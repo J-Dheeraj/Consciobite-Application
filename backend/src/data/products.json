@@ -1,0 +1,256 @@
+[
+  {
+    "id": "1",
+    "name": "Organic Tofu",
+    "brand": "GreenHarvest",
+    "category": "Protein",
+    "barcode": "1234567890123",
+    "image": "https://via.placeholder.com/200?text=Tofu",
+    "description": "Organic firm tofu made from non-GMO soybeans.",
+    "purchaseLinks": [
+      { "seller": "Amazon", "url": "https://amazon.com" },
+      { "seller": "FairPrice", "url": "https://fairprice.com.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0.0,
+      "farm": 0.5,
+      "processing": 0.4,
+      "transport": 0.3,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "2",
+    "name": "Grass-Fed Beef Steak",
+    "brand": "MeatCo",
+    "category": "Protein",
+    "barcode": "2345678901234",
+    "image": "https://via.placeholder.com/200?text=Beef",
+    "description": "Premium grass-fed beef steak, 300g.",
+    "purchaseLinks": [
+      { "seller": "ColdStorage", "url": "https://coldstorage.com.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 9.8,
+      "animalFeed": 6.2,
+      "farm": 21.3,
+      "processing": 1.8,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "3",
+    "name": "Arabica Coffee Beans",
+    "brand": "BeanOrigin",
+    "category": "Beverages",
+    "barcode": "3456789012345",
+    "image": "https://via.placeholder.com/200?text=Coffee",
+    "description": "Single-origin Arabica coffee beans, 250g.",
+    "purchaseLinks": [
+      { "seller": "Shopee", "url": "https://shopee.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 3.7,
+      "animalFeed": 0.0,
+      "farm": 5.1,
+      "processing": 1.2,
+      "transport": 1.0,
+      "packaging": 0.8,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "4",
+    "name": "Free-Range Eggs",
+    "brand": "HappyHens",
+    "category": "Dairy & Eggs",
+    "barcode": "4567890123456",
+    "image": "https://via.placeholder.com/200?text=Eggs",
+    "description": "Pack of 10 free-range eggs.",
+    "purchaseLinks": [
+      { "seller": "FairPrice", "url": "https://fairprice.com.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 0.7,
+      "animalFeed": 1.8,
+      "farm": 1.3,
+      "processing": 0.2,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "5",
+    "name": "Almond Milk",
+    "brand": "NutriNut",
+    "category": "Beverages",
+    "barcode": "5678901234567",
+    "image": "https://via.placeholder.com/200?text=AlmondMilk",
+    "description": "Unsweetened almond milk, 1L.",
+    "purchaseLinks": [
+      { "seller": "Amazon", "url": "https://amazon.com" },
+      { "seller": "RedMart", "url": "https://redmart.com" }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0.0,
+      "farm": 0.8,
+      "processing": 0.3,
+      "transport": 0.4,
+      "packaging": 0.5,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "6",
+    "name": "Atlantic Salmon Fillet",
+    "brand": "OceanCatch",
+    "category": "Seafood",
+    "barcode": "6789012345678",
+    "image": "https://via.placeholder.com/200?text=Salmon",
+    "description": "Fresh Atlantic salmon fillet, 200g.",
+    "purchaseLinks": [
+      { "seller": "ColdStorage", "url": "https://coldstorage.com.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 0.4,
+      "animalFeed": 3.2,
+      "farm": 4.1,
+      "processing": 0.8,
+      "transport": 0.6,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "7",
+    "name": "Basmati Rice",
+    "brand": "PaddyGold",
+    "category": "Grains",
+    "barcode": "7890123456789",
+    "image": "https://via.placeholder.com/200?text=Rice",
+    "description": "Premium aged basmati rice, 1kg.",
+    "purchaseLinks": [
+      { "seller": "FairPrice", "url": "https://fairprice.com.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 0.4,
+      "animalFeed": 0.0,
+      "farm": 2.5,
+      "processing": 0.5,
+      "transport": 0.6,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "8",
+    "name": "Dark Chocolate Bar",
+    "brand": "CocoaPure",
+    "category": "Snacks",
+    "barcode": "8901234567890",
+    "image": "https://via.placeholder.com/200?text=Chocolate",
+    "description": "70% dark chocolate bar, 100g.",
+    "purchaseLinks": [
+      { "seller": "Shopee", "url": "https://shopee.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 4.5,
+      "animalFeed": 0.0,
+      "farm": 3.8,
+      "processing": 1.0,
+      "transport": 0.7,
+      "packaging": 0.6,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "9",
+    "name": "Organic Bananas",
+    "brand": "TropiFresh",
+    "category": "Fruits",
+    "barcode": "9012345678901",
+    "image": "https://via.placeholder.com/200?text=Bananas",
+    "description": "Bunch of 6 organic bananas.",
+    "purchaseLinks": [
+      { "seller": "FairPrice", "url": "https://fairprice.com.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0.0,
+      "farm": 0.3,
+      "processing": 0.1,
+      "transport": 0.5,
+      "packaging": 0.1,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "10",
+    "name": "Cheddar Cheese",
+    "brand": "DairyBest",
+    "category": "Dairy & Eggs",
+    "barcode": "0123456789012",
+    "image": "https://via.placeholder.com/200?text=Cheese",
+    "description": "Mature cheddar cheese block, 250g.",
+    "purchaseLinks": [
+      { "seller": "ColdStorage", "url": "https://coldstorage.com.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 2.1,
+      "animalFeed": 3.5,
+      "farm": 5.2,
+      "processing": 1.1,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "11",
+    "name": "Oat Milk",
+    "brand": "OatlyGood",
+    "category": "Beverages",
+    "barcode": "1122334455667",
+    "image": "https://via.placeholder.com/200?text=OatMilk",
+    "description": "Original oat milk, 1L.",
+    "purchaseLinks": [
+      { "seller": "Amazon", "url": "https://amazon.com" }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0.0,
+      "farm": 0.4,
+      "processing": 0.3,
+      "transport": 0.3,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "12",
+    "name": "Lamb Chops",
+    "brand": "PasturePrime",
+    "category": "Protein",
+    "barcode": "2233445566778",
+    "image": "https://via.placeholder.com/200?text=Lamb",
+    "description": "New Zealand lamb chops, 400g.",
+    "purchaseLinks": [
+      { "seller": "ColdStorage", "url": "https://coldstorage.com.sg" }
+    ],
+    "emissions": {
+      "landUseChange": 3.8,
+      "animalFeed": 2.1,
+      "farm": 14.2,
+      "processing": 1.5,
+      "transport": 1.2,
+      "packaging": 0.4,
+      "retail": 0.3
+    }
+  }
+]
