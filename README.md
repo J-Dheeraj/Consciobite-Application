@@ -33,6 +33,18 @@ npm install
 npm start        # runs on http://localhost:3000
 ```
 
+## Deploy to Render
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+1. Go to [render.com/deploy](https://render.com/deploy)
+2. Connect your GitHub account and select this repository
+3. Render will auto-detect the `render.yaml` blueprint
+4. Click **Apply** to create both services (API + frontend)
+5. Wait for deployment — your app will be live at `https://consciobite-app.onrender.com`
+
+> Note: Free tier services spin down after inactivity. First request after idle may take 30-60 seconds.
+
 ## API Endpoints
 
 | Method | Endpoint | Description |

@@ -1,4 +1,6 @@
-const API_BASE = process.env.REACT_APP_API_URL || "http://localhost:4000/api";
+// Render sets REACT_APP_API_URL to the backend service URL (e.g., https://consciobite-api.onrender.com)
+const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+const API_BASE = `${BASE_URL.replace(/\/$/, "")}/api`;
 
 export async function fetchProducts({ search, category, sort } = {}) {
   const params = new URLSearchParams();
