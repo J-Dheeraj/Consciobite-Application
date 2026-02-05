@@ -26,8 +26,7 @@ services:
         fromService:
           name: consciobite-api
           type: web
-          property: url
-        # Will be set to: https://consciobite-api.onrender.com/api
+          property: host
     headers:
       - path: /*
         name: Cache-Control

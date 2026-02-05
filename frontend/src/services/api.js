@@ -1,5 +1,9 @@
-// Render sets REACT_APP_API_URL to the backend service URL (e.g., https://consciobite-api.onrender.com)
-const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:4000";
+// Render's fromService host property returns the hostname (e.g., consciobite-api.onrender.com)
+// In development, fall back to localhost
+const HOST = process.env.REACT_APP_API_URL;
+const BASE_URL = HOST
+  ? HOST.startsWith("http") ? HOST : `https://${HOST}`
+  : "http://localhost:4000";
 const API_BASE = `${BASE_URL.replace(/\/$/, "")}/api`;
 
 export async function fetchProducts({ search, category, sort } = {}) {
