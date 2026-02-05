@@ -9,13 +9,17 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("grade_desc");
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    setError("");
     fetchProducts({
       search: search || undefined,
       category: category === "All" ? undefined : category,
       sort,
-    }).then(setProducts);
+    })
+      .then(setProducts)
+      .catch(() => setError("Unable to load products. Please try again later."));
   }, [search, category, sort]);
 
   return (
@@ -59,8 +63,9 @@ export default function Home() {
         </select>
       </div>
 
+      {error && <p style={{ color: "#e63946", marginBottom: 12 }}>{error}</p>}
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        {products.length === 0 && <p style={{ color: "#888" }}>No products found.</p>}
+        {!error && products.length === 0 && <p style={{ color: "#888" }}>No products found.</p>}
         {products.map((p) => (
           <ProductCard key={p.id} product={p} />
         ))}

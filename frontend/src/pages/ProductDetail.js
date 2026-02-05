@@ -8,11 +8,16 @@ export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [showBreakdown, setShowBreakdown] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    fetchProduct(id).then(setProduct);
+    setError("");
+    fetchProduct(id)
+      .then(setProduct)
+      .catch(() => setError("Unable to load product details."));
   }, [id]);
 
+  if (error) return <div style={{ padding: 24, color: "#e63946" }}>{error}</div>;
   if (!product) return <div style={{ padding: 24 }}>Loading...</div>;
 
   const { greenGrade } = product;
