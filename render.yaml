@@ -12,6 +12,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: ALLOWED_ORIGINS
+        value: https://consciobite-app.onrender.com
     plan: free
 
   # Frontend Static Site

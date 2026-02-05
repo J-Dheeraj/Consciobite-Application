@@ -6,21 +6,27 @@ const BASE_URL = HOST
   : "http://localhost:4000";
 const API_BASE = `${BASE_URL.replace(/\/$/, "")}/api`;
 
+async function safeFetch(url) {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Request failed (${res.status})`);
+  }
+  return res.json();
+}
+
 export async function fetchProducts({ search, category, sort } = {}) {
   const params = new URLSearchParams();
   if (search) params.set("search", search);
   if (category) params.set("category", category);
   if (sort) params.set("sort", sort);
-  const res = await fetch(`${API_BASE}/products?${params}`);
-  return res.json();
+  return safeFetch(`${API_BASE}/products?${params}`);
 }
 
 export async function fetchProduct(id) {
-  const res = await fetch(`${API_BASE}/products/${id}`);
-  return res.json();
+  return safeFetch(`${API_BASE}/products/${encodeURIComponent(id)}`);
 }
 
 export async function scanBarcode(barcode) {
-  const res = await fetch(`${API_BASE}/products/scan/${barcode}`);
-  return res.json();
+  return safeFetch(`${API_BASE}/products/scan/${encodeURIComponent(barcode)}`);
 }
