@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { fetchProducts } from "../services/api";
 import ProductCard from "../components/ProductCard";
 
-const CATEGORIES = ["All", "Protein", "Beverages", "Dairy & Eggs", "Seafood", "Grains", "Snacks", "Fruits"];
+const CATEGORIES = ["All", "Protein", "Seafood", "Dairy & Eggs", "Grains", "Fruits", "Vegetables", "Beverages", "Snacks", "Pantry"];
 
 export default function Home() {
   const [products, setProducts] = useState([]);
