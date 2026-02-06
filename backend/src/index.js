@@ -18,12 +18,24 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
   : ["http://localhost:3000"];
 
+function isAllowedOrigin(origin) {
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
+  // Also allow any consciobite*.onrender.com origin (covers name variations)
+  try {
+    const url = new URL(origin);
+    if (url.hostname.startsWith("consciobite") && url.hostname.endsWith(".onrender.com")) {
+      return true;
+    }
+  } catch (_) { /* invalid URL, reject */ }
+  return false;
+}
+
 app.use(
   cors({
     origin(origin, callback) {
       // Allow requests with no origin (server-to-server, curl, mobile apps)
       if (!origin) return callback(null, true);
-      if (ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+      if (isAllowedOrigin(origin)) return callback(null, true);
       callback(new Error("Not allowed by CORS"));
     },
     methods: ["GET"],
