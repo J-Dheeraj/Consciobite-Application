@@ -1,19 +1,22 @@
 // Determine the API base URL at runtime so it works regardless of
 // whether the build-time env var was injected correctly.
 function getApiBase() {
-  // 1. Build-time env var (set by Render fromService or .env)
-  const envHost = process.env.REACT_APP_API_URL;
-  if (envHost) {
-    const base = envHost.startsWith("http") ? envHost : `https://${envHost}`;
-    return `${base.replace(/\/$/, "")}/api`;
+  // 1. Runtime detection FIRST (most reliable for Render deployments)
+  //    Derive API hostname from current page hostname
+  //    e.g. consciobite-app.onrender.com → consciobite-api.onrender.com
+  if (typeof window !== "undefined") {
+    const { hostname, protocol } = window.location;
+    if (hostname.endsWith(".onrender.com")) {
+      const apiHost = hostname.replace("-app", "-api");
+      return `${protocol}//${apiHost}/api`;
+    }
   }
 
-  // 2. Runtime detection: derive API hostname from current page hostname
-  //    e.g. consciobite-app.onrender.com → consciobite-api.onrender.com
-  const { hostname, protocol } = window.location;
-  if (hostname.endsWith(".onrender.com")) {
-    const apiHost = hostname.replace("-app", "-api");
-    return `${protocol}//${apiHost}/api`;
+  // 2. Build-time env var (only if it looks like a valid full hostname)
+  const envHost = process.env.REACT_APP_API_URL;
+  if (envHost && envHost.includes(".")) {
+    const base = envHost.startsWith("http") ? envHost : `https://${envHost}`;
+    return `${base.replace(/\/$/, "")}/api`;
   }
 
   // 3. Local development fallback
