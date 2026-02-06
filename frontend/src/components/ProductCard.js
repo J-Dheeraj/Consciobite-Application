@@ -1,9 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import GradeBadge from "./GradeBadge";
+import { getProductImage } from "../utils/productImage";
 
 export default function ProductCard({ product }) {
   const { greenGrade } = product;
+  const imageUrl = getProductImage(product);
+
   return (
     <Link
       to={`/product/${product.id}`}
@@ -20,6 +23,17 @@ export default function ProductCard({ product }) {
         transition: "box-shadow 0.2s",
       }}
     >
+      <img
+        src={imageUrl}
+        alt={product.name}
+        style={{
+          width: 60,
+          height: 60,
+          borderRadius: 8,
+          objectFit: "cover",
+          flexShrink: 0,
+        }}
+      />
       <GradeBadge score={greenGrade.score} color={greenGrade.color} />
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontWeight: 600 }}>{product.name}</div>

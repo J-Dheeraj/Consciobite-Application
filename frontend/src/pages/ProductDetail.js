@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { fetchProduct } from "../services/api";
 import GradeBadge from "../components/GradeBadge";
 import GradeBreakdown from "../components/GradeBreakdown";
+import { getProductImageLarge } from "../utils/productImage";
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -21,12 +22,27 @@ export default function ProductDetail() {
   if (!product) return <div style={{ padding: 24 }}>Loading...</div>;
 
   const { greenGrade } = product;
+  const imageUrl = getProductImageLarge(product);
 
   return (
     <div style={{ maxWidth: 600, margin: "0 auto", padding: 24 }}>
       <Link to="/" style={{ fontSize: "0.85rem" }}>&larr; Back to products</Link>
 
       <div style={{ background: "#fff", borderRadius: 12, padding: 24, marginTop: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+        <div style={{ textAlign: "center", marginBottom: 20 }}>
+          <img
+            src={imageUrl}
+            alt={product.name}
+            style={{
+              width: "100%",
+              maxWidth: 280,
+              height: "auto",
+              borderRadius: 12,
+              objectFit: "cover",
+            }}
+          />
+        </div>
+
         <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 16 }}>
           <GradeBadge score={greenGrade.score} color={greenGrade.color} size="large" />
           <div>
