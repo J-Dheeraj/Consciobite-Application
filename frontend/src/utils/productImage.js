@@ -15,24 +15,20 @@ const DEFAULT_COLORS = ["f5f5f5", "666666"];
 
 /**
  * Get the image URL for a product.
- * If the product has an `image` field, use that.
- * Otherwise, generate a placeholder based on category and name.
+ * Priority:
+ * 1. Product's own `image` field (if set in products.json)
+ * 2. Local image file at /images/products/{id}.jpg
+ * 3. Placeholder image based on category
  */
 export function getProductImage(product, size = 200) {
-  // Use product's own image if available
+  // 1. Use product's own image URL if available
   if (product.image) {
     return product.image;
   }
 
-  // Generate placeholder image
-  const colors = CATEGORY_COLORS[product.category] || DEFAULT_COLORS;
-  const [bgColor, textColor] = colors;
-
-  // Use first two words of name for placeholder text
-  const words = product.name.split(" ").slice(0, 2).join("+");
-  const text = encodeURIComponent(words);
-
-  return `https://placehold.co/${size}x${size}/${bgColor}/${textColor}?text=${text}&font=roboto`;
+  // 2. Use local image (saved in public/images/products/)
+  // These will be checked at runtime - if the image exists, it loads; otherwise shows placeholder
+  return `/images/products/${product.id}.jpg`;
 }
 
 /**
@@ -40,4 +36,15 @@ export function getProductImage(product, size = 200) {
  */
 export function getProductImageLarge(product) {
   return getProductImage(product, 400);
+}
+
+/**
+ * Get placeholder image URL (fallback)
+ */
+export function getPlaceholderImage(product, size = 200) {
+  const colors = CATEGORY_COLORS[product.category] || DEFAULT_COLORS;
+  const [bgColor, textColor] = colors;
+  const words = product.name.split(" ").slice(0, 2).join("+");
+  const text = encodeURIComponent(words);
+  return `https://placehold.co/${size}x${size}/${bgColor}/${textColor}?text=${text}&font=roboto`;
 }

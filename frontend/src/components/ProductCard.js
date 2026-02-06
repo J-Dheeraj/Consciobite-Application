@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import GradeBadge from "./GradeBadge";
-import { getProductImage } from "../utils/productImage";
+import { getProductImage, getPlaceholderImage } from "../utils/productImage";
 
 export default function ProductCard({ product }) {
   const { greenGrade } = product;
-  const imageUrl = getProductImage(product);
+  const [imgSrc, setImgSrc] = useState(getProductImage(product));
+
+  const handleImageError = () => {
+    setImgSrc(getPlaceholderImage(product, 60));
+  };
 
   return (
     <Link
@@ -24,8 +28,9 @@ export default function ProductCard({ product }) {
       }}
     >
       <img
-        src={imageUrl}
+        src={imgSrc}
         alt={product.name}
+        onError={handleImageError}
         style={{
           width: 60,
           height: 60,

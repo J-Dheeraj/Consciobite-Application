@@ -3,18 +3,22 @@ import { useParams, Link } from "react-router-dom";
 import { fetchProduct } from "../services/api";
 import GradeBadge from "../components/GradeBadge";
 import GradeBreakdown from "../components/GradeBreakdown";
-import { getProductImageLarge } from "../utils/productImage";
+import { getProductImageLarge, getPlaceholderImage } from "../utils/productImage";
 
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [error, setError] = useState("");
+  const [imgSrc, setImgSrc] = useState(null);
 
   useEffect(() => {
     setError("");
     fetchProduct(id)
-      .then(setProduct)
+      .then((p) => {
+        setProduct(p);
+        setImgSrc(getProductImageLarge(p));
+      })
       .catch(() => setError("Unable to load product details."));
   }, [id]);
 
@@ -22,7 +26,10 @@ export default function ProductDetail() {
   if (!product) return <div style={{ padding: 24 }}>Loading...</div>;
 
   const { greenGrade } = product;
-  const imageUrl = getProductImageLarge(product);
+
+  const handleImageError = () => {
+    setImgSrc(getPlaceholderImage(product, 280));
+  };
 
   return (
     <div style={{ maxWidth: 600, margin: "0 auto", padding: 24 }}>
@@ -31,8 +38,9 @@ export default function ProductDetail() {
       <div style={{ background: "#fff", borderRadius: 12, padding: 24, marginTop: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
         <div style={{ textAlign: "center", marginBottom: 20 }}>
           <img
-            src={imageUrl}
+            src={imgSrc}
             alt={product.name}
+            onError={handleImageError}
             style={{
               width: "100%",
               maxWidth: 280,
