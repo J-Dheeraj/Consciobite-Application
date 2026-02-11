@@ -18,3 +18,37 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* Focus styles for accessibility */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid #2d6a4f;
+  outline-offset: 2px;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Better select styling */
+select {
+  appearance: auto;
+  background: #fff;
+}
+
+/* Skip to content for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #2d6a4f;
+  color: #fff;
+  padding: 8px;
+  z-index: 200;
+}
+.skip-link:focus {
+  top: 0;
+}
