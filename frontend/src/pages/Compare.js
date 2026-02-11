@@ -203,6 +203,7 @@ export default function Compare() {
                 <GradeBreakdown
                   breakdown={p.greenGrade.breakdown}
                   totalEmissions={p.greenGrade.totalEmissions}
+                  totalScore={p.greenGrade.score}
                 />
               </div>
             ))}
