@@ -3,7 +3,7 @@
 function getApiBase() {
   // 1. Runtime detection FIRST (most reliable for Render deployments)
   //    Derive API hostname from current page hostname
-  //    e.g. consciobite-app.onrender.com → consciobite-api.onrender.com
+  //    e.g. consciobite-app.onrender.com -> consciobite-api.onrender.com
   if (typeof window !== "undefined") {
     const { hostname, protocol } = window.location;
     if (hostname.endsWith(".onrender.com")) {
@@ -34,11 +34,13 @@ async function safeFetch(url) {
   return res.json();
 }
 
-export async function fetchProducts({ search, category, sort } = {}) {
+export async function fetchProducts({ search, category, sort, page, limit } = {}) {
   const params = new URLSearchParams();
   if (search) params.set("search", search);
   if (category) params.set("category", category);
   if (sort) params.set("sort", sort);
+  if (page) params.set("page", String(page));
+  if (limit) params.set("limit", String(limit));
   return safeFetch(`${API_BASE}/products?${params}`);
 }
 
@@ -48,4 +50,12 @@ export async function fetchProduct(id) {
 
 export async function scanBarcode(barcode) {
   return safeFetch(`${API_BASE}/products/scan/${encodeURIComponent(barcode)}`);
+}
+
+export async function compareProducts(ids) {
+  return safeFetch(`${API_BASE}/products/compare?ids=${ids.map(encodeURIComponent).join(",")}`);
+}
+
+export async function fetchStats() {
+  return safeFetch(`${API_BASE}/products/stats`);
 }
