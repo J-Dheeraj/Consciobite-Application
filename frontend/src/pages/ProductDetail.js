@@ -27,7 +27,6 @@ function toggleFavorite(id) {
 export default function ProductDetail() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [showBreakdown, setShowBreakdown] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [fav, setFav] = useState(false);
@@ -86,11 +85,12 @@ export default function ProductDetail() {
   const { greenGrade } = product;
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: 24 }}>
+    <div style={{ maxWidth: 640, margin: "0 auto", padding: 24 }}>
       <Link to="/" style={{ fontSize: "0.85rem" }}>&larr; Back to products</Link>
 
+      {/* Product header card */}
       <div style={{ background: "#fff", borderRadius: 12, padding: 24, marginTop: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 16 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 12 }}>
           <GradeBadge score={greenGrade.score} color={greenGrade.color} size="large" />
           <div style={{ flex: 1 }}>
             <h2 style={{ marginBottom: 2 }}>{product.name}</h2>
@@ -115,58 +115,49 @@ export default function ProductDetail() {
             {fav ? "\u2665" : "\u2661"}
           </button>
         </div>
-
-        <p style={{ marginBottom: 16, fontSize: "0.9rem" }}>{product.description}</p>
-
-        <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-          <button
-            onClick={() => setShowBreakdown(!showBreakdown)}
-            style={{
-              background: "none",
-              border: "1px solid #2d6a4f",
-              color: "#2d6a4f",
-              padding: "6px 14px",
-              borderRadius: 6,
-              cursor: "pointer",
-              fontSize: "0.85rem",
-            }}
-          >
-            {showBreakdown ? "Hide" : "Show"} Emissions Breakdown
-          </button>
-        </div>
-
-        {showBreakdown && (
-          <GradeBreakdown
-            breakdown={greenGrade.breakdown}
-            totalEmissions={greenGrade.totalEmissions}
-          />
-        )}
-
-        {product.purchaseLinks && product.purchaseLinks.length > 0 && (
-          <div style={{ marginTop: 20 }}>
-            <h4 style={{ marginBottom: 8 }}>Buy This Product</h4>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-              {product.purchaseLinks.map((link) => (
-                <a
-                  key={link.seller}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    padding: "6px 14px",
-                    background: "#2d6a4f",
-                    color: "#fff",
-                    borderRadius: 6,
-                    fontSize: "0.85rem",
-                  }}
-                >
-                  {link.seller}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
+        <p style={{ fontSize: "0.9rem", color: "#444" }}>{product.description}</p>
       </div>
+
+      {/* Full supply chain breakdown - always visible */}
+      <div style={{ background: "#fff", borderRadius: 12, padding: 24, marginTop: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+        <h3 style={{ marginBottom: 4 }}>Supply Chain Breakdown</h3>
+        <p style={{ fontSize: "0.85rem", color: "#888", marginBottom: 16 }}>
+          Score per stage of the supply chain. Each category is scored 0-10 and weighted by its environmental significance.
+        </p>
+
+        <GradeBreakdown
+          breakdown={greenGrade.breakdown}
+          totalEmissions={greenGrade.totalEmissions}
+          totalScore={greenGrade.score}
+        />
+      </div>
+
+      {/* Purchase links */}
+      {product.purchaseLinks && product.purchaseLinks.length > 0 && (
+        <div style={{ background: "#fff", borderRadius: 12, padding: 24, marginTop: 16, boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
+          <h4 style={{ marginBottom: 8 }}>Buy This Product</h4>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {product.purchaseLinks.map((link) => (
+              <a
+                key={link.seller}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  padding: "8px 16px",
+                  background: "#2d6a4f",
+                  color: "#fff",
+                  borderRadius: 6,
+                  fontSize: "0.85rem",
+                  textDecoration: "none",
+                }}
+              >
+                {link.seller}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
