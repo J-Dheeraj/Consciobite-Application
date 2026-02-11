@@ -2393,11 +2393,11 @@
   },
   {
     "id": "105",
-    "name": "Silken Tofu",
+    "name": "Japanese Silken Tofu",
     "brand": "Unicurd",
     "category": "Protein",
     "barcode": "8888001141401",
-    "description": "Smooth silken tofu, ideal for soups and desserts, 300g.",
+    "description": "Smooth Japanese-style silken tofu, ideal for soups and desserts, 300g.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -2462,7 +2462,7 @@
   },
   {
     "id": "108",
-    "name": "Chicken Wings",
+    "name": "Chicken Mid Wings",
     "brand": "Sadia",
     "category": "Protein",
     "barcode": "8888001171701",
@@ -2600,11 +2600,11 @@
   },
   {
     "id": "114",
-    "name": "Pork Belly",
+    "name": "Pork Belly Sliced",
     "brand": "FairPrice",
     "category": "Protein",
     "barcode": "8888001232301",
-    "description": "Fresh pork belly slices, 300g.",
+    "description": "Fresh sliced pork belly for BBQ, 300g.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -2945,11 +2945,11 @@
   },
   {
     "id": "129",
-    "name": "Frozen Squid Rings",
+    "name": "Frozen Baby Squid",
     "brand": "FairPrice",
     "category": "Seafood",
     "barcode": "8888002171701",
-    "description": "Cleaned and sliced squid rings, 500g. Frozen.",
+    "description": "Cleaned frozen baby squid, 500g.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -3014,11 +3014,11 @@
   },
   {
     "id": "132",
-    "name": "Fish Sauce",
+    "name": "Premium Fish Sauce",
     "brand": "Squid Brand",
     "category": "Seafood",
     "barcode": "8888002202001",
-    "description": "Premium Thai fish sauce, 300ml.",
+    "description": "Premium Thai fish sauce, 300ml bottle.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -3267,11 +3267,11 @@
   },
   {
     "id": "143",
-    "name": "Cheddar Cheese Block",
+    "name": "Tasty Cheddar Block",
     "brand": "Bega",
     "category": "Dairy & Eggs",
     "barcode": "8888003171701",
-    "description": "Tasty cheddar cheese block, 250g.",
+    "description": "Tasty matured cheddar cheese block, 250g.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -3658,11 +3658,11 @@
   },
   {
     "id": "160",
-    "name": "Wholemeal Bread",
+    "name": "Wholemeal Bread High Fibre",
     "brand": "Gardenia",
     "category": "Grains",
     "barcode": "8888004161601",
-    "description": "Enriched wholemeal bread, 400g loaf.",
+    "description": "High fibre enriched wholemeal bread, 400g loaf.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -4072,11 +4072,11 @@
   },
   {
     "id": "178",
-    "name": "Navel Oranges",
+    "name": "Cara Cara Oranges",
     "brand": "Sunkist",
     "category": "Fruits",
     "barcode": "8888005141401",
-    "description": "Fresh seedless navel oranges, 6 pack.",
+    "description": "Fresh seedless Cara Cara oranges, 6 pack.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -4233,7 +4233,7 @@
   },
   {
     "id": "185",
-    "name": "Watermelon",
+    "name": "Seedless Watermelon",
     "brand": "Pasar",
     "category": "Fruits",
     "barcode": "8888005212101",
@@ -4302,7 +4302,7 @@
   },
   {
     "id": "188",
-    "name": "Avocado",
+    "name": "Hass Avocado",
     "brand": "Pasar",
     "category": "Fruits",
     "barcode": "8888005242401",
@@ -4486,11 +4486,11 @@
   },
   {
     "id": "196",
-    "name": "Celery",
+    "name": "Celery Sticks",
     "brand": "Pasar",
     "category": "Vegetables",
     "barcode": "8888006202001",
-    "description": "Fresh celery stalk, per bunch.",
+    "description": "Fresh celery sticks, trimmed, per bunch.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -5797,11 +5797,11 @@
   },
   {
     "id": "253",
-    "name": "Tomato Ketchup",
+    "name": "Tomato Ketchup Squeeze",
     "brand": "Heinz",
     "category": "Pantry",
     "barcode": "8888009252501",
-    "description": "Classic tomato ketchup, 567g squeeze bottle.",
+    "description": "Classic tomato ketchup in squeeze bottle, 567g.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -6280,11 +6280,11 @@
   },
   {
     "id": "274",
-    "name": "Milo Powder",
+    "name": "Milo Activ-Go",
     "brand": "Nestle",
     "category": "Pantry",
     "barcode": "8888009464601",
-    "description": "Milo chocolate malt powder, 400g tin.",
+    "description": "Milo Activ-Go chocolate malt powder, 400g tin.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -6303,11 +6303,11 @@
   },
   {
     "id": "275",
-    "name": "Coconut Oil Virgin",
+    "name": "Cold Pressed Coconut Oil",
     "brand": "Parachute",
     "category": "Pantry",
     "barcode": "8888009474701",
-    "description": "Virgin cold-pressed coconut oil, 500ml.",
+    "description": "Virgin cold-pressed coconut oil for cooking and beauty, 500ml.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -6418,11 +6418,11 @@
   },
   {
     "id": "280",
-    "name": "Unsalted Butter",
+    "name": "Salted Butter",
     "brand": "Anchor",
     "category": "Dairy & Eggs",
     "barcode": "8888003313101",
-    "description": "New Zealand unsalted butter, 227g.",
+    "description": "New Zealand salted butter, 227g.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -6625,11 +6625,11 @@
   },
   {
     "id": "289",
-    "name": "Coconut Water",
+    "name": "Coconut Water With Pulp",
     "brand": "UFC",
     "category": "Beverages",
     "barcode": "8888007292901",
-    "description": "Pure coconut water, 500ml.",
+    "description": "Pure coconut water with coconut pulp, 500ml.",
     "purchaseLinks": [
       {
         "seller": "FairPrice",
@@ -6689,6 +6689,2835 @@
       "processing": 0.8,
       "transport": 0.4,
       "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "292",
+    "name": "Chicken Frankfurters",
+    "brand": "CP",
+    "category": "Protein",
+    "barcode": "8888001333301",
+    "description": "Chicken frankfurter sausages, 340g pack.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/cp%20frankfurters"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 2,
+      "animalFeed": 1.5,
+      "farm": 1.3,
+      "processing": 1.1,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "293",
+    "name": "Chicken Gyoza",
+    "brand": "CP",
+    "category": "Protein",
+    "barcode": "8888001343401",
+    "description": "Japanese style chicken gyoza dumplings, 300g. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/cp%20gyoza"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 2.1,
+      "animalFeed": 1.4,
+      "farm": 1.2,
+      "processing": 1.2,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "294",
+    "name": "Chicken Karaage",
+    "brand": "CP",
+    "category": "Protein",
+    "barcode": "8888001353501",
+    "description": "Japanese style fried chicken karaage, 400g. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/cp%20karaage"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 2.2,
+      "animalFeed": 1.6,
+      "farm": 1.4,
+      "processing": 1.3,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "295",
+    "name": "Pork Wonton",
+    "brand": "CP",
+    "category": "Protein",
+    "barcode": "8888001363601",
+    "description": "Pork and prawn wonton, 250g. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/cp%20wonton"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1.8,
+      "animalFeed": 2,
+      "farm": 1.8,
+      "processing": 1.1,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "296",
+    "name": "Chicken Drumsticks",
+    "brand": "Kee Song",
+    "category": "Protein",
+    "barcode": "8888001373701",
+    "description": "Fresh kampong chicken drumsticks, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/kee%20song%20drumsticks"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 2.1,
+      "animalFeed": 1.5,
+      "farm": 1.2,
+      "processing": 0.5,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "297",
+    "name": "Chicken Breast Boneless",
+    "brand": "Kee Song",
+    "category": "Protein",
+    "barcode": "8888001383801",
+    "description": "Fresh kampong chicken breast, boneless, 400g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/kee%20song%20breast"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 2,
+      "animalFeed": 1.4,
+      "farm": 1.1,
+      "processing": 0.5,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "298",
+    "name": "Pork Meatballs",
+    "brand": "Ma Ling",
+    "category": "Protein",
+    "barcode": "8888001393901",
+    "description": "Canned braised pork meatballs, 280g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/ma%20ling%20meatballs"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1.7,
+      "animalFeed": 2.5,
+      "farm": 2.4,
+      "processing": 1.1,
+      "transport": 0.6,
+      "packaging": 0.5,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "299",
+    "name": "Stewed Pork Slices",
+    "brand": "Ma Ling",
+    "category": "Protein",
+    "barcode": "8888001404001",
+    "description": "Canned stewed pork slices, 397g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/ma%20ling%20stewed%20pork"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1.9,
+      "animalFeed": 2.6,
+      "farm": 2.5,
+      "processing": 1.2,
+      "transport": 0.6,
+      "packaging": 0.5,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "300",
+    "name": "Lamb Mince",
+    "brand": "New Zealand",
+    "category": "Protein",
+    "barcode": "8888001414101",
+    "description": "Frozen New Zealand lean lamb mince, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/lamb%20mince"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 3.5,
+      "animalFeed": 1.9,
+      "farm": 13.5,
+      "processing": 1.3,
+      "transport": 1.1,
+      "packaging": 0.4,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "301",
+    "name": "Lamb Chops",
+    "brand": "New Zealand",
+    "category": "Protein",
+    "barcode": "8888001424201",
+    "description": "Frozen New Zealand lamb loin chops, 400g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/lamb%20chops"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 3.7,
+      "animalFeed": 2,
+      "farm": 14,
+      "processing": 1.5,
+      "transport": 1.2,
+      "packaging": 0.4,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "302",
+    "name": "Cashew Nuts Salted",
+    "brand": "Tong Garden",
+    "category": "Protein",
+    "barcode": "8888001434301",
+    "description": "Salted roasted cashew nuts, 160g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/tong%20garden%20cashew"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.4,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "303",
+    "name": "Almonds Baked",
+    "brand": "Tong Garden",
+    "category": "Protein",
+    "barcode": "8888001444401",
+    "description": "Baked almonds, lightly salted, 140g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/tong%20garden%20almonds"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.7,
+      "processing": 0.4,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "304",
+    "name": "Plant-Based Sausages",
+    "brand": "Quorn",
+    "category": "Protein",
+    "barcode": "8888001454501",
+    "description": "Meat-free Cumberland-style sausages, 252g. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/quorn%20sausages"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.9,
+      "transport": 0.3,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "305",
+    "name": "Plant-Based Burger",
+    "brand": "Quorn",
+    "category": "Protein",
+    "barcode": "8888001464601",
+    "description": "Meat-free quarter pounder burgers, 2 pack. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/quorn%20burger"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 1,
+      "transport": 0.3,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "306",
+    "name": "Fish Fingers",
+    "brand": "Pacific West",
+    "category": "Seafood",
+    "barcode": "8888002222201",
+    "description": "Crumbed fish fingers, 300g. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/pacific%20west%20fish%20fingers"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 1.2,
+      "farm": 2.8,
+      "processing": 0.9,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "307",
+    "name": "Tempura Prawns",
+    "brand": "Pacific West",
+    "category": "Seafood",
+    "barcode": "8888002232301",
+    "description": "Crispy tempura prawns, 250g. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/pacific%20west%20tempura%20prawns"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 1.5,
+      "farm": 4.2,
+      "processing": 1,
+      "transport": 0.6,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "308",
+    "name": "Crumbed Fish Fillets",
+    "brand": "Pacific West",
+    "category": "Seafood",
+    "barcode": "8888002242401",
+    "description": "Crumbed white fish fillets, 400g. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/pacific%20west%20fish%20fillet"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 1.3,
+      "farm": 3,
+      "processing": 0.9,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "309",
+    "name": "Calamari Rings",
+    "brand": "Pacific West",
+    "category": "Seafood",
+    "barcode": "8888002252501",
+    "description": "Salt and pepper calamari rings, 300g. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/pacific%20west%20calamari"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 2.5,
+      "processing": 0.8,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "310",
+    "name": "Salmon Steaks",
+    "brand": "Tassal",
+    "category": "Seafood",
+    "barcode": "8888002262601",
+    "description": "Frozen Tasmanian salmon steaks, 2x150g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/tassal%20salmon%20steaks"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.5,
+      "animalFeed": 3.4,
+      "farm": 4.9,
+      "processing": 0.7,
+      "transport": 0.7,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "311",
+    "name": "Hot Smoked Salmon Pieces",
+    "brand": "Tassal",
+    "category": "Seafood",
+    "barcode": "8888002272701",
+    "description": "Hot smoked salmon pieces, ready to eat, 150g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/tassal%20hot%20smoked"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.5,
+      "animalFeed": 3.6,
+      "farm": 5.2,
+      "processing": 1.1,
+      "transport": 0.8,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "312",
+    "name": "Sriracha Chilli Sauce",
+    "brand": "Squid Brand",
+    "category": "Seafood",
+    "barcode": "8888002282801",
+    "description": "Sriracha hot chilli sauce, 300ml.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/squid%20brand%20sriracha"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.6,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "313",
+    "name": "Anchovy Sauce",
+    "brand": "Squid Brand",
+    "category": "Seafood",
+    "barcode": "8888002292901",
+    "description": "Thai anchovy sauce, 300ml.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/squid%20brand%20anchovy"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 1.3,
+      "processing": 0.8,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "314",
+    "name": "Chunk Light Tuna",
+    "brand": "Bumble Bee",
+    "category": "Seafood",
+    "barcode": "8888002303001",
+    "description": "Chunk light tuna in water, 142g can.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/bumble%20bee%20tuna"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 2.3,
+      "processing": 0.8,
+      "transport": 0.6,
+      "packaging": 0.5,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "315",
+    "name": "Pink Salmon",
+    "brand": "Bumble Bee",
+    "category": "Seafood",
+    "barcode": "8888002313101",
+    "description": "Canned pink salmon, 213g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/bumble%20bee%20salmon"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 3.5,
+      "processing": 0.9,
+      "transport": 0.6,
+      "packaging": 0.5,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "316",
+    "name": "Smoked Oysters",
+    "brand": "Bumble Bee",
+    "category": "Seafood",
+    "barcode": "8888002323201",
+    "description": "Smoked oysters in oil, 85g can.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/bumble%20bee%20oysters"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 1.8,
+      "processing": 0.8,
+      "transport": 0.6,
+      "packaging": 0.5,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "317",
+    "name": "Salted Butter",
+    "brand": "SCS",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003373701",
+    "description": "Pure creamery salted butter, 250g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/scs%20butter"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1.3,
+      "animalFeed": 2.6,
+      "farm": 5.8,
+      "processing": 0.5,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "318",
+    "name": "Unsalted Butter",
+    "brand": "SCS",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003383801",
+    "description": "Pure creamery unsalted butter, 250g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/scs%20unsalted%20butter"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1.3,
+      "animalFeed": 2.6,
+      "farm": 5.8,
+      "processing": 0.5,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "319",
+    "name": "Spreadable Butter",
+    "brand": "SCS",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003393901",
+    "description": "Spreadable butter with canola oil, 250g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/scs%20spreadable"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1.1,
+      "animalFeed": 2.2,
+      "farm": 4.8,
+      "processing": 0.5,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "320",
+    "name": "Ghee",
+    "brand": "SCS",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003404001",
+    "description": "Clarified butter ghee, 250g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/scs%20ghee"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1.5,
+      "animalFeed": 3,
+      "farm": 6.5,
+      "processing": 0.6,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "321",
+    "name": "Full Cream Milk Powder",
+    "brand": "Anchor",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003414101",
+    "description": "Full cream milk powder, 800g tin.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/anchor%20milk%20powder"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.8,
+      "animalFeed": 1.5,
+      "farm": 3.5,
+      "processing": 0.8,
+      "transport": 0.6,
+      "packaging": 0.4,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "322",
+    "name": "Whipping Cream",
+    "brand": "Anchor",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003424201",
+    "description": "UHT whipping cream, 250ml.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/anchor%20whipping%20cream"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1,
+      "animalFeed": 1.9,
+      "farm": 4.2,
+      "processing": 0.5,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "323",
+    "name": "Vanilla Yoghurt",
+    "brand": "Farmers Union",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003434301",
+    "description": "Creamy vanilla yoghurt, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/farmers%20union%20vanilla"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.6,
+      "animalFeed": 1,
+      "farm": 1.8,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "324",
+    "name": "Mango Yoghurt",
+    "brand": "Farmers Union",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003444401",
+    "description": "Creamy mango yoghurt, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/farmers%20union%20mango"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.6,
+      "animalFeed": 1,
+      "farm": 1.8,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "325",
+    "name": "Chive Cream Cheese",
+    "brand": "Philadelphia",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003454501",
+    "description": "Cream cheese with chives, 180g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/philadelphia%20chive"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.9,
+      "animalFeed": 2,
+      "farm": 4.5,
+      "processing": 0.7,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "326",
+    "name": "Cream Cheese Block",
+    "brand": "Philadelphia",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003464601",
+    "description": "Original cream cheese block for baking, 250g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/philadelphia%20block"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1,
+      "animalFeed": 2.2,
+      "farm": 5,
+      "processing": 0.7,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "327",
+    "name": "Strawberry Ice Cream",
+    "brand": "Bulla",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003474701",
+    "description": "Creamy strawberry ice cream, 1L tub.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/bulla%20strawberry"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.8,
+      "animalFeed": 1.5,
+      "farm": 2.8,
+      "processing": 0.8,
+      "transport": 0.4,
+      "packaging": 0.5,
+      "retail": 0.5
+    }
+  },
+  {
+    "id": "328",
+    "name": "Thickened Cream",
+    "brand": "Bulla",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003484801",
+    "description": "Thickened cooking cream, 300ml.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/bulla%20thickened%20cream"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 1,
+      "animalFeed": 1.8,
+      "farm": 4,
+      "processing": 0.4,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.3
+    }
+  },
+  {
+    "id": "329",
+    "name": "Kampong Eggs",
+    "brand": "Sunny Farms",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003494901",
+    "description": "Fresh kampong eggs, 10 pack.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/sunny%20farms%20kampong"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 1.4,
+      "farm": 0.9,
+      "processing": 0.1,
+      "transport": 0.2,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "330",
+    "name": "Fresh Eggs Large",
+    "brand": "Sunny Farms",
+    "category": "Dairy & Eggs",
+    "barcode": "8888003505001",
+    "description": "Fresh large eggs, 30 pack.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/sunny%20farms%20large%20eggs"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 1.5,
+      "farm": 1,
+      "processing": 0.1,
+      "transport": 0.2,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "331",
+    "name": "Mee Goreng Instant Noodles",
+    "brand": "Maggi",
+    "category": "Grains",
+    "barcode": "8888004343401",
+    "description": "Maggi mee goreng instant fried noodles, 5 x 72g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/maggi%20mee%20goreng"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.8,
+      "transport": 0.3,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "332",
+    "name": "Curry Flavour Noodles",
+    "brand": "Maggi",
+    "category": "Grains",
+    "barcode": "8888004353501",
+    "description": "Instant curry flavour noodles, 5 x 79g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/maggi%20curry"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.8,
+      "transport": 0.3,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "333",
+    "name": "Tom Yam Noodles",
+    "brand": "Maggi",
+    "category": "Grains",
+    "barcode": "8888004363601",
+    "description": "Instant tom yam flavour noodles, 5 x 80g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/maggi%20tom%20yam"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.8,
+      "transport": 0.3,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "334",
+    "name": "Chicken Stock Cubes",
+    "brand": "Maggi",
+    "category": "Grains",
+    "barcode": "8888004373701",
+    "description": "Chicken flavour stock cubes, 20 cubes.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/maggi%20chicken%20stock"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0.1,
+      "farm": 0.5,
+      "processing": 0.6,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "335",
+    "name": "Spaghetti No.5",
+    "brand": "Barilla",
+    "category": "Grains",
+    "barcode": "8888004383801",
+    "description": "Classic spaghetti pasta No.5, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/barilla%20spaghetti"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.8,
+      "processing": 0.4,
+      "transport": 0.5,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "336",
+    "name": "Linguine Pasta",
+    "brand": "Barilla",
+    "category": "Grains",
+    "barcode": "8888004393901",
+    "description": "Classic linguine pasta, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/barilla%20linguine"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.8,
+      "processing": 0.4,
+      "transport": 0.5,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "337",
+    "name": "Multigrain Bread",
+    "brand": "Sunshine",
+    "category": "Grains",
+    "barcode": "8888004404001",
+    "description": "Multigrain bread with seeds, 400g loaf.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/sunshine%20multigrain"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.7,
+      "processing": 0.5,
+      "transport": 0.2,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "338",
+    "name": "Hot Dog Buns",
+    "brand": "Sunshine",
+    "category": "Grains",
+    "barcode": "8888004414101",
+    "description": "Soft hot dog buns, 6 pack.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/sunshine%20hot%20dog%20buns"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.7,
+      "processing": 0.6,
+      "transport": 0.2,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "339",
+    "name": "Steel Cut Oats",
+    "brand": "Quaker",
+    "category": "Grains",
+    "barcode": "8888004424201",
+    "description": "Steel cut whole grain oats, 680g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/quaker%20steel%20cut"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.8,
+      "processing": 0.2,
+      "transport": 0.3,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "340",
+    "name": "Granola Oats Honey",
+    "brand": "Quaker",
+    "category": "Grains",
+    "barcode": "8888004434301",
+    "description": "Crunchy granola with honey and almonds, 375g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/quaker%20granola"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.9,
+      "processing": 0.5,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "341",
+    "name": "Strawberries",
+    "brand": "Driscoll's",
+    "category": "Fruits",
+    "barcode": "8888005282801",
+    "description": "Fresh Driscoll's strawberries, 250g punnet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/driscolls%20strawberries"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.1,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "342",
+    "name": "Blueberries",
+    "brand": "Driscoll's",
+    "category": "Fruits",
+    "barcode": "8888005292901",
+    "description": "Fresh Driscoll's blueberries, 170g punnet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/driscolls%20blueberries"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.1,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "343",
+    "name": "Raspberries",
+    "brand": "Driscoll's",
+    "category": "Fruits",
+    "barcode": "8888005303001",
+    "description": "Fresh Driscoll's raspberries, 170g punnet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/driscolls%20raspberries"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.1,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "344",
+    "name": "Blackberries",
+    "brand": "Driscoll's",
+    "category": "Fruits",
+    "barcode": "8888005313101",
+    "description": "Fresh Driscoll's blackberries, 170g punnet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/driscolls%20blackberries"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.1,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "345",
+    "name": "Mandarin Oranges",
+    "brand": "Dole",
+    "category": "Fruits",
+    "barcode": "8888005323201",
+    "description": "Canned mandarin orange segments in juice, 312g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/dole%20mandarin"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.4,
+      "transport": 0.3,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "346",
+    "name": "Tropical Fruit Mix",
+    "brand": "Dole",
+    "category": "Fruits",
+    "barcode": "8888005333301",
+    "description": "Canned tropical fruit mix in juice, 432g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/dole%20tropical%20fruit"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.5,
+      "transport": 0.3,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "347",
+    "name": "Red Kiwi",
+    "brand": "Zespri",
+    "category": "Fruits",
+    "barcode": "8888005343401",
+    "description": "Zespri RubyRed kiwifruit, pack of 3.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/zespri%20red%20kiwi"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.1,
+      "transport": 0.4,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "348",
+    "name": "Organic Green Kiwi",
+    "brand": "Zespri",
+    "category": "Fruits",
+    "barcode": "8888005353501",
+    "description": "Organic Zespri green kiwifruit, pack of 4.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/zespri%20organic"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.1,
+      "transport": 0.4,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "349",
+    "name": "Valencia Oranges",
+    "brand": "Sunkist",
+    "category": "Fruits",
+    "barcode": "8888005363601",
+    "description": "Fresh Valencia oranges for juicing, 8 pack.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/sunkist%20valencia"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.1,
+      "transport": 0.3,
+      "packaging": 0.1,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "350",
+    "name": "Kimchi Original",
+    "brand": "Bibigo",
+    "category": "Vegetables",
+    "barcode": "8888006303001",
+    "description": "Authentic Korean kimchi, 500g jar.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/bibigo%20kimchi"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "351",
+    "name": "Seaweed Crisps",
+    "brand": "Bibigo",
+    "category": "Vegetables",
+    "barcode": "8888006313101",
+    "description": "Crispy seaweed snack chips, original, 20g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/bibigo%20seaweed%20crisps"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.2,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "352",
+    "name": "Frozen Dumplings Chicken",
+    "brand": "Bibigo",
+    "category": "Vegetables",
+    "barcode": "8888006323201",
+    "description": "Chicken and vegetable steamed dumplings, 500g. Frozen.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/bibigo%20dumplings"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0.5,
+      "farm": 0.8,
+      "processing": 0.9,
+      "transport": 0.5,
+      "packaging": 0.4,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "353",
+    "name": "Gochujang Sauce",
+    "brand": "Bibigo",
+    "category": "Vegetables",
+    "barcode": "8888006333301",
+    "description": "Korean hot pepper paste gochujang, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/bibigo%20gochujang"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "354",
+    "name": "Organic Cherry Tomatoes",
+    "brand": "N&N",
+    "category": "Vegetables",
+    "barcode": "8888006343401",
+    "description": "Fresh organic cherry tomatoes, 200g punnet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/organic%20cherry%20tomatoes"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0,
+      "transport": 0.1,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "355",
+    "name": "Organic Broccoli",
+    "brand": "N&N",
+    "category": "Vegetables",
+    "barcode": "8888006353501",
+    "description": "Fresh organic broccoli, per head.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/organic%20broccoli"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0,
+      "transport": 0.2,
+      "packaging": 0.1,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "356",
+    "name": "Frozen Garden Peas",
+    "brand": "Birds Eye",
+    "category": "Vegetables",
+    "barcode": "8888006363601",
+    "description": "Frozen garden peas, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/birds%20eye%20peas"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.3,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "357",
+    "name": "Frozen Sweet Corn",
+    "brand": "Birds Eye",
+    "category": "Vegetables",
+    "barcode": "8888006373701",
+    "description": "Frozen super sweet corn kernels, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/birds%20eye%20corn"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.3,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "358",
+    "name": "Frozen Stir Fry Vegetables",
+    "brand": "Birds Eye",
+    "category": "Vegetables",
+    "barcode": "8888006383801",
+    "description": "Frozen Asian stir fry vegetable mix, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/birds%20eye%20stir%20fry"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.4,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "359",
+    "name": "Frozen Spinach",
+    "brand": "Birds Eye",
+    "category": "Vegetables",
+    "barcode": "8888006393901",
+    "description": "Frozen chopped spinach, 500g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/birds%20eye%20spinach"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.3,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "360",
+    "name": "Old Ginger",
+    "brand": "Pasar",
+    "category": "Vegetables",
+    "barcode": "8888006404001",
+    "description": "Fresh old ginger root, 200g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/ginger"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0,
+      "transport": 0.2,
+      "packaging": 0,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "361",
+    "name": "Garlic Peeled",
+    "brand": "Pasar",
+    "category": "Vegetables",
+    "barcode": "8888006414101",
+    "description": "Pre-peeled garlic cloves, 200g pack.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/garlic"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0,
+      "transport": 0.3,
+      "packaging": 0.1,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "362",
+    "name": "Red Chilli",
+    "brand": "Pasar",
+    "category": "Vegetables",
+    "barcode": "8888006424201",
+    "description": "Fresh red chilli, 100g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/red%20chilli"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0,
+      "transport": 0.2,
+      "packaging": 0.1,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "363",
+    "name": "Spring Onion",
+    "brand": "Pasar",
+    "category": "Vegetables",
+    "barcode": "8888006434301",
+    "description": "Fresh spring onion bunch.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/spring%20onion"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.2,
+      "processing": 0,
+      "transport": 0.1,
+      "packaging": 0,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "364",
+    "name": "Shiitake Mushrooms",
+    "brand": "Pasar",
+    "category": "Vegetables",
+    "barcode": "8888006444401",
+    "description": "Fresh shiitake mushrooms, 150g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/shiitake%20mushrooms"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.1,
+      "transport": 0.2,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "365",
+    "name": "Eggplant",
+    "brand": "Pasar",
+    "category": "Vegetables",
+    "barcode": "8888006454501",
+    "description": "Fresh Japanese eggplant, 300g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/eggplant"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0,
+      "transport": 0.2,
+      "packaging": 0,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "366",
+    "name": "Chrysanthemum Tea",
+    "brand": "Yeo's",
+    "category": "Beverages",
+    "barcode": "8888007303001",
+    "description": "Chrysanthemum tea drink, 250ml packet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/yeos%20chrysanthemum"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.2,
+      "processing": 0.3,
+      "transport": 0.2,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "367",
+    "name": "Soy Bean Milk",
+    "brand": "Yeo's",
+    "category": "Beverages",
+    "barcode": "8888007313101",
+    "description": "Soy bean milk drink, 250ml packet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/yeos%20soy%20bean"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.3,
+      "transport": 0.2,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "368",
+    "name": "Lemon Barley",
+    "brand": "Yeo's",
+    "category": "Beverages",
+    "barcode": "8888007323201",
+    "description": "Lemon barley drink, 250ml packet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/yeos%20lemon%20barley"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.2,
+      "processing": 0.3,
+      "transport": 0.2,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "369",
+    "name": "Sugar Cane Drink",
+    "brand": "Yeo's",
+    "category": "Beverages",
+    "barcode": "8888007333301",
+    "description": "Sugar cane drink, 250ml packet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/yeos%20sugar%20cane"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.3,
+      "transport": 0.2,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "370",
+    "name": "Winter Melon Tea",
+    "brand": "Yeo's",
+    "category": "Beverages",
+    "barcode": "8888007343401",
+    "description": "Winter melon tea drink, 250ml packet.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/yeos%20winter%20melon"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.2,
+      "processing": 0.3,
+      "transport": 0.2,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "371",
+    "name": "Orange Sparkling",
+    "brand": "F&N",
+    "category": "Beverages",
+    "barcode": "8888007353501",
+    "description": "F&N sparkling orange flavoured drink, 325ml can.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/fn%20orange"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.1,
+      "processing": 0.4,
+      "transport": 0.2,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "372",
+    "name": "Grape Sparkling",
+    "brand": "F&N",
+    "category": "Beverages",
+    "barcode": "8888007363601",
+    "description": "F&N sparkling grape flavoured drink, 325ml can.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/fn%20grape"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.1,
+      "processing": 0.4,
+      "transport": 0.2,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "373",
+    "name": "Sarsi",
+    "brand": "F&N",
+    "category": "Beverages",
+    "barcode": "8888007373701",
+    "description": "F&N Sarsi root beer flavoured drink, 325ml can.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/fn%20sarsi"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.1,
+      "processing": 0.4,
+      "transport": 0.2,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "374",
+    "name": "Ice Cream Soda",
+    "brand": "F&N",
+    "category": "Beverages",
+    "barcode": "8888007383801",
+    "description": "F&N ice cream soda flavoured drink, 325ml can.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/fn%20ice%20cream%20soda"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.1,
+      "processing": 0.4,
+      "transport": 0.2,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "375",
+    "name": "Mocha White Coffee",
+    "brand": "Old Town",
+    "category": "Beverages",
+    "barcode": "8888007393901",
+    "description": "Mocha flavour white coffee 3-in-1, 15 sticks.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/old%20town%20mocha"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 1.1,
+      "processing": 0.8,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "376",
+    "name": "Cane Sugar White Coffee",
+    "brand": "Old Town",
+    "category": "Beverages",
+    "barcode": "8888007404001",
+    "description": "Natural cane sugar white coffee 3-in-1, 15 sticks.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/old%20town%20cane%20sugar"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 1,
+      "processing": 0.7,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "377",
+    "name": "Chocolate Almond Milk",
+    "brand": "Almond Breeze",
+    "category": "Beverages",
+    "barcode": "8888007414101",
+    "description": "Chocolate flavoured almond milk, 1L.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/almond%20breeze%20chocolate"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.3,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "378",
+    "name": "Barista Blend Almond Milk",
+    "brand": "Almond Breeze",
+    "category": "Beverages",
+    "barcode": "8888007424201",
+    "description": "Barista blend almond milk for coffee, 1L.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/almond%20breeze%20barista"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.4,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.2
+    }
+  },
+  {
+    "id": "379",
+    "name": "Coconut Milk",
+    "brand": "UFC",
+    "category": "Beverages",
+    "barcode": "8888007434301",
+    "description": "Thai coconut milk, 1L.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/ufc%20coconut%20milk"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.3,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "380",
+    "name": "Velvet Coconut Water",
+    "brand": "UFC",
+    "category": "Beverages",
+    "barcode": "8888007444401",
+    "description": "Premium velvet coconut water, 350ml.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/ufc%20velvet%20coconut"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.2,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "381",
+    "name": "Peanut Butter Sandwich",
+    "brand": "Julie's",
+    "category": "Snacks",
+    "barcode": "8888008343401",
+    "description": "Julie's peanut butter sandwich biscuits, 180g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/julies%20peanut%20butter"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.7,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "382",
+    "name": "Cheese Sandwich",
+    "brand": "Julie's",
+    "category": "Snacks",
+    "barcode": "8888008353501",
+    "description": "Julie's cheese sandwich crackers, 180g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/julies%20cheese%20sandwich"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0.1,
+      "farm": 0.7,
+      "processing": 0.7,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "383",
+    "name": "Butter Waffles",
+    "brand": "Julie's",
+    "category": "Snacks",
+    "barcode": "8888008363601",
+    "description": "Julie's butter waffles, 150g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/julies%20butter%20waffles"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.8,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "384",
+    "name": "Oat 25 Biscuits",
+    "brand": "Julie's",
+    "category": "Snacks",
+    "barcode": "8888008373701",
+    "description": "Julie's Oat 25 with strawberry pieces, 200g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/julies%20oat%2025"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.7,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "385",
+    "name": "Lexus Cream Sandwich",
+    "brand": "Munchy's",
+    "category": "Snacks",
+    "barcode": "8888008383801",
+    "description": "Munchy's Lexus cream sandwich crackers, 190g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/munchys%20lexus"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.7,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "386",
+    "name": "Oat Krunch",
+    "brand": "Munchy's",
+    "category": "Snacks",
+    "barcode": "8888008393901",
+    "description": "Munchy's Oat Krunch dark chocolate, 208g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/munchys%20oat%20krunch"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.7,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "387",
+    "name": "Muzic Wafer",
+    "brand": "Munchy's",
+    "category": "Snacks",
+    "barcode": "8888008404001",
+    "description": "Munchy's Muzic chocolate hazelnut wafer, 80g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/munchys%20muzic"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.4,
+      "animalFeed": 0,
+      "farm": 0.7,
+      "processing": 0.8,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "388",
+    "name": "Funmix Assorted Biscuits",
+    "brand": "Munchy's",
+    "category": "Snacks",
+    "barcode": "8888008414101",
+    "description": "Munchy's Funmix assorted biscuit tin, 700g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/munchys%20funmix"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.7,
+      "transport": 0.3,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "389",
+    "name": "Ping Pong Biscuits",
+    "brand": "Hup Seng",
+    "category": "Snacks",
+    "barcode": "8888008424201",
+    "description": "Ping Pong brand special cream crackers, 125g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/hup%20seng%20ping%20pong"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.6,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "390",
+    "name": "Cap Kaki Crackers",
+    "brand": "Hup Seng",
+    "category": "Snacks",
+    "barcode": "8888008434301",
+    "description": "Cap Ping Pong cream crackers, 428g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/hup%20seng%20cap%20kaki"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.6,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "391",
+    "name": "Reduced Fat Peanut Butter",
+    "brand": "Skippy",
+    "category": "Snacks",
+    "barcode": "8888008444401",
+    "description": "Reduced fat creamy peanut butter, 462g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/skippy%20reduced%20fat"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.7,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "392",
+    "name": "Peanut Butter with Honey",
+    "brand": "Skippy",
+    "category": "Snacks",
+    "barcode": "8888008454501",
+    "description": "Creamy peanut butter with honey, 462g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/skippy%20honey"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.8,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "393",
+    "name": "Crunchy Oats & Honey",
+    "brand": "Nature Valley",
+    "category": "Snacks",
+    "barcode": "8888008464601",
+    "description": "Crunchy granola bar oats and honey, 5 bars.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/nature%20valley%20oats%20honey"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.7,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "394",
+    "name": "Fruit & Nut Trail Mix Bar",
+    "brand": "Nature Valley",
+    "category": "Snacks",
+    "barcode": "8888008474701",
+    "description": "Chewy trail mix bar with fruit and nuts, 5 bars.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/nature%20valley%20trail%20mix"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.4,
+      "animalFeed": 0,
+      "farm": 0.8,
+      "processing": 0.6,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "395",
+    "name": "Classic Salted Chips",
+    "brand": "Lay's",
+    "category": "Snacks",
+    "barcode": "8888008484801",
+    "description": "Lay's classic salted potato chips, 170g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/lays%20classic"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.8,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "396",
+    "name": "Nori Seaweed Chips",
+    "brand": "Lay's",
+    "category": "Snacks",
+    "barcode": "8888008494901",
+    "description": "Lay's nori seaweed flavour potato chips, 170g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/lays%20nori"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.8,
+      "transport": 0.4,
+      "packaging": 0.4,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "397",
+    "name": "Singapore Laksa Paste",
+    "brand": "Prima Taste",
+    "category": "Pantry",
+    "barcode": "8888009535301",
+    "description": "Ready-to-cook Singapore laksa paste, 185g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/prima%20taste%20laksa"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.6,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "398",
+    "name": "Singapore Curry Paste",
+    "brand": "Prima Taste",
+    "category": "Pantry",
+    "barcode": "8888009545401",
+    "description": "Ready-to-cook Singapore curry paste, 185g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/prima%20taste%20curry"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.4,
+      "processing": 0.6,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "399",
+    "name": "Chilli Crab Paste",
+    "brand": "Prima Taste",
+    "category": "Pantry",
+    "barcode": "8888009555501",
+    "description": "Singapore chilli crab cooking paste, 320g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/prima%20taste%20chilli%20crab"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.6,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "400",
+    "name": "Hainanese Chicken Rice Paste",
+    "brand": "Prima Taste",
+    "category": "Pantry",
+    "barcode": "8888009565601",
+    "description": "Hainanese chicken rice cooking set, 110g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/prima%20taste%20chicken%20rice"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.1,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.5,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "401",
+    "name": "Japanese Mayonnaise",
+    "brand": "Kewpie",
+    "category": "Pantry",
+    "barcode": "8888009575701",
+    "description": "Japanese-style mayonnaise, 310g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/kewpie%20mayonnaise"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0.5,
+      "farm": 1,
+      "processing": 0.6,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "402",
+    "name": "Roasted Sesame Dressing",
+    "brand": "Kewpie",
+    "category": "Pantry",
+    "barcode": "8888009585801",
+    "description": "Japanese roasted sesame salad dressing, 210ml.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/kewpie%20sesame%20dressing"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "403",
+    "name": "Wafu Dressing",
+    "brand": "Kewpie",
+    "category": "Pantry",
+    "barcode": "8888009595901",
+    "description": "Japanese wafu onion salad dressing, 210ml.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/kewpie%20wafu"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.5,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "404",
+    "name": "Spicy Mayonnaise",
+    "brand": "Kewpie",
+    "category": "Pantry",
+    "barcode": "8888009606001",
+    "description": "Japanese-style spicy mayonnaise, 310g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/kewpie%20spicy%20mayo"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0.5,
+      "farm": 1,
+      "processing": 0.6,
+      "transport": 0.4,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "405",
+    "name": "Golden Curry Mild",
+    "brand": "S&B",
+    "category": "Pantry",
+    "barcode": "8888009616101",
+    "description": "Japanese golden curry sauce mix, mild, 220g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/sb%20golden%20curry%20mild"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.6,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "406",
+    "name": "Golden Curry Medium Hot",
+    "brand": "S&B",
+    "category": "Pantry",
+    "barcode": "8888009626201",
+    "description": "Japanese golden curry sauce mix, medium hot, 220g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/sb%20golden%20curry%20medium"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.6,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "407",
+    "name": "Wasabi Paste",
+    "brand": "S&B",
+    "category": "Pantry",
+    "barcode": "8888009636301",
+    "description": "Japanese wasabi paste in tube, 43g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/sb%20wasabi"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.3,
+      "processing": 0.4,
+      "transport": 0.5,
+      "packaging": 0.2,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "408",
+    "name": "Japanese Curry Hot",
+    "brand": "S&B",
+    "category": "Pantry",
+    "barcode": "8888009646401",
+    "description": "Japanese golden curry sauce mix, hot, 220g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/sb%20golden%20curry%20hot"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.6,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "409",
+    "name": "Organic Honey",
+    "brand": "Capilano",
+    "category": "Pantry",
+    "barcode": "8888009656501",
+    "description": "Certified organic Australian honey, 340g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/capilano%20organic%20honey"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.5,
+      "processing": 0.3,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "410",
+    "name": "Raw Honey",
+    "brand": "Capilano",
+    "category": "Pantry",
+    "barcode": "8888009666601",
+    "description": "Unfiltered raw Australian honey, 340g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/capilano%20raw%20honey"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.2,
+      "transport": 0.5,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "411",
+    "name": "Canola Oil",
+    "brand": "Knife",
+    "category": "Pantry",
+    "barcode": "8888009676701",
+    "description": "Pure canola cooking oil, 2L.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/knife%20canola%20oil"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.4,
+      "transport": 0.2,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "412",
+    "name": "Peanut Oil",
+    "brand": "Knife",
+    "category": "Pantry",
+    "barcode": "8888009686801",
+    "description": "Pure peanut oil for cooking, 1L.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/knife%20peanut%20oil"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.7,
+      "processing": 0.4,
+      "transport": 0.2,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "413",
+    "name": "Coconut Milk Powder",
+    "brand": "Parachute",
+    "category": "Pantry",
+    "barcode": "8888009696901",
+    "description": "Coconut milk powder for cooking, 150g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/parachute%20coconut%20milk%20powder"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.3,
+      "animalFeed": 0,
+      "farm": 0.7,
+      "processing": 0.5,
+      "transport": 0.3,
+      "packaging": 0.3,
+      "retail": 0.1
+    }
+  },
+  {
+    "id": "414",
+    "name": "Desiccated Coconut",
+    "brand": "Parachute",
+    "category": "Pantry",
+    "barcode": "8888009707001",
+    "description": "Finely desiccated coconut, 200g.",
+    "purchaseLinks": [
+      {
+        "seller": "FairPrice",
+        "url": "https://www.fairprice.com.sg/searchterm/parachute%20desiccated%20coconut"
+      }
+    ],
+    "emissions": {
+      "landUseChange": 0.2,
+      "animalFeed": 0,
+      "farm": 0.6,
+      "processing": 0.4,
+      "transport": 0.3,
+      "packaging": 0.2,
       "retail": 0.1
     }
   }
