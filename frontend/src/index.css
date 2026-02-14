@@ -1,54 +1,82 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root {
+  --green-900: #1b4332;
+  --green-800: #2d6a4f;
+  --green-700: #40916c;
+  --green-600: #52b788;
+  --green-500: #74c69d;
+  --green-400: #95d5b2;
+  --green-300: #b7e4c7;
+  --green-200: #d8f3dc;
+  --green-100: #edf7f0;
+  --green-50: #f5faf7;
+  --amber-500: #e9c46a;
+  --amber-600: #c59a1a;
+  --amber-100: #fff8e1;
+  --red-500: #e63946;
+  --red-100: #fef2f2;
+  --gray-900: #1a1a2e;
+  --gray-500: #666;
+  --gray-400: #888;
+  --gray-200: #ccc;
+  --gray-100: #e8e8e8;
+  --white: #fff;
+  --shadow-sm: 0 1px 3px rgba(27,67,50,0.06);
+  --shadow-md: 0 4px 12px rgba(27,67,50,0.08);
+  --shadow-lg: 0 8px 30px rgba(27,67,50,0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
 }
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  background: #f5f7f5;
-  color: #1a1a2e;
+  background: var(--green-50);
+  color: var(--gray-900);
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-a {
-  color: #2d6a4f;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
+a { color: var(--green-800); text-decoration: none; transition: color var(--transition-fast); }
+a:hover { color: var(--green-700); }
 
-/* Focus styles for accessibility */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible {
-  outline: 2px solid #2d6a4f;
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--green-600);
   outline-offset: 2px;
 }
 
-/* Smooth scroll */
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
+select { appearance: auto; background: var(--white); }
 
-/* Better select styling */
-select {
-  appearance: auto;
-  background: #fff;
-}
-
-/* Skip to content for accessibility */
 .skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: #2d6a4f;
-  color: #fff;
-  padding: 8px;
-  z-index: 200;
+  position: absolute; top: -40px; left: 0;
+  background: var(--green-800); color: var(--white); padding: 8px; z-index: 200;
 }
-.skip-link:focus {
-  top: 0;
+.skip-link:focus { top: 0; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes growBar { from { width: 0; } }
+@keyframes ringFill { from { stroke-dashoffset: 251.2; } }
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--green-100); }
+::-webkit-scrollbar-thumb { background: var(--green-400); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--green-600); }
