@@ -59,3 +59,7 @@ export async function compareProducts(ids) {
 export async function fetchStats() {
   return safeFetch(`${API_BASE}/products/stats`);
 }
+
+export async function fetchRecommendations(id) {
+  return safeFetch(`${API_BASE}/products/${encodeURIComponent(id)}/recommendations`);
+}

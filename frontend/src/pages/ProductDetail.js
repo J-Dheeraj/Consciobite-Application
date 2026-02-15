@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { fetchProduct } from "../services/api";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { fetchProduct, fetchProducts } from "../services/api";
 import GradeBadge from "../components/GradeBadge";
 import GradeBreakdown from "../components/GradeBreakdown";
+import ProductImage from "../components/ProductImage";
+import { useTheme } from "../context/ThemeContext";
 
 function isFavorited(id) {
   try { return JSON.parse(localStorage.getItem("consciobite_favorites") || "[]").includes(id); }
@@ -27,16 +29,30 @@ const CATEGORY_ICONS = {
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [product, setProduct] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [fav, setFav] = useState(false);
+  const [recommendations, setRecommendations] = useState([]);
 
   useEffect(() => {
     setError("");
     setLoading(true);
+    setRecommendations([]);
     fetchProduct(id)
-      .then((data) => { setProduct(data); setFav(isFavorited(data.id)); })
+      .then((data) => {
+        setProduct(data);
+        setFav(isFavorited(data.id));
+        // Fetch recommendations: same category, sorted by best grade
+        fetchProducts({ category: data.category, sort: "grade_desc", limit: 5 })
+          .then((recData) => {
+            setRecommendations(recData.products.filter((p) => p.id !== data.id).slice(0, 4));
+          })
+          .catch(() => {});
+      })
       .catch(() => setError("Unable to load product details."))
       .finally(() => setLoading(false));
   }, [id]);
@@ -54,7 +70,7 @@ export default function ProductDetail() {
     return (
       <div style={{ maxWidth: 600, margin: "0 auto", padding: 24, animation: "fadeIn 0.3s ease" }}>
         <Link to="/" style={{ fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6 }}>{"\u2190"} Back to products</Link>
-        <div style={{ marginTop: 16, padding: 24, background: "#fef2f2", borderRadius: 14, border: "1px solid #fecaca", color: "#e63946", textAlign: "center" }}>
+        <div style={{ marginTop: 16, padding: 24, background: isDark ? "#2a1519" : "#fef2f2", borderRadius: 14, border: "1px solid #fecaca", color: "#e63946", textAlign: "center" }}>
           {error}
         </div>
       </div>
@@ -101,22 +117,22 @@ export default function ProductDetail() {
 
       <div style={{ maxWidth: 640, margin: "0 auto", padding: "0 20px 40px" }}>
         {/* Description */}
-        <div style={{ background: "#fff", borderRadius: 14, padding: 20, marginTop: -20, boxShadow: "0 4px 12px rgba(27,67,50,0.08)", animation: "fadeInUp 0.4s ease" }}>
-          <p style={{ fontSize: "0.9rem", color: "#555", lineHeight: 1.7 }}>{product.description}</p>
+        <div style={{ background: isDark ? "#162419" : "#fff", borderRadius: 14, padding: 20, marginTop: -20, boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)", animation: "fadeInUp 0.4s ease" }}>
+          <p style={{ fontSize: "0.9rem", color: isDark ? "#b0c4b1" : "#555", lineHeight: 1.7 }}>{product.description}</p>
           <div style={{ display: "flex", gap: 12, marginTop: 14, flexWrap: "wrap" }}>
-            <div style={{ padding: "8px 14px", borderRadius: 10, background: "#edf7f0", fontSize: "0.82rem", color: "#2d6a4f", fontWeight: 600 }}>
+            <div style={{ padding: "8px 14px", borderRadius: 10, background: isDark ? "#1c2e22" : "#edf7f0", fontSize: "0.82rem", color: "#2d6a4f", fontWeight: 600 }}>
               Score: {greenGrade.score}/10
             </div>
-            <div style={{ padding: "8px 14px", borderRadius: 10, background: "#edf7f0", fontSize: "0.82rem", color: "#2d6a4f", fontWeight: 600 }}>
-              {greenGrade.totalEmissions} kg CO&#8322;e/kg
+            <div style={{ padding: "8px 14px", borderRadius: 10, background: isDark ? "#1c2e22" : "#edf7f0", fontSize: "0.82rem", color: "#2d6a4f", fontWeight: 600 }}>
+              {greenGrade.totalEmissions} kg CO{"\u2082"}e/kg
             </div>
           </div>
         </div>
 
         {/* Breakdown */}
-        <div style={{ background: "#fff", borderRadius: 14, padding: 24, marginTop: 16, boxShadow: "0 4px 12px rgba(27,67,50,0.08)", animation: "fadeInUp 0.4s ease 0.1s both" }}>
+        <div style={{ background: isDark ? "#162419" : "#fff", borderRadius: 14, padding: 24, marginTop: 16, boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)", animation: "fadeInUp 0.4s ease 0.1s both" }}>
           <h3 style={{ marginBottom: 4, fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>Supply Chain Breakdown</h3>
-          <p style={{ fontSize: "0.85rem", color: "#888", marginBottom: 16 }}>
+          <p style={{ fontSize: "0.85rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}>
             Score per stage of the supply chain, weighted by environmental significance.
           </p>
           <GradeBreakdown breakdown={greenGrade.breakdown} totalEmissions={greenGrade.totalEmissions} totalScore={greenGrade.score} />
@@ -124,7 +140,7 @@ export default function ProductDetail() {
 
         {/* Purchase links */}
         {product.purchaseLinks && product.purchaseLinks.length > 0 && (
-          <div style={{ background: "#fff", borderRadius: 14, padding: 24, marginTop: 16, boxShadow: "0 4px 12px rgba(27,67,50,0.08)", animation: "fadeInUp 0.4s ease 0.2s both" }}>
+          <div style={{ background: isDark ? "#162419" : "#fff", borderRadius: 14, padding: 24, marginTop: 16, boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)", animation: "fadeInUp 0.4s ease 0.2s both" }}>
             <h4 style={{ marginBottom: 10, fontFamily: "'Outfit', sans-serif" }}>Buy This Product</h4>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               {product.purchaseLinks.map((link) => (
@@ -133,6 +149,47 @@ export default function ProductDetail() {
                   {link.seller} {"\u2192"}
                 </a>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Alternative Recommendations */}
+        {recommendations.length > 0 && (
+          <div style={{ background: isDark ? "#162419" : "#fff", borderRadius: 14, padding: 24, marginTop: 16, boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)", animation: "fadeInUp 0.4s ease 0.3s both" }}>
+            <h4 style={{ marginBottom: 4, fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
+              {"\uD83C\uDF31"} Greener Alternatives
+            </h4>
+            <p style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 14 }}>
+              Other {product.category.toLowerCase()} products with top sustainability scores.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {recommendations.map((rec, i) => {
+                const recAccent = rec.greenGrade.color === "green" ? "#52b788" : rec.greenGrade.color === "yellow" ? "#e9c46a" : "#e63946";
+                return (
+                  <button key={rec.id} onClick={() => navigate(`/product/${rec.id}`)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 12, padding: "10px 14px",
+                      background: isDark ? "#1c2e22" : "#f9fafb", borderRadius: 12, border: "1px solid " + (isDark ? "#2d4a35" : "#eee"),
+                      cursor: "pointer", transition: "all 0.2s ease", textAlign: "left", width: "100%",
+                      animation: `fadeInUp 0.3s ease ${i * 60}ms both`,
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = recAccent}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = isDark ? "#2d4a35" : "#eee"}
+                  >
+                    <ProductImage name={rec.name} category={rec.category} size={38} />
+                    <div style={{ width: 32, height: 32, borderRadius: 8, background: recAccent + "22", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.8rem", color: recAccent, flexShrink: 0 }}>
+                      {rec.greenGrade.score}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 600, fontSize: "0.88rem", color: isDark ? "#e8f5e9" : "#333" }}>{rec.name}</div>
+                      <div style={{ fontSize: "0.78rem", color: isDark ? "#7a9a7e" : "#888" }}>{rec.brand}</div>
+                    </div>
+                    <div style={{ fontSize: "0.75rem", color: isDark ? "#7a9a7e" : "#aaa", whiteSpace: "nowrap" }}>
+                      {rec.greenGrade.totalEmissions} kg CO{"\u2082"}e
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
