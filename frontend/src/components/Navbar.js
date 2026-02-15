@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 const NAV_LINKS = [
   { to: "/", label: "Products", icon: "\uD83C\uDF3F" },
   { to: "/scan", label: "Scan", icon: "\uD83D\uDCF7" },
   { to: "/compare", label: "Compare", icon: "\u2696\uFE0F" },
+  { to: "/dashboard", label: "Dashboard", icon: "\uD83D\uDCCA" },
+  { to: "/tips", label: "Tips", icon: "\uD83C\uDF31" },
   { to: "/favorites", label: "Favorites", icon: "\u2665" },
   { to: "/about", label: "About", icon: "\u2139\uFE0F" },
 ];
@@ -20,6 +23,7 @@ const LeafIcon = () => (
 export default function Navbar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav
@@ -44,21 +48,33 @@ export default function Navbar() {
         Consciobite
       </Link>
 
-      <div style={{ display: "flex", gap: 4, fontSize: "0.88rem" }} className="nav-desktop">
+      <div style={{ display: "flex", gap: 2, fontSize: "0.85rem", alignItems: "center" }} className="nav-desktop">
         {NAV_LINKS.map((link) => {
           const active = location.pathname === link.to;
           return (
-            <Link key={link.to} to={link.to} style={{ color: active ? "#fff" : "rgba(255,255,255,0.7)", fontWeight: active ? 600 : 400, textDecoration: "none", padding: "8px 14px", borderRadius: 8, background: active ? "rgba(255,255,255,0.15)" : "transparent", transition: "all 0.2s ease", display: "flex", alignItems: "center", gap: 6 }}>
-              <span style={{ fontSize: "0.9rem" }}>{link.icon}</span>
+            <Link key={link.to} to={link.to} style={{ color: active ? "#fff" : "rgba(255,255,255,0.7)", fontWeight: active ? 600 : 400, textDecoration: "none", padding: "7px 11px", borderRadius: 8, background: active ? "rgba(255,255,255,0.15)" : "transparent", transition: "all 0.2s ease", display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap" }}>
+              <span style={{ fontSize: "0.85rem" }}>{link.icon}</span>
               {link.label}
             </Link>
           );
         })}
+        {/* Dark mode toggle */}
+        <button onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          style={{ background: "rgba(255,255,255,0.12)", border: "none", color: "#fff", cursor: "pointer", padding: "7px 10px", borderRadius: 8, fontSize: "1rem", marginLeft: 4, transition: "all 0.2s ease", display: "flex", alignItems: "center" }}>
+          {theme === "dark" ? "\u2600\uFE0F" : "\uD83C\uDF19"}
+        </button>
       </div>
 
-      <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu" aria-expanded={menuOpen} className="nav-hamburger" style={{ display: "none", background: menuOpen ? "rgba(255,255,255,0.15)" : "none", border: "none", color: "#fff", fontSize: "1.4rem", cursor: "pointer", padding: "6px 8px", borderRadius: 8 }}>
-        {menuOpen ? "\u2715" : "\u2630"}
-      </button>
+      <div style={{ display: "flex", gap: 4 }} className="nav-mobile-buttons">
+        <button onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          className="nav-theme-mobile"
+          style={{ display: "none", background: "rgba(255,255,255,0.12)", border: "none", color: "#fff", cursor: "pointer", padding: "6px 8px", borderRadius: 8, fontSize: "1rem" }}>
+          {theme === "dark" ? "\u2600\uFE0F" : "\uD83C\uDF19"}
+        </button>
+        <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu" aria-expanded={menuOpen} className="nav-hamburger" style={{ display: "none", background: menuOpen ? "rgba(255,255,255,0.15)" : "none", border: "none", color: "#fff", fontSize: "1.4rem", cursor: "pointer", padding: "6px 8px", borderRadius: 8 }}>
+          {menuOpen ? "\u2715" : "\u2630"}
+        </button>
+      </div>
 
       {menuOpen && (
         <div className="nav-mobile" style={{ display: "none", position: "absolute", top: "100%", left: 0, right: 0, background: "linear-gradient(180deg, #2d6a4f 0%, #1b4332 100%)", padding: "8px 16px 16px", flexDirection: "column", gap: 4, zIndex: 100, boxShadow: "0 8px 30px rgba(27,67,50,0.3)", animation: "slideDown 0.25s ease" }}>
@@ -74,9 +90,10 @@ export default function Navbar() {
       )}
 
       <style>{`
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
           .nav-desktop { display: none !important; }
           .nav-hamburger { display: block !important; }
+          .nav-theme-mobile { display: block !important; }
           .nav-mobile { display: flex !important; }
         }
       `}</style>
