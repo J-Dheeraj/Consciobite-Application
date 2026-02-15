@@ -3,27 +3,13 @@ import { Link } from "react-router-dom";
 import GradeBadge from "./GradeBadge";
 import ProductImage from "./ProductImage";
 import { useTheme } from "../context/ThemeContext";
+import { isFavorited, toggleFavorite } from "../utils/favorites";
 
 const CATEGORY_ICONS = {
   Protein: "\uD83E\uDD69", Seafood: "\uD83D\uDC1F", "Dairy & Eggs": "\uD83E\uDD5B",
   Grains: "\uD83C\uDF3E", Fruits: "\uD83C\uDF53", Vegetables: "\uD83E\uDD66",
   Beverages: "\uD83E\uDDC3", Snacks: "\uD83C\uDF6A", Pantry: "\uD83C\uDF6F",
 };
-
-function isFavorited(id) {
-  try { return JSON.parse(localStorage.getItem("consciobite_favorites") || "[]").includes(id); }
-  catch { return false; }
-}
-
-function toggleFavorite(id) {
-  try {
-    const favs = JSON.parse(localStorage.getItem("consciobite_favorites") || "[]");
-    const next = favs.includes(id) ? favs.filter((x) => x !== id) : [...favs, id];
-    localStorage.setItem("consciobite_favorites", JSON.stringify(next));
-    window.dispatchEvent(new Event("favorites-updated"));
-    return next.includes(id);
-  } catch { return false; }
-}
 
 export default function ProductCard({ product, delay = 0 }) {
   const { theme } = useTheme();

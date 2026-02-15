@@ -114,6 +114,10 @@ select { appearance: auto; background: var(--bg-card); color: var(--text-primary
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
 }
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--green-100); }

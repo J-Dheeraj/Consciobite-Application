@@ -5,21 +5,7 @@ import GradeBadge from "../components/GradeBadge";
 import GradeBreakdown from "../components/GradeBreakdown";
 import ProductImage from "../components/ProductImage";
 import { useTheme } from "../context/ThemeContext";
-
-function isFavorited(id) {
-  try { return JSON.parse(localStorage.getItem("consciobite_favorites") || "[]").includes(id); }
-  catch { return false; }
-}
-
-function toggleFavorite(id) {
-  try {
-    const favs = JSON.parse(localStorage.getItem("consciobite_favorites") || "[]");
-    const next = favs.includes(id) ? favs.filter((x) => x !== id) : [...favs, id];
-    localStorage.setItem("consciobite_favorites", JSON.stringify(next));
-    window.dispatchEvent(new Event("favorites-updated"));
-    return next.includes(id);
-  } catch { return false; }
-}
+import { isFavorited, toggleFavorite } from "../utils/favorites";
 
 const CATEGORY_ICONS = {
   Protein: "\uD83E\uDD69", Seafood: "\uD83D\uDC1F", "Dairy & Eggs": "\uD83E\uDD5B",
@@ -46,7 +32,6 @@ export default function ProductDetail() {
       .then((data) => {
         setProduct(data);
         setFav(isFavorited(data.id));
-        // Fetch recommendations: same category, sorted by best grade
         fetchProducts({ category: data.category, sort: "grade_desc", limit: 5 })
           .then((recData) => {
             setRecommendations(recData.products.filter((p) => p.id !== data.id).slice(0, 4));
@@ -98,7 +83,7 @@ export default function ProductDetail() {
             <GradeBadge score={greenGrade.score} color={greenGrade.color} size="large" />
             <div style={{ flex: 1 }}>
               <h2 style={{ color: "#fff", fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "1.5rem", marginBottom: 4 }}>{product.name}</h2>
-              <div style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem", display: "flex", alignItems: "center", gap: 6 }}>
+              <div style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem", display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                 {product.brand}
                 <span style={{ padding: "2px 10px", borderRadius: 20, background: "rgba(255,255,255,0.15)", fontSize: "0.8rem", display: "inline-flex", alignItems: "center", gap: 4 }}>
                   <span>{catIcon}</span> {product.category}
@@ -120,10 +105,10 @@ export default function ProductDetail() {
         <div style={{ background: isDark ? "#162419" : "#fff", borderRadius: 14, padding: 20, marginTop: -20, boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)", animation: "fadeInUp 0.4s ease" }}>
           <p style={{ fontSize: "0.9rem", color: isDark ? "#b0c4b1" : "#555", lineHeight: 1.7 }}>{product.description}</p>
           <div style={{ display: "flex", gap: 12, marginTop: 14, flexWrap: "wrap" }}>
-            <div style={{ padding: "8px 14px", borderRadius: 10, background: isDark ? "#1c2e22" : "#edf7f0", fontSize: "0.82rem", color: "#2d6a4f", fontWeight: 600 }}>
+            <div style={{ padding: "8px 14px", borderRadius: 10, background: isDark ? "#1c2e22" : "#edf7f0", fontSize: "0.82rem", color: isDark ? "#95d5b2" : "#2d6a4f", fontWeight: 600 }}>
               Score: {greenGrade.score}/10
             </div>
-            <div style={{ padding: "8px 14px", borderRadius: 10, background: isDark ? "#1c2e22" : "#edf7f0", fontSize: "0.82rem", color: "#2d6a4f", fontWeight: 600 }}>
+            <div style={{ padding: "8px 14px", borderRadius: 10, background: isDark ? "#1c2e22" : "#edf7f0", fontSize: "0.82rem", color: isDark ? "#95d5b2" : "#2d6a4f", fontWeight: 600 }}>
               {greenGrade.totalEmissions} kg CO{"\u2082"}e/kg
             </div>
           </div>

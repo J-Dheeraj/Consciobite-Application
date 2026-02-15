@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProducts } from "../services/api";
 import ProductCard from "../components/ProductCard";
+import { ProductListSkeleton } from "../components/Skeleton";
 import { useTheme } from "../context/ThemeContext";
 
 const CATEGORIES = [
@@ -34,6 +35,7 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const searchRef = useRef(null);
   const debounceRef = useRef(null);
 
@@ -59,6 +61,7 @@ export default function Home() {
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearch(val);
+    setActiveIndex(-1);
 
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
@@ -80,11 +83,32 @@ export default function Home() {
     }, 250);
   };
 
+  // Keyboard navigation for autocomplete
+  const handleSearchKeyDown = (e) => {
+    if (!showSuggestions || suggestions.length === 0) return;
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : 0));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : suggestions.length - 1));
+    } else if (e.key === "Enter" && activeIndex >= 0) {
+      e.preventDefault();
+      setShowSuggestions(false);
+      navigate(`/product/${suggestions[activeIndex].id}`);
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+      setActiveIndex(-1);
+    }
+  };
+
   // Close suggestions on outside click
   useEffect(() => {
     const handler = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         setShowSuggestions(false);
+        setActiveIndex(-1);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -115,15 +139,18 @@ export default function Home() {
             Browse 550+ products and their GreenGrade sustainability scores across Singapore.
           </p>
           {/* Search bar with autocomplete */}
-          <div style={{ position: "relative", maxWidth: 480, margin: "0 auto" }} ref={searchRef}>
+          <div style={{ position: "relative", maxWidth: 480, margin: "0 auto" }} ref={searchRef} role="combobox" aria-expanded={showSuggestions && suggestions.length > 0} aria-haspopup="listbox">
             <span style={{ position: "absolute", left: 14, top: "50%", transform: "translateY(-50%)", fontSize: "1rem", opacity: 0.5, zIndex: 2 }}>{"\uD83D\uDD0D"}</span>
             <input
               type="text"
               placeholder="Search products, brands..."
               value={search}
               onChange={handleSearchChange}
+              onKeyDown={handleSearchKeyDown}
               onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
               aria-label="Search products"
+              aria-autocomplete="list"
+              aria-activedescendant={activeIndex >= 0 ? `suggestion-${activeIndex}` : undefined}
               style={{
                 width: "100%", padding: "14px 16px 14px 42px", borderRadius: showSuggestions && suggestions.length > 0 ? "14px 14px 0 0" : 14,
                 border: "2px solid rgba(255,255,255,0.2)", fontSize: "0.95rem",
@@ -135,7 +162,7 @@ export default function Home() {
             />
             {/* Suggestions dropdown */}
             {showSuggestions && suggestions.length > 0 && (
-              <div style={{
+              <div role="listbox" style={{
                 position: "absolute", top: "100%", left: 0, right: 0, zIndex: 10,
                 background: isDark ? "#1c2e22" : "#fff", borderRadius: "0 0 14px 14px",
                 boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
@@ -146,15 +173,17 @@ export default function Home() {
                 {suggestionsLoading && (
                   <div style={{ padding: 12, textAlign: "center", color: "#888", fontSize: "0.85rem" }}>Searching...</div>
                 )}
-                {suggestions.map((p) => (
-                  <button key={p.id} onClick={() => { setShowSuggestions(false); navigate(`/product/${p.id}`); }}
+                {suggestions.map((p, i) => (
+                  <button key={p.id} id={`suggestion-${i}`} role="option" aria-selected={i === activeIndex}
+                    onClick={() => { setShowSuggestions(false); navigate(`/product/${p.id}`); }}
                     style={{
                       width: "100%", padding: "10px 14px", border: "none", borderBottom: "1px solid " + (isDark ? "#2d4a35" : "#f0f0f0"),
-                      background: "transparent", cursor: "pointer", display: "flex", alignItems: "center", gap: 10,
+                      background: i === activeIndex ? (isDark ? "#243a2b" : "#f5faf7") : "transparent",
+                      cursor: "pointer", display: "flex", alignItems: "center", gap: 10,
                       textAlign: "left", transition: "background 0.15s", color: isDark ? "#e8f5e9" : "#333",
                     }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = isDark ? "#243a2b" : "#f5faf7"}
-                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = isDark ? "#243a2b" : "#f5faf7"; setActiveIndex(i); }}
+                    onMouseLeave={(e) => { if (i !== activeIndex) e.currentTarget.style.background = "transparent"; }}
                   >
                     <div style={{ width: 28, height: 28, borderRadius: 6, background: isDark ? "#2d4a35" : "#edf7f0", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "0.7rem", color: gradeColor(p.greenGrade.score), flexShrink: 0 }}>
                       {p.greenGrade.score}
@@ -215,12 +244,7 @@ export default function Home() {
           </div>
         )}
 
-        {loading && (
-          <div style={{ textAlign: "center", padding: 48, color: "#888" }}>
-            <div style={{ width: 36, height: 36, border: "3px solid #d8f3dc", borderTopColor: "#2d6a4f", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
-            <div style={{ fontSize: "0.9rem" }}>Loading products...</div>
-          </div>
-        )}
+        {loading && <ProductListSkeleton count={8} />}
 
         {!loading && !error && (
           <>
