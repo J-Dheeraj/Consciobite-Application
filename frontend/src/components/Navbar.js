@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 
 const NAV_LINKS = [
   { to: "/", label: "Products", icon: "\uD83C\uDF3F" },
   { to: "/scan", label: "Scan", icon: "\uD83D\uDCF7" },
   { to: "/compare", label: "Compare", icon: "\u2696\uFE0F" },
   { to: "/dashboard", label: "Dashboard", icon: "\uD83D\uDCCA" },
+  { to: "/recipes", label: "Recipes", icon: "\uD83C\uDF73" },
+  { to: "/carbon", label: "Carbon", icon: "\uD83C\uDF0D" },
   { to: "/tips", label: "Tips", icon: "\uD83C\uDF31" },
-  { to: "/favorites", label: "Favorites", icon: "\u2665" },
-  { to: "/about", label: "About", icon: "\u2139\uFE0F" },
 ];
 
 const LeafIcon = () => (
@@ -22,30 +23,29 @@ const LeafIcon = () => (
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { isAuthenticated, user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false);
+    navigate("/");
+  };
 
   return (
     <nav
       style={{
         background: "linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)",
-        color: "#fff",
-        padding: "0 24px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        position: "sticky",
-        top: 0,
-        zIndex: 100,
-        height: 60,
-        boxShadow: "0 2px 20px rgba(27, 67, 50, 0.3)",
+        color: "#fff", padding: "0 24px", display: "flex", alignItems: "center",
+        justifyContent: "space-between", position: "sticky", top: 0, zIndex: 100,
+        height: 60, boxShadow: "0 2px 20px rgba(27, 67, 50, 0.3)",
       }}
-      role="navigation"
-      aria-label="Main navigation"
+      role="navigation" aria-label="Main navigation"
     >
       <Link to="/" style={{ color: "#fff", fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "1.4rem", textDecoration: "none", display: "flex", alignItems: "center", letterSpacing: "-0.02em" }}>
-        <LeafIcon />
-        Consciobite
+        <LeafIcon />Consciobite
       </Link>
 
       <div style={{ display: "flex", gap: 2, fontSize: "0.85rem", alignItems: "center" }} className="nav-desktop">
@@ -53,25 +53,31 @@ export default function Navbar() {
           const active = location.pathname === link.to;
           return (
             <Link key={link.to} to={link.to} style={{ color: active ? "#fff" : "rgba(255,255,255,0.7)", fontWeight: active ? 600 : 400, textDecoration: "none", padding: "7px 11px", borderRadius: 8, background: active ? "rgba(255,255,255,0.15)" : "transparent", transition: "all 0.2s ease", display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap" }}>
-              <span style={{ fontSize: "0.85rem" }}>{link.icon}</span>
-              {link.label}
+              <span style={{ fontSize: "0.85rem" }}>{link.icon}</span>{link.label}
             </Link>
           );
         })}
-        {/* Dark mode toggle */}
-        <button onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          style={{ background: "rgba(255,255,255,0.12)", border: "none", color: "#fff", cursor: "pointer", padding: "7px 10px", borderRadius: 8, fontSize: "1rem", marginLeft: 4, transition: "all 0.2s ease", display: "flex", alignItems: "center" }}>
+        {isAuthenticated ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
+            <span style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.7)", padding: "0 6px" }}>{user?.name?.split(" ")[0]}</span>
+            <button onClick={handleLogout} style={{ background: "rgba(255,255,255,0.12)", border: "none", color: "#fff", cursor: "pointer", padding: "6px 10px", borderRadius: 8, fontSize: "0.82rem", fontWeight: 500 }}>Logout</button>
+          </div>
+        ) : (
+          <Link to="/login" style={{ color: "#fff", fontWeight: 500, textDecoration: "none", padding: "7px 14px", borderRadius: 8, background: "rgba(255,255,255,0.15)", fontSize: "0.85rem", marginLeft: 4 }}>Sign In</Link>
+        )}
+        <button onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+          style={{ background: "rgba(255,255,255,0.12)", border: "none", color: "#fff", cursor: "pointer", padding: "7px 10px", borderRadius: 8, fontSize: "1rem", marginLeft: 4, display: "flex", alignItems: "center" }}>
           {theme === "dark" ? "\u2600\uFE0F" : "\uD83C\uDF19"}
         </button>
       </div>
 
       <div style={{ display: "flex", gap: 4 }} className="nav-mobile-buttons">
-        <button onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          className="nav-theme-mobile"
+        <button onClick={toggleTheme} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} className="nav-theme-mobile"
           style={{ display: "none", background: "rgba(255,255,255,0.12)", border: "none", color: "#fff", cursor: "pointer", padding: "6px 8px", borderRadius: 8, fontSize: "1rem" }}>
           {theme === "dark" ? "\u2600\uFE0F" : "\uD83C\uDF19"}
         </button>
-        <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu" aria-expanded={menuOpen} className="nav-hamburger" style={{ display: "none", background: menuOpen ? "rgba(255,255,255,0.15)" : "none", border: "none", color: "#fff", fontSize: "1.4rem", cursor: "pointer", padding: "6px 8px", borderRadius: 8 }}>
+        <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu" aria-expanded={menuOpen} className="nav-hamburger"
+          style={{ display: "none", background: menuOpen ? "rgba(255,255,255,0.15)" : "none", border: "none", color: "#fff", fontSize: "1.4rem", cursor: "pointer", padding: "6px 8px", borderRadius: 8 }}>
           {menuOpen ? "\u2715" : "\u2630"}
         </button>
       </div>
@@ -86,6 +92,18 @@ export default function Navbar() {
               </Link>
             );
           })}
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.15)", margin: "4px 0" }} />
+          {isAuthenticated ? (
+            <>
+              <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem", padding: "8px 12px" }}>{"\uD83D\uDC64"} {user?.name}</div>
+              <button onClick={handleLogout} style={{ color: "rgba(255,255,255,0.7)", background: "none", border: "none", textAlign: "left", fontSize: "1rem", padding: "10px 12px", borderRadius: 8, cursor: "pointer", display: "flex", alignItems: "center", gap: 10 }}>{"\uD83D\uDEAA"} Logout</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" onClick={() => setMenuOpen(false)} style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none", fontSize: "1rem", padding: "10px 12px", borderRadius: 8, display: "flex", alignItems: "center", gap: 10 }}>{"\uD83D\uDD11"} Sign In</Link>
+              <Link to="/register" onClick={() => setMenuOpen(false)} style={{ color: "rgba(255,255,255,0.7)", textDecoration: "none", fontSize: "1rem", padding: "10px 12px", borderRadius: 8, display: "flex", alignItems: "center", gap: 10 }}>{"\uD83C\uDF31"} Create Account</Link>
+            </>
+          )}
         </div>
       )}
 

@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { fetchProduct, fetchProducts } from "../services/api";
+import { fetchProduct, fetchProducts, logCarbonPurchase } from "../services/api";
 import GradeBadge from "../components/GradeBadge";
 import GradeBreakdown from "../components/GradeBreakdown";
 import ProductImage from "../components/ProductImage";
+import ReviewSection from "../components/ReviewSection";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import { isFavorited, toggleFavorite } from "../utils/favorites";
 
 const CATEGORY_ICONS = {
@@ -18,16 +20,19 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const { isAuthenticated } = useAuth();
   const [product, setProduct] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [fav, setFav] = useState(false);
   const [recommendations, setRecommendations] = useState([]);
+  const [loggedPurchase, setLoggedPurchase] = useState(false);
 
   useEffect(() => {
     setError("");
     setLoading(true);
     setRecommendations([]);
+    setLoggedPurchase(false);
     fetchProduct(id)
       .then((data) => {
         setProduct(data);
@@ -41,6 +46,14 @@ export default function ProductDetail() {
       .catch(() => setError("Unable to load product details."))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleLogPurchase = async () => {
+    if (!product) return;
+    try {
+      await logCarbonPurchase(product.id, product.name, 1, product.greenGrade.totalEmissions);
+      setLoggedPurchase(true);
+    } catch { /* ignore */ }
+  };
 
   if (loading) {
     return (
@@ -72,8 +85,7 @@ export default function ProductDetail() {
       {/* Product hero */}
       <div style={{
         background: "linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)",
-        padding: "20px 24px 36px",
-        position: "relative",
+        padding: "20px 24px 36px", position: "relative",
       }}>
         <div style={{ maxWidth: 640, margin: "0 auto" }}>
           <Link to="/" style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 16 }}>
@@ -88,11 +100,13 @@ export default function ProductDetail() {
                 <span style={{ padding: "2px 10px", borderRadius: 20, background: "rgba(255,255,255,0.15)", fontSize: "0.8rem", display: "inline-flex", alignItems: "center", gap: 4 }}>
                   <span>{catIcon}</span> {product.category}
                 </span>
+                {product.source === "openfoodfacts" && (
+                  <span style={{ padding: "2px 10px", borderRadius: 20, background: "rgba(255,200,50,0.2)", fontSize: "0.75rem", color: "#e9c46a" }}>Open Food Facts</span>
+                )}
               </div>
             </div>
             <button onClick={() => setFav(toggleFavorite(product.id))}
               aria-label={fav ? "Remove from favorites" : "Add to favorites"}
-              title={fav ? "Remove from favorites" : "Add to favorites"}
               style={{ background: "rgba(255,255,255,0.12)", border: "none", cursor: "pointer", fontSize: "1.5rem", color: fav ? "#e63946" : "rgba(255,255,255,0.5)", flexShrink: 0, transition: "all 0.2s ease", width: 44, height: 44, borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center" }}>
               {fav ? "\u2665" : "\u2661"}
             </button>
@@ -112,6 +126,20 @@ export default function ProductDetail() {
               {greenGrade.totalEmissions} kg CO{"\u2082"}e/kg
             </div>
           </div>
+
+          {/* Carbon logging button */}
+          {isAuthenticated && (
+            <button onClick={handleLogPurchase} disabled={loggedPurchase}
+              style={{
+                marginTop: 14, padding: "10px 18px", borderRadius: 10, border: "none", cursor: loggedPurchase ? "default" : "pointer",
+                background: loggedPurchase ? (isDark ? "#1c2e22" : "#edf7f0") : "linear-gradient(135deg, #2d6a4f, #40916c)",
+                color: loggedPurchase ? (isDark ? "#52b788" : "#2d6a4f") : "#fff",
+                fontWeight: 600, fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 8,
+                transition: "all 0.2s",
+              }}>
+              {loggedPurchase ? "\u2713 Logged to Carbon Tracker" : "\uD83C\uDF0D Log Purchase"}
+            </button>
+          )}
         </div>
 
         {/* Breakdown */}
@@ -130,7 +158,7 @@ export default function ProductDetail() {
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               {product.purchaseLinks.map((link) => (
                 <a key={link.seller} href={link.url} target="_blank" rel="noopener noreferrer"
-                  style={{ padding: "10px 20px", background: "linear-gradient(135deg, #2d6a4f, #40916c)", color: "#fff", borderRadius: 10, fontSize: "0.88rem", textDecoration: "none", fontWeight: 600, transition: "all 0.2s ease", boxShadow: "0 2px 8px rgba(45,106,79,0.3)" }}>
+                  style={{ padding: "10px 20px", background: "linear-gradient(135deg, #2d6a4f, #40916c)", color: "#fff", borderRadius: 10, fontSize: "0.88rem", textDecoration: "none", fontWeight: 600, boxShadow: "0 2px 8px rgba(45,106,79,0.3)" }}>
                   {link.seller} {"\u2192"}
                 </a>
               ))}
@@ -138,7 +166,10 @@ export default function ProductDetail() {
           </div>
         )}
 
-        {/* Alternative Recommendations */}
+        {/* Reviews */}
+        <ReviewSection productId={product.id} />
+
+        {/* Recommendations */}
         {recommendations.length > 0 && (
           <div style={{ background: isDark ? "#162419" : "#fff", borderRadius: 14, padding: 24, marginTop: 16, boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)", animation: "fadeInUp 0.4s ease 0.3s both" }}>
             <h4 style={{ marginBottom: 4, fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>

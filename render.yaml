@@ -14,7 +14,10 @@ services:
         value: production
       - key: ALLOWED_ORIGINS
         value: https://consciobite-app.onrender.com
+      - key: JWT_SECRET
+        generateValue: true
     plan: free
+    healthCheckPath: /api/health
 
   # Frontend Static Site
   - type: web

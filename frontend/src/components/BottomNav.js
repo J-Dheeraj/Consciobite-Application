@@ -4,8 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 const BOTTOM_LINKS = [
   { to: "/", label: "Home", icon: "\uD83C\uDF3F" },
   { to: "/scan", label: "Scan", icon: "\uD83D\uDCF7" },
-  { to: "/compare", label: "Compare", icon: "\u2696\uFE0F" },
-  { to: "/dashboard", label: "Stats", icon: "\uD83D\uDCCA" },
+  { to: "/recipes", label: "Recipes", icon: "\uD83C\uDF73" },
+  { to: "/carbon", label: "Carbon", icon: "\uD83C\uDF0D" },
   { to: "/favorites", label: "Favs", icon: "\u2665" },
 ];
 
