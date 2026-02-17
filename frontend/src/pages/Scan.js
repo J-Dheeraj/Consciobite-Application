@@ -38,7 +38,7 @@ export default function Scan() {
   }, [lookupBarcode]);
 
   const stopCamera = useCallback(async () => {
-    if (scannerRef.current) { try { await scannerRef.current.stop(); } catch {} scannerRef.current = null; }
+    if (scannerRef.current) { try { await scannerRef.current.stop(); } catch (_) { /* ignore */ } scannerRef.current = null; }
     setScanning(false);
   }, []);
 

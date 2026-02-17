@@ -1,18 +1,35 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import BottomNav from "./components/BottomNav";
 import ErrorBoundary from "./components/ErrorBoundary";
+
+// Eagerly loaded (critical path)
 import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
-import Scan from "./pages/Scan";
-import Compare from "./pages/Compare";
-import Favorites from "./pages/Favorites";
-import About from "./pages/About";
-import Tips from "./pages/Tips";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
+
+// Lazy loaded (code splitting)
+const Scan = lazy(() => import("./pages/Scan"));
+const Compare = lazy(() => import("./pages/Compare"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const About = lazy(() => import("./pages/About"));
+const Tips = lazy(() => import("./pages/Tips"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const CarbonTracker = lazy(() => import("./pages/CarbonTracker"));
+const Recipes = lazy(() => import("./pages/Recipes"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+function PageLoader() {
+  return (
+    <div style={{ padding: 48, textAlign: "center", color: "#888" }}>
+      <div style={{ width: 36, height: 36, border: "3px solid #d8f3dc", borderTopColor: "#2d6a4f", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
+      Loading...
+    </div>
+  );
+}
 
 export default function App() {
   return (
@@ -21,17 +38,23 @@ export default function App() {
       <Navbar />
       <ErrorBoundary>
         <main id="main-content" style={{ flex: 1 }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/scan" element={<Scan />} />
-            <Route path="/compare" element={<Compare />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/tips" element={<Tips />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/scan" element={<Scan />} />
+              <Route path="/compare" element={<Compare />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/tips" element={<Tips />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/carbon" element={<CarbonTracker />} />
+              <Route path="/recipes" element={<Recipes />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </main>
       </ErrorBoundary>
       <Footer />

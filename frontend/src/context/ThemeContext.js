@@ -6,7 +6,7 @@ function getInitialTheme() {
   try {
     const stored = localStorage.getItem("consciobite_theme");
     if (stored === "dark" || stored === "light") return stored;
-  } catch {}
+  } catch (_) { /* localStorage unavailable */ }
   if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
   return "light";
 }

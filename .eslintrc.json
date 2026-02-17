@@ -1,0 +1,40 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2021": true,
+    "jest": true
+  },
+  "extends": ["eslint:recommended"],
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "prefer-const": "warn",
+    "no-var": "error",
+    "eqeqeq": ["error", "always"],
+    "no-eval": "error",
+    "no-implied-eval": "error"
+  },
+  "overrides": [
+    {
+      "files": ["backend/**/*.js"],
+      "env": { "node": true, "browser": false }
+    },
+    {
+      "files": ["frontend/src/**/*.js", "frontend/src/**/*.jsx"],
+      "env": { "browser": true, "node": false }
+    },
+    {
+      "files": ["**/*.test.js", "**/__tests__/**"],
+      "env": { "jest": true }
+    }
+  ]
+}
