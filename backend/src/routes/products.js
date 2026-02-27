@@ -26,7 +26,10 @@ router.get("/", (req, res) => {
   const sort = VALID_SORTS.includes(req.query.sort) ? req.query.sort : "";
 
   const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-  const limit = Math.min(MAX_PAGE_SIZE, Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_PAGE_SIZE));
+  const limit = Math.min(
+    MAX_PAGE_SIZE,
+    Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_PAGE_SIZE)
+  );
 
   let results = products.map(enrichProduct);
 
@@ -41,15 +44,15 @@ router.get("/", (req, res) => {
   }
 
   if (category) {
-    results = results.filter(
-      (p) => p.category.toLowerCase() === category.toLowerCase()
-    );
+    results = results.filter((p) => p.category.toLowerCase() === category.toLowerCase());
   }
 
   if (sort === "grade_asc") results.sort((a, b) => a.greenGrade.score - b.greenGrade.score);
   else if (sort === "grade_desc") results.sort((a, b) => b.greenGrade.score - a.greenGrade.score);
-  else if (sort === "emissions_asc") results.sort((a, b) => a.greenGrade.totalEmissions - b.greenGrade.totalEmissions);
-  else if (sort === "emissions_desc") results.sort((a, b) => b.greenGrade.totalEmissions - a.greenGrade.totalEmissions);
+  else if (sort === "emissions_asc")
+    results.sort((a, b) => a.greenGrade.totalEmissions - b.greenGrade.totalEmissions);
+  else if (sort === "emissions_desc")
+    results.sort((a, b) => b.greenGrade.totalEmissions - a.greenGrade.totalEmissions);
 
   const totalCount = results.length;
   const totalPages = Math.ceil(totalCount / limit);
@@ -58,7 +61,14 @@ router.get("/", (req, res) => {
 
   res.json({
     products: paginatedResults,
-    pagination: { page, limit, totalCount, totalPages, hasNext: page < totalPages, hasPrev: page > 1 },
+    pagination: {
+      page,
+      limit,
+      totalCount,
+      totalPages,
+      hasNext: page < totalPages,
+      hasPrev: page > 1,
+    },
   });
 });
 
@@ -69,7 +79,10 @@ router.get("/compare", (req, res) => {
     return res.status(400).json({ error: "Provide product IDs as ?ids=id1,id2,id3" });
   }
 
-  const ids = idsParam.split(",").map((id) => sanitize(id.trim(), 20)).filter(Boolean);
+  const ids = idsParam
+    .split(",")
+    .map((id) => sanitize(id.trim(), 20))
+    .filter(Boolean);
 
   if (ids.length < 2 || ids.length > 5) {
     return res.status(400).json({ error: "Provide between 2 and 5 product IDs to compare" });
@@ -81,7 +94,10 @@ router.get("/compare", (req, res) => {
     }
   }
 
-  const found = ids.map((id) => products.find((p) => p.id === id)).filter(Boolean).map(enrichProduct);
+  const found = ids
+    .map((id) => products.find((p) => p.id === id))
+    .filter(Boolean)
+    .map(enrichProduct);
 
   if (found.length < 2) {
     return res.status(404).json({ error: "Not enough valid products found to compare" });
@@ -191,27 +207,125 @@ function mapOpenFoodFactsCategory(tags) {
   const tagStr = tags.join(",").toLowerCase();
   if (tagStr.includes("meat") || tagStr.includes("poultry")) return "Protein";
   if (tagStr.includes("fish") || tagStr.includes("seafood")) return "Seafood";
-  if (tagStr.includes("dairy") || tagStr.includes("egg") || tagStr.includes("milk") || tagStr.includes("cheese")) return "Dairy & Eggs";
-  if (tagStr.includes("cereal") || tagStr.includes("grain") || tagStr.includes("bread") || tagStr.includes("pasta") || tagStr.includes("rice")) return "Grains";
+  if (
+    tagStr.includes("dairy") ||
+    tagStr.includes("egg") ||
+    tagStr.includes("milk") ||
+    tagStr.includes("cheese")
+  )
+    return "Dairy & Eggs";
+  if (
+    tagStr.includes("cereal") ||
+    tagStr.includes("grain") ||
+    tagStr.includes("bread") ||
+    tagStr.includes("pasta") ||
+    tagStr.includes("rice")
+  )
+    return "Grains";
   if (tagStr.includes("fruit") || tagStr.includes("juice")) return "Fruits";
   if (tagStr.includes("vegetable") || tagStr.includes("salad")) return "Vegetables";
-  if (tagStr.includes("beverage") || tagStr.includes("drink") || tagStr.includes("water") || tagStr.includes("tea") || tagStr.includes("coffee")) return "Beverages";
-  if (tagStr.includes("snack") || tagStr.includes("chip") || tagStr.includes("candy") || tagStr.includes("chocolate")) return "Snacks";
+  if (
+    tagStr.includes("beverage") ||
+    tagStr.includes("drink") ||
+    tagStr.includes("water") ||
+    tagStr.includes("tea") ||
+    tagStr.includes("coffee")
+  )
+    return "Beverages";
+  if (
+    tagStr.includes("snack") ||
+    tagStr.includes("chip") ||
+    tagStr.includes("candy") ||
+    tagStr.includes("chocolate")
+  )
+    return "Snacks";
   return "Pantry";
 }
 
 // Estimate emissions from ecoscore grade
 function estimateEmissions(ecoGrade, category) {
   const baselines = {
-    Protein: { landUseChange: 5, animalFeed: 4, farm: 12, processing: 1, transport: 0.8, packaging: 0.5, retail: 0.3 },
-    Seafood: { landUseChange: 0.5, animalFeed: 2, farm: 6, processing: 1.2, transport: 1.2, packaging: 0.6, retail: 0.4 },
-    "Dairy & Eggs": { landUseChange: 2, animalFeed: 2, farm: 5, processing: 0.8, transport: 0.5, packaging: 0.4, retail: 0.3 },
-    Grains: { landUseChange: 0.3, animalFeed: 0, farm: 1, processing: 0.5, transport: 0.3, packaging: 0.2, retail: 0.2 },
-    Fruits: { landUseChange: 0.2, animalFeed: 0, farm: 0.5, processing: 0.3, transport: 0.5, packaging: 0.3, retail: 0.2 },
-    Vegetables: { landUseChange: 0.1, animalFeed: 0, farm: 0.8, processing: 0.3, transport: 0.4, packaging: 0.2, retail: 0.2 },
-    Beverages: { landUseChange: 0.2, animalFeed: 0, farm: 0.3, processing: 0.8, transport: 0.4, packaging: 0.5, retail: 0.3 },
-    Snacks: { landUseChange: 0.5, animalFeed: 0.3, farm: 1, processing: 1, transport: 0.4, packaging: 0.5, retail: 0.3 },
-    Pantry: { landUseChange: 0.3, animalFeed: 0.1, farm: 0.8, processing: 0.6, transport: 0.3, packaging: 0.3, retail: 0.2 },
+    Protein: {
+      landUseChange: 5,
+      animalFeed: 4,
+      farm: 12,
+      processing: 1,
+      transport: 0.8,
+      packaging: 0.5,
+      retail: 0.3,
+    },
+    Seafood: {
+      landUseChange: 0.5,
+      animalFeed: 2,
+      farm: 6,
+      processing: 1.2,
+      transport: 1.2,
+      packaging: 0.6,
+      retail: 0.4,
+    },
+    "Dairy & Eggs": {
+      landUseChange: 2,
+      animalFeed: 2,
+      farm: 5,
+      processing: 0.8,
+      transport: 0.5,
+      packaging: 0.4,
+      retail: 0.3,
+    },
+    Grains: {
+      landUseChange: 0.3,
+      animalFeed: 0,
+      farm: 1,
+      processing: 0.5,
+      transport: 0.3,
+      packaging: 0.2,
+      retail: 0.2,
+    },
+    Fruits: {
+      landUseChange: 0.2,
+      animalFeed: 0,
+      farm: 0.5,
+      processing: 0.3,
+      transport: 0.5,
+      packaging: 0.3,
+      retail: 0.2,
+    },
+    Vegetables: {
+      landUseChange: 0.1,
+      animalFeed: 0,
+      farm: 0.8,
+      processing: 0.3,
+      transport: 0.4,
+      packaging: 0.2,
+      retail: 0.2,
+    },
+    Beverages: {
+      landUseChange: 0.2,
+      animalFeed: 0,
+      farm: 0.3,
+      processing: 0.8,
+      transport: 0.4,
+      packaging: 0.5,
+      retail: 0.3,
+    },
+    Snacks: {
+      landUseChange: 0.5,
+      animalFeed: 0.3,
+      farm: 1,
+      processing: 1,
+      transport: 0.4,
+      packaging: 0.5,
+      retail: 0.3,
+    },
+    Pantry: {
+      landUseChange: 0.3,
+      animalFeed: 0.1,
+      farm: 0.8,
+      processing: 0.6,
+      transport: 0.3,
+      packaging: 0.3,
+      retail: 0.2,
+    },
   };
 
   const multipliers = { a: 0.4, b: 0.65, c: 0.85, d: 1.1, e: 1.4 };

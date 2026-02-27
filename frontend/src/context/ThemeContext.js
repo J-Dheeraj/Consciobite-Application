@@ -6,7 +6,9 @@ function getInitialTheme() {
   try {
     const stored = localStorage.getItem("consciobite_theme");
     if (stored === "dark" || stored === "light") return stored;
-  } catch (_) { /* localStorage unavailable */ }
+  } catch (_) {
+    /* localStorage unavailable */
+  }
   if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) return "dark";
   return "light";
 }
@@ -21,11 +23,7 @@ export function ThemeProvider({ children }) {
 
   const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {

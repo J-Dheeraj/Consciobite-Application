@@ -12,19 +12,27 @@ router.get("/:productId", optionalAuth, (req, res) => {
   const productId = validator.escape(validator.trim(req.params.productId)).slice(0, 20);
   const db = getDb();
 
-  const reviews = db.prepare(`
+  const reviews = db
+    .prepare(
+      `
     SELECT r.id, r.product_id, r.rating, r.comment, r.created_at,
            u.name as user_name, u.id as user_id
     FROM reviews r
     JOIN users u ON r.user_id = u.id
     WHERE r.product_id = ?
     ORDER BY r.created_at DESC
-  `).all(productId);
+  `
+    )
+    .all(productId);
 
-  const stats = db.prepare(`
+  const stats = db
+    .prepare(
+      `
     SELECT COUNT(*) as count, ROUND(AVG(rating), 1) as average
     FROM reviews WHERE product_id = ?
-  `).get(productId);
+  `
+    )
+    .get(productId);
 
   res.json({
     reviews,
@@ -41,15 +49,13 @@ router.post("/:productId", requireAuth, (req, res) => {
     return res.status(400).json({ error: "Rating must be between 1 and 5" });
   }
 
-  const sanitizedComment = comment
-    ? validator.escape(validator.trim(comment)).slice(0, 500)
-    : null;
+  const sanitizedComment = comment ? validator.escape(validator.trim(comment)).slice(0, 500) : null;
 
   const db = getDb();
 
-  const existing = db.prepare(
-    "SELECT id FROM reviews WHERE product_id = ? AND user_id = ?"
-  ).get(productId, req.user.id);
+  const existing = db
+    .prepare("SELECT id FROM reviews WHERE product_id = ? AND user_id = ?")
+    .get(productId, req.user.id);
 
   if (existing) {
     return res.status(409).json({ error: "You have already reviewed this product" });
@@ -62,12 +68,16 @@ router.post("/:productId", requireAuth, (req, res) => {
 
   invalidateCache(`reviews/${productId}`);
 
-  const review = db.prepare(`
+  const review = db
+    .prepare(
+      `
     SELECT r.id, r.product_id, r.rating, r.comment, r.created_at,
            u.name as user_name, u.id as user_id
     FROM reviews r JOIN users u ON r.user_id = u.id
     WHERE r.id = ?
-  `).get(id);
+  `
+    )
+    .get(id);
 
   res.status(201).json({ review });
 });

@@ -25,7 +25,17 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 function PageLoader() {
   return (
     <div style={{ padding: 48, textAlign: "center", color: "#888" }}>
-      <div style={{ width: 36, height: 36, border: "3px solid #d8f3dc", borderTopColor: "#2d6a4f", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
+      <div
+        style={{
+          width: 36,
+          height: 36,
+          border: "3px solid #d8f3dc",
+          borderTopColor: "#2d6a4f",
+          borderRadius: "50%",
+          animation: "spin 0.8s linear infinite",
+          margin: "0 auto 12px",
+        }}
+      />
       Loading...
     </div>
   );
@@ -34,7 +44,9 @@ function PageLoader() {
 export default function App() {
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <a href="#main-content" className="skip-link">Skip to main content</a>
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <Navbar />
       <ErrorBoundary>
         <main id="main-content" style={{ flex: 1 }}>

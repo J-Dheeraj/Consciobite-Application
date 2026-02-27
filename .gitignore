@@ -1,8 +1,28 @@
 node_modules/
 build/
+coverage/
+
+# Environment
 .env
+.env.local
+.env.*.local
+
+# OS
 .DS_Store
+Thumbs.db
+
+# Database
 *.db
 *.db-shm
 *.db-wal
 *.db-journal
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo

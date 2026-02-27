@@ -46,7 +46,7 @@ function calculateGreenGrade(emissions) {
   );
 
   // Score: 10 means zero emissions, 0 means at or above max emissions
-  const score = Math.round(((1 - totalEmissions / totalMax) * 10) * 10) / 10;
+  const score = Math.round((1 - totalEmissions / totalMax) * 10 * 10) / 10;
   const clampedScore = Math.max(0, Math.min(10, score));
 
   const breakdown = categories.map((cat) => {

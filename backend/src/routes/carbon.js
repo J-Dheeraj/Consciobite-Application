@@ -11,43 +11,63 @@ router.get("/summary", requireAuth, (req, res) => {
   const db = getDb();
   const userId = req.user.id;
 
-  const total = db.prepare(`
+  const total = db
+    .prepare(
+      `
     SELECT COALESCE(SUM(emissions * quantity), 0) as totalEmissions,
            COUNT(*) as totalLogs,
            COALESCE(SUM(quantity), 0) as totalItems
     FROM carbon_logs WHERE user_id = ?
-  `).get(userId);
+  `
+    )
+    .get(userId);
 
-  const weekly = db.prepare(`
+  const weekly = db
+    .prepare(
+      `
     SELECT COALESCE(SUM(emissions * quantity), 0) as emissions,
            COUNT(*) as logs
     FROM carbon_logs
     WHERE user_id = ? AND logged_at >= datetime('now', '-7 days')
-  `).get(userId);
+  `
+    )
+    .get(userId);
 
-  const monthly = db.prepare(`
+  const monthly = db
+    .prepare(
+      `
     SELECT COALESCE(SUM(emissions * quantity), 0) as emissions,
            COUNT(*) as logs
     FROM carbon_logs
     WHERE user_id = ? AND logged_at >= datetime('now', '-30 days')
-  `).get(userId);
+  `
+    )
+    .get(userId);
 
-  const byWeek = db.prepare(`
+  const byWeek = db
+    .prepare(
+      `
     SELECT strftime('%Y-W%W', logged_at) as week,
            ROUND(SUM(emissions * quantity), 2) as emissions,
            COUNT(*) as logs
     FROM carbon_logs
     WHERE user_id = ? AND logged_at >= datetime('now', '-90 days')
     GROUP BY week ORDER BY week
-  `).all(userId);
+  `
+    )
+    .all(userId);
 
-  const topProducts = db.prepare(`
+  const topProducts = db
+    .prepare(
+      `
     SELECT product_name, product_id,
            ROUND(SUM(emissions * quantity), 2) as totalEmissions,
            SUM(quantity) as totalQuantity
     FROM carbon_logs WHERE user_id = ?
     GROUP BY product_id ORDER BY totalEmissions DESC LIMIT 5
-  `).all(userId);
+  `
+    )
+    .all(userId);
 
   res.json({
     total: {
@@ -75,16 +95,20 @@ router.get("/logs", requireAuth, (req, res) => {
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 20));
   const offset = (page - 1) * limit;
 
-  const total = db.prepare(
-    "SELECT COUNT(*) as count FROM carbon_logs WHERE user_id = ?"
-  ).get(req.user.id);
+  const total = db
+    .prepare("SELECT COUNT(*) as count FROM carbon_logs WHERE user_id = ?")
+    .get(req.user.id);
 
-  const logs = db.prepare(`
+  const logs = db
+    .prepare(
+      `
     SELECT * FROM carbon_logs
     WHERE user_id = ?
     ORDER BY logged_at DESC
     LIMIT ? OFFSET ?
-  `).all(req.user.id, limit, offset);
+  `
+    )
+    .all(req.user.id, limit, offset);
 
   res.json({
     logs,
@@ -113,7 +137,14 @@ router.post("/log", requireAuth, (req, res) => {
 
   db.prepare(
     "INSERT INTO carbon_logs (id, user_id, product_id, product_name, quantity, emissions) VALUES (?, ?, ?, ?, ?, ?)"
-  ).run(id, req.user.id, validator.escape(productId), validator.escape(productName.slice(0, 100)), qty, emissionsVal);
+  ).run(
+    id,
+    req.user.id,
+    validator.escape(productId),
+    validator.escape(productName.slice(0, 100)),
+    qty,
+    emissionsVal
+  );
 
   const log = db.prepare("SELECT * FROM carbon_logs WHERE id = ?").get(id);
   res.status(201).json({ log });
@@ -124,7 +155,9 @@ router.delete("/log/:id", requireAuth, (req, res) => {
   const logId = validator.escape(validator.trim(req.params.id)).slice(0, 40);
   const db = getDb();
 
-  const log = db.prepare("SELECT * FROM carbon_logs WHERE id = ? AND user_id = ?").get(logId, req.user.id);
+  const log = db
+    .prepare("SELECT * FROM carbon_logs WHERE id = ? AND user_id = ?")
+    .get(logId, req.user.id);
   if (!log) {
     return res.status(404).json({ error: "Log not found" });
   }
