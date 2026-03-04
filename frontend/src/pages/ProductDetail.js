@@ -208,8 +208,7 @@ export default function ProductDetail() {
         <div
           style={{
             width: "100%",
-            background: "rgba(255,255,255,0.08)",
-            backdropFilter: "blur(12px)",
+            background: "#14352a",
             borderRadius: 18,
             padding: "20px 20px 24px",
             marginBottom: 16,
@@ -239,7 +238,7 @@ export default function ProductDetail() {
               <div
                 style={{
                   fontSize: "0.65rem",
-                  color: "rgba(255,255,255,0.6)",
+                  color: "#b8d4c0",
                   marginBottom: 4,
                   fontWeight: 600,
                 }}
@@ -270,7 +269,7 @@ export default function ProductDetail() {
                         display: "inline-block",
                       }}
                     />
-                    <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.7)" }}>
+                    <span style={{ fontSize: "0.7rem", color: "#d4e8da" }}>
                       {item.label}
                     </span>
                   </div>
@@ -322,8 +321,7 @@ export default function ProductDetail() {
         <div
           style={{
             width: "100%",
-            background: "rgba(20, 80, 50, 0.75)",
-            backdropFilter: "blur(12px)",
+            background: "#0b2a1a",
             borderRadius: 18,
             padding: "20px",
             marginBottom: 16,
@@ -382,9 +380,9 @@ export default function ProductDetail() {
               >
                 <span
                   style={{
-                    color: "rgba(255,255,255,0.85)",
-                    fontSize: "0.88rem",
-                    fontWeight: 500,
+                    color: "#ffffff",
+                    fontSize: "0.92rem",
+                    fontWeight: 600,
                   }}
                 >
                   {CATEGORY_LABELS[b.category] || b.category}
@@ -512,8 +510,7 @@ export default function ProductDetail() {
           <div
             style={{
               width: "100%",
-              background: "rgba(255,255,255,0.1)",
-              backdropFilter: "blur(12px)",
+              background: "#0b2a1a",
               borderRadius: 18,
               padding: "20px",
               marginBottom: 16,
@@ -537,7 +534,7 @@ export default function ProductDetail() {
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  color: "rgba(255,255,255,0.8)",
+                  color: "#ffffff",
                   fontSize: "0.85rem",
                 }}
               >
@@ -550,7 +547,7 @@ export default function ProductDetail() {
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  color: "rgba(255,255,255,0.8)",
+                  color: "#ffffff",
                   fontSize: "0.85rem",
                 }}
               >
@@ -562,7 +559,7 @@ export default function ProductDetail() {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    color: "rgba(255,255,255,0.8)",
+                    color: "#ffffff",
                     fontSize: "0.85rem",
                   }}
                 >
@@ -577,7 +574,7 @@ export default function ProductDetail() {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    color: "rgba(255,255,255,0.8)",
+                    color: "#ffffff",
                     fontSize: "0.85rem",
                   }}
                 >
@@ -592,7 +589,7 @@ export default function ProductDetail() {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    color: "rgba(255,255,255,0.8)",
+                    color: "#ffffff",
                     fontSize: "0.85rem",
                   }}
                 >
@@ -605,7 +602,7 @@ export default function ProductDetail() {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    color: "rgba(255,255,255,0.8)",
+                    color: "#ffffff",
                     fontSize: "0.85rem",
                   }}
                 >
@@ -625,7 +622,7 @@ export default function ProductDetail() {
                   style={{
                     display: "flex",
                     justifyContent: "space-between",
-                    color: "rgba(255,255,255,0.8)",
+                    color: "#ffffff",
                     fontSize: "0.85rem",
                   }}
                 >
@@ -645,7 +642,7 @@ export default function ProductDetail() {
                 <div
                   style={{
                     fontSize: "0.8rem",
-                    color: "rgba(255,255,255,0.6)",
+                    color: "#b8d4c0",
                     marginBottom: 8,
                     fontWeight: 600,
                   }}
@@ -658,7 +655,7 @@ export default function ProductDetail() {
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
-                      color: "rgba(255,255,255,0.7)",
+                      color: "#d4e8da",
                       fontSize: "0.8rem",
                       padding: "4px 0",
                     }}
@@ -678,14 +675,13 @@ export default function ProductDetail() {
         <div
           style={{
             width: "100%",
-            background: "rgba(255,255,255,0.08)",
-            backdropFilter: "blur(12px)",
+            background: "#14352a",
             borderRadius: 18,
             padding: "16px 20px",
             marginBottom: 16,
           }}
         >
-          <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.88rem", lineHeight: 1.7 }}>
+          <p style={{ color: "#ffffff", fontSize: "0.88rem", lineHeight: 1.7 }}>
             {product.description}
           </p>
         </div>
