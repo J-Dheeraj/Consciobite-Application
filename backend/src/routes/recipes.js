@@ -9,7 +9,8 @@ const RECIPE_TEMPLATES = [
   {
     id: "green-bowl",
     name: "Green Power Bowl",
-    description: "A nutrient-dense bowl packed with sustainable grains, fresh vegetables, and plant protein.",
+    description:
+      "A nutrient-dense bowl packed with sustainable grains, fresh vegetables, and plant protein.",
     servings: 2,
     prepTime: "15 min",
     cookTime: "20 min",
@@ -26,7 +27,8 @@ const RECIPE_TEMPLATES = [
   {
     id: "sustainable-smoothie",
     name: "Eco Smoothie Blast",
-    description: "A refreshing smoothie using low-emission fruits, dairy alternatives, and natural sweeteners.",
+    description:
+      "A refreshing smoothie using low-emission fruits, dairy alternatives, and natural sweeteners.",
     servings: 2,
     prepTime: "5 min",
     cookTime: "0 min",
@@ -43,7 +45,8 @@ const RECIPE_TEMPLATES = [
   {
     id: "planet-friendly-pasta",
     name: "Planet-Friendly Pasta",
-    description: "A delicious pasta dish featuring sustainable grains with seasonal vegetables and light sauce.",
+    description:
+      "A delicious pasta dish featuring sustainable grains with seasonal vegetables and light sauce.",
     servings: 4,
     prepTime: "10 min",
     cookTime: "25 min",
@@ -77,7 +80,8 @@ const RECIPE_TEMPLATES = [
   {
     id: "eco-breakfast",
     name: "Sustainable Breakfast Plate",
-    description: "Start your day right with a balanced, low-emission breakfast featuring local-friendly ingredients.",
+    description:
+      "Start your day right with a balanced, low-emission breakfast featuring local-friendly ingredients.",
     servings: 2,
     prepTime: "5 min",
     cookTime: "15 min",
@@ -94,7 +98,8 @@ const RECIPE_TEMPLATES = [
   {
     id: "ocean-friendly-bowl",
     name: "Ocean-Friendly Poke Bowl",
-    description: "A sustainable take on poke bowls using responsibly sourced seafood and fresh produce.",
+    description:
+      "A sustainable take on poke bowls using responsibly sourced seafood and fresh produce.",
     servings: 2,
     prepTime: "15 min",
     cookTime: "20 min",
@@ -152,9 +157,8 @@ router.get("/", (req, res) => {
     return {
       ...recipe,
       ingredients,
-      sustainabilityScore: categoryCount > 0
-        ? Math.round((totalScore / categoryCount) * 10) / 10
-        : 0,
+      sustainabilityScore:
+        categoryCount > 0 ? Math.round((totalScore / categoryCount) * 10) / 10 : 0,
     };
   });
 
@@ -184,9 +188,7 @@ router.get("/:id", (req, res) => {
   res.json({
     ...recipe,
     ingredients,
-    sustainabilityScore: categoryCount > 0
-      ? Math.round((totalScore / categoryCount) * 10) / 10
-      : 0,
+    sustainabilityScore: categoryCount > 0 ? Math.round((totalScore / categoryCount) * 10) / 10 : 0,
   });
 });
 

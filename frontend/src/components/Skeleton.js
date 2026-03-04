@@ -62,10 +62,26 @@ export function ProductListSkeleton({ count = 6 }) {
 
 export function DashboardSkeleton() {
   return (
-    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+        gap: 12,
+      }}
+    >
       {Array.from({ length: 4 }, (_, i) => (
-        <div key={i} style={{ background: "#fff", borderRadius: 14, padding: "20px 18px", textAlign: "center" }}>
-          <SkeletonPulse style={{ width: 36, height: 36, borderRadius: "50%", margin: "0 auto 8px" }} />
+        <div
+          key={i}
+          style={{
+            background: "#fff",
+            borderRadius: 14,
+            padding: "20px 18px",
+            textAlign: "center",
+          }}
+        >
+          <SkeletonPulse
+            style={{ width: 36, height: 36, borderRadius: "50%", margin: "0 auto 8px" }}
+          />
           <SkeletonPulse style={{ width: 60, height: 28, margin: "0 auto 8px" }} />
           <SkeletonPulse style={{ width: 80, height: 12, margin: "0 auto" }} />
         </div>

@@ -40,18 +40,20 @@ export default function ProductImage({ name, category, size = 48 }) {
   const patternIndex = hash % 3;
 
   return (
-    <div style={{
-      width: size,
-      height: size,
-      borderRadius: size > 60 ? 16 : 10,
-      background: colors.bg,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      position: "relative",
-      overflow: "hidden",
-      flexShrink: 0,
-    }}>
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: size > 60 ? 16 : 10,
+        background: colors.bg,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        overflow: "hidden",
+        flexShrink: 0,
+      }}
+    >
       {/* Background pattern */}
       <svg width={size} height={size} style={{ position: "absolute", inset: 0, opacity: 0.3 }}>
         {patternIndex === 0 && (
@@ -63,16 +65,44 @@ export default function ProductImage({ name, category, size = 48 }) {
         )}
         {patternIndex === 1 && (
           <>
-            <rect x={size * 0.1} y={size * 0.1} width={size * 0.15} height={size * 0.15} rx={3} fill={colors.accent} transform={`rotate(${rotation} ${size * 0.175} ${size * 0.175})`} />
-            <rect x={size * 0.7} y={size * 0.6} width={size * 0.12} height={size * 0.12} rx={2} fill={colors.accent} transform={`rotate(${-rotation} ${size * 0.76} ${size * 0.66})`} />
+            <rect
+              x={size * 0.1}
+              y={size * 0.1}
+              width={size * 0.15}
+              height={size * 0.15}
+              rx={3}
+              fill={colors.accent}
+              transform={`rotate(${rotation} ${size * 0.175} ${size * 0.175})`}
+            />
+            <rect
+              x={size * 0.7}
+              y={size * 0.6}
+              width={size * 0.12}
+              height={size * 0.12}
+              rx={2}
+              fill={colors.accent}
+              transform={`rotate(${-rotation} ${size * 0.76} ${size * 0.66})`}
+            />
           </>
         )}
         {patternIndex === 2 && (
-          <path d={`M0,${size * 0.8} Q${size * 0.25},${size * 0.6} ${size * 0.5},${size * 0.75} T${size},${size * 0.65}`} stroke={colors.accent} strokeWidth={2} fill="none" />
+          <path
+            d={`M0,${size * 0.8} Q${size * 0.25},${size * 0.6} ${size * 0.5},${size * 0.75} T${size},${size * 0.65}`}
+            stroke={colors.accent}
+            strokeWidth={2}
+            fill="none"
+          />
         )}
       </svg>
       {/* Icon */}
-      <span style={{ fontSize: size * 0.45, position: "relative", zIndex: 1, transform: `rotate(${rotation * 0.3}deg)` }}>
+      <span
+        style={{
+          fontSize: size * 0.45,
+          position: "relative",
+          zIndex: 1,
+          transform: `rotate(${rotation * 0.3}deg)`,
+        }}
+      >
         {icon}
       </span>
     </div>

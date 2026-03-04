@@ -28,9 +28,9 @@
   --text-muted: #888;
   --border-color: #e0e0e0;
   --border-light: #f0f0f0;
-  --shadow-sm: 0 1px 3px rgba(27,67,50,0.06);
-  --shadow-md: 0 4px 12px rgba(27,67,50,0.08);
-  --shadow-lg: 0 8px 30px rgba(27,67,50,0.12);
+  --shadow-sm: 0 1px 3px rgba(27, 67, 50, 0.06);
+  --shadow-md: 0 4px 12px rgba(27, 67, 50, 0.08);
+  --shadow-lg: 0 8px 30px rgba(27, 67, 50, 0.12);
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -58,77 +58,173 @@
   --green-50: #0f1a14;
   --green-100: #162419;
   --green-200: #1c2e22;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.25);
-  --shadow-lg: 0 8px 30px rgba(0,0,0,0.35);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.35);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  transition: background 0.3s ease, color 0.3s ease;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
 }
 
-a { color: var(--green-800); text-decoration: none; transition: color var(--transition-fast); }
-a:hover { color: var(--green-700); }
+a {
+  color: var(--green-800);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+a:hover {
+  color: var(--green-700);
+}
 
-[data-theme="dark"] a { color: var(--green-500); }
-[data-theme="dark"] a:hover { color: var(--green-400); }
+[data-theme="dark"] a {
+  color: var(--green-500);
+}
+[data-theme="dark"] a:hover {
+  color: var(--green-400);
+}
 
-a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
   outline: 2px solid var(--green-600);
   outline-offset: 2px;
 }
 
-html { scroll-behavior: smooth; }
-select { appearance: auto; background: var(--bg-card); color: var(--text-primary); }
+html {
+  scroll-behavior: smooth;
+}
+select {
+  appearance: auto;
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
 
 .skip-link {
-  position: absolute; top: -40px; left: 0;
-  background: var(--green-800); color: #fff; padding: 8px; z-index: 200;
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--green-800);
+  color: #fff;
+  padding: 8px;
+  z-index: 200;
 }
-.skip-link:focus { top: 0; }
+.skip-link:focus {
+  top: 0;
+}
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-@keyframes growBar { from { width: 0; } }
-@keyframes ringFill { from { stroke-dashoffset: 251.2; } }
+@keyframes growBar {
+  from {
+    width: 0;
+  }
+}
+@keyframes ringFill {
+  from {
+    stroke-dashoffset: 251.2;
+  }
+}
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--green-100); }
-::-webkit-scrollbar-thumb { background: var(--green-400); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--green-600); }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--green-100);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--green-400);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--green-600);
+}
 
 /* Responsive utilities */
 @media (max-width: 480px) {
-  h1 { font-size: 1.3rem !important; }
-  h2 { font-size: 1.2rem !important; }
-  h3 { font-size: 1rem !important; }
+  h1 {
+    font-size: 1.3rem !important;
+  }
+  h2 {
+    font-size: 1.2rem !important;
+  }
+  h3 {
+    font-size: 1rem !important;
+  }
 }
 
 /* Dark mode overrides for inline-styled elements */

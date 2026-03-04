@@ -14,7 +14,11 @@ export default function Compare() {
   const [error, setError] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
 
-  useEffect(() => { fetchProducts({ limit: 100 }).then((data) => setAllProducts(data.products)).catch(() => {}); }, []);
+  useEffect(() => {
+    fetchProducts({ limit: 100 })
+      .then((data) => setAllProducts(data.products))
+      .catch(() => {});
+  }, []);
 
   const toggleProduct = (id) => {
     setSelected((prev) => {
@@ -27,53 +31,177 @@ export default function Compare() {
 
   const runComparison = async () => {
     if (selected.length < 2) return;
-    setError(""); setLoading(true);
-    try { const data = await compareProducts(selected); setCompared(data.products); }
-    catch (err) { setError(err.message || "Unable to compare products."); }
-    finally { setLoading(false); }
+    setError("");
+    setLoading(true);
+    try {
+      const data = await compareProducts(selected);
+      setCompared(data.products);
+    } catch (err) {
+      setError(err.message || "Unable to compare products.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filtered = searchFilter
-    ? allProducts.filter((p) => p.name.toLowerCase().includes(searchFilter.toLowerCase()) || p.brand.toLowerCase().includes(searchFilter.toLowerCase()))
+    ? allProducts.filter(
+        (p) =>
+          p.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+          p.brand.toLowerCase().includes(searchFilter.toLowerCase())
+      )
     : allProducts;
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      <div style={{ background: "linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)", padding: "36px 24px 44px", textAlign: "center" }}>
+      <div
+        style={{
+          background: "linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)",
+          padding: "36px 24px 44px",
+          textAlign: "center",
+        }}
+      >
         <div style={{ fontSize: "2.2rem", marginBottom: 8 }}>{"\u2696\uFE0F"}</div>
-        <h1 style={{ color: "#fff", fontFamily: "'Outfit', sans-serif", fontWeight: 800, fontSize: "1.6rem", marginBottom: 6 }}>Compare Products</h1>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>Select 2-5 products to compare their environmental impact.</p>
+        <h1
+          style={{
+            color: "#fff",
+            fontFamily: "'Outfit', sans-serif",
+            fontWeight: 800,
+            fontSize: "1.6rem",
+            marginBottom: 6,
+          }}
+        >
+          Compare Products
+        </h1>
+        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>
+          Select 2-5 products to compare their environmental impact.
+        </p>
       </div>
 
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px 40px" }}>
         {/* Selector */}
-        <div style={{ marginTop: -20, background: isDark ? "#162419" : "#fff", borderRadius: 14, padding: 20, boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)", marginBottom: 20, animation: "fadeInUp 0.4s ease" }}>
-          <input type="text" placeholder="Search to find products..." value={searchFilter} onChange={(e) => setSearchFilter(e.target.value)} aria-label="Search products to compare"
-            style={{ width: "100%", padding: "10px 14px", borderRadius: 10, border: "2px solid " + (isDark ? "#2d4a35" : "#e8e8e8"), fontSize: "0.9rem", marginBottom: 12, transition: "border-color 0.2s" }} />
-          <div style={{ maxHeight: 240, overflowY: "auto", border: "1px solid " + (isDark ? "#2d4a35" : "#eee"), borderRadius: 10 }}>
+        <div
+          style={{
+            marginTop: -20,
+            background: isDark ? "#162419" : "#fff",
+            borderRadius: 14,
+            padding: 20,
+            boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
+            marginBottom: 20,
+            animation: "fadeInUp 0.4s ease",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Search to find products..."
+            value={searchFilter}
+            onChange={(e) => setSearchFilter(e.target.value)}
+            aria-label="Search products to compare"
+            style={{
+              width: "100%",
+              padding: "10px 14px",
+              borderRadius: 10,
+              border: "2px solid " + (isDark ? "#2d4a35" : "#e8e8e8"),
+              fontSize: "0.9rem",
+              marginBottom: 12,
+              transition: "border-color 0.2s",
+            }}
+          />
+          <div
+            style={{
+              maxHeight: 240,
+              overflowY: "auto",
+              border: "1px solid " + (isDark ? "#2d4a35" : "#eee"),
+              borderRadius: 10,
+            }}
+          >
             {filtered.map((p) => (
-              <label key={p.id} style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", cursor: "pointer", borderBottom: "1px solid " + (isDark ? "#243a2b" : "#f5f5f5"), background: selected.includes(p.id) ? (isDark ? "#1c2e22" : "#edf7f0") : "transparent", transition: "background 0.15s" }}>
-                <input type="checkbox" checked={selected.includes(p.id)} onChange={() => toggleProduct(p.id)} disabled={!selected.includes(p.id) && selected.length >= 5}
-                  style={{ accentColor: "#2d6a4f" }} />
+              <label
+                key={p.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  padding: "10px 14px",
+                  cursor: "pointer",
+                  borderBottom: "1px solid " + (isDark ? "#243a2b" : "#f5f5f5"),
+                  background: selected.includes(p.id)
+                    ? isDark
+                      ? "#1c2e22"
+                      : "#edf7f0"
+                    : "transparent",
+                  transition: "background 0.15s",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={selected.includes(p.id)}
+                  onChange={() => toggleProduct(p.id)}
+                  disabled={!selected.includes(p.id) && selected.length >= 5}
+                  style={{ accentColor: "#2d6a4f" }}
+                />
                 <GradeBadge score={p.greenGrade.score} color={p.greenGrade.color} />
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 600, fontSize: "0.9rem", color: isDark ? "#e8f5e9" : "inherit" }}>{p.name}</div>
-                  <div style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#666" }}>{p.brand} {"\u00B7"} {p.greenGrade.totalEmissions} kg CO{"\u2082"}e</div>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      fontSize: "0.9rem",
+                      color: isDark ? "#e8f5e9" : "inherit",
+                    }}
+                  >
+                    {p.name}
+                  </div>
+                  <div style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#666" }}>
+                    {p.brand} {"\u00B7"} {p.greenGrade.totalEmissions} kg CO{"\u2082"}e
+                  </div>
                 </div>
               </label>
             ))}
-            {filtered.length === 0 && <p style={{ padding: 16, color: "#888", textAlign: "center" }}>No products found.</p>}
+            {filtered.length === 0 && (
+              <p style={{ padding: 16, color: "#888", textAlign: "center" }}>No products found.</p>
+            )}
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
-          <button onClick={runComparison} disabled={selected.length < 2 || loading}
-            style={{ padding: "12px 28px", background: selected.length >= 2 ? "linear-gradient(135deg, #2d6a4f, #40916c)" : (isDark ? "#2d4a35" : "#e8e8e8"), color: selected.length >= 2 ? "#fff" : "#aaa", border: "none", borderRadius: 12, cursor: selected.length >= 2 ? "pointer" : "not-allowed", fontWeight: 600, fontSize: "0.9rem", boxShadow: selected.length >= 2 ? "0 2px 8px rgba(45,106,79,0.3)" : "none", transition: "all 0.2s ease" }}>
+          <button
+            onClick={runComparison}
+            disabled={selected.length < 2 || loading}
+            style={{
+              padding: "12px 28px",
+              background:
+                selected.length >= 2
+                  ? "linear-gradient(135deg, #2d6a4f, #40916c)"
+                  : isDark
+                    ? "#2d4a35"
+                    : "#e8e8e8",
+              color: selected.length >= 2 ? "#fff" : "#aaa",
+              border: "none",
+              borderRadius: 12,
+              cursor: selected.length >= 2 ? "pointer" : "not-allowed",
+              fontWeight: 600,
+              fontSize: "0.9rem",
+              boxShadow: selected.length >= 2 ? "0 2px 8px rgba(45,106,79,0.3)" : "none",
+              transition: "all 0.2s ease",
+            }}
+          >
             {loading ? "Comparing..." : `Compare ${selected.length} Products`}
           </button>
           {selected.length > 0 && (
-            <button onClick={() => { setSelected([]); setCompared(null); }}
-              style={{ padding: "10px 16px", background: "none", border: "1px solid " + (isDark ? "#2d4a35" : "#e0e0e0"), borderRadius: 10, cursor: "pointer", fontSize: "0.85rem", color: isDark ? "#7a9a7e" : "#666" }}>
+            <button
+              onClick={() => {
+                setSelected([]);
+                setCompared(null);
+              }}
+              style={{
+                padding: "10px 16px",
+                background: "none",
+                border: "1px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
+                borderRadius: 10,
+                cursor: "pointer",
+                fontSize: "0.85rem",
+                color: isDark ? "#7a9a7e" : "#666",
+              }}
+            >
               Clear
             </button>
           )}
@@ -83,25 +211,97 @@ export default function Compare() {
 
         {compared && (
           <div style={{ animation: "fadeInUp 0.4s ease" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12, marginBottom: 24 }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
+                gap: 12,
+                marginBottom: 24,
+              }}
+            >
               {compared.map((p) => (
-                <div key={p.id} style={{ background: isDark ? "#162419" : "#fff", borderRadius: 14, padding: 18, textAlign: "center", boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.15)" : "0 2px 8px rgba(27,67,50,0.06)" }}>
+                <div
+                  key={p.id}
+                  style={{
+                    background: isDark ? "#162419" : "#fff",
+                    borderRadius: 14,
+                    padding: 18,
+                    textAlign: "center",
+                    boxShadow: isDark
+                      ? "0 2px 8px rgba(0,0,0,0.15)"
+                      : "0 2px 8px rgba(27,67,50,0.06)",
+                  }}
+                >
                   <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
-                    <GradeBadge score={p.greenGrade.score} color={p.greenGrade.color} size="large" />
+                    <GradeBadge
+                      score={p.greenGrade.score}
+                      color={p.greenGrade.color}
+                      size="large"
+                    />
                   </div>
-                  <div style={{ fontWeight: 600, fontSize: "0.9rem", marginBottom: 2, color: isDark ? "#e8f5e9" : "inherit" }}>{p.name}</div>
-                  <div style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#666" }}>{p.brand}</div>
-                  <div style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginTop: 6 }}>{p.greenGrade.totalEmissions} kg CO{"\u2082"}e</div>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      fontSize: "0.9rem",
+                      marginBottom: 2,
+                      color: isDark ? "#e8f5e9" : "inherit",
+                    }}
+                  >
+                    {p.name}
+                  </div>
+                  <div style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#666" }}>
+                    {p.brand}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "0.82rem",
+                      color: isDark ? "#7a9a7e" : "#888",
+                      marginTop: 6,
+                    }}
+                  >
+                    {p.greenGrade.totalEmissions} kg CO{"\u2082"}e
+                  </div>
                 </div>
               ))}
             </div>
 
-            <h3 style={{ marginBottom: 12, fontFamily: "'Outfit', sans-serif" }}>Emissions Breakdown</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
+            <h3 style={{ marginBottom: 12, fontFamily: "'Outfit', sans-serif" }}>
+              Emissions Breakdown
+            </h3>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: 12,
+              }}
+            >
               {compared.map((p) => (
-                <div key={p.id} style={{ background: isDark ? "#162419" : "#fff", borderRadius: 14, padding: 18, boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.15)" : "0 2px 8px rgba(27,67,50,0.06)" }}>
-                  <h4 style={{ fontSize: "0.88rem", marginBottom: 10, fontFamily: "'Outfit', sans-serif", color: isDark ? "#e8f5e9" : "inherit" }}>{p.name}</h4>
-                  <GradeBreakdown breakdown={p.greenGrade.breakdown} totalEmissions={p.greenGrade.totalEmissions} totalScore={p.greenGrade.score} />
+                <div
+                  key={p.id}
+                  style={{
+                    background: isDark ? "#162419" : "#fff",
+                    borderRadius: 14,
+                    padding: 18,
+                    boxShadow: isDark
+                      ? "0 2px 8px rgba(0,0,0,0.15)"
+                      : "0 2px 8px rgba(27,67,50,0.06)",
+                  }}
+                >
+                  <h4
+                    style={{
+                      fontSize: "0.88rem",
+                      marginBottom: 10,
+                      fontFamily: "'Outfit', sans-serif",
+                      color: isDark ? "#e8f5e9" : "inherit",
+                    }}
+                  >
+                    {p.name}
+                  </h4>
+                  <GradeBreakdown
+                    breakdown={p.greenGrade.breakdown}
+                    totalEmissions={p.greenGrade.totalEmissions}
+                    totalScore={p.greenGrade.score}
+                  />
                 </div>
               ))}
             </div>

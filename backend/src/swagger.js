@@ -6,12 +6,11 @@ const options = {
     info: {
       title: "Consciobite API",
       version: "2.0.0",
-      description: "GreenGrade sustainability scoring API for food products. Browse 550+ products, compare environmental impact, track your carbon footprint, and discover sustainable recipes.",
+      description:
+        "GreenGrade sustainability scoring API for food products. Browse 550+ products, compare environmental impact, track your carbon footprint, and discover sustainable recipes.",
       contact: { name: "Consciobite Team" },
     },
-    servers: [
-      { url: "/api", description: "API Base" },
-    ],
+    servers: [{ url: "/api", description: "API Base" }],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -90,7 +89,14 @@ const options = {
           parameters: [
             { name: "search", in: "query", schema: { type: "string" } },
             { name: "category", in: "query", schema: { type: "string" } },
-            { name: "sort", in: "query", schema: { type: "string", enum: ["grade_asc", "grade_desc", "emissions_asc", "emissions_desc"] } },
+            {
+              name: "sort",
+              in: "query",
+              schema: {
+                type: "string",
+                enum: ["grade_asc", "grade_desc", "emissions_asc", "emissions_desc"],
+              },
+            },
             { name: "page", in: "query", schema: { type: "integer", default: 1 } },
             { name: "limit", in: "query", schema: { type: "integer", default: 20, maximum: 100 } },
           ],
@@ -125,7 +131,15 @@ const options = {
         get: {
           tags: ["Products"],
           summary: "Compare multiple products",
-          parameters: [{ name: "ids", in: "query", required: true, schema: { type: "string" }, description: "Comma-separated product IDs (2-5)" }],
+          parameters: [
+            {
+              name: "ids",
+              in: "query",
+              required: true,
+              schema: { type: "string" },
+              description: "Comma-separated product IDs (2-5)",
+            },
+          ],
           responses: { 200: { description: "Compared products" } },
         },
       },
@@ -142,9 +156,24 @@ const options = {
           summary: "Register a new account",
           requestBody: {
             required: true,
-            content: { "application/json": { schema: { type: "object", required: ["email", "name", "password"], properties: { email: { type: "string" }, name: { type: "string" }, password: { type: "string", minLength: 6 } } } } },
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["email", "name", "password"],
+                  properties: {
+                    email: { type: "string" },
+                    name: { type: "string" },
+                    password: { type: "string", minLength: 6 },
+                  },
+                },
+              },
+            },
           },
-          responses: { 201: { description: "Account created" }, 409: { description: "Email already registered" } },
+          responses: {
+            201: { description: "Account created" },
+            409: { description: "Email already registered" },
+          },
         },
       },
       "/auth/login": {
@@ -153,9 +182,20 @@ const options = {
           summary: "Login to existing account",
           requestBody: {
             required: true,
-            content: { "application/json": { schema: { type: "object", required: ["email", "password"], properties: { email: { type: "string" }, password: { type: "string" } } } } },
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["email", "password"],
+                  properties: { email: { type: "string" }, password: { type: "string" } },
+                },
+              },
+            },
           },
-          responses: { 200: { description: "Login successful" }, 401: { description: "Invalid credentials" } },
+          responses: {
+            200: { description: "Login successful" },
+            401: { description: "Invalid credentials" },
+          },
         },
       },
       "/auth/me": {
@@ -163,24 +203,42 @@ const options = {
           tags: ["Auth"],
           summary: "Get current user profile",
           security: [{ bearerAuth: [] }],
-          responses: { 200: { description: "User profile" }, 401: { description: "Not authenticated" } },
+          responses: {
+            200: { description: "User profile" },
+            401: { description: "Not authenticated" },
+          },
         },
       },
       "/reviews/{productId}": {
         get: {
           tags: ["Reviews"],
           summary: "Get reviews for a product",
-          parameters: [{ name: "productId", in: "path", required: true, schema: { type: "string" } }],
+          parameters: [
+            { name: "productId", in: "path", required: true, schema: { type: "string" } },
+          ],
           responses: { 200: { description: "Reviews list with stats" } },
         },
         post: {
           tags: ["Reviews"],
           summary: "Add a review",
           security: [{ bearerAuth: [] }],
-          parameters: [{ name: "productId", in: "path", required: true, schema: { type: "string" } }],
+          parameters: [
+            { name: "productId", in: "path", required: true, schema: { type: "string" } },
+          ],
           requestBody: {
             required: true,
-            content: { "application/json": { schema: { type: "object", required: ["rating"], properties: { rating: { type: "integer", minimum: 1, maximum: 5 }, comment: { type: "string" } } } } },
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["rating"],
+                  properties: {
+                    rating: { type: "integer", minimum: 1, maximum: 5 },
+                    comment: { type: "string" },
+                  },
+                },
+              },
+            },
           },
           responses: { 201: { description: "Review created" } },
         },
@@ -200,7 +258,20 @@ const options = {
           security: [{ bearerAuth: [] }],
           requestBody: {
             required: true,
-            content: { "application/json": { schema: { type: "object", required: ["productId", "productName", "emissions"], properties: { productId: { type: "string" }, productName: { type: "string" }, quantity: { type: "number", default: 1 }, emissions: { type: "number" } } } } },
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["productId", "productName", "emissions"],
+                  properties: {
+                    productId: { type: "string" },
+                    productName: { type: "string" },
+                    quantity: { type: "number", default: 1 },
+                    emissions: { type: "number" },
+                  },
+                },
+              },
+            },
           },
           responses: { 201: { description: "Log created" } },
         },

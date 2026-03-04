@@ -36,7 +36,10 @@ router.post("/register", (req, res) => {
   const passwordHash = bcrypt.hashSync(password, 10);
 
   db.prepare("INSERT INTO users (id, email, name, password_hash) VALUES (?, ?, ?, ?)").run(
-    id, sanitizedEmail, sanitizedName, passwordHash
+    id,
+    sanitizedEmail,
+    sanitizedName,
+    passwordHash
   );
 
   const user = { id, email: sanitizedEmail, name: sanitizedName };
@@ -54,9 +57,9 @@ router.post("/login", (req, res) => {
   }
 
   const db = getDb();
-  const user = db.prepare("SELECT * FROM users WHERE email = ?").get(
-    validator.normalizeEmail(email)
-  );
+  const user = db
+    .prepare("SELECT * FROM users WHERE email = ?")
+    .get(validator.normalizeEmail(email));
 
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
     return res.status(401).json({ error: "Invalid email or password" });
@@ -73,7 +76,9 @@ router.post("/login", (req, res) => {
 // GET /api/auth/me
 router.get("/me", requireAuth, (req, res) => {
   const db = getDb();
-  const user = db.prepare("SELECT id, email, name, created_at FROM users WHERE id = ?").get(req.user.id);
+  const user = db
+    .prepare("SELECT id, email, name, created_at FROM users WHERE id = ?")
+    .get(req.user.id);
 
   if (!user) {
     return res.status(404).json({ error: "User not found" });

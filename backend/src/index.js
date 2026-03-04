@@ -13,6 +13,8 @@ const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
 const { swaggerSpec } = require("./swagger");
 const { getDb, closeDb } = require("./db/schema");
+const { trainModel } = require("./services/greengrade");
+const products = require("./data/products.json");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -20,6 +22,10 @@ const PORT = process.env.PORT || 4000;
 // ---------- Initialize database ----------
 getDb();
 logger.info("Database initialized");
+
+// ---------- Train GreenGrade ML model on product catalog ----------
+trainModel(products);
+logger.info(`GreenGrade model trained on ${products.length} products`);
 
 // ---------- Structured logging ----------
 app.use(requestLogger);
@@ -39,7 +45,9 @@ function isAllowedOrigin(origin) {
     if (url.hostname.startsWith("consciobite") && url.hostname.endsWith(".onrender.com")) {
       return true;
     }
-  } catch (_) { /* invalid URL, reject */ }
+  } catch (_) {
+    /* invalid URL, reject */
+  }
   return false;
 }
 
@@ -95,10 +103,14 @@ app.use(hpp());
 app.disable("x-powered-by");
 
 // ---------- API Documentation ----------
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  customCss: ".swagger-ui .topbar { display: none }",
-  customSiteTitle: "Consciobite API Docs",
-}));
+app.use(
+  "/api/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec, {
+    customCss: ".swagger-ui .topbar { display: none }",
+    customSiteTitle: "Consciobite API Docs",
+  })
+);
 
 // ---------- Routes ----------
 app.get("/api/health", (_req, res) => {
