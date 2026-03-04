@@ -37,7 +37,7 @@ export default function GradeBadge({ score, color, size = "normal" }) {
       style={{ width: dim, height: dim, position: "relative", flexShrink: 0 }}
       title={`GreenGrade: ${score}/10`}
     >
-      <svg width={dim} height={dim} style={{ transform: "rotate(-90deg)" }}>
+      <svg width={dim} height={dim} data-testid="badge-svg" style={{ transform: "rotate(-90deg)" }}>
         <circle
           cx={center}
           cy={center}

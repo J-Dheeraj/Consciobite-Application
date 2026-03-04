@@ -5,9 +5,17 @@ const {
   sigmoidScore,
   percentileRank,
   computeStats,
+  normalCdf,
+  kdeCdf,
+  buildKdeStats,
+  mahalanobisDistance2,
+  computeCentroid,
+  computeCovarianceInverse,
+  invertMatrix,
 } = require("../src/services/greengrade");
 
-// ─── Helper: minimal product set that covers several food categories ────────
+// ─── Sample data ────────────────────────────────────────────────────────────
+
 const SAMPLE_PRODUCTS = [
   {
     category: "Protein",
@@ -46,6 +54,66 @@ const SAMPLE_PRODUCTS = [
     },
   },
   {
+    category: "Protein",
+    emissions: {
+      landUseChange: 1.5,
+      animalFeed: 2.4,
+      farm: 2.1,
+      processing: 0.5,
+      transport: 0.4,
+      packaging: 0.3,
+      retail: 0.2,
+    },
+  },
+  {
+    category: "Protein",
+    emissions: {
+      landUseChange: 5.0,
+      animalFeed: 3.5,
+      farm: 10.0,
+      processing: 1.2,
+      transport: 0.6,
+      packaging: 0.3,
+      retail: 0.3,
+    },
+  },
+  {
+    category: "Protein",
+    emissions: {
+      landUseChange: 0.8,
+      animalFeed: 0.5,
+      farm: 0.9,
+      processing: 0.5,
+      transport: 0.3,
+      packaging: 0.2,
+      retail: 0.1,
+    },
+  },
+  {
+    category: "Protein",
+    emissions: {
+      landUseChange: 3.5,
+      animalFeed: 2.8,
+      farm: 4.5,
+      processing: 0.7,
+      transport: 0.5,
+      packaging: 0.3,
+      retail: 0.2,
+    },
+  },
+  {
+    category: "Protein",
+    emissions: {
+      landUseChange: 7.0,
+      animalFeed: 4.8,
+      farm: 15.0,
+      processing: 1.5,
+      transport: 0.5,
+      packaging: 0.4,
+      retail: 0.3,
+    },
+  },
+  {
     category: "Vegetables",
     emissions: {
       landUseChange: 0.1,
@@ -67,6 +135,78 @@ const SAMPLE_PRODUCTS = [
       transport: 0.3,
       packaging: 0.2,
       retail: 0.1,
+    },
+  },
+  {
+    category: "Vegetables",
+    emissions: {
+      landUseChange: 0.15,
+      animalFeed: 0,
+      farm: 0.4,
+      processing: 0.25,
+      transport: 0.25,
+      packaging: 0.15,
+      retail: 0.1,
+    },
+  },
+  {
+    category: "Vegetables",
+    emissions: {
+      landUseChange: 0.3,
+      animalFeed: 0,
+      farm: 0.8,
+      processing: 0.35,
+      transport: 0.35,
+      packaging: 0.2,
+      retail: 0.15,
+    },
+  },
+  {
+    category: "Vegetables",
+    emissions: {
+      landUseChange: 0.1,
+      animalFeed: 0,
+      farm: 0.2,
+      processing: 0.15,
+      transport: 0.2,
+      packaging: 0.1,
+      retail: 0.1,
+    },
+  },
+  {
+    category: "Vegetables",
+    emissions: {
+      landUseChange: 0.25,
+      animalFeed: 0,
+      farm: 0.5,
+      processing: 0.3,
+      transport: 0.3,
+      packaging: 0.15,
+      retail: 0.1,
+    },
+  },
+  {
+    category: "Vegetables",
+    emissions: {
+      landUseChange: 0.18,
+      animalFeed: 0,
+      farm: 0.45,
+      processing: 0.28,
+      transport: 0.28,
+      packaging: 0.18,
+      retail: 0.12,
+    },
+  },
+  {
+    category: "Vegetables",
+    emissions: {
+      landUseChange: 0.35,
+      animalFeed: 0,
+      farm: 0.9,
+      processing: 0.4,
+      transport: 0.4,
+      packaging: 0.25,
+      retail: 0.15,
     },
   },
   {
@@ -322,8 +462,6 @@ describe("GreenGrade ML (trained model)", () => {
   });
 
   test("learned weights should not be equal", () => {
-    // The algorithm learns different importance for each emission dimension
-    // based on variance — farm and landUseChange should weigh more than retail
     const lowVariance = calculateGreenGrade(
       {
         landUseChange: 0,
@@ -348,12 +486,293 @@ describe("GreenGrade ML (trained model)", () => {
       },
       "Vegetables"
     );
-    // farm=5 should cause a much bigger score drop than retail=0.5
     expect(lowVariance.score).toBeGreaterThan(highVariance.score);
   });
 });
 
-// ─── Statistical helpers ────────────────────────────────────────────────────
+// ─── Anomaly detection ──────────────────────────────────────────────────────
+
+describe("Anomaly detection (Mahalanobis distance)", () => {
+  beforeAll(() => {
+    trainModel(SAMPLE_PRODUCTS);
+  });
+
+  test("should include anomaly field for known categories", () => {
+    const result = calculateGreenGrade(
+      {
+        landUseChange: 2,
+        animalFeed: 1.5,
+        farm: 3,
+        processing: 0.6,
+        transport: 0.4,
+        packaging: 0.3,
+        retail: 0.2,
+      },
+      "Protein"
+    );
+    expect(result.anomaly).toBeDefined();
+    expect(result.anomaly).toHaveProperty("isAnomaly");
+    expect(result.anomaly).toHaveProperty("distance");
+    expect(result.anomaly).toHaveProperty("threshold");
+    expect(typeof result.anomaly.isAnomaly).toBe("boolean");
+    expect(result.anomaly.distance).toBeGreaterThanOrEqual(0);
+    expect(result.anomaly.threshold).toBeGreaterThan(0);
+  });
+
+  test("should NOT flag a normal product as anomaly", () => {
+    const result = calculateGreenGrade(
+      {
+        landUseChange: 2.5,
+        animalFeed: 1.8,
+        farm: 1.4,
+        processing: 0.6,
+        transport: 0.4,
+        packaging: 0.3,
+        retail: 0.2,
+      },
+      "Protein"
+    );
+    expect(result.anomaly.isAnomaly).toBe(false);
+  });
+
+  test("should flag an extreme outlier as anomaly", () => {
+    // A "vegetable" with beef-level emissions should be anomalous
+    const result = calculateGreenGrade(
+      {
+        landUseChange: 9,
+        animalFeed: 6,
+        farm: 20,
+        processing: 2,
+        transport: 1,
+        packaging: 0.8,
+        retail: 0.5,
+      },
+      "Vegetables"
+    );
+    expect(result.anomaly.isAnomaly).toBe(true);
+    expect(result.anomaly.distance).toBeGreaterThan(result.anomaly.threshold);
+  });
+
+  test("anomaly distance should be higher for more extreme products", () => {
+    const normal = calculateGreenGrade(
+      {
+        landUseChange: 0.2,
+        animalFeed: 0,
+        farm: 0.5,
+        processing: 0.3,
+        transport: 0.3,
+        packaging: 0.2,
+        retail: 0.1,
+      },
+      "Vegetables"
+    );
+    const extreme = calculateGreenGrade(
+      {
+        landUseChange: 5,
+        animalFeed: 3,
+        farm: 10,
+        processing: 2,
+        transport: 1,
+        packaging: 0.8,
+        retail: 0.5,
+      },
+      "Vegetables"
+    );
+    expect(extreme.anomaly.distance).toBeGreaterThan(normal.anomaly.distance);
+  });
+
+  test("should be null for unknown categories", () => {
+    const result = calculateGreenGrade(
+      {
+        landUseChange: 1,
+        animalFeed: 0.5,
+        farm: 2,
+        processing: 0.5,
+        transport: 0.3,
+        packaging: 0.2,
+        retail: 0.1,
+      },
+      "SomeNewCategory"
+    );
+    expect(result.anomaly).toBeNull();
+  });
+});
+
+// ─── KDE tests ──────────────────────────────────────────────────────────────
+
+describe("Kernel Density Estimation", () => {
+  describe("normalCdf", () => {
+    test("should return 0.5 at x=0", () => {
+      expect(normalCdf(0)).toBeCloseTo(0.5, 4);
+    });
+
+    test("should return ~0.8413 at x=1", () => {
+      expect(normalCdf(1)).toBeCloseTo(0.8413, 3);
+    });
+
+    test("should return ~0.1587 at x=-1", () => {
+      expect(normalCdf(-1)).toBeCloseTo(0.1587, 3);
+    });
+
+    test("should return ~0.9772 at x=2", () => {
+      expect(normalCdf(2)).toBeCloseTo(0.9772, 3);
+    });
+
+    test("should approach 0 for very negative x", () => {
+      expect(normalCdf(-10)).toBe(0);
+    });
+
+    test("should approach 1 for very positive x", () => {
+      expect(normalCdf(10)).toBe(1);
+    });
+
+    test("should be monotonically increasing", () => {
+      let prev = normalCdf(-5);
+      for (let x = -4; x <= 5; x += 0.5) {
+        const curr = normalCdf(x);
+        expect(curr).toBeGreaterThanOrEqual(prev);
+        prev = curr;
+      }
+    });
+  });
+
+  describe("buildKdeStats", () => {
+    test("should compute bandwidth via Silverman rule", () => {
+      const stats = buildKdeStats([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      expect(stats.bandwidth).toBeGreaterThan(0);
+    });
+
+    test("should floor bandwidth to 0.001", () => {
+      // All identical values → zero std → bandwidth should be floored
+      const stats = buildKdeStats([5, 5, 5, 5, 5]);
+      expect(stats.bandwidth).toBeCloseTo(0.001, 3);
+    });
+
+    test("should include sorted array, mean, std", () => {
+      const stats = buildKdeStats([3, 1, 2]);
+      expect(stats.sorted).toEqual([1, 2, 3]);
+      expect(stats.mean).toBe(2);
+      expect(stats.std).toBeGreaterThan(0);
+    });
+  });
+
+  describe("kdeCdf", () => {
+    test("should return ~0.5 for the median of a symmetric distribution", () => {
+      const stats = buildKdeStats([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      const cdf = kdeCdf(stats, 5.5);
+      expect(cdf).toBeGreaterThan(0.3);
+      expect(cdf).toBeLessThan(0.7);
+    });
+
+    test("should return near 0 for values far below the data", () => {
+      const stats = buildKdeStats([10, 11, 12, 13, 14, 15]);
+      const cdf = kdeCdf(stats, -10);
+      expect(cdf).toBeLessThan(0.01);
+    });
+
+    test("should return near 1 for values far above the data", () => {
+      const stats = buildKdeStats([1, 2, 3, 4, 5]);
+      const cdf = kdeCdf(stats, 100);
+      expect(cdf).toBeGreaterThan(0.99);
+    });
+
+    test("should be monotonically increasing", () => {
+      const stats = buildKdeStats([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+      let prev = kdeCdf(stats, 0);
+      for (let x = 1; x <= 11; x++) {
+        const curr = kdeCdf(stats, x);
+        expect(curr).toBeGreaterThanOrEqual(prev);
+        prev = curr;
+      }
+    });
+
+    test("KDE CDF should be smoother than raw percentile", () => {
+      // With 5 data points, percentile jumps in 20% steps.
+      // KDE CDF should give intermediate values.
+      const stats = buildKdeStats([1, 3, 5, 7, 9]);
+
+      // Between data points, KDE gives smooth values
+      const at2 = kdeCdf(stats, 2);
+      const at4 = kdeCdf(stats, 4);
+      expect(at2).toBeGreaterThan(0.1);
+      expect(at2).toBeLessThan(0.4);
+      expect(at4).toBeGreaterThan(0.2);
+      expect(at4).toBeLessThan(0.6);
+    });
+  });
+});
+
+// ─── Matrix / Mahalanobis helpers ───────────────────────────────────────────
+
+describe("Matrix operations", () => {
+  test("invertMatrix should invert 2x2 identity", () => {
+    const I = [
+      [1, 0],
+      [0, 1],
+    ];
+    const inv = invertMatrix(I);
+    expect(inv[0][0]).toBeCloseTo(1, 10);
+    expect(inv[0][1]).toBeCloseTo(0, 10);
+    expect(inv[1][0]).toBeCloseTo(0, 10);
+    expect(inv[1][1]).toBeCloseTo(1, 10);
+  });
+
+  test("invertMatrix should invert a known 2x2 matrix", () => {
+    const M = [
+      [4, 7],
+      [2, 6],
+    ];
+    const inv = invertMatrix(M);
+    // Inverse of [[4,7],[2,6]] = [[0.6, -0.7],[-0.2, 0.4]]
+    expect(inv[0][0]).toBeCloseTo(0.6, 4);
+    expect(inv[0][1]).toBeCloseTo(-0.7, 4);
+    expect(inv[1][0]).toBeCloseTo(-0.2, 4);
+    expect(inv[1][1]).toBeCloseTo(0.4, 4);
+  });
+
+  test("invertMatrix should return null for singular matrix", () => {
+    const M = [
+      [1, 2],
+      [2, 4],
+    ];
+    const inv = invertMatrix(M);
+    expect(inv).toBeNull();
+  });
+
+  test("computeCentroid should compute mean vector", () => {
+    const matrix = [
+      [1, 2, 3],
+      [3, 4, 5],
+      [5, 6, 7],
+    ];
+    const c = computeCentroid(matrix);
+    expect(c[0]).toBe(3);
+    expect(c[1]).toBe(4);
+    expect(c[2]).toBe(5);
+  });
+
+  test("mahalanobisDistance2 should return 0 at centroid", () => {
+    const centroid = [3, 4];
+    const covInv = [
+      [1, 0],
+      [0, 1],
+    ]; // identity = Euclidean
+    const dist = mahalanobisDistance2([3, 4], centroid, covInv);
+    expect(dist).toBeCloseTo(0, 10);
+  });
+
+  test("mahalanobisDistance2 with identity covInv equals squared Euclidean", () => {
+    const centroid = [0, 0];
+    const covInv = [
+      [1, 0],
+      [0, 1],
+    ];
+    const dist = mahalanobisDistance2([3, 4], centroid, covInv);
+    expect(dist).toBeCloseTo(25, 5); // 3² + 4² = 25
+  });
+});
+
+// ─── Sigmoid ────────────────────────────────────────────────────────────────
 
 describe("sigmoidScore", () => {
   test("should map 0 to 0", () => {
@@ -378,7 +797,9 @@ describe("sigmoidScore", () => {
   });
 });
 
-describe("percentileRank", () => {
+// ─── Legacy helpers ─────────────────────────────────────────────────────────
+
+describe("percentileRank (legacy)", () => {
   const sorted = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
   test("should return 0 for value at or below minimum", () => {
@@ -402,7 +823,7 @@ describe("percentileRank", () => {
   });
 });
 
-describe("computeStats", () => {
+describe("computeStats (legacy compat)", () => {
   test("should compute correct mean", () => {
     const stats = computeStats([2, 4, 6, 8, 10]);
     expect(stats.mean).toBe(6);
@@ -423,6 +844,11 @@ describe("computeStats", () => {
   test("should return sorted array", () => {
     const stats = computeStats([5, 1, 3, 2, 4]);
     expect(stats.sorted).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  test("should include bandwidth (KDE extension)", () => {
+    const stats = computeStats([1, 2, 3, 4, 5]);
+    expect(stats.bandwidth).toBeGreaterThan(0);
   });
 });
 

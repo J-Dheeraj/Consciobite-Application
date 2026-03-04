@@ -13,15 +13,15 @@ test("shows correct title tooltip", () => {
 });
 
 test("renders large size variant", () => {
-  const { container } = render(<GradeBadge score={9} color="green" size="large" />);
-  const svg = container.querySelector("svg");
+  render(<GradeBadge score={9} color="green" size="large" />);
+  const svg = screen.getByTestId("badge-svg");
   expect(svg).toHaveAttribute("width", "88");
   expect(svg).toHaveAttribute("height", "88");
 });
 
 test("renders normal size by default", () => {
-  const { container } = render(<GradeBadge score={3} color="red" />);
-  const svg = container.querySelector("svg");
+  render(<GradeBadge score={3} color="red" />);
+  const svg = screen.getByTestId("badge-svg");
   expect(svg).toHaveAttribute("width", "48");
   expect(svg).toHaveAttribute("height", "48");
 });
