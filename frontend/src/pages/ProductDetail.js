@@ -1,53 +1,87 @@
 import React, { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import { fetchProduct, fetchProducts, logCarbonPurchase } from "../services/api";
+import { useParams, useNavigate } from "react-router-dom";
+import { fetchProduct, logCarbonPurchase } from "../services/api";
 import GradeBadge from "../components/GradeBadge";
-import GradeBreakdown from "../components/GradeBreakdown";
 import ProductImage from "../components/ProductImage";
-import ReviewSection from "../components/ReviewSection";
-import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { isFavorited, toggleFavorite } from "../utils/favorites";
 
-const CATEGORY_ICONS = {
-  Protein: "\uD83E\uDD69",
-  Seafood: "\uD83D\uDC1F",
-  "Dairy & Eggs": "\uD83E\uDD5B",
-  Grains: "\uD83C\uDF3E",
-  Fruits: "\uD83C\uDF53",
-  Vegetables: "\uD83E\uDD66",
-  Beverages: "\uD83E\uDDC3",
-  Snacks: "\uD83C\uDF6A",
-  Pantry: "\uD83C\uDF6F",
+const scoreColor = (score) => {
+  if (score >= 7) return "#27ae60";
+  if (score >= 4) return "#f39c12";
+  return "#e74c3c";
 };
+
+const CATEGORY_LABELS = {
+  "Land Use Change": "Land Use Change",
+  "Animal Feed": "Animal Feed",
+  Farm: "Farming",
+  Processing: "Processing",
+  Transport: "Transport",
+  Packaging: "Packaging",
+  Retail: "Retail",
+};
+
+const sustainabilityLabel = (score) => {
+  if (score >= 8) return "This Product is Highly Sustainable";
+  if (score >= 6) return "This Product is Sustainable";
+  if (score >= 4) return "This Product Has Moderate Sustainability";
+  if (score >= 2) return "This Product is Highly Unsustainable";
+  return "This Product is Extremely Unsustainable";
+};
+
+/* Decorative green blob for top-left corner */
+function GreenBlob() {
+  return (
+    <svg
+      style={{ position: "absolute", top: 0, left: 0, width: 180, height: 200, zIndex: 0 }}
+      viewBox="0 0 180 200"
+      aria-hidden="true"
+    >
+      <circle cx="-10" cy="-10" r="140" fill="#1a7a42" opacity="0.7" />
+      <ellipse cx="50" cy="60" rx="70" ry="80" fill="rgba(255,255,255,0.15)" />
+    </svg>
+  );
+}
+
+/* Consciobite pot logo */
+function ConsciobiteLogo() {
+  return (
+    <svg viewBox="0 0 64 64" width="48" height="48">
+      <rect x="16" y="34" width="32" height="22" rx="4" fill="#1a5e35" />
+      <rect x="12" y="30" width="40" height="8" rx="3" fill="#2d8a4e" />
+      <ellipse cx="32" cy="36" rx="14" ry="3" fill="#3d2b1f" />
+      <line x1="32" y1="32" x2="32" y2="14" stroke="#52b788" strokeWidth="2.5" />
+      <line x1="32" y1="22" x2="24" y2="14" stroke="#52b788" strokeWidth="2" />
+      <line x1="32" y1="22" x2="40" y2="14" stroke="#52b788" strokeWidth="2" />
+      <ellipse cx="24" cy="13" rx="6" ry="4" fill="#52b788" transform="rotate(-30, 24, 13)" />
+      <ellipse cx="40" cy="13" rx="6" ry="4" fill="#74c69d" transform="rotate(30, 40, 13)" />
+      <ellipse cx="32" cy="10" rx="5" ry="4" fill="#52b788" />
+      <rect x="22" y="42" width="20" height="3" rx="1" fill="rgba(255,255,255,0.15)" />
+    </svg>
+  );
+}
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const { isAuthenticated } = useAuth();
   const [product, setProduct] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [fav, setFav] = useState(false);
-  const [recommendations, setRecommendations] = useState([]);
   const [loggedPurchase, setLoggedPurchase] = useState(false);
+  const [showStats, setShowStats] = useState(false);
 
   useEffect(() => {
     setError("");
     setLoading(true);
-    setRecommendations([]);
     setLoggedPurchase(false);
+    setShowStats(false);
     fetchProduct(id)
       .then((data) => {
         setProduct(data);
         setFav(isFavorited(data.id));
-        fetchProducts({ category: data.category, sort: "grade_desc", limit: 5 })
-          .then((recData) => {
-            setRecommendations(recData.products.filter((p) => p.id !== data.id).slice(0, 4));
-          })
-          .catch(() => {});
       })
       .catch(() => setError("Unable to load product details."))
       .finally(() => setLoading(false));
@@ -82,114 +116,185 @@ export default function ProductDetail() {
     );
   }
 
-  if (error) {
+  if (error || !product) {
     return (
-      <div style={{ maxWidth: 600, margin: "0 auto", padding: 24, animation: "fadeIn 0.3s ease" }}>
-        <Link
-          to="/"
-          style={{ fontSize: "0.85rem", display: "inline-flex", alignItems: "center", gap: 6 }}
-        >
-          {"\u2190"} Back to products
-        </Link>
+      <div
+        style={{
+          minHeight: "calc(100vh - 60px)",
+          background: "#0d1f17",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: 24,
+        }}
+      >
         <div
           style={{
-            marginTop: 16,
             padding: 24,
-            background: isDark ? "#2a1519" : "#fef2f2",
+            background: "rgba(230,57,70,0.1)",
             borderRadius: 14,
             border: "1px solid #fecaca",
             color: "#e63946",
             textAlign: "center",
           }}
         >
-          {error}
+          <p>{error || "Product not found."}</p>
+          <button
+            onClick={() => navigate("/")}
+            style={{
+              marginTop: 12,
+              padding: "10px 24px",
+              background: "#27ae60",
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            Back to Home
+          </button>
         </div>
       </div>
     );
   }
 
-  if (!product) return null;
-
   const { greenGrade } = product;
-  const catIcon = CATEGORY_ICONS[product.category] || "\uD83C\uDF3F";
 
   return (
-    <div style={{ animation: "fadeIn 0.4s ease" }}>
-      {/* Product hero */}
+    <div
+      style={{
+        minHeight: "calc(100vh - 60px)",
+        background:
+          "linear-gradient(180deg, #0d1f17 0%, #0d2818 12%, #1a5e3a 30%, #4a8b6b 60%, #6d9e80 100%)",
+        position: "relative",
+        overflow: "hidden",
+        animation: "fadeIn 0.4s ease",
+      }}
+    >
+      {/* Green blob decoration */}
+      <GreenBlob />
+
+      {/* Main content */}
       <div
         style={{
-          background: "linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)",
-          padding: "20px 24px 36px",
           position: "relative",
+          zIndex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "16px 20px 32px",
+          maxWidth: 500,
+          margin: "0 auto",
         }}
       >
-        <div style={{ maxWidth: 640, margin: "0 auto" }}>
-          <Link
-            to="/"
+        {/* Logo + Brand */}
+        <div style={{ textAlign: "center", marginBottom: 16 }}>
+          <ConsciobiteLogo />
+          <div
             style={{
-              color: "rgba(255,255,255,0.8)",
-              fontSize: "0.85rem",
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              marginBottom: 16,
+              color: "#fff",
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 700,
+              fontSize: "1rem",
+              marginTop: 2,
             }}
           >
-            {"\u2190"} Back to products
-          </Link>
-          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            <GradeBadge score={greenGrade.score} color={greenGrade.color} size="large" />
-            <div style={{ flex: 1 }}>
-              <h2
-                style={{
-                  color: "#fff",
-                  fontFamily: "'Outfit', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "1.5rem",
-                  marginBottom: 4,
-                }}
-              >
-                {product.name}
-              </h2>
+            Consciobite
+          </div>
+        </div>
+
+        {/* Product header */}
+        <div
+          style={{
+            width: "100%",
+            background: "rgba(255,255,255,0.08)",
+            backdropFilter: "blur(12px)",
+            borderRadius: 18,
+            padding: "20px 20px 24px",
+            marginBottom: 16,
+          }}
+        >
+          {/* Product name + Legend */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: 14,
+            }}
+          >
+            <h2
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                fontSize: "1.2rem",
+                flex: 1,
+              }}
+            >
+              {product.brand} {product.name}
+            </h2>
+            <div style={{ textAlign: "right", flexShrink: 0, marginLeft: 12 }}>
               <div
                 style={{
-                  color: "rgba(255,255,255,0.8)",
-                  fontSize: "0.9rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  flexWrap: "wrap",
+                  fontSize: "0.65rem",
+                  color: "rgba(255,255,255,0.6)",
+                  marginBottom: 4,
+                  fontWeight: 600,
                 }}
               >
-                {product.brand}
-                <span
-                  style={{
-                    padding: "2px 10px",
-                    borderRadius: 20,
-                    background: "rgba(255,255,255,0.15)",
-                    fontSize: "0.8rem",
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 4,
-                  }}
-                >
-                  <span>{catIcon}</span> {product.category}
-                </span>
-                {product.source === "openfoodfacts" && (
-                  <span
+                GreenGrade Legend
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+                {[
+                  { color: "#27ae60", label: "Best" },
+                  { color: "#f39c12", label: "Medium" },
+                  { color: "#e74c3c", label: "Bad" },
+                ].map((item) => (
+                  <div
+                    key={item.label}
                     style={{
-                      padding: "2px 10px",
-                      borderRadius: 20,
-                      background: "rgba(255,200,50,0.2)",
-                      fontSize: "0.75rem",
-                      color: "#e9c46a",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      justifyContent: "flex-end",
                     }}
                   >
-                    Open Food Facts
-                  </span>
-                )}
+                    <span
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: "50%",
+                        background: item.color,
+                        display: "inline-block",
+                      }}
+                    />
+                    <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.7)" }}>
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
+          </div>
+
+          {/* Product image */}
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+            <div
+              style={{
+                background: "#fff",
+                borderRadius: 16,
+                padding: 12,
+                boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+              }}
+            >
+              <ProductImage name={product.name} category={product.category} size={90} />
+            </div>
+          </div>
+
+          {/* Favorite button */}
+          <div style={{ display: "flex", justifyContent: "center" }}>
             <button
               onClick={() => setFav(toggleFavorite(product.id))}
               aria-label={fav ? "Remove from favorites" : "Add to favorites"}
@@ -197,261 +302,413 @@ export default function ProductDetail() {
                 background: "rgba(255,255,255,0.12)",
                 border: "none",
                 cursor: "pointer",
-                fontSize: "1.5rem",
-                color: fav ? "#e63946" : "rgba(255,255,255,0.5)",
-                flexShrink: 0,
-                transition: "all 0.2s ease",
-                width: 44,
-                height: 44,
-                borderRadius: 12,
+                fontSize: "1.4rem",
+                color: fav ? "#e63946" : "rgba(255,255,255,0.4)",
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
+                transition: "all 0.2s",
               }}
             >
               {fav ? "\u2665" : "\u2661"}
             </button>
           </div>
         </div>
-      </div>
 
-      <div style={{ maxWidth: 640, margin: "0 auto", padding: "0 20px 40px" }}>
+        {/* GreenGrade breakdown card */}
+        <div
+          style={{
+            width: "100%",
+            background: "rgba(20, 80, 50, 0.75)",
+            backdropFilter: "blur(12px)",
+            borderRadius: 18,
+            padding: "20px",
+            marginBottom: 16,
+          }}
+        >
+          {/* GreenGrade header with overall score */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 12,
+              marginBottom: 20,
+            }}
+          >
+            <h3
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                fontSize: "1.15rem",
+              }}
+            >
+              GreenGrade
+            </h3>
+            <span
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: "50%",
+                background: scoreColor(greenGrade.score),
+                color: "#fff",
+                fontWeight: 700,
+                fontSize: "0.85rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: `0 2px 8px ${scoreColor(greenGrade.score)}80`,
+              }}
+            >
+              {greenGrade.score}
+            </span>
+          </div>
+
+          {/* Category breakdown rows */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {greenGrade.breakdown.map((b) => (
+              <div
+                key={b.category}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "0 8px",
+                }}
+              >
+                <span
+                  style={{
+                    color: "rgba(255,255,255,0.85)",
+                    fontSize: "0.88rem",
+                    fontWeight: 500,
+                  }}
+                >
+                  {CATEGORY_LABELS[b.category] || b.category}
+                </span>
+                <span
+                  style={{
+                    width: 34,
+                    height: 34,
+                    borderRadius: "50%",
+                    background: scoreColor(b.categoryScore),
+                    color: "#fff",
+                    fontWeight: 700,
+                    fontSize: "0.75rem",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    boxShadow: `0 2px 6px ${scoreColor(b.categoryScore)}60`,
+                  }}
+                >
+                  {b.categoryScore}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sustainability verdict section */}
+        <div
+          style={{
+            width: "100%",
+            background: "#8ee4c6",
+            borderRadius: 18,
+            padding: "28px 20px",
+            textAlign: "center",
+            marginBottom: 16,
+          }}
+        >
+          {/* Large score badge */}
+          <div style={{ marginBottom: 14 }}>
+            <GradeBadge score={greenGrade.score} color={greenGrade.color} size="large" />
+          </div>
+
+          {/* Sustainability message */}
+          <h3
+            style={{
+              color: "#1a3a2a",
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 700,
+              fontSize: "1.1rem",
+              marginBottom: 20,
+            }}
+          >
+            {sustainabilityLabel(greenGrade.score)}
+          </h3>
+
+          {/* Click to Buy button */}
+          {product.purchaseLinks && product.purchaseLinks.length > 0 ? (
+            <a
+              href={product.purchaseLinks[0].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "block",
+                padding: "13px 0",
+                borderRadius: 28,
+                background: "#27ae60",
+                color: "#fff",
+                fontSize: "0.95rem",
+                fontWeight: 700,
+                textDecoration: "none",
+                textAlign: "center",
+                marginBottom: 10,
+                boxShadow: "0 4px 12px rgba(39,174,96,0.3)",
+              }}
+            >
+              Click to Buy
+            </a>
+          ) : (
+            isAuthenticated && (
+              <button
+                onClick={handleLogPurchase}
+                disabled={loggedPurchase}
+                style={{
+                  width: "100%",
+                  padding: "13px 0",
+                  borderRadius: 28,
+                  border: "none",
+                  background: loggedPurchase ? "#1a5e3a" : "#27ae60",
+                  color: "#fff",
+                  fontSize: "0.95rem",
+                  fontWeight: 700,
+                  cursor: loggedPurchase ? "default" : "pointer",
+                  marginBottom: 10,
+                  boxShadow: "0 4px 12px rgba(39,174,96,0.3)",
+                }}
+              >
+                {loggedPurchase ? "\u2713 Logged to Carbon Tracker" : "Log Purchase"}
+              </button>
+            )
+          )}
+
+          {/* Stats for Nerds button */}
+          <button
+            onClick={() => setShowStats(!showStats)}
+            style={{
+              width: "100%",
+              padding: "13px 0",
+              borderRadius: 28,
+              border: "none",
+              background: "#1a5e3a",
+              color: "#fff",
+              fontSize: "0.95rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(26,94,58,0.3)",
+            }}
+          >
+            Stats for Nerds
+          </button>
+        </div>
+
+        {/* Stats for Nerds expandable section */}
+        {showStats && (
+          <div
+            style={{
+              width: "100%",
+              background: "rgba(255,255,255,0.1)",
+              backdropFilter: "blur(12px)",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+              animation: "fadeInUp 0.3s ease",
+            }}
+          >
+            <h4
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 12,
+                fontSize: "0.95rem",
+              }}
+            >
+              Detailed Stats
+            </h4>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  color: "rgba(255,255,255,0.8)",
+                  fontSize: "0.85rem",
+                }}
+              >
+                <span>Total Emissions</span>
+                <span style={{ fontWeight: 600 }}>
+                  {greenGrade.totalEmissions} kg CO{"\u2082"}e/kg
+                </span>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  color: "rgba(255,255,255,0.8)",
+                  fontSize: "0.85rem",
+                }}
+              >
+                <span>Overall Score</span>
+                <span style={{ fontWeight: 600 }}>{greenGrade.score} / 10</span>
+              </div>
+              {greenGrade.confidence !== undefined && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    color: "rgba(255,255,255,0.8)",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  <span>Confidence</span>
+                  <span style={{ fontWeight: 600 }}>
+                    {Math.round(greenGrade.confidence * 100)}%
+                  </span>
+                </div>
+              )}
+              {greenGrade.percentile !== undefined && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    color: "rgba(255,255,255,0.8)",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  <span>Percentile</span>
+                  <span style={{ fontWeight: 600 }}>
+                    Top {Math.round((1 - greenGrade.percentile) * 100)}%
+                  </span>
+                </div>
+              )}
+              {greenGrade.categoryRank && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    color: "rgba(255,255,255,0.8)",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  <span>Category Rank</span>
+                  <span style={{ fontWeight: 600 }}>{greenGrade.categoryRank}</span>
+                </div>
+              )}
+              {greenGrade.anomaly && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    color: "rgba(255,255,255,0.8)",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  <span>Anomaly Detection</span>
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      color: greenGrade.anomaly.isAnomaly ? "#e74c3c" : "#27ae60",
+                    }}
+                  >
+                    {greenGrade.anomaly.isAnomaly ? "Flagged" : "Normal"}
+                  </span>
+                </div>
+              )}
+              {greenGrade.anomaly && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    color: "rgba(255,255,255,0.8)",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  <span>Mahalanobis Distance</span>
+                  <span style={{ fontWeight: 600 }}>{greenGrade.anomaly.distance.toFixed(2)}</span>
+                </div>
+              )}
+
+              {/* Detailed breakdown */}
+              <div
+                style={{
+                  marginTop: 8,
+                  paddingTop: 12,
+                  borderTop: "1px solid rgba(255,255,255,0.15)",
+                }}
+              >
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "rgba(255,255,255,0.6)",
+                    marginBottom: 8,
+                    fontWeight: 600,
+                  }}
+                >
+                  Emission Breakdown
+                </div>
+                {greenGrade.breakdown.map((b) => (
+                  <div
+                    key={b.category}
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      color: "rgba(255,255,255,0.7)",
+                      fontSize: "0.8rem",
+                      padding: "4px 0",
+                    }}
+                  >
+                    <span>{CATEGORY_LABELS[b.category] || b.category}</span>
+                    <span>
+                      {b.emission} / {b.maxReference} kg CO{"\u2082"}e
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Description */}
         <div
           style={{
-            background: isDark ? "#162419" : "#fff",
-            borderRadius: 14,
-            padding: 20,
-            marginTop: -20,
-            boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
-            animation: "fadeInUp 0.4s ease",
+            width: "100%",
+            background: "rgba(255,255,255,0.08)",
+            backdropFilter: "blur(12px)",
+            borderRadius: 18,
+            padding: "16px 20px",
+            marginBottom: 16,
           }}
         >
-          <p style={{ fontSize: "0.9rem", color: isDark ? "#b0c4b1" : "#555", lineHeight: 1.7 }}>
+          <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.88rem", lineHeight: 1.7 }}>
             {product.description}
           </p>
-          <div style={{ display: "flex", gap: 12, marginTop: 14, flexWrap: "wrap" }}>
-            <div
-              style={{
-                padding: "8px 14px",
-                borderRadius: 10,
-                background: isDark ? "#1c2e22" : "#edf7f0",
-                fontSize: "0.82rem",
-                color: isDark ? "#95d5b2" : "#2d6a4f",
-                fontWeight: 600,
-              }}
-            >
-              Score: {greenGrade.score}/10
-            </div>
-            <div
-              style={{
-                padding: "8px 14px",
-                borderRadius: 10,
-                background: isDark ? "#1c2e22" : "#edf7f0",
-                fontSize: "0.82rem",
-                color: isDark ? "#95d5b2" : "#2d6a4f",
-                fontWeight: 600,
-              }}
-            >
-              {greenGrade.totalEmissions} kg CO{"\u2082"}e/kg
-            </div>
-          </div>
-
-          {/* Carbon logging button */}
-          {isAuthenticated && (
-            <button
-              onClick={handleLogPurchase}
-              disabled={loggedPurchase}
-              style={{
-                marginTop: 14,
-                padding: "10px 18px",
-                borderRadius: 10,
-                border: "none",
-                cursor: loggedPurchase ? "default" : "pointer",
-                background: loggedPurchase
-                  ? isDark
-                    ? "#1c2e22"
-                    : "#edf7f0"
-                  : "linear-gradient(135deg, #2d6a4f, #40916c)",
-                color: loggedPurchase ? (isDark ? "#52b788" : "#2d6a4f") : "#fff",
-                fontWeight: 600,
-                fontSize: "0.85rem",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                transition: "all 0.2s",
-              }}
-            >
-              {loggedPurchase ? "\u2713 Logged to Carbon Tracker" : "\uD83C\uDF0D Log Purchase"}
-            </button>
-          )}
         </div>
 
-        {/* Breakdown */}
-        <div
-          style={{
-            background: isDark ? "#162419" : "#fff",
-            borderRadius: 14,
-            padding: 24,
-            marginTop: 16,
-            boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
-            animation: "fadeInUp 0.4s ease 0.1s both",
-          }}
-        >
-          <h3 style={{ marginBottom: 4, fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
-            Supply Chain Breakdown
-          </h3>
-          <p style={{ fontSize: "0.85rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}>
-            Score per stage of the supply chain, weighted by environmental significance.
-          </p>
-          <GradeBreakdown
-            breakdown={greenGrade.breakdown}
-            totalEmissions={greenGrade.totalEmissions}
-            totalScore={greenGrade.score}
-          />
+        {/* Back button */}
+        <div style={{ width: "100%", maxWidth: 380, padding: "0 16px" }}>
+          <button
+            onClick={() => navigate("/")}
+            style={{
+              padding: "13px 32px",
+              borderRadius: 10,
+              border: "none",
+              background: "#27ae60",
+              color: "#fff",
+              fontSize: "0.95rem",
+              fontWeight: 700,
+              cursor: "pointer",
+              boxShadow: "0 4px 12px rgba(39,174,96,0.3)",
+            }}
+          >
+            Back
+          </button>
         </div>
-
-        {/* Purchase links */}
-        {product.purchaseLinks && product.purchaseLinks.length > 0 && (
-          <div
-            style={{
-              background: isDark ? "#162419" : "#fff",
-              borderRadius: 14,
-              padding: 24,
-              marginTop: 16,
-              boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
-              animation: "fadeInUp 0.4s ease 0.2s both",
-            }}
-          >
-            <h4 style={{ marginBottom: 10, fontFamily: "'Outfit', sans-serif" }}>
-              Buy This Product
-            </h4>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              {product.purchaseLinks.map((link) => (
-                <a
-                  key={link.seller}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    padding: "10px 20px",
-                    background: "linear-gradient(135deg, #2d6a4f, #40916c)",
-                    color: "#fff",
-                    borderRadius: 10,
-                    fontSize: "0.88rem",
-                    textDecoration: "none",
-                    fontWeight: 600,
-                    boxShadow: "0 2px 8px rgba(45,106,79,0.3)",
-                  }}
-                >
-                  {link.seller} {"\u2192"}
-                </a>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Reviews */}
-        <ReviewSection productId={product.id} />
-
-        {/* Recommendations */}
-        {recommendations.length > 0 && (
-          <div
-            style={{
-              background: isDark ? "#162419" : "#fff",
-              borderRadius: 14,
-              padding: 24,
-              marginTop: 16,
-              boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
-              animation: "fadeInUp 0.4s ease 0.3s both",
-            }}
-          >
-            <h4 style={{ marginBottom: 4, fontFamily: "'Outfit', sans-serif", fontWeight: 700 }}>
-              {"\uD83C\uDF31"} Greener Alternatives
-            </h4>
-            <p
-              style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 14 }}
-            >
-              Other {product.category.toLowerCase()} products with top sustainability scores.
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-              {recommendations.map((rec, i) => {
-                const recAccent =
-                  rec.greenGrade.color === "green"
-                    ? "#52b788"
-                    : rec.greenGrade.color === "yellow"
-                      ? "#e9c46a"
-                      : "#e63946";
-                return (
-                  <button
-                    key={rec.id}
-                    onClick={() => navigate(`/product/${rec.id}`)}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 12,
-                      padding: "10px 14px",
-                      background: isDark ? "#1c2e22" : "#f9fafb",
-                      borderRadius: 12,
-                      border: "1px solid " + (isDark ? "#2d4a35" : "#eee"),
-                      cursor: "pointer",
-                      transition: "all 0.2s ease",
-                      textAlign: "left",
-                      width: "100%",
-                      animation: `fadeInUp 0.3s ease ${i * 60}ms both`,
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = recAccent)}
-                    onMouseLeave={(e) =>
-                      (e.currentTarget.style.borderColor = isDark ? "#2d4a35" : "#eee")
-                    }
-                  >
-                    <ProductImage name={rec.name} category={rec.category} size={38} />
-                    <div
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 8,
-                        background: recAccent + "22",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: 700,
-                        fontSize: "0.8rem",
-                        color: recAccent,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {rec.greenGrade.score}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontWeight: 600,
-                          fontSize: "0.88rem",
-                          color: isDark ? "#e8f5e9" : "#333",
-                        }}
-                      >
-                        {rec.name}
-                      </div>
-                      <div style={{ fontSize: "0.78rem", color: isDark ? "#7a9a7e" : "#888" }}>
-                        {rec.brand}
-                      </div>
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "0.75rem",
-                        color: isDark ? "#7a9a7e" : "#aaa",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {rec.greenGrade.totalEmissions} kg CO{"\u2082"}e
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
