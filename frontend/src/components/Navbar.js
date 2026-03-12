@@ -49,7 +49,7 @@ export default function Navbar() {
   return (
     <nav
       style={{
-        background: "linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)",
+        background: "#0d1f17",
         color: "#fff",
         padding: "0 24px",
         display: "flex",
@@ -58,8 +58,8 @@ export default function Navbar() {
         position: "sticky",
         top: 0,
         zIndex: 100,
-        height: 60,
-        boxShadow: "0 2px 20px rgba(27, 67, 50, 0.3)",
+        height: 56,
+        borderBottom: "1px solid rgba(45,106,79,0.2)",
       }}
       role="navigation"
       aria-label="Main navigation"
@@ -215,7 +215,7 @@ export default function Navbar() {
             top: "100%",
             left: 0,
             right: 0,
-            background: "linear-gradient(180deg, #2d6a4f 0%, #1b4332 100%)",
+            background: "#0d1f17",
             padding: "8px 16px 16px",
             flexDirection: "column",
             gap: 4,
