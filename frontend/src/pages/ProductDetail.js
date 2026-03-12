@@ -5,6 +5,7 @@ import GradeBadge from "../components/GradeBadge";
 import ProductImage from "../components/ProductImage";
 import { useAuth } from "../context/AuthContext";
 import { isFavorited, toggleFavorite } from "../utils/favorites";
+import { Link } from "react-router-dom";
 
 const scoreColor = (score) => {
   if (score >= 7) return "#27ae60";
@@ -28,6 +29,18 @@ const sustainabilityLabel = (score) => {
   if (score >= 4) return "This Product Has Moderate Sustainability";
   if (score >= 2) return "This Product is Highly Unsustainable";
   return "This Product is Extremely Unsustainable";
+};
+
+const confidenceLabel = (conf) => {
+  if (conf >= 0.8) return { text: "High Confidence", color: "#27ae60", bg: "rgba(39,174,96,0.15)" };
+  if (conf >= 0.5) return { text: "Moderate Confidence", color: "#f39c12", bg: "rgba(243,156,18,0.15)" };
+  return { text: "Low Confidence", color: "#e74c3c", bg: "rgba(231,57,60,0.15)" };
+};
+
+const tierLabel = (tier) => {
+  if (tier === 1) return "Verified LCA Data";
+  if (tier === 2) return "Aggregated Database";
+  return "Estimated";
 };
 
 /* Decorative green blob for top-left corner */
@@ -366,6 +379,45 @@ export default function ProductDetail() {
             </span>
           </div>
 
+          {/* Data confidence badge */}
+          {greenGrade.dataConfidence !== undefined && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 8,
+                marginBottom: 16,
+                padding: "8px 14px",
+                borderRadius: 20,
+                background: confidenceLabel(greenGrade.dataConfidence).bg,
+                border: `1px solid ${confidenceLabel(greenGrade.dataConfidence).color}30`,
+              }}
+            >
+              <span
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background: confidenceLabel(greenGrade.dataConfidence).color,
+                  display: "inline-block",
+                }}
+              />
+              <span
+                style={{
+                  color: confidenceLabel(greenGrade.dataConfidence).color,
+                  fontSize: "0.78rem",
+                  fontWeight: 600,
+                }}
+              >
+                {confidenceLabel(greenGrade.dataConfidence).text}
+              </span>
+              <span style={{ color: "#b8d4c0", fontSize: "0.72rem" }}>
+                {tierLabel(greenGrade.dataTier)}
+              </span>
+            </div>
+          )}
+
           {/* Category breakdown rows */}
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {greenGrade.breakdown.map((b) => (
@@ -628,6 +680,154 @@ export default function ProductDetail() {
                 >
                   <span>Mahalanobis Distance</span>
                   <span style={{ fontWeight: 600 }}>{greenGrade.anomaly.distance.toFixed(2)}</span>
+                </div>
+              )}
+
+              {/* Data provenance section */}
+              {greenGrade.dataConfidence !== undefined && (
+                <div
+                  style={{
+                    marginTop: 8,
+                    paddingTop: 12,
+                    borderTop: "1px solid rgba(255,255,255,0.15)",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: "0.8rem",
+                      color: "#b8d4c0",
+                      marginBottom: 8,
+                      fontWeight: 600,
+                    }}
+                  >
+                    Data Provenance
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      color: "#ffffff",
+                      fontSize: "0.85rem",
+                      padding: "4px 0",
+                    }}
+                  >
+                    <span>Data Confidence</span>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        color: confidenceLabel(greenGrade.dataConfidence).color,
+                      }}
+                    >
+                      {Math.round(greenGrade.dataConfidence * 100)}%
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      color: "#ffffff",
+                      fontSize: "0.85rem",
+                      padding: "4px 0",
+                    }}
+                  >
+                    <span>Data Tier</span>
+                    <span style={{ fontWeight: 600 }}>
+                      Tier {greenGrade.dataTier} ({tierLabel(greenGrade.dataTier)})
+                    </span>
+                  </div>
+                  {greenGrade.referenceProduct && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        color: "#ffffff",
+                        fontSize: "0.85rem",
+                        padding: "4px 0",
+                      }}
+                    >
+                      <span>Reference Product</span>
+                      <span style={{ fontWeight: 600, textTransform: "capitalize" }}>
+                        {greenGrade.referenceProduct.replace(/_/g, " ")}
+                      </span>
+                    </div>
+                  )}
+                  {greenGrade.agreementWithReference !== undefined && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        color: "#ffffff",
+                        fontSize: "0.85rem",
+                        padding: "4px 0",
+                      }}
+                    >
+                      <span>Agreement with Reference</span>
+                      <span style={{ fontWeight: 600 }}>
+                        {Math.round(greenGrade.agreementWithReference * 100)}%
+                      </span>
+                    </div>
+                  )}
+                  {greenGrade.sourceCount !== undefined && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        color: "#ffffff",
+                        fontSize: "0.85rem",
+                        padding: "4px 0",
+                      }}
+                    >
+                      <span>Sources</span>
+                      <span style={{ fontWeight: 600 }}>
+                        {greenGrade.sourceCount} source{greenGrade.sourceCount !== 1 ? "s" : ""}
+                      </span>
+                    </div>
+                  )}
+                  {greenGrade.lastVerified && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        color: "#ffffff",
+                        fontSize: "0.85rem",
+                        padding: "4px 0",
+                      }}
+                    >
+                      <span>Last Verified</span>
+                      <span style={{ fontWeight: 600 }}>{greenGrade.lastVerified}</span>
+                    </div>
+                  )}
+                  {greenGrade.sources && greenGrade.sources.length > 0 && (
+                    <div style={{ marginTop: 8 }}>
+                      <div style={{ fontSize: "0.75rem", color: "#7a9a7e", marginBottom: 4 }}>
+                        Data sourced from:
+                      </div>
+                      {greenGrade.sources.map((s, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            fontSize: "0.75rem",
+                            color: "#d4e8da",
+                            padding: "2px 0",
+                          }}
+                        >
+                          {s.name} ({s.year})
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <Link
+                    to="/methodology"
+                    style={{
+                      display: "inline-block",
+                      marginTop: 8,
+                      fontSize: "0.75rem",
+                      color: "#52b788",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    View full methodology
+                  </Link>
                 </div>
               )}
 

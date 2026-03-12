@@ -14,6 +14,7 @@ const { cacheMiddleware } = require("./middleware/cache");
 const { swaggerSpec } = require("./swagger");
 const { getDb, closeDb } = require("./db/schema");
 const { trainModel } = require("./services/greengrade");
+const { getMethodology } = require("./services/dataProvenance");
 const products = require("./data/products.json");
 
 const app = express();
@@ -115,6 +116,10 @@ app.use(
 // ---------- Routes ----------
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", service: "Consciobite API", version: "2.0.0" });
+});
+
+app.get("/api/methodology", (_req, res) => {
+  res.json(getMethodology());
 });
 
 app.use("/api/products", cacheMiddleware(120), productRoutes);

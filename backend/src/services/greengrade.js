@@ -26,11 +26,14 @@
  *   6. Confidence signal                  – based on category sample size.
  *
  * Output is fully backward-compatible: { score, color, totalEmissions, breakdown }
- * with optional new fields: confidence, percentile, categoryRank, anomaly.
+ * with optional new fields: confidence, percentile, categoryRank, anomaly,
+ * and provenance fields: dataConfidence, dataTier, sources.
  *
  * Score 10 = most sustainable, 0 = least sustainable.
  * Color: green (7-10), yellow (4-6.9), red (0-3.9)
  */
+
+const { getProductProvenance } = require("./dataProvenance");
 
 const EMISSION_KEYS = [
   "landUseChange",
@@ -153,7 +156,7 @@ function trainModel(products) {
 
 // ─── Scoring ────────────────────────────────────────────────────────────────
 
-function calculateGreenGrade(emissions, productCategory) {
+function calculateGreenGrade(emissions, productCategory, product) {
   const totalEmissions =
     Math.round(EMISSION_KEYS.reduce((sum, k) => sum + (emissions[k] || 0), 0) * 100) / 100;
 
@@ -232,6 +235,11 @@ function calculateGreenGrade(emissions, productCategory) {
     }
   }
 
+  // --- Data provenance ---
+  const provenance = product
+    ? getProductProvenance(product, product.source)
+    : null;
+
   return {
     score,
     color: getColor(score),
@@ -241,6 +249,16 @@ function calculateGreenGrade(emissions, productCategory) {
     percentile,
     categoryRank,
     anomaly,
+    ...(provenance && {
+      dataConfidence: provenance.dataConfidence,
+      dataTier: provenance.dataTier,
+      dataTierLabel: provenance.dataTierLabel,
+      sources: provenance.sources,
+      sourceCount: provenance.sourceCount,
+      referenceProduct: provenance.referenceProduct,
+      agreementWithReference: provenance.agreementWithReference,
+      lastVerified: provenance.lastVerified,
+    }),
   };
 }
 

@@ -20,6 +20,7 @@ const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const CarbonTracker = lazy(() => import("./pages/CarbonTracker"));
 const Recipes = lazy(() => import("./pages/Recipes"));
+const Methodology = lazy(() => import("./pages/Methodology"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 function PageLoader() {
@@ -64,6 +65,7 @@ export default function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/carbon" element={<CarbonTracker />} />
               <Route path="/recipes" element={<Recipes />} />
+              <Route path="/methodology" element={<Methodology />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
