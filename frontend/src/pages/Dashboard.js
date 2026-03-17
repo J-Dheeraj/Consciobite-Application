@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchStats, fetchProducts } from "../services/api";
+import { useTheme } from "../context/ThemeContext";
 import {
   BarChart,
   Bar,
@@ -41,17 +42,18 @@ const PIE_COLORS = [
   "#e63946",
 ];
 
-const CustomTooltip = ({ active, payload, label }) => {
+const CustomTooltip = ({ active, payload, label, isDark }) => {
   if (!active || !payload?.length) return null;
   return (
     <div
       style={{
-        background: "#fff",
+        background: isDark ? "#14352a" : "#fff",
         padding: "10px 14px",
         borderRadius: 10,
         boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
-        border: "1px solid #eee",
+        border: "1px solid " + (isDark ? "#2d4a35" : "#eee"),
         fontSize: "0.82rem",
+        color: isDark ? "#e8f5e9" : "inherit",
       }}
     >
       <div style={{ fontWeight: 600, marginBottom: 4 }}>{label}</div>
@@ -67,14 +69,14 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-function StatCard({ icon, label, value, subtext, color }) {
+function StatCard({ icon, label, value, subtext, color, isDark }) {
   return (
     <div
       style={{
-        background: "#fff",
+        background: isDark ? "#14352a" : "#fff",
         borderRadius: 14,
         padding: "20px 18px",
-        boxShadow: "0 2px 8px rgba(27,67,50,0.06)",
+        boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
         textAlign: "center",
       }}
     >
@@ -84,20 +86,31 @@ function StatCard({ icon, label, value, subtext, color }) {
           fontFamily: "'Outfit', sans-serif",
           fontWeight: 800,
           fontSize: "1.8rem",
-          color: color || "#2d6a4f",
+          color: color || (isDark ? "#95d5b2" : "#2d6a4f"),
         }}
       >
         {value}
       </div>
-      <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "#555", marginBottom: 2 }}>
+      <div
+        style={{
+          fontSize: "0.82rem",
+          fontWeight: 600,
+          color: isDark ? "#b0c4b1" : "#555",
+          marginBottom: 2,
+        }}
+      >
         {label}
       </div>
-      {subtext && <div style={{ fontSize: "0.75rem", color: "#888" }}>{subtext}</div>}
+      {subtext && (
+        <div style={{ fontSize: "0.75rem", color: isDark ? "#7a9a7e" : "#888" }}>{subtext}</div>
+      )}
     </div>
   );
 }
 
 export default function Dashboard() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [stats, setStats] = useState(null);
   const [topProducts, setTopProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -138,7 +151,7 @@ export default function Dashboard() {
         <div
           style={{
             padding: 24,
-            background: "#fef2f2",
+            background: isDark ? "#2a1519" : "#fef2f2",
             borderRadius: 14,
             color: "#e63946",
             textAlign: "center",
@@ -192,7 +205,7 @@ export default function Dashboard() {
       {/* Hero */}
       <div
         style={{
-          background: "linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)",
+          background: "#0d2818",
           padding: "36px 24px 44px",
           textAlign: "center",
         }}
@@ -226,57 +239,72 @@ export default function Dashboard() {
             animation: "fadeInUp 0.4s ease",
           }}
         >
-          <StatCard icon={"\uD83C\uDF3F"} label="Total Products" value={totalProducts} />
+          <StatCard
+            icon={"\uD83C\uDF3F"}
+            label="Total Products"
+            value={totalProducts}
+            isDark={isDark}
+          />
           <StatCard
             icon={"\u2B50"}
             label="Avg GreenGrade"
             value={overallAvgScore}
             subtext="out of 10"
-            color={parseFloat(overallAvgScore) >= 7 ? "#2d6a4f" : "#e9c46a"}
+            color={parseFloat(overallAvgScore) >= 7 ? (isDark ? "#95d5b2" : "#2d6a4f") : "#e9c46a"}
+            isDark={isDark}
           />
           <StatCard
             icon={"\uD83C\uDF0D"}
             label="Avg Emissions"
             value={overallAvgEmissions}
             subtext="kg CO\u2082e per product"
+            isDark={isDark}
           />
           <StatCard
             icon={"\uD83C\uDFC6"}
             label="Best Category"
             value={bestCategory.category}
             subtext={`Score: ${bestCategory.avgScore}`}
+            isDark={isDark}
           />
         </div>
 
         {/* Score by Category Chart */}
         <div
           style={{
-            background: "#fff",
+            background: isDark ? "#14352a" : "#fff",
             borderRadius: 14,
             padding: 24,
-            boxShadow: "0 2px 8px rgba(27,67,50,0.06)",
+            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
             marginBottom: 16,
             animation: "fadeInUp 0.4s ease 0.1s both",
           }}
         >
-          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, marginBottom: 4 }}>
+          <h3
+            style={{
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 700,
+              marginBottom: 4,
+              color: isDark ? "#e8f5e9" : "inherit",
+            }}
+          >
             Average GreenGrade by Category
           </h3>
-          <p style={{ fontSize: "0.82rem", color: "#888", marginBottom: 16 }}>
+          <p style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}>
             Higher scores indicate more sustainable products.
           </p>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={scoreChartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#2d4a35" : "#f0f0f0"} />
               <XAxis
                 dataKey="name"
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: isDark ? "#7a9a7e" : "#666" }}
                 angle={-35}
                 textAnchor="end"
                 height={70}
               />
-              <YAxis domain={[0, 10]} tick={{ fontSize: 11 }} />
-              <Tooltip content={<CustomTooltip />} />
+              <YAxis domain={[0, 10]} tick={{ fontSize: 11, fill: isDark ? "#7a9a7e" : "#666" }} />
+              <Tooltip content={<CustomTooltip isDark={isDark} />} />
               <Bar dataKey="score" name="Avg Score" radius={[6, 6, 0, 0]}>
                 {scoreChartData.map((entry, i) => (
                   <Cell key={i} fill={entry.fill} />
@@ -298,17 +326,26 @@ export default function Dashboard() {
           {/* Emissions Chart */}
           <div
             style={{
-              background: "#fff",
+              background: isDark ? "#14352a" : "#fff",
               borderRadius: 14,
               padding: 24,
-              boxShadow: "0 2px 8px rgba(27,67,50,0.06)",
+              boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
               animation: "fadeInUp 0.4s ease 0.15s both",
             }}
           >
-            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, marginBottom: 4 }}>
+            <h3
+              style={{
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 4,
+                color: isDark ? "#e8f5e9" : "inherit",
+              }}
+            >
               Average Emissions
             </h3>
-            <p style={{ fontSize: "0.82rem", color: "#888", marginBottom: 16 }}>
+            <p
+              style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}
+            >
               kg CO{"\u2082"}e per product by category.
             </p>
             <ResponsiveContainer width="100%" height={280}>
@@ -317,10 +354,19 @@ export default function Dashboard() {
                 layout="vertical"
                 margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize: 11 }} />
-                <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} width={80} />
-                <Tooltip content={<CustomTooltip />} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? "#2d4a35" : "#f0f0f0"}
+                  horizontal={false}
+                />
+                <XAxis type="number" tick={{ fontSize: 11, fill: isDark ? "#7a9a7e" : "#666" }} />
+                <YAxis
+                  dataKey="name"
+                  type="category"
+                  tick={{ fontSize: 11, fill: isDark ? "#7a9a7e" : "#666" }}
+                  width={80}
+                />
+                <Tooltip content={<CustomTooltip isDark={isDark} />} />
                 <Bar
                   dataKey="emissions"
                   name="Avg Emissions"
@@ -334,17 +380,26 @@ export default function Dashboard() {
           {/* Product Distribution Pie */}
           <div
             style={{
-              background: "#fff",
+              background: isDark ? "#14352a" : "#fff",
               borderRadius: 14,
               padding: 24,
-              boxShadow: "0 2px 8px rgba(27,67,50,0.06)",
+              boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
               animation: "fadeInUp 0.4s ease 0.2s both",
             }}
           >
-            <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, marginBottom: 4 }}>
+            <h3
+              style={{
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 4,
+                color: isDark ? "#e8f5e9" : "inherit",
+              }}
+            >
               Product Distribution
             </h3>
-            <p style={{ fontSize: "0.82rem", color: "#888", marginBottom: 16 }}>
+            <p
+              style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}
+            >
               Number of products by category.
             </p>
             <ResponsiveContainer width="100%" height={280}>
@@ -365,7 +420,7 @@ export default function Dashboard() {
                     <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip isDark={isDark} />} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -374,24 +429,34 @@ export default function Dashboard() {
         {/* Radar Chart */}
         <div
           style={{
-            background: "#fff",
+            background: isDark ? "#14352a" : "#fff",
             borderRadius: 14,
             padding: 24,
-            boxShadow: "0 2px 8px rgba(27,67,50,0.06)",
+            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
             marginBottom: 16,
             animation: "fadeInUp 0.4s ease 0.25s both",
           }}
         >
-          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, marginBottom: 4 }}>
+          <h3
+            style={{
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 700,
+              marginBottom: 4,
+              color: isDark ? "#e8f5e9" : "inherit",
+            }}
+          >
             Category Score Radar
           </h3>
-          <p style={{ fontSize: "0.82rem", color: "#888", marginBottom: 16 }}>
+          <p style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}>
             Visual overview of sustainability scores across categories.
           </p>
           <ResponsiveContainer width="100%" height={320}>
             <RadarChart cx="50%" cy="50%" outerRadius="70%" data={radarData}>
-              <PolarGrid stroke="#e0e0e0" />
-              <PolarAngleAxis dataKey="category" tick={{ fontSize: 11, fill: "#555" }} />
+              <PolarGrid stroke={isDark ? "#2d4a35" : "#e0e0e0"} />
+              <PolarAngleAxis
+                dataKey="category"
+                tick={{ fontSize: 11, fill: isDark ? "#b0c4b1" : "#555" }}
+              />
               <Radar
                 name="Avg Score"
                 dataKey="score"
@@ -400,7 +465,7 @@ export default function Dashboard() {
                 fillOpacity={0.4}
                 strokeWidth={2}
               />
-              <Tooltip content={<CustomTooltip />} />
+              <Tooltip content={<CustomTooltip isDark={isDark} />} />
             </RadarChart>
           </ResponsiveContainer>
         </div>
@@ -408,28 +473,35 @@ export default function Dashboard() {
         {/* Top Products Table */}
         <div
           style={{
-            background: "#fff",
+            background: isDark ? "#14352a" : "#fff",
             borderRadius: 14,
             padding: 24,
-            boxShadow: "0 2px 8px rgba(27,67,50,0.06)",
+            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
             animation: "fadeInUp 0.4s ease 0.3s both",
           }}
         >
-          <h3 style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, marginBottom: 4 }}>
+          <h3
+            style={{
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 700,
+              marginBottom: 4,
+              color: isDark ? "#e8f5e9" : "inherit",
+            }}
+          >
             Top 10 Greenest Products
           </h3>
-          <p style={{ fontSize: "0.82rem", color: "#888", marginBottom: 16 }}>
+          <p style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}>
             Products with the highest GreenGrade scores.
           </p>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
               <thead>
-                <tr style={{ borderBottom: "2px solid #edf7f0" }}>
+                <tr style={{ borderBottom: "2px solid " + (isDark ? "#2d4a35" : "#edf7f0") }}>
                   <th
                     style={{
                       textAlign: "left",
                       padding: "10px 8px",
-                      color: "#2d6a4f",
+                      color: isDark ? "#95d5b2" : "#2d6a4f",
                       fontWeight: 700,
                     }}
                   >
@@ -439,7 +511,7 @@ export default function Dashboard() {
                     style={{
                       textAlign: "left",
                       padding: "10px 8px",
-                      color: "#2d6a4f",
+                      color: isDark ? "#95d5b2" : "#2d6a4f",
                       fontWeight: 700,
                     }}
                   >
@@ -449,7 +521,7 @@ export default function Dashboard() {
                     style={{
                       textAlign: "left",
                       padding: "10px 8px",
-                      color: "#2d6a4f",
+                      color: isDark ? "#95d5b2" : "#2d6a4f",
                       fontWeight: 700,
                     }}
                   >
@@ -459,7 +531,7 @@ export default function Dashboard() {
                     style={{
                       textAlign: "left",
                       padding: "10px 8px",
-                      color: "#2d6a4f",
+                      color: isDark ? "#95d5b2" : "#2d6a4f",
                       fontWeight: 700,
                     }}
                   >
@@ -469,7 +541,7 @@ export default function Dashboard() {
                     style={{
                       textAlign: "right",
                       padding: "10px 8px",
-                      color: "#2d6a4f",
+                      color: isDark ? "#95d5b2" : "#2d6a4f",
                       fontWeight: 700,
                     }}
                   >
@@ -479,7 +551,7 @@ export default function Dashboard() {
                     style={{
                       textAlign: "right",
                       padding: "10px 8px",
-                      color: "#2d6a4f",
+                      color: isDark ? "#95d5b2" : "#2d6a4f",
                       fontWeight: 700,
                     }}
                   >
@@ -491,7 +563,10 @@ export default function Dashboard() {
                 {topProducts.map((p, i) => (
                   <tr
                     key={p.id}
-                    style={{ borderBottom: "1px solid #f5f5f5", transition: "background 0.15s" }}
+                    style={{
+                      borderBottom: "1px solid " + (isDark ? "#2d4a35" : "#f5f5f5"),
+                      transition: "background 0.15s",
+                    }}
                   >
                     <td
                       style={{
@@ -502,8 +577,18 @@ export default function Dashboard() {
                     >
                       {i + 1}
                     </td>
-                    <td style={{ padding: "10px 8px", fontWeight: 500 }}>{p.name}</td>
-                    <td style={{ padding: "10px 8px", color: "#666" }}>{p.brand}</td>
+                    <td
+                      style={{
+                        padding: "10px 8px",
+                        fontWeight: 500,
+                        color: isDark ? "#e8f5e9" : "inherit",
+                      }}
+                    >
+                      {p.name}
+                    </td>
+                    <td style={{ padding: "10px 8px", color: isDark ? "#b0c4b1" : "#666" }}>
+                      {p.brand}
+                    </td>
                     <td style={{ padding: "10px 8px" }}>
                       <span style={{ display: "inline-flex", alignItems: "center", gap: 4 }}>
                         <span style={{ fontSize: "0.8rem" }}>
@@ -519,14 +604,28 @@ export default function Dashboard() {
                           borderRadius: 20,
                           fontWeight: 600,
                           fontSize: "0.8rem",
-                          background: p.greenGrade.score >= 7 ? "#edf7f0" : "#fff8e1",
-                          color: p.greenGrade.score >= 7 ? "#2d6a4f" : "#b45309",
+                          background:
+                            p.greenGrade.score >= 7
+                              ? isDark
+                                ? "#1c3a2a"
+                                : "#edf7f0"
+                              : isDark
+                                ? "#3a3420"
+                                : "#fff8e1",
+                          color:
+                            p.greenGrade.score >= 7 ? (isDark ? "#95d5b2" : "#2d6a4f") : "#b45309",
                         }}
                       >
                         {p.greenGrade.score}
                       </span>
                     </td>
-                    <td style={{ padding: "10px 8px", textAlign: "right", color: "#666" }}>
+                    <td
+                      style={{
+                        padding: "10px 8px",
+                        textAlign: "right",
+                        color: isDark ? "#b0c4b1" : "#666",
+                      }}
+                    >
                       {p.greenGrade.totalEmissions}
                     </td>
                   </tr>

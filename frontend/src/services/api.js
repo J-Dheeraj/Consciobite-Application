@@ -141,3 +141,8 @@ export async function fetchRecipes(tag) {
 export async function fetchRecipe(id) {
   return safeFetch(`${API_BASE}/recipes/${encodeURIComponent(id)}`);
 }
+
+// ---- Methodology ----
+export async function fetchMethodology() {
+  return safeFetch(`${API_BASE}/methodology`);
+}

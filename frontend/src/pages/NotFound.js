@@ -6,7 +6,7 @@ export default function NotFound() {
     <div style={{ animation: "fadeIn 0.4s ease" }}>
       <div
         style={{
-          background: "linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #40916c 100%)",
+          background: "#0d2818",
           padding: "80px 24px",
           textAlign: "center",
         }}

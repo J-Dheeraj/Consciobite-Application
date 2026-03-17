@@ -6,7 +6,7 @@ const { calculateGreenGrade } = require("../services/greengrade");
 const { logger } = require("../middleware/logger");
 
 function enrichProduct(product) {
-  const grade = calculateGreenGrade(product.emissions, product.category);
+  const grade = calculateGreenGrade(product.emissions, product.category, product);
   return { ...product, greenGrade: grade };
 }
 
