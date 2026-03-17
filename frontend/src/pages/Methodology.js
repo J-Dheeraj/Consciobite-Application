@@ -210,10 +210,18 @@ export default function Methodology() {
                 background: isDark ? "#1c2e22" : "#edf7f0",
               }}
             >
-              <div style={{ fontSize: "0.72rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 2 }}>
+              <div
+                style={{ fontSize: "0.72rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 2 }}
+              >
                 Method
               </div>
-              <div style={{ fontSize: "0.82rem", fontWeight: 600, color: isDark ? "#e8f5e9" : "#1a3a2a" }}>
+              <div
+                style={{
+                  fontSize: "0.82rem",
+                  fontWeight: 600,
+                  color: isDark ? "#e8f5e9" : "#1a3a2a",
+                }}
+              >
                 {data.algorithm.scoring.method}
               </div>
             </div>
@@ -224,10 +232,18 @@ export default function Methodology() {
                 background: isDark ? "#1c2e22" : "#edf7f0",
               }}
             >
-              <div style={{ fontSize: "0.72rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 2 }}>
+              <div
+                style={{ fontSize: "0.72rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 2 }}
+              >
                 Scale
               </div>
-              <div style={{ fontSize: "0.82rem", fontWeight: 600, color: isDark ? "#e8f5e9" : "#1a3a2a" }}>
+              <div
+                style={{
+                  fontSize: "0.82rem",
+                  fontWeight: 600,
+                  color: isDark ? "#e8f5e9" : "#1a3a2a",
+                }}
+              >
                 {data.algorithm.scoring.scale}
               </div>
             </div>
@@ -246,7 +262,14 @@ export default function Methodology() {
                     textAlign: "center",
                   }}
                 >
-                  <div style={{ fontWeight: 700, color: colorMap[color], fontSize: "0.85rem", textTransform: "capitalize" }}>
+                  <div
+                    style={{
+                      fontWeight: 700,
+                      color: colorMap[color],
+                      fontSize: "0.85rem",
+                      textTransform: "capitalize",
+                    }}
+                  >
                     {color}
                   </div>
                   <div style={{ fontSize: "0.75rem", color: textColor }}>{range}</div>
@@ -259,7 +282,8 @@ export default function Methodology() {
         {/* 7 Emission dimensions */}
         <SectionCard title="7 Emission Dimensions" isDark={isDark}>
           <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 14 }}>
-            Each product is evaluated across seven lifecycle stages, measured in kg CO{"\u2082"}e per kg of product.
+            Each product is evaluated across seven lifecycle stages, measured in kg CO{"\u2082"}e
+            per kg of product.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {data.algorithm.dimensions.map((dim) => (
@@ -366,7 +390,13 @@ export default function Methodology() {
                     }}
                   />
                   <div>
-                    <div style={{ fontWeight: 600, fontSize: "0.85rem", color: isDark ? "#e8f5e9" : "#1a3a2a" }}>
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "0.85rem",
+                        color: isDark ? "#e8f5e9" : "#1a3a2a",
+                      }}
+                    >
                       {level.label}{" "}
                       <span style={{ fontWeight: 400, color: textColor }}>({level.range})</span>
                     </div>
@@ -434,7 +464,14 @@ export default function Methodology() {
                     {source.reliability}
                   </span>
                 </div>
-                <p style={{ fontSize: "0.82rem", color: textColor, lineHeight: 1.5, marginBottom: 6 }}>
+                <p
+                  style={{
+                    fontSize: "0.82rem",
+                    color: textColor,
+                    lineHeight: 1.5,
+                    marginBottom: 6,
+                  }}
+                >
                   {source.methodology}
                 </p>
                 <p
@@ -476,7 +513,14 @@ export default function Methodology() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {data.references.map((ref, i) => (
               <div key={i}>
-                <p style={{ fontSize: "0.85rem", color: textColor, lineHeight: 1.6, marginBottom: 4 }}>
+                <p
+                  style={{
+                    fontSize: "0.85rem",
+                    color: textColor,
+                    lineHeight: 1.6,
+                    marginBottom: 4,
+                  }}
+                >
                   {ref.citation}
                 </p>
                 {ref.url && (

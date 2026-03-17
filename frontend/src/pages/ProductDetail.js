@@ -33,7 +33,8 @@ const sustainabilityLabel = (score) => {
 
 const confidenceLabel = (conf) => {
   if (conf >= 0.8) return { text: "High Confidence", color: "#27ae60", bg: "rgba(39,174,96,0.15)" };
-  if (conf >= 0.5) return { text: "Moderate Confidence", color: "#f39c12", bg: "rgba(243,156,18,0.15)" };
+  if (conf >= 0.5)
+    return { text: "Moderate Confidence", color: "#f39c12", bg: "rgba(243,156,18,0.15)" };
   return { text: "Low Confidence", color: "#e74c3c", bg: "rgba(231,57,60,0.15)" };
 };
 
@@ -282,9 +283,7 @@ export default function ProductDetail() {
                         display: "inline-block",
                       }}
                     />
-                    <span style={{ fontSize: "0.7rem", color: "#d4e8da" }}>
-                      {item.label}
-                    </span>
+                    <span style={{ fontSize: "0.7rem", color: "#d4e8da" }}>{item.label}</span>
                   </div>
                 ))}
               </div>
