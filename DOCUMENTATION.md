@@ -715,5 +715,5 @@ API documentation available at `http://localhost:4000/api/docs` after starting t
 
 ---
 
-*Built by the Consciobite team: Adrin, Sanjay, Karthikraj, Shanthosh, and Dheeraj.*
+*Built by the Consciobite team: Adrin, Sanjay, Karthikraj, Shanthosh, and Dheeraj*
 *Founded by five university friends bringing an interdisciplinary edge to sustainable food technology.*
