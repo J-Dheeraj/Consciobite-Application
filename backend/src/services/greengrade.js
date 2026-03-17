@@ -236,9 +236,7 @@ function calculateGreenGrade(emissions, productCategory, product) {
   }
 
   // --- Data provenance ---
-  const provenance = product
-    ? getProductProvenance(product, product.source)
-    : null;
+  const provenance = product ? getProductProvenance(product, product.source) : null;
 
   return {
     score,

@@ -36,15 +36,42 @@ const options = {
                 color: { type: "string", enum: ["green", "yellow", "red"] },
                 totalEmissions: { type: "number" },
                 breakdown: { type: "array" },
-                confidence: { type: "number", description: "Algorithm confidence based on category sample size (0-1)" },
-                dataConfidence: { type: "number", description: "Data provenance confidence score (0-1)" },
-                dataTier: { type: "integer", enum: [1, 2, 3], description: "Data quality tier: 1=verified LCA, 2=aggregated database, 3=estimated" },
-                dataTierLabel: { type: "string", enum: ["verified_lca", "aggregated_database", "estimated"] },
+                confidence: {
+                  type: "number",
+                  description: "Algorithm confidence based on category sample size (0-1)",
+                },
+                dataConfidence: {
+                  type: "number",
+                  description: "Data provenance confidence score (0-1)",
+                },
+                dataTier: {
+                  type: "integer",
+                  enum: [1, 2, 3],
+                  description:
+                    "Data quality tier: 1=verified LCA, 2=aggregated database, 3=estimated",
+                },
+                dataTierLabel: {
+                  type: "string",
+                  enum: ["verified_lca", "aggregated_database", "estimated"],
+                },
                 sources: { type: "array", description: "Data sources used for emissions data" },
-                sourceCount: { type: "integer", description: "Number of corroborating data sources" },
-                referenceProduct: { type: "string", nullable: true, description: "Matched reference product type from LCA research" },
-                agreementWithReference: { type: "number", description: "Agreement score with reference data (0-1)" },
-                lastVerified: { type: "string", description: "Date when emissions data was last verified" },
+                sourceCount: {
+                  type: "integer",
+                  description: "Number of corroborating data sources",
+                },
+                referenceProduct: {
+                  type: "string",
+                  nullable: true,
+                  description: "Matched reference product type from LCA research",
+                },
+                agreementWithReference: {
+                  type: "number",
+                  description: "Agreement score with reference data (0-1)",
+                },
+                lastVerified: {
+                  type: "string",
+                  description: "Date when emissions data was last verified",
+                },
               },
             },
           },
@@ -289,7 +316,8 @@ const options = {
         get: {
           tags: ["Methodology"],
           summary: "Get scoring methodology and data provenance documentation",
-          description: "Returns comprehensive documentation about the GreenGrade scoring algorithm, data sources, confidence scoring formula, data tiers, and known limitations.",
+          description:
+            "Returns comprehensive documentation about the GreenGrade scoring algorithm, data sources, confidence scoring formula, data tiers, and known limitations.",
           responses: {
             200: {
               description: "Methodology documentation",

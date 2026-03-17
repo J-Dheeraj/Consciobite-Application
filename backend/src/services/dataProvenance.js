@@ -20,29 +20,282 @@
 // These are median kg CO₂e per kg product across 38,700 farms worldwide.
 
 const POORE_NEMECEK_REFERENCE = {
-  beef: { total: 59.6, breakdown: { landUseChange: 16.3, animalFeed: 7.6, farm: 30.5, processing: 1.8, transport: 0.5, packaging: 0.4, retail: 0.3 } },
-  lamb: { total: 24.5, breakdown: { landUseChange: 7.5, animalFeed: 2.4, farm: 11.2, processing: 1.1, transport: 0.6, packaging: 0.4, retail: 0.3 } },
-  pork: { total: 7.6, breakdown: { landUseChange: 1.5, animalFeed: 2.7, farm: 2.0, processing: 0.5, transport: 0.4, packaging: 0.3, retail: 0.2 } },
-  chicken: { total: 6.9, breakdown: { landUseChange: 2.5, animalFeed: 1.8, farm: 1.3, processing: 0.6, transport: 0.4, packaging: 0.2, retail: 0.1 } },
-  fish_farmed: { total: 5.1, breakdown: { landUseChange: 0.5, animalFeed: 2.0, farm: 1.5, processing: 0.5, transport: 0.3, packaging: 0.2, retail: 0.1 } },
-  fish_wild: { total: 3.5, breakdown: { landUseChange: 0.0, animalFeed: 0.0, farm: 2.5, processing: 0.4, transport: 0.3, packaging: 0.2, retail: 0.1 } },
-  shrimp: { total: 11.8, breakdown: { landUseChange: 3.2, animalFeed: 1.5, farm: 5.3, processing: 0.8, transport: 0.5, packaging: 0.3, retail: 0.2 } },
-  eggs: { total: 4.7, breakdown: { landUseChange: 0.9, animalFeed: 1.5, farm: 1.3, processing: 0.4, transport: 0.3, packaging: 0.2, retail: 0.1 } },
-  milk: { total: 3.2, breakdown: { landUseChange: 0.5, animalFeed: 0.6, farm: 1.5, processing: 0.3, transport: 0.1, packaging: 0.1, retail: 0.1 } },
-  cheese: { total: 11.0, breakdown: { landUseChange: 2.8, animalFeed: 2.0, farm: 4.2, processing: 0.8, transport: 0.5, packaging: 0.4, retail: 0.3 } },
-  tofu: { total: 2.0, breakdown: { landUseChange: 0.3, animalFeed: 0.0, farm: 0.8, processing: 0.5, transport: 0.2, packaging: 0.1, retail: 0.1 } },
-  rice: { total: 4.0, breakdown: { landUseChange: 0.2, animalFeed: 0.0, farm: 2.5, processing: 0.5, transport: 0.4, packaging: 0.2, retail: 0.2 } },
-  wheat: { total: 1.4, breakdown: { landUseChange: 0.1, animalFeed: 0.0, farm: 0.8, processing: 0.2, transport: 0.1, packaging: 0.1, retail: 0.1 } },
-  tomatoes: { total: 1.4, breakdown: { landUseChange: 0.1, animalFeed: 0.0, farm: 0.7, processing: 0.2, transport: 0.2, packaging: 0.1, retail: 0.1 } },
-  potatoes: { total: 0.5, breakdown: { landUseChange: 0.0, animalFeed: 0.0, farm: 0.3, processing: 0.1, transport: 0.0, packaging: 0.0, retail: 0.1 } },
-  bananas: { total: 0.7, breakdown: { landUseChange: 0.1, animalFeed: 0.0, farm: 0.3, processing: 0.1, transport: 0.1, packaging: 0.1, retail: 0.0 } },
-  apples: { total: 0.4, breakdown: { landUseChange: 0.0, animalFeed: 0.0, farm: 0.2, processing: 0.1, transport: 0.1, packaging: 0.0, retail: 0.0 } },
-  nuts: { total: 0.3, breakdown: { landUseChange: -0.4, animalFeed: 0.0, farm: 0.4, processing: 0.2, transport: 0.1, packaging: 0.0, retail: 0.0 } },
-  coffee: { total: 16.5, breakdown: { landUseChange: 3.7, animalFeed: 0.0, farm: 10.4, processing: 1.2, transport: 0.5, packaging: 0.4, retail: 0.3 } },
-  chocolate: { total: 18.7, breakdown: { landUseChange: 8.5, animalFeed: 0.0, farm: 7.6, processing: 1.2, transport: 0.6, packaging: 0.5, retail: 0.3 } },
-  sugar: { total: 2.7, breakdown: { landUseChange: 1.2, animalFeed: 0.0, farm: 0.8, processing: 0.3, transport: 0.2, packaging: 0.1, retail: 0.1 } },
-  olive_oil: { total: 5.4, breakdown: { landUseChange: -0.4, animalFeed: 0.0, farm: 4.3, processing: 0.7, transport: 0.4, packaging: 0.3, retail: 0.1 } },
-  soy_milk: { total: 1.0, breakdown: { landUseChange: 0.1, animalFeed: 0.0, farm: 0.4, processing: 0.2, transport: 0.1, packaging: 0.1, retail: 0.1 } },
+  beef: {
+    total: 59.6,
+    breakdown: {
+      landUseChange: 16.3,
+      animalFeed: 7.6,
+      farm: 30.5,
+      processing: 1.8,
+      transport: 0.5,
+      packaging: 0.4,
+      retail: 0.3,
+    },
+  },
+  lamb: {
+    total: 24.5,
+    breakdown: {
+      landUseChange: 7.5,
+      animalFeed: 2.4,
+      farm: 11.2,
+      processing: 1.1,
+      transport: 0.6,
+      packaging: 0.4,
+      retail: 0.3,
+    },
+  },
+  pork: {
+    total: 7.6,
+    breakdown: {
+      landUseChange: 1.5,
+      animalFeed: 2.7,
+      farm: 2.0,
+      processing: 0.5,
+      transport: 0.4,
+      packaging: 0.3,
+      retail: 0.2,
+    },
+  },
+  chicken: {
+    total: 6.9,
+    breakdown: {
+      landUseChange: 2.5,
+      animalFeed: 1.8,
+      farm: 1.3,
+      processing: 0.6,
+      transport: 0.4,
+      packaging: 0.2,
+      retail: 0.1,
+    },
+  },
+  fish_farmed: {
+    total: 5.1,
+    breakdown: {
+      landUseChange: 0.5,
+      animalFeed: 2.0,
+      farm: 1.5,
+      processing: 0.5,
+      transport: 0.3,
+      packaging: 0.2,
+      retail: 0.1,
+    },
+  },
+  fish_wild: {
+    total: 3.5,
+    breakdown: {
+      landUseChange: 0.0,
+      animalFeed: 0.0,
+      farm: 2.5,
+      processing: 0.4,
+      transport: 0.3,
+      packaging: 0.2,
+      retail: 0.1,
+    },
+  },
+  shrimp: {
+    total: 11.8,
+    breakdown: {
+      landUseChange: 3.2,
+      animalFeed: 1.5,
+      farm: 5.3,
+      processing: 0.8,
+      transport: 0.5,
+      packaging: 0.3,
+      retail: 0.2,
+    },
+  },
+  eggs: {
+    total: 4.7,
+    breakdown: {
+      landUseChange: 0.9,
+      animalFeed: 1.5,
+      farm: 1.3,
+      processing: 0.4,
+      transport: 0.3,
+      packaging: 0.2,
+      retail: 0.1,
+    },
+  },
+  milk: {
+    total: 3.2,
+    breakdown: {
+      landUseChange: 0.5,
+      animalFeed: 0.6,
+      farm: 1.5,
+      processing: 0.3,
+      transport: 0.1,
+      packaging: 0.1,
+      retail: 0.1,
+    },
+  },
+  cheese: {
+    total: 11.0,
+    breakdown: {
+      landUseChange: 2.8,
+      animalFeed: 2.0,
+      farm: 4.2,
+      processing: 0.8,
+      transport: 0.5,
+      packaging: 0.4,
+      retail: 0.3,
+    },
+  },
+  tofu: {
+    total: 2.0,
+    breakdown: {
+      landUseChange: 0.3,
+      animalFeed: 0.0,
+      farm: 0.8,
+      processing: 0.5,
+      transport: 0.2,
+      packaging: 0.1,
+      retail: 0.1,
+    },
+  },
+  rice: {
+    total: 4.0,
+    breakdown: {
+      landUseChange: 0.2,
+      animalFeed: 0.0,
+      farm: 2.5,
+      processing: 0.5,
+      transport: 0.4,
+      packaging: 0.2,
+      retail: 0.2,
+    },
+  },
+  wheat: {
+    total: 1.4,
+    breakdown: {
+      landUseChange: 0.1,
+      animalFeed: 0.0,
+      farm: 0.8,
+      processing: 0.2,
+      transport: 0.1,
+      packaging: 0.1,
+      retail: 0.1,
+    },
+  },
+  tomatoes: {
+    total: 1.4,
+    breakdown: {
+      landUseChange: 0.1,
+      animalFeed: 0.0,
+      farm: 0.7,
+      processing: 0.2,
+      transport: 0.2,
+      packaging: 0.1,
+      retail: 0.1,
+    },
+  },
+  potatoes: {
+    total: 0.5,
+    breakdown: {
+      landUseChange: 0.0,
+      animalFeed: 0.0,
+      farm: 0.3,
+      processing: 0.1,
+      transport: 0.0,
+      packaging: 0.0,
+      retail: 0.1,
+    },
+  },
+  bananas: {
+    total: 0.7,
+    breakdown: {
+      landUseChange: 0.1,
+      animalFeed: 0.0,
+      farm: 0.3,
+      processing: 0.1,
+      transport: 0.1,
+      packaging: 0.1,
+      retail: 0.0,
+    },
+  },
+  apples: {
+    total: 0.4,
+    breakdown: {
+      landUseChange: 0.0,
+      animalFeed: 0.0,
+      farm: 0.2,
+      processing: 0.1,
+      transport: 0.1,
+      packaging: 0.0,
+      retail: 0.0,
+    },
+  },
+  nuts: {
+    total: 0.3,
+    breakdown: {
+      landUseChange: -0.4,
+      animalFeed: 0.0,
+      farm: 0.4,
+      processing: 0.2,
+      transport: 0.1,
+      packaging: 0.0,
+      retail: 0.0,
+    },
+  },
+  coffee: {
+    total: 16.5,
+    breakdown: {
+      landUseChange: 3.7,
+      animalFeed: 0.0,
+      farm: 10.4,
+      processing: 1.2,
+      transport: 0.5,
+      packaging: 0.4,
+      retail: 0.3,
+    },
+  },
+  chocolate: {
+    total: 18.7,
+    breakdown: {
+      landUseChange: 8.5,
+      animalFeed: 0.0,
+      farm: 7.6,
+      processing: 1.2,
+      transport: 0.6,
+      packaging: 0.5,
+      retail: 0.3,
+    },
+  },
+  sugar: {
+    total: 2.7,
+    breakdown: {
+      landUseChange: 1.2,
+      animalFeed: 0.0,
+      farm: 0.8,
+      processing: 0.3,
+      transport: 0.2,
+      packaging: 0.1,
+      retail: 0.1,
+    },
+  },
+  olive_oil: {
+    total: 5.4,
+    breakdown: {
+      landUseChange: -0.4,
+      animalFeed: 0.0,
+      farm: 4.3,
+      processing: 0.7,
+      transport: 0.4,
+      packaging: 0.3,
+      retail: 0.1,
+    },
+  },
+  soy_milk: {
+    total: 1.0,
+    breakdown: {
+      landUseChange: 0.1,
+      animalFeed: 0.0,
+      farm: 0.4,
+      processing: 0.2,
+      transport: 0.1,
+      packaging: 0.1,
+      retail: 0.1,
+    },
+  },
 };
 
 // Product name keyword → reference key mapping
@@ -52,18 +305,27 @@ const PRODUCT_REFERENCE_MAP = [
   { keywords: ["pork", "bacon", "ham", "sausage"], ref: "pork" },
   { keywords: ["chicken", "turkey", "duck", "poultry"], ref: "chicken" },
   { keywords: ["tofu", "tempeh", "seitan"], ref: "tofu" },
-  { keywords: ["salmon", "cod", "tilapia", "barramundi", "snapper", "trout", "tuna"], ref: "fish_farmed" },
+  {
+    keywords: ["salmon", "cod", "tilapia", "barramundi", "snapper", "trout", "tuna"],
+    ref: "fish_farmed",
+  },
   { keywords: ["shrimp", "prawn", "crab", "lobster"], ref: "shrimp" },
   { keywords: ["egg"], ref: "eggs" },
   { keywords: ["milk", "yogurt", "yoghurt"], ref: "milk" },
   { keywords: ["cheese", "cheddar", "mozzarella", "parmesan", "brie", "feta"], ref: "cheese" },
   { keywords: ["rice", "jasmine rice", "basmati"], ref: "rice" },
-  { keywords: ["bread", "flour", "wheat", "pasta", "noodle", "oat", "cereal", "granola"], ref: "wheat" },
+  {
+    keywords: ["bread", "flour", "wheat", "pasta", "noodle", "oat", "cereal", "granola"],
+    ref: "wheat",
+  },
   { keywords: ["tomato", "ketchup"], ref: "tomatoes" },
   { keywords: ["potato", "fries"], ref: "potatoes" },
   { keywords: ["banana"], ref: "bananas" },
   { keywords: ["apple"], ref: "apples" },
-  { keywords: ["almond", "cashew", "walnut", "peanut", "pistachio", "macadamia", "nut"], ref: "nuts" },
+  {
+    keywords: ["almond", "cashew", "walnut", "peanut", "pistachio", "macadamia", "nut"],
+    ref: "nuts",
+  },
   { keywords: ["coffee"], ref: "coffee" },
   { keywords: ["chocolate", "cocoa", "cacao"], ref: "chocolate" },
   { keywords: ["sugar", "honey", "syrup"], ref: "sugar" },
@@ -78,9 +340,11 @@ const DATA_SOURCES = {
     id: "poore_nemecek_2018",
     name: "Poore & Nemecek (2018)",
     type: "peer_reviewed_lca",
-    citation: "Poore, J. & Nemecek, T. (2018). Reducing food's environmental impacts through producers and consumers. Science, 360(6392), 987-992.",
+    citation:
+      "Poore, J. & Nemecek, T. (2018). Reducing food's environmental impacts through producers and consumers. Science, 360(6392), 987-992.",
     url: "https://doi.org/10.1126/science.aaq0216",
-    methodology: "Meta-analysis of 570 studies covering 38,700 farms and 1,600 processors across 119 countries.",
+    methodology:
+      "Meta-analysis of 570 studies covering 38,700 farms and 1,600 processors across 119 countries.",
     year: 2018,
     granularity: "product_type",
     reliability: "high",
@@ -89,9 +353,11 @@ const DATA_SOURCES = {
     id: "our_world_in_data",
     name: "Our World in Data",
     type: "curated_aggregation",
-    citation: "Ritchie, H. & Roser, M. (2020). Environmental Impacts of Food Production. OurWorldInData.org.",
+    citation:
+      "Ritchie, H. & Roser, M. (2020). Environmental Impacts of Food Production. OurWorldInData.org.",
     url: "https://ourworldindata.org/food-ghg-emissions",
-    methodology: "Curated visualization of Poore & Nemecek data with additional context and per-country adjustments.",
+    methodology:
+      "Curated visualization of Poore & Nemecek data with additional context and per-country adjustments.",
     year: 2020,
     granularity: "product_type",
     reliability: "high",
@@ -102,7 +368,8 @@ const DATA_SOURCES = {
     type: "crowdsourced_database",
     citation: "Open Food Facts contributors. Open Food Facts - the free food products database.",
     url: "https://world.openfoodfacts.org",
-    methodology: "Crowdsourced product data with Ecoscore grade (A-E) computed from Agribalyse LCA data, transport adjustments, and packaging impact.",
+    methodology:
+      "Crowdsourced product data with Ecoscore grade (A-E) computed from Agribalyse LCA data, transport adjustments, and packaging impact.",
     year: 2024,
     granularity: "brand_product",
     reliability: "medium",
@@ -113,7 +380,8 @@ const DATA_SOURCES = {
     type: "derived_estimate",
     citation: "Consciobite internal estimation based on category-level LCA data.",
     url: null,
-    methodology: "Emissions estimated by applying category-average baselines derived from Poore & Nemecek (2018) with adjustments for product subcategory.",
+    methodology:
+      "Emissions estimated by applying category-average baselines derived from Poore & Nemecek (2018) with adjustments for product subcategory.",
     year: 2024,
     granularity: "category",
     reliability: "low",
@@ -123,8 +391,13 @@ const DATA_SOURCES = {
 // ─── Confidence scoring ───────────────────────────────────────────────────
 
 const EMISSION_KEYS = [
-  "landUseChange", "animalFeed", "farm",
-  "processing", "transport", "packaging", "retail",
+  "landUseChange",
+  "animalFeed",
+  "farm",
+  "processing",
+  "transport",
+  "packaging",
+  "retail",
 ];
 
 /**
@@ -170,7 +443,8 @@ function computeAgreement(emissions, referenceBreakdown) {
   if (sumReference === 0) return 0.5;
 
   // Normalized RMSE → agreement
-  const nrmse = Math.sqrt(sumSquaredDiff / EMISSION_KEYS.length) /
+  const nrmse =
+    Math.sqrt(sumSquaredDiff / EMISSION_KEYS.length) /
     Math.sqrt(sumReference / EMISSION_KEYS.length);
 
   // Convert to 0-1 agreement (lower NRMSE = higher agreement)
@@ -233,10 +507,7 @@ function computeDataConfidence(product, source) {
 
   // Weighted combination
   const confidence =
-    0.35 * tierScore +
-    0.20 * sourceCountScore +
-    0.30 * agreementScore +
-    0.15 * recencyScore;
+    0.35 * tierScore + 0.2 * sourceCountScore + 0.3 * agreementScore + 0.15 * recencyScore;
 
   return {
     confidence: Math.round(Math.max(0, Math.min(1, confidence)) * 100) / 100,
@@ -281,15 +552,49 @@ function getMethodology() {
     version: "3.0",
     algorithm: {
       name: "GreenGrade v3",
-      description: "A data-driven sustainability scoring model that uses Gaussian Kernel Density Estimation to score food products on environmental impact across 7 lifecycle dimensions.",
+      description:
+        "A data-driven sustainability scoring model that uses Gaussian Kernel Density Estimation to score food products on environmental impact across 7 lifecycle dimensions.",
       dimensions: [
-        { key: "landUseChange", label: "Land Use Change", description: "Carbon emissions from converting natural ecosystems (forests, wetlands) to agricultural land." },
-        { key: "animalFeed", label: "Animal Feed", description: "Emissions from growing, processing, and transporting feed crops for livestock." },
-        { key: "farm", label: "Farm", description: "Direct emissions from farming operations including methane from livestock, nitrous oxide from fertilizers, and energy use." },
-        { key: "processing", label: "Processing", description: "Emissions from post-harvest processing, manufacturing, and food preparation." },
-        { key: "transport", label: "Transport", description: "Emissions from distribution and shipping from farm to retail." },
-        { key: "packaging", label: "Packaging", description: "Emissions from producing packaging materials (plastic, glass, cardboard)." },
-        { key: "retail", label: "Retail", description: "Emissions from retail operations including refrigeration, lighting, and waste." },
+        {
+          key: "landUseChange",
+          label: "Land Use Change",
+          description:
+            "Carbon emissions from converting natural ecosystems (forests, wetlands) to agricultural land.",
+        },
+        {
+          key: "animalFeed",
+          label: "Animal Feed",
+          description:
+            "Emissions from growing, processing, and transporting feed crops for livestock.",
+        },
+        {
+          key: "farm",
+          label: "Farm",
+          description:
+            "Direct emissions from farming operations including methane from livestock, nitrous oxide from fertilizers, and energy use.",
+        },
+        {
+          key: "processing",
+          label: "Processing",
+          description:
+            "Emissions from post-harvest processing, manufacturing, and food preparation.",
+        },
+        {
+          key: "transport",
+          label: "Transport",
+          description: "Emissions from distribution and shipping from farm to retail.",
+        },
+        {
+          key: "packaging",
+          label: "Packaging",
+          description: "Emissions from producing packaging materials (plastic, glass, cardboard).",
+        },
+        {
+          key: "retail",
+          label: "Retail",
+          description:
+            "Emissions from retail operations including refrigeration, lighting, and waste.",
+        },
       ],
       scoring: {
         method: "Kernel Density Estimation with variance-weighted feature importance",
@@ -305,17 +610,51 @@ function getMethodology() {
     },
     dataSources: Object.values(DATA_SOURCES),
     confidenceScoring: {
-      description: "Each product receives a data confidence score (0-1) based on the quality, quantity, and recency of its emissions data sources.",
-      formula: "confidence = 0.35 * tierScore + 0.20 * sourceCountScore + 0.30 * agreementScore + 0.15 * recencyScore",
+      description:
+        "Each product receives a data confidence score (0-1) based on the quality, quantity, and recency of its emissions data sources.",
+      formula:
+        "confidence = 0.35 * tierScore + 0.20 * sourceCountScore + 0.30 * agreementScore + 0.15 * recencyScore",
       tiers: [
-        { tier: 1, label: "Verified LCA", description: "Emissions data sourced from peer-reviewed lifecycle assessment studies. Cross-validated against multiple published sources.", tierScore: 1.0 },
-        { tier: 2, label: "Aggregated Database", description: "Data from curated environmental databases like Open Food Facts Ecoscore. Based on established LCA methodologies but may use estimation for specific products.", tierScore: 0.7 },
-        { tier: 3, label: "Estimated", description: "Emissions estimated using category-average baselines. Less precise but provides directional guidance for products without specific LCA data.", tierScore: 0.4 },
+        {
+          tier: 1,
+          label: "Verified LCA",
+          description:
+            "Emissions data sourced from peer-reviewed lifecycle assessment studies. Cross-validated against multiple published sources.",
+          tierScore: 1.0,
+        },
+        {
+          tier: 2,
+          label: "Aggregated Database",
+          description:
+            "Data from curated environmental databases like Open Food Facts Ecoscore. Based on established LCA methodologies but may use estimation for specific products.",
+          tierScore: 0.7,
+        },
+        {
+          tier: 3,
+          label: "Estimated",
+          description:
+            "Emissions estimated using category-average baselines. Less precise but provides directional guidance for products without specific LCA data.",
+          tierScore: 0.4,
+        },
       ],
       interpretation: [
-        { range: "0.80-1.00", label: "High confidence", description: "Data is well-supported by multiple peer-reviewed sources." },
-        { range: "0.50-0.79", label: "Moderate confidence", description: "Data is supported by at least one credible source but may rely on category-level estimates for some dimensions." },
-        { range: "0.00-0.49", label: "Low confidence", description: "Data is primarily estimated from category averages. Treat as directional guidance only." },
+        {
+          range: "0.80-1.00",
+          label: "High confidence",
+          description: "Data is well-supported by multiple peer-reviewed sources.",
+        },
+        {
+          range: "0.50-0.79",
+          label: "Moderate confidence",
+          description:
+            "Data is supported by at least one credible source but may rely on category-level estimates for some dimensions.",
+        },
+        {
+          range: "0.00-0.49",
+          label: "Low confidence",
+          description:
+            "Data is primarily estimated from category averages. Treat as directional guidance only.",
+        },
       ],
     },
     limitations: [
@@ -325,10 +664,7 @@ function getMethodology() {
       "Packaging emissions are estimated based on typical packaging for the product type.",
       "The scoring model is trained on the current product catalog and may shift as new products are added.",
     ],
-    references: [
-      DATA_SOURCES.poore_nemecek_2018,
-      DATA_SOURCES.our_world_in_data,
-    ],
+    references: [DATA_SOURCES.poore_nemecek_2018, DATA_SOURCES.our_world_in_data],
   };
 }
 
