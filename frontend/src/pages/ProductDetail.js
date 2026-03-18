@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchProduct, logCarbonPurchase } from "../services/api";
+import { scoreColor } from "../utils/constants";
 import GradeBadge from "../components/GradeBadge";
 import ProductImage from "../components/ProductImage";
+import Spinner from "../components/Spinner";
 import { useAuth } from "../context/AuthContext";
 import { isFavorited, toggleFavorite } from "../utils/favorites";
 import { Link } from "react-router-dom";
 
-const scoreColor = (score) => {
-  if (score >= 7) return "#27ae60";
-  if (score >= 4) return "#f39c12";
-  return "#e74c3c";
-};
+const LEGEND_ITEMS = [
+  { color: "#27ae60", label: "Best" },
+  { color: "#f39c12", label: "Medium" },
+  { color: "#e74c3c", label: "Bad" },
+];
 
 const CATEGORY_LABELS = {
   "Land Use Change": "Land Use Change",
@@ -88,17 +90,26 @@ export default function ProductDetail() {
   const [showStats, setShowStats] = useState(false);
 
   useEffect(() => {
+    let stale = false;
     setError("");
     setLoading(true);
     setLoggedPurchase(false);
     setShowStats(false);
     fetchProduct(id)
       .then((data) => {
+        if (stale) return;
         setProduct(data);
         setFav(isFavorited(data.id));
       })
-      .catch(() => setError("Unable to load product details."))
-      .finally(() => setLoading(false));
+      .catch(() => {
+        if (!stale) setError("Unable to load product details.");
+      })
+      .finally(() => {
+        if (!stale) setLoading(false);
+      });
+    return () => {
+      stale = true;
+    };
   }, [id]);
 
   const handleLogPurchase = async () => {
@@ -112,22 +123,7 @@ export default function ProductDetail() {
   };
 
   if (loading) {
-    return (
-      <div style={{ padding: 48, textAlign: "center", color: "#888" }}>
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            border: "3px solid #d8f3dc",
-            borderTopColor: "#2d6a4f",
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-            margin: "0 auto 12px",
-          }}
-        />
-        Loading product...
-      </div>
-    );
+    return <Spinner message="Loading product..." />;
   }
 
   if (error || !product) {
@@ -174,6 +170,8 @@ export default function ProductDetail() {
   }
 
   const { greenGrade } = product;
+  const confLabel =
+    greenGrade.dataConfidence !== undefined ? confidenceLabel(greenGrade.dataConfidence) : null;
 
   return (
     <div
@@ -260,11 +258,7 @@ export default function ProductDetail() {
                 GreenGrade Legend
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                {[
-                  { color: "#27ae60", label: "Best" },
-                  { color: "#f39c12", label: "Medium" },
-                  { color: "#e74c3c", label: "Bad" },
-                ].map((item) => (
+                {LEGEND_ITEMS.map((item) => (
                   <div
                     key={item.label}
                     style={{
@@ -379,7 +373,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Data confidence badge */}
-          {greenGrade.dataConfidence !== undefined && (
+          {confLabel && (
             <div
               style={{
                 display: "flex",
@@ -389,8 +383,8 @@ export default function ProductDetail() {
                 marginBottom: 16,
                 padding: "8px 14px",
                 borderRadius: 20,
-                background: confidenceLabel(greenGrade.dataConfidence).bg,
-                border: `1px solid ${confidenceLabel(greenGrade.dataConfidence).color}30`,
+                background: confLabel.bg,
+                border: `1px solid ${confLabel.color}30`,
               }}
             >
               <span
@@ -398,18 +392,18 @@ export default function ProductDetail() {
                   width: 8,
                   height: 8,
                   borderRadius: "50%",
-                  background: confidenceLabel(greenGrade.dataConfidence).color,
+                  background: confLabel.color,
                   display: "inline-block",
                 }}
               />
               <span
                 style={{
-                  color: confidenceLabel(greenGrade.dataConfidence).color,
+                  color: confLabel.color,
                   fontSize: "0.78rem",
                   fontWeight: 600,
                 }}
               >
-                {confidenceLabel(greenGrade.dataConfidence).text}
+                {confLabel.text}
               </span>
               <span style={{ color: "#b8d4c0", fontSize: "0.72rem" }}>
                 {tierLabel(greenGrade.dataTier)}
@@ -714,7 +708,7 @@ export default function ProductDetail() {
                     <span
                       style={{
                         fontWeight: 600,
-                        color: confidenceLabel(greenGrade.dataConfidence).color,
+                        color: confLabel.color,
                       }}
                     >
                       {Math.round(greenGrade.dataConfidence * 100)}%

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 import { fetchMethodology } from "../services/api";
+import Spinner from "../components/Spinner";
 
 const SectionCard = ({ title, children, isDark }) => (
   <div
@@ -91,22 +92,7 @@ export default function Methodology() {
   }, []);
 
   if (loading) {
-    return (
-      <div style={{ padding: 48, textAlign: "center", color: "#888" }}>
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            border: "3px solid #d8f3dc",
-            borderTopColor: "#2d6a4f",
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-            margin: "0 auto 12px",
-          }}
-        />
-        Loading methodology...
-      </div>
-    );
+    return <Spinner message="Loading methodology..." />;
   }
 
   if (!data) {

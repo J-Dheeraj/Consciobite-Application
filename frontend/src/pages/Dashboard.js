@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { fetchStats, fetchProducts } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
+import { CATEGORY_ICONS } from "../utils/constants";
+import Spinner from "../components/Spinner";
 import {
   BarChart,
   Bar,
@@ -18,18 +20,6 @@ import {
   Radar,
 } from "recharts";
 
-const CATEGORY_ICONS = {
-  Protein: "\uD83E\uDD69",
-  Seafood: "\uD83D\uDC1F",
-  "Dairy & Eggs": "\uD83E\uDD5B",
-  Grains: "\uD83C\uDF3E",
-  Fruits: "\uD83C\uDF53",
-  Vegetables: "\uD83E\uDD66",
-  Beverages: "\uD83E\uDDC3",
-  Snacks: "\uD83C\uDF6A",
-  Pantry: "\uD83C\uDF6F",
-};
-
 const PIE_COLORS = [
   "#2d6a4f",
   "#40916c",
@@ -41,6 +31,33 @@ const PIE_COLORS = [
   "#e9c46a",
   "#e63946",
 ];
+
+const cardStyle = (isDark) => ({
+  background: isDark ? "#14352a" : "#fff",
+  borderRadius: 14,
+  padding: 24,
+  boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
+});
+
+const sectionHeadingStyle = (isDark) => ({
+  fontFamily: "'Outfit', sans-serif",
+  fontWeight: 700,
+  marginBottom: 4,
+  color: isDark ? "#e8f5e9" : "inherit",
+});
+
+const subtextStyle = (isDark) => ({
+  fontSize: "0.82rem",
+  color: isDark ? "#7a9a7e" : "#888",
+  marginBottom: 16,
+});
+
+const thStyle = (isDark, textAlign = "left") => ({
+  textAlign,
+  padding: "10px 8px",
+  color: isDark ? "#95d5b2" : "#2d6a4f",
+  fontWeight: 700,
+});
 
 const CustomTooltip = ({ active, payload, label, isDark }) => {
   if (!active || !payload?.length) return null;
@@ -127,22 +144,7 @@ export default function Dashboard() {
   }, []);
 
   if (loading) {
-    return (
-      <div style={{ padding: 48, textAlign: "center", color: "#888" }}>
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            border: "3px solid #d8f3dc",
-            borderTopColor: "#2d6a4f",
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-            margin: "0 auto 12px",
-          }}
-        />
-        Loading dashboard...
-      </div>
-    );
+    return <Spinner message="Loading dashboard..." />;
   }
 
   if (error) {
@@ -165,40 +167,58 @@ export default function Dashboard() {
 
   const { categories } = stats;
   const totalProducts = stats.totalProducts;
-  const overallAvgScore = (
-    categories.reduce((s, c) => s + c.avgScore * c.productCount, 0) / totalProducts
-  ).toFixed(1);
-  const overallAvgEmissions = (
-    categories.reduce((s, c) => s + c.avgEmissions * c.productCount, 0) / totalProducts
-  ).toFixed(2);
-  const bestCategory = categories[0];
-  const greenCount = categories.reduce((sum, c) => {
-    if (c.avgScore >= 7) return sum + c.productCount;
-    return sum;
-  }, 0);
 
-  const scoreChartData = categories.map((c) => ({
-    name: c.category,
-    icon: CATEGORY_ICONS[c.category] || "",
-    score: c.avgScore,
-    fill: c.avgScore >= 7 ? "#2d6a4f" : c.avgScore >= 4 ? "#e9c46a" : "#e63946",
-  }));
-
-  const emissionsChartData = categories.map((c) => ({
-    name: c.category,
-    emissions: c.avgEmissions,
-  }));
-
-  const pieData = categories.map((c) => ({
-    name: c.category,
-    value: c.productCount,
-  }));
-
-  const radarData = categories.map((c) => ({
-    category: c.category.length > 8 ? c.category.slice(0, 8) + "..." : c.category,
-    score: c.avgScore,
-    fullMark: 10,
-  }));
+  const {
+    overallAvgScore,
+    overallAvgEmissions,
+    bestCategory,
+    greenCount,
+    scoreChartData,
+    emissionsChartData,
+    pieData,
+    radarData,
+  } = useMemo(() => {
+    const avgScore = (
+      categories.reduce((s, c) => s + c.avgScore * c.productCount, 0) / totalProducts
+    ).toFixed(1);
+    const avgEmissions = (
+      categories.reduce((s, c) => s + c.avgEmissions * c.productCount, 0) / totalProducts
+    ).toFixed(2);
+    const best = categories[0];
+    const green = categories.reduce((sum, c) => {
+      if (c.avgScore >= 7) return sum + c.productCount;
+      return sum;
+    }, 0);
+    const score = categories.map((c) => ({
+      name: c.category,
+      icon: CATEGORY_ICONS[c.category] || "",
+      score: c.avgScore,
+      fill: c.avgScore >= 7 ? "#2d6a4f" : c.avgScore >= 4 ? "#e9c46a" : "#e63946",
+    }));
+    const emissions = categories.map((c) => ({
+      name: c.category,
+      emissions: c.avgEmissions,
+    }));
+    const pie = categories.map((c) => ({
+      name: c.category,
+      value: c.productCount,
+    }));
+    const radar = categories.map((c) => ({
+      category: c.category.length > 8 ? c.category.slice(0, 8) + "..." : c.category,
+      score: c.avgScore,
+      fullMark: 10,
+    }));
+    return {
+      overallAvgScore: avgScore,
+      overallAvgEmissions: avgEmissions,
+      bestCategory: best,
+      greenCount: green,
+      scoreChartData: score,
+      emissionsChartData: emissions,
+      pieData: pie,
+      radarData: radar,
+    };
+  }, [categories, totalProducts]);
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
@@ -272,27 +292,13 @@ export default function Dashboard() {
         {/* Score by Category Chart */}
         <div
           style={{
-            background: isDark ? "#14352a" : "#fff",
-            borderRadius: 14,
-            padding: 24,
-            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
+            ...cardStyle(isDark),
             marginBottom: 16,
             animation: "fadeInUp 0.4s ease 0.1s both",
           }}
         >
-          <h3
-            style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 700,
-              marginBottom: 4,
-              color: isDark ? "#e8f5e9" : "inherit",
-            }}
-          >
-            Average GreenGrade by Category
-          </h3>
-          <p style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}>
-            Higher scores indicate more sustainable products.
-          </p>
+          <h3 style={sectionHeadingStyle(isDark)}>Average GreenGrade by Category</h3>
+          <p style={subtextStyle(isDark)}>Higher scores indicate more sustainable products.</p>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={scoreChartData} margin={{ top: 5, right: 10, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#2d4a35" : "#f0f0f0"} />
@@ -326,28 +332,12 @@ export default function Dashboard() {
           {/* Emissions Chart */}
           <div
             style={{
-              background: isDark ? "#14352a" : "#fff",
-              borderRadius: 14,
-              padding: 24,
-              boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
+              ...cardStyle(isDark),
               animation: "fadeInUp 0.4s ease 0.15s both",
             }}
           >
-            <h3
-              style={{
-                fontFamily: "'Outfit', sans-serif",
-                fontWeight: 700,
-                marginBottom: 4,
-                color: isDark ? "#e8f5e9" : "inherit",
-              }}
-            >
-              Average Emissions
-            </h3>
-            <p
-              style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}
-            >
-              kg CO{"\u2082"}e per product by category.
-            </p>
+            <h3 style={sectionHeadingStyle(isDark)}>Average Emissions</h3>
+            <p style={subtextStyle(isDark)}>kg CO{"\u2082"}e per product by category.</p>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart
                 data={emissionsChartData}
@@ -380,28 +370,12 @@ export default function Dashboard() {
           {/* Product Distribution Pie */}
           <div
             style={{
-              background: isDark ? "#14352a" : "#fff",
-              borderRadius: 14,
-              padding: 24,
-              boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
+              ...cardStyle(isDark),
               animation: "fadeInUp 0.4s ease 0.2s both",
             }}
           >
-            <h3
-              style={{
-                fontFamily: "'Outfit', sans-serif",
-                fontWeight: 700,
-                marginBottom: 4,
-                color: isDark ? "#e8f5e9" : "inherit",
-              }}
-            >
-              Product Distribution
-            </h3>
-            <p
-              style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}
-            >
-              Number of products by category.
-            </p>
+            <h3 style={sectionHeadingStyle(isDark)}>Product Distribution</h3>
+            <p style={subtextStyle(isDark)}>Number of products by category.</p>
             <ResponsiveContainer width="100%" height={280}>
               <PieChart>
                 <Pie
@@ -429,25 +403,13 @@ export default function Dashboard() {
         {/* Radar Chart */}
         <div
           style={{
-            background: isDark ? "#14352a" : "#fff",
-            borderRadius: 14,
-            padding: 24,
-            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
+            ...cardStyle(isDark),
             marginBottom: 16,
             animation: "fadeInUp 0.4s ease 0.25s both",
           }}
         >
-          <h3
-            style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 700,
-              marginBottom: 4,
-              color: isDark ? "#e8f5e9" : "inherit",
-            }}
-          >
-            Category Score Radar
-          </h3>
-          <p style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}>
+          <h3 style={sectionHeadingStyle(isDark)}>Category Score Radar</h3>
+          <p style={subtextStyle(isDark)}>
             Visual overview of sustainability scores across categories.
           </p>
           <ResponsiveContainer width="100%" height={320}>
@@ -473,90 +435,22 @@ export default function Dashboard() {
         {/* Top Products Table */}
         <div
           style={{
-            background: isDark ? "#14352a" : "#fff",
-            borderRadius: 14,
-            padding: 24,
-            boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
+            ...cardStyle(isDark),
             animation: "fadeInUp 0.4s ease 0.3s both",
           }}
         >
-          <h3
-            style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 700,
-              marginBottom: 4,
-              color: isDark ? "#e8f5e9" : "inherit",
-            }}
-          >
-            Top 10 Greenest Products
-          </h3>
-          <p style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888", marginBottom: 16 }}>
-            Products with the highest GreenGrade scores.
-          </p>
+          <h3 style={sectionHeadingStyle(isDark)}>Top 10 Greenest Products</h3>
+          <p style={subtextStyle(isDark)}>Products with the highest GreenGrade scores.</p>
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.85rem" }}>
               <thead>
                 <tr style={{ borderBottom: "2px solid " + (isDark ? "#2d4a35" : "#edf7f0") }}>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "10px 8px",
-                      color: isDark ? "#95d5b2" : "#2d6a4f",
-                      fontWeight: 700,
-                    }}
-                  >
-                    #
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "10px 8px",
-                      color: isDark ? "#95d5b2" : "#2d6a4f",
-                      fontWeight: 700,
-                    }}
-                  >
-                    Product
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "10px 8px",
-                      color: isDark ? "#95d5b2" : "#2d6a4f",
-                      fontWeight: 700,
-                    }}
-                  >
-                    Brand
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "left",
-                      padding: "10px 8px",
-                      color: isDark ? "#95d5b2" : "#2d6a4f",
-                      fontWeight: 700,
-                    }}
-                  >
-                    Category
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "right",
-                      padding: "10px 8px",
-                      color: isDark ? "#95d5b2" : "#2d6a4f",
-                      fontWeight: 700,
-                    }}
-                  >
-                    Score
-                  </th>
-                  <th
-                    style={{
-                      textAlign: "right",
-                      padding: "10px 8px",
-                      color: isDark ? "#95d5b2" : "#2d6a4f",
-                      fontWeight: 700,
-                    }}
-                  >
-                    CO{"\u2082"}e
-                  </th>
+                  <th style={thStyle(isDark)}>#</th>
+                  <th style={thStyle(isDark)}>Product</th>
+                  <th style={thStyle(isDark)}>Brand</th>
+                  <th style={thStyle(isDark)}>Category</th>
+                  <th style={thStyle(isDark, "right")}>Score</th>
+                  <th style={thStyle(isDark, "right")}>CO{"\u2082"}e</th>
                 </tr>
               </thead>
               <tbody>
