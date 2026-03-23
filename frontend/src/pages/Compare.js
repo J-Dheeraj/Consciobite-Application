@@ -3,6 +3,7 @@ import { fetchProducts, compareProducts } from "../services/api";
 import GradeBadge from "../components/GradeBadge";
 import GradeBreakdown from "../components/GradeBreakdown";
 import { useTheme } from "../context/ThemeContext";
+import PageHero from "../components/PageHero";
 
 export default function Compare() {
   const { theme } = useTheme();
@@ -53,29 +54,11 @@ export default function Compare() {
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      <div
-        style={{
-          background: "#0d2818",
-          padding: "36px 24px 44px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "2.2rem", marginBottom: 8 }}>{"\u2696\uFE0F"}</div>
-        <h1
-          style={{
-            color: "#fff",
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 800,
-            fontSize: "1.6rem",
-            marginBottom: 6,
-          }}
-        >
-          Compare Products
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>
-          Select 2-5 products to compare their environmental impact.
-        </p>
-      </div>
+      <PageHero
+        icon={"\u2696\uFE0F"}
+        title="Compare Products"
+        subtitle="Select 2-5 products to compare their environmental impact."
+      />
 
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px 40px" }}>
         {/* Selector */}

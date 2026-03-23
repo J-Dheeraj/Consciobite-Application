@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useTheme } from "../context/ThemeContext";
+import PageHero from "../components/PageHero";
 
 const TIPS = [
   {
@@ -109,59 +111,27 @@ const FUN_FACTS = [
 ];
 
 export default function Tips() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [expandedCategory, setExpandedCategory] = useState(0);
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      {/* Hero */}
-      <div
-        style={{
-          background: "#0d2818",
-          padding: "36px 24px 44px",
-          textAlign: "center",
-        }}
-      >
-        <div
-          style={{
-            fontSize: "2.2rem",
-            marginBottom: 8,
-            animation: "float 3s ease-in-out infinite",
-          }}
-        >
-          {"\uD83C\uDF31"}
-        </div>
-        <h1
-          style={{
-            color: "#fff",
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 800,
-            fontSize: "1.6rem",
-            marginBottom: 6,
-          }}
-        >
-          Sustainability Tips
-        </h1>
-        <p
-          style={{
-            color: "rgba(255,255,255,0.8)",
-            fontSize: "0.9rem",
-            maxWidth: 480,
-            margin: "0 auto",
-          }}
-        >
-          Practical ways to reduce your food's environmental footprint, one meal at a time.
-        </p>
-      </div>
+      <PageHero
+        icon={"\uD83C\uDF31"}
+        title="Sustainability Tips"
+        subtitle="Practical ways to reduce your food's environmental footprint, one meal at a time."
+      />
 
       <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 20px 40px" }}>
         {/* Fun Facts Carousel */}
         <div
           style={{
             marginTop: -20,
-            background: "#fff",
+            background: isDark ? "#162419" : "#fff",
             borderRadius: 14,
             padding: "20px 24px",
-            boxShadow: "0 4px 12px rgba(27,67,50,0.08)",
+            boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
             marginBottom: 24,
             animation: "fadeInUp 0.4s ease",
           }}
@@ -191,7 +161,7 @@ export default function Tips() {
                   textAlign: "center",
                   padding: "14px 10px",
                   borderRadius: 12,
-                  background: "#f0fdf4",
+                  background: isDark ? "#1c2e22" : "#f0fdf4",
                   animation: `fadeInUp 0.4s ease ${i * 60}ms both`,
                 }}
               >
@@ -206,7 +176,7 @@ export default function Tips() {
                 >
                   {fact.stat}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: "#555", lineHeight: 1.4 }}>
+                <div style={{ fontSize: "0.75rem", color: isDark ? "#7a9a7e" : "#555", lineHeight: 1.4 }}>
                   {fact.label}
                 </div>
               </div>
@@ -222,10 +192,10 @@ export default function Tips() {
               <div
                 key={i}
                 style={{
-                  background: "#fff",
+                  background: isDark ? "#162419" : "#fff",
                   borderRadius: 14,
                   overflow: "hidden",
-                  boxShadow: "0 2px 8px rgba(27,67,50,0.06)",
+                  boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.15)" : "0 2px 8px rgba(27,67,50,0.06)",
                   animation: `fadeInUp 0.4s ease ${(i + 1) * 80}ms both`,
                 }}
               >
@@ -256,7 +226,7 @@ export default function Tips() {
                     >
                       {section.category}
                     </h3>
-                    <p style={{ fontSize: "0.8rem", color: "#888", marginTop: 2 }}>
+                    <p style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#888", marginTop: 2 }}>
                       {section.tips.length} tips
                     </p>
                   </div>
@@ -278,7 +248,7 @@ export default function Tips() {
                         key={j}
                         style={{
                           padding: "14px 0",
-                          borderBottom: j < section.tips.length - 1 ? "1px solid #f0f0f0" : "none",
+                          borderBottom: j < section.tips.length - 1 ? "1px solid " + (isDark ? "#2d4a35" : "#f0f0f0") : "none",
                         }}
                       >
                         <h4
@@ -286,12 +256,12 @@ export default function Tips() {
                             fontSize: "0.9rem",
                             fontWeight: 600,
                             marginBottom: 4,
-                            color: "#333",
+                            color: isDark ? "#e8f5e9" : "#333",
                           }}
                         >
                           {tip.title}
                         </h4>
-                        <p style={{ fontSize: "0.85rem", color: "#666", lineHeight: 1.6 }}>
+                        <p style={{ fontSize: "0.85rem", color: isDark ? "#b0c4b1" : "#666", lineHeight: 1.6 }}>
                           {tip.text}
                         </p>
                       </div>

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { fetchProduct, logCarbonPurchase } from "../services/api";
 import { scoreColor } from "../utils/constants";
 import GradeBadge from "../components/GradeBadge";
@@ -7,7 +8,6 @@ import ProductImage from "../components/ProductImage";
 import Spinner from "../components/Spinner";
 import { useAuth } from "../context/AuthContext";
 import { isFavorited, toggleFavorite } from "../utils/favorites";
-import { Link } from "react-router-dom";
 
 const LEGEND_ITEMS = [
   { color: "#27ae60", label: "Best" },
@@ -82,35 +82,27 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const [product, setProduct] = useState(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [fav, setFav] = useState(false);
   const [loggedPurchase, setLoggedPurchase] = useState(false);
   const [showStats, setShowStats] = useState(false);
 
-  useEffect(() => {
-    let stale = false;
-    setError("");
-    setLoading(true);
+  const {
+    data: product,
+    isLoading: loading,
+    error: queryError,
+  } = useQuery({
+    queryKey: ["product", id],
+    queryFn: () => fetchProduct(id),
+  });
+
+  const error = queryError ? "Unable to load product details." : "";
+  const [fav, setFav] = useState(false);
+
+  // Sync favorite state when product loads
+  React.useEffect(() => {
+    if (product) setFav(isFavorited(product.id));
     setLoggedPurchase(false);
     setShowStats(false);
-    fetchProduct(id)
-      .then((data) => {
-        if (stale) return;
-        setProduct(data);
-        setFav(isFavorited(data.id));
-      })
-      .catch(() => {
-        if (!stale) setError("Unable to load product details.");
-      })
-      .finally(() => {
-        if (!stale) setLoading(false);
-      });
-    return () => {
-      stale = true;
-    };
-  }, [id]);
+  }, [product]);
 
   const handleLogPurchase = async () => {
     if (!product) return;

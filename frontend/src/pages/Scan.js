@@ -4,6 +4,7 @@ import { Html5Qrcode } from "html5-qrcode";
 import { scanBarcode } from "../services/api";
 import GradeBadge from "../components/GradeBadge";
 import { useTheme } from "../context/ThemeContext";
+import PageHero from "../components/PageHero";
 
 export default function Scan() {
   const { theme } = useTheme();
@@ -87,30 +88,11 @@ export default function Scan() {
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      {/* Hero */}
-      <div
-        style={{
-          background: "#0d2818",
-          padding: "36px 24px 44px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "2.2rem", marginBottom: 8 }}>{"\uD83D\uDCF7"}</div>
-        <h1
-          style={{
-            color: "#fff",
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 800,
-            fontSize: "1.6rem",
-            marginBottom: 6,
-          }}
-        >
-          Scan a Product
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>
-          Point your camera at a barcode or enter it manually.
-        </p>
-      </div>
+      <PageHero
+        icon={"\uD83D\uDCF7"}
+        title="Scan a Product"
+        subtitle="Point your camera at a barcode or enter it manually."
+      />
 
       <div style={{ maxWidth: 500, margin: "0 auto", padding: "0 20px 40px" }}>
         {/* Scanner */}

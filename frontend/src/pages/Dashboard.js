@@ -1,8 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { fetchStats, fetchProducts } from "../services/api";
 import { useTheme } from "../context/ThemeContext";
 import { CATEGORY_ICONS } from "../utils/constants";
 import Spinner from "../components/Spinner";
+import PageHero from "../components/PageHero";
 import {
   BarChart,
   Bar,
@@ -128,45 +130,23 @@ function StatCard({ icon, label, value, subtext, color, isDark }) {
 export default function Dashboard() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [stats, setStats] = useState(null);
-  const [topProducts, setTopProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  useEffect(() => {
-    Promise.all([fetchStats(), fetchProducts({ sort: "grade_desc", limit: 10 })])
-      .then(([statsData, prodData]) => {
-        setStats(statsData);
-        setTopProducts(prodData.products);
-      })
-      .catch(() => setError("Unable to load dashboard data."))
-      .finally(() => setLoading(false));
-  }, []);
+  const {
+    data: dashData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["dashboard"],
+    queryFn: () =>
+      Promise.all([fetchStats(), fetchProducts({ sort: "grade_desc", limit: 10 })]).then(
+        ([statsData, prodData]) => ({ stats: statsData, topProducts: prodData.products }),
+      ),
+  });
 
-  if (loading) {
-    return <Spinner message="Loading dashboard..." />;
-  }
-
-  if (error) {
-    return (
-      <div style={{ maxWidth: 600, margin: "0 auto", padding: 24 }}>
-        <div
-          style={{
-            padding: 24,
-            background: isDark ? "#2a1519" : "#fef2f2",
-            borderRadius: 14,
-            color: "#e63946",
-            textAlign: "center",
-          }}
-        >
-          {error}
-        </div>
-      </div>
-    );
-  }
-
-  const { categories } = stats;
-  const totalProducts = stats.totalProducts;
+  const stats = dashData?.stats;
+  const topProducts = dashData?.topProducts || [];
+  const categories = stats?.categories || [];
+  const totalProducts = stats?.totalProducts || 0;
 
   const {
     overallAvgScore,
@@ -178,6 +158,18 @@ export default function Dashboard() {
     pieData,
     radarData,
   } = useMemo(() => {
+    if (!categories.length || !totalProducts) {
+      return {
+        overallAvgScore: "0",
+        overallAvgEmissions: "0",
+        bestCategory: null,
+        greenCount: 0,
+        scoreChartData: [],
+        emissionsChartData: [],
+        pieData: [],
+        radarData: [],
+      };
+    }
     const avgScore = (
       categories.reduce((s, c) => s + c.avgScore * c.productCount, 0) / totalProducts
     ).toFixed(1);
@@ -220,32 +212,35 @@ export default function Dashboard() {
     };
   }, [categories, totalProducts]);
 
-  return (
-    <div style={{ animation: "fadeIn 0.4s ease" }}>
-      {/* Hero */}
-      <div
-        style={{
-          background: "#0d2818",
-          padding: "36px 24px 44px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "2.2rem", marginBottom: 8 }}>{"\uD83D\uDCCA"}</div>
-        <h1
+  if (isLoading) {
+    return <Spinner message="Loading dashboard..." />;
+  }
+
+  if (error || !stats) {
+    return (
+      <div style={{ maxWidth: 600, margin: "0 auto", padding: 24 }}>
+        <div
           style={{
-            color: "#fff",
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 800,
-            fontSize: "1.6rem",
-            marginBottom: 6,
+            padding: 24,
+            background: isDark ? "#2a1519" : "#fef2f2",
+            borderRadius: 14,
+            color: "#e63946",
+            textAlign: "center",
           }}
         >
-          Sustainability Dashboard
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>
-          Insights across {totalProducts} products and {categories.length} categories.
-        </p>
+          {error?.message || "Unable to load dashboard data."}
+        </div>
       </div>
+    );
+  }
+
+  return (
+    <div style={{ animation: "fadeIn 0.4s ease" }}>
+      <PageHero
+        icon={"\uD83D\uDCCA"}
+        title="Sustainability Dashboard"
+        subtitle={`Insights across ${totalProducts} products and ${categories.length} categories.`}
+      />
 
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px 40px" }}>
         {/* Summary Stats */}

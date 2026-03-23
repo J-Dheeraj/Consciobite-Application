@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "../context/ThemeContext";
 import { fetchMethodology } from "../services/api";
 import Spinner from "../components/Spinner";
@@ -81,24 +82,36 @@ const TierBadge = ({ tier, isDark }) => {
 export default function Methodology() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchMethodology()
-      .then(setData)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["methodology"],
+    queryFn: fetchMethodology,
+  });
 
-  if (loading) {
+  if (isLoading) {
     return <Spinner message="Loading methodology..." />;
   }
 
-  if (!data) {
+  if (error || !data) {
     return (
       <div style={{ padding: 48, textAlign: "center", color: "#888" }}>
         Unable to load methodology data.
+        <button
+          onClick={() => window.location.reload()}
+          style={{
+            display: "block",
+            margin: "16px auto 0",
+            padding: "10px 24px",
+            background: "#2d6a4f",
+            color: "#fff",
+            border: "none",
+            borderRadius: 10,
+            cursor: "pointer",
+            fontWeight: 600,
+          }}
+        >
+          Retry
+        </button>
       </div>
     );
   }
