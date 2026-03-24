@@ -10,6 +10,9 @@ function enrichProduct(product) {
   return { ...product, greenGrade: grade };
 }
 
+// Pre-compute enriched products at module load (product catalog is static)
+const enrichedProducts = products.map(enrichProduct);
+
 function sanitize(str, maxLen = 100) {
   if (typeof str !== "string") return "";
   return validator.escape(validator.trim(str)).slice(0, maxLen);
@@ -31,7 +34,7 @@ router.get("/", (req, res) => {
     Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_PAGE_SIZE)
   );
 
-  let results = products.map(enrichProduct);
+  let results = [...enrichedProducts];
 
   if (search) {
     const q = search.toLowerCase();
@@ -108,10 +111,9 @@ router.get("/compare", (req, res) => {
 
 // GET /api/products/stats
 router.get("/stats", (req, res) => {
-  const enriched = products.map(enrichProduct);
   const categories = {};
 
-  for (const p of enriched) {
+  for (const p of enrichedProducts) {
     if (!categories[p.category]) {
       categories[p.category] = { count: 0, totalScore: 0, totalEmissions: 0 };
     }
@@ -138,9 +140,9 @@ router.get("/:id", (req, res) => {
   if (!validator.isAlphanumeric(id)) {
     return res.status(400).json({ error: "Invalid product ID" });
   }
-  const product = products.find((p) => p.id === id);
+  const product = enrichedProducts.find((p) => p.id === id);
   if (!product) return res.status(404).json({ error: "Product not found" });
-  res.json(enrichProduct(product));
+  res.json(product);
 });
 
 // GET /api/products/scan/:barcode - barcode lookup with Open Food Facts fallback
@@ -161,11 +163,15 @@ router.get("/scan/:barcode", async (req, res) => {
     return res.status(404).json({ error: "Product not found for this barcode" });
   }
 
-  // Fallback to Open Food Facts API
+  // Fallback to Open Food Facts API (with 10s timeout)
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
     const response = await fetch(
-      `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json?fields=product_name,brands,categories_tags,ecoscore_grade,ecoscore_score,nutriments`
+      `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json?fields=product_name,brands,categories_tags,ecoscore_grade,ecoscore_score,nutriments`,
+      { signal: controller.signal }
     );
+    clearTimeout(timeout);
 
     if (!response.ok) {
       return res.status(404).json({ error: "Product not found for this barcode" });

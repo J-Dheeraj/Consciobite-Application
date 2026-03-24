@@ -91,6 +91,7 @@ export default function Navbar() {
             <Link
               key={link.to}
               to={link.to}
+              aria-current={active ? "page" : undefined}
               style={{
                 color: active ? "#fff" : "rgba(255,255,255,0.7)",
                 fontWeight: active ? 600 : 400,
@@ -231,6 +232,7 @@ export default function Navbar() {
                 key={link.to}
                 to={link.to}
                 onClick={() => setMenuOpen(false)}
+                aria-current={active ? "page" : undefined}
                 style={{
                   color: active ? "#fff" : "rgba(255,255,255,0.7)",
                   fontWeight: active ? 600 : 400,
@@ -314,14 +316,6 @@ export default function Navbar() {
         </div>
       )}
 
-      <style>{`
-        @media (max-width: 768px) {
-          .nav-desktop { display: none !important; }
-          .nav-hamburger { display: block !important; }
-          .nav-theme-mobile { display: block !important; }
-          .nav-mobile { display: flex !important; }
-        }
-      `}</style>
     </nav>
   );
 }

@@ -19,8 +19,13 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    if (
+      password.length < 8 ||
+      !/[A-Z]/.test(password) ||
+      !/[a-z]/.test(password) ||
+      !/[0-9]/.test(password)
+    ) {
+      setError("Password must be at least 8 characters with uppercase, lowercase, and a number");
       return;
     }
     setLoading(true);
@@ -57,6 +62,9 @@ export default function Register() {
         >
           {error && (
             <div
+              id="register-error"
+              role="alert"
+              aria-live="assertive"
               style={{
                 padding: 12,
                 background: isDark ? "#2a1519" : "#fef2f2",
@@ -149,7 +157,7 @@ export default function Register() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="new-password"
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
               style={{
                 width: "100%",
                 padding: "12px 14px",

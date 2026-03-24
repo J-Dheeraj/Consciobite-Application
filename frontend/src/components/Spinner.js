@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 export default function Spinner({ message = "Loading..." }) {
   return (
@@ -18,3 +19,7 @@ export default function Spinner({ message = "Loading..." }) {
     </div>
   );
 }
+
+Spinner.propTypes = {
+  message: PropTypes.string,
+};

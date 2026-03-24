@@ -8,7 +8,7 @@ const { generateToken, requireAuth } = require("../middleware/auth");
 const router = express.Router();
 
 // POST /api/auth/register
-router.post("/register", (req, res) => {
+router.post("/register", async (req, res) => {
   const { email, name, password } = req.body;
 
   if (!email || !name || !password) {
@@ -19,8 +19,15 @@ router.post("/register", (req, res) => {
     return res.status(400).json({ error: "Invalid email format" });
   }
 
-  if (password.length < 6) {
-    return res.status(400).json({ error: "Password must be at least 6 characters" });
+  if (
+    password.length < 8 ||
+    !/[A-Z]/.test(password) ||
+    !/[a-z]/.test(password) ||
+    !/[0-9]/.test(password)
+  ) {
+    return res.status(400).json({
+      error: "Password must be at least 8 characters with uppercase, lowercase, and a number",
+    });
   }
 
   const sanitizedName = validator.escape(validator.trim(name)).slice(0, 50);
@@ -33,7 +40,7 @@ router.post("/register", (req, res) => {
   }
 
   const id = crypto.randomUUID();
-  const passwordHash = bcrypt.hashSync(password, 10);
+  const passwordHash = await bcrypt.hash(password, 10);
 
   db.prepare("INSERT INTO users (id, email, name, password_hash) VALUES (?, ?, ?, ?)").run(
     id,
@@ -49,7 +56,7 @@ router.post("/register", (req, res) => {
 });
 
 // POST /api/auth/login
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -61,7 +68,7 @@ router.post("/login", (req, res) => {
     .prepare("SELECT * FROM users WHERE email = ?")
     .get(validator.normalizeEmail(email));
 
-  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+  if (!user || !(await bcrypt.compare(password, user.password_hash))) {
     return res.status(401).json({ error: "Invalid email or password" });
   }
 

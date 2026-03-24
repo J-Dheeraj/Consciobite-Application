@@ -122,7 +122,7 @@ describe("API Endpoints", () => {
     const testUser = {
       name: "Test User",
       email: `test${Date.now()}@example.com`,
-      password: "testpassword123",
+      password: "TestPassword123",
     };
     let authToken;
 

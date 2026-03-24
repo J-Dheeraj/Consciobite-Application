@@ -52,6 +52,9 @@ export default function Login() {
         >
           {error && (
             <div
+              id="login-error"
+              role="alert"
+              aria-live="assertive"
               style={{
                 padding: 12,
                 background: isDark ? "#2a1519" : "#fef2f2",
@@ -84,6 +87,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
+              aria-describedby={error ? "login-error" : undefined}
               placeholder="you@example.com"
               style={{
                 width: "100%",
@@ -115,7 +119,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              placeholder="At least 6 characters"
+              placeholder="Enter your password"
               style={{
                 width: "100%",
                 padding: "12px 14px",

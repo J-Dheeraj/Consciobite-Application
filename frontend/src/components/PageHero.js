@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 export default function PageHero({ icon, title, subtitle, children }) {
   return (
@@ -28,3 +29,10 @@ export default function PageHero({ icon, title, subtitle, children }) {
     </div>
   );
 }
+
+PageHero.propTypes = {
+  icon: PropTypes.node,
+  title: PropTypes.string.isRequired,
+  subtitle: PropTypes.string,
+  children: PropTypes.node,
+};

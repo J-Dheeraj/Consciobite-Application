@@ -32,9 +32,13 @@ jobs:
         working-directory: ./backend
         run: npm run lint
 
-      - name: Run backend tests
+      - name: Run backend tests with coverage
         working-directory: ./backend
-        run: npm test
+        run: npm test -- --coverage
+
+      - name: Audit backend dependencies
+        working-directory: ./backend
+        run: npm audit --production --audit-level=high || true
 
   frontend-build:
     name: Frontend Build & Test
@@ -61,9 +65,13 @@ jobs:
         working-directory: ./frontend
         run: npm run lint
 
-      - name: Run frontend tests
+      - name: Run frontend tests with coverage
         working-directory: ./frontend
-        run: CI=true npm test -- --watchAll=false
+        run: CI=true npm test -- --watchAll=false --coverage
+
+      - name: Audit frontend dependencies
+        working-directory: ./frontend
+        run: npm audit --production --audit-level=high || true
 
       - name: Build frontend
         working-directory: ./frontend

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import GradeBadge from "./GradeBadge";
 import ProductImage from "./ProductImage";
@@ -6,7 +7,7 @@ import { useTheme } from "../context/ThemeContext";
 import { isFavorited, toggleFavorite } from "../utils/favorites";
 import { CATEGORY_ICONS } from "../utils/constants";
 
-export default function ProductCard({ product, delay = 0 }) {
+function ProductCard({ product, delay = 0 }) {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { greenGrade } = product;
@@ -132,3 +133,20 @@ export default function ProductCard({ product, delay = 0 }) {
     </div>
   );
 }
+
+ProductCard.propTypes = {
+  product: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    brand: PropTypes.string.isRequired,
+    category: PropTypes.string.isRequired,
+    greenGrade: PropTypes.shape({
+      score: PropTypes.number.isRequired,
+      color: PropTypes.string.isRequired,
+      totalEmissions: PropTypes.number.isRequired,
+    }).isRequired,
+  }).isRequired,
+  delay: PropTypes.number,
+};
+
+export default React.memo(ProductCard);

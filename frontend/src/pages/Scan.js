@@ -205,6 +205,8 @@ export default function Scan() {
 
         {error && (
           <p
+            role="alert"
+            aria-live="assertive"
             style={{
               color: "#e63946",
               marginBottom: 12,

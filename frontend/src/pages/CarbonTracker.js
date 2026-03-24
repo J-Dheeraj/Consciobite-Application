@@ -101,6 +101,8 @@ export default function CarbonTracker() {
       <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 20px 40px" }}>
         {error && (
           <div
+            role="alert"
+            aria-live="assertive"
             style={{
               marginTop: 16,
               padding: 14,

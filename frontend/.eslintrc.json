@@ -1,10 +1,21 @@
 {
   "extends": ["react-app", "react-app/jest"],
+  "plugins": ["jsx-a11y"],
   "rules": {
     "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "prefer-const": "warn",
     "no-var": "error",
-    "eqeqeq": ["error", "always"]
+    "eqeqeq": ["error", "always"],
+    "jsx-a11y/alt-text": "warn",
+    "jsx-a11y/anchor-has-content": "warn",
+    "jsx-a11y/aria-props": "warn",
+    "jsx-a11y/aria-role": "warn",
+    "jsx-a11y/heading-has-content": "warn",
+    "jsx-a11y/img-redundant-alt": "warn",
+    "jsx-a11y/no-access-key": "warn",
+    "jsx-a11y/no-redundant-roles": "warn",
+    "jsx-a11y/role-has-required-aria-props": "warn",
+    "jsx-a11y/role-supports-aria-props": "warn"
   }
 }

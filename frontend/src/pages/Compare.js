@@ -190,7 +190,11 @@ export default function Compare() {
           )}
         </div>
 
-        {error && <p style={{ color: "#e63946", marginBottom: 12 }}>{error}</p>}
+        {error && (
+          <p role="alert" aria-live="assertive" style={{ color: "#e63946", marginBottom: 12 }}>
+            {error}
+          </p>
+        )}
 
         {compared && (
           <div style={{ animation: "fadeInUp 0.4s ease" }}>
