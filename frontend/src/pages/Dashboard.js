@@ -145,10 +145,8 @@ export default function Dashboard() {
 
   const stats = dashData?.stats;
   const topProducts = dashData?.topProducts || [];
-  const categories = stats?.categories || [];
-  const totalProducts = stats?.totalProducts || 0;
-
   const {
+    categories,
     overallAvgScore,
     overallAvgEmissions,
     bestCategory,
@@ -158,8 +156,12 @@ export default function Dashboard() {
     pieData,
     radarData,
   } = useMemo(() => {
-    if (!categories.length || !totalProducts) {
+    const cats = stats?.categories || [];
+    const totalProds = stats?.totalProducts || 0;
+
+    if (!cats.length || !totalProds) {
       return {
+        categories: [],
         overallAvgScore: "0",
         overallAvgEmissions: "0",
         bestCategory: null,
@@ -171,36 +173,37 @@ export default function Dashboard() {
       };
     }
     const avgScore = (
-      categories.reduce((s, c) => s + c.avgScore * c.productCount, 0) / totalProducts
+      cats.reduce((s, c) => s + c.avgScore * c.productCount, 0) / totalProds
     ).toFixed(1);
     const avgEmissions = (
-      categories.reduce((s, c) => s + c.avgEmissions * c.productCount, 0) / totalProducts
+      cats.reduce((s, c) => s + c.avgEmissions * c.productCount, 0) / totalProds
     ).toFixed(2);
-    const best = categories[0];
-    const green = categories.reduce((sum, c) => {
+    const best = cats[0];
+    const green = cats.reduce((sum, c) => {
       if (c.avgScore >= 7) return sum + c.productCount;
       return sum;
     }, 0);
-    const score = categories.map((c) => ({
+    const score = cats.map((c) => ({
       name: c.category,
       icon: CATEGORY_ICONS[c.category] || "",
       score: c.avgScore,
       fill: c.avgScore >= 7 ? "#2d6a4f" : c.avgScore >= 4 ? "#e9c46a" : "#e63946",
     }));
-    const emissions = categories.map((c) => ({
+    const emissions = cats.map((c) => ({
       name: c.category,
       emissions: c.avgEmissions,
     }));
-    const pie = categories.map((c) => ({
+    const pie = cats.map((c) => ({
       name: c.category,
       value: c.productCount,
     }));
-    const radar = categories.map((c) => ({
+    const radar = cats.map((c) => ({
       category: c.category.length > 8 ? c.category.slice(0, 8) + "..." : c.category,
       score: c.avgScore,
       fullMark: 10,
     }));
     return {
+      categories: cats,
       overallAvgScore: avgScore,
       overallAvgEmissions: avgEmissions,
       bestCategory: best,
@@ -210,7 +213,8 @@ export default function Dashboard() {
       pieData: pie,
       radarData: radar,
     };
-  }, [categories, totalProducts]);
+  }, [stats]);
+  const totalProducts = stats?.totalProducts || 0;
 
   if (isLoading) {
     return <Spinner message="Loading dashboard..." />;
