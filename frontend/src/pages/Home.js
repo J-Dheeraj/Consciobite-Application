@@ -1,48 +1,13 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { fetchProducts } from "../services/api";
 import { scoreColor } from "../utils/constants";
-import MarketIllustration from "../components/MarketIllustration";
-
-/* Decorative green blob for top-left corner */
-function GreenBlob() {
-  return (
-    <svg
-      style={{ position: "absolute", top: 0, left: 0, width: 180, height: 200, zIndex: 0 }}
-      viewBox="0 0 180 200"
-      aria-hidden="true"
-    >
-      <circle cx="-10" cy="-10" r="140" fill="#1a7a42" opacity="0.7" />
-      <ellipse cx="50" cy="60" rx="70" ry="80" fill="rgba(255,255,255,0.15)" />
-    </svg>
-  );
-}
-
-/* Consciobite pot logo matching the mockup */
-function ConsciobiteLogo() {
-  return (
-    <svg viewBox="0 0 64 64" width="56" height="56">
-      {/* Pot */}
-      <rect x="16" y="34" width="32" height="22" rx="4" fill="#1a5e35" />
-      <rect x="12" y="30" width="40" height="8" rx="3" fill="#2d8a4e" />
-      {/* Soil */}
-      <ellipse cx="32" cy="36" rx="14" ry="3" fill="#3d2b1f" />
-      {/* Plant stems */}
-      <line x1="32" y1="32" x2="32" y2="14" stroke="#52b788" strokeWidth="2.5" />
-      <line x1="32" y1="22" x2="24" y2="14" stroke="#52b788" strokeWidth="2" />
-      <line x1="32" y1="22" x2="40" y2="14" stroke="#52b788" strokeWidth="2" />
-      {/* Leaves */}
-      <ellipse cx="24" cy="13" rx="6" ry="4" fill="#52b788" transform="rotate(-30, 24, 13)" />
-      <ellipse cx="40" cy="13" rx="6" ry="4" fill="#74c69d" transform="rotate(30, 40, 13)" />
-      <ellipse cx="32" cy="10" rx="5" ry="4" fill="#52b788" />
-      {/* Pot detail */}
-      <rect x="22" y="42" width="20" height="3" rx="1" fill="rgba(255,255,255,0.15)" />
-    </svg>
-  );
-}
+import { useTheme } from "../context/ThemeContext";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
@@ -53,15 +18,12 @@ export default function Home() {
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearch(val);
-
     if (debounceRef.current) clearTimeout(debounceRef.current);
-
     if (val.trim().length < 2) {
       setResults([]);
       setShowResults(false);
       return;
     }
-
     setLoading(true);
     debounceRef.current = setTimeout(() => {
       fetchProducts({ search: val, limit: 8 })
@@ -88,7 +50,6 @@ export default function Home() {
     }
   };
 
-  // Close results on outside click
   useEffect(() => {
     const handler = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
@@ -101,293 +62,591 @@ export default function Home() {
 
   const hasResults = showResults && results.length > 0;
 
-  return (
-    <div
-      style={{
-        minHeight: "calc(100vh - 60px)",
-        background:
-          "linear-gradient(180deg, #0d1f17 0%, #0d2818 12%, #1a5e3a 35%, #4a8b6b 65%, #6d9e80 100%)",
-        position: "relative",
-        overflow: "hidden",
-        animation: "fadeIn 0.4s ease",
-      }}
-    >
-      {/* Green blob decoration */}
-      <GreenBlob />
+  const bg = isDark ? "#0a0a0a" : "#fafafa";
+  const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
+  const cardBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
+  const textPrimary = isDark ? "#ededed" : "#111";
+  const textSecondary = isDark ? "rgba(255,255,255,0.6)" : "#666";
+  const textMuted = isDark ? "rgba(255,255,255,0.4)" : "#999";
+  const accent = "#2d6a4f";
 
-      {/* Main content */}
-      <div
+  const features = [
+    {
+      title: "GreenGrade Ratings",
+      desc: "Every product scored on nutrition, environmental impact, and sustainability. Shop with confidence.",
+    },
+    {
+      title: "Carbon Tracker",
+      desc: "Track your food-related carbon emissions with personalized insights and weekly reduction goals.",
+    },
+    {
+      title: "Smart Comparisons",
+      desc: "Compare products side-by-side to instantly find healthier, greener alternatives.",
+    },
+    {
+      title: "Eco-Friendly Recipes",
+      desc: "Discover recipes that are good for you and gentle on the planet, curated by sustainability experts.",
+    },
+  ];
+
+  const steps = [
+    { step: "01", title: "Search", desc: "Look up any food product by name or barcode." },
+    {
+      step: "02",
+      title: "Understand",
+      desc: "See the GreenGrade score, nutrition facts, and carbon impact.",
+    },
+    {
+      step: "03",
+      title: "Choose better",
+      desc: "Pick the healthiest, most sustainable option every time.",
+    },
+  ];
+
+  return (
+    <div style={{ background: bg, minHeight: "100vh" }}>
+      {/* ── Hero ── */}
+      <section
         style={{
           position: "relative",
-          zIndex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          padding: "24px 20px 32px",
-          minHeight: "calc(100vh - 60px)",
+          overflow: "hidden",
+          padding: "80px 24px 88px",
+          textAlign: "center",
+          background: isDark
+            ? "linear-gradient(180deg, #0a1f14 0%, #0a0a0a 100%)"
+            : "linear-gradient(180deg, #f0faf4 0%, #fafafa 100%)",
         }}
       >
-        {/* Logo + Brand */}
-        <div style={{ textAlign: "center", marginBottom: 12 }}>
-          <ConsciobiteLogo />
-          <h1
-            style={{
-              color: "#fff",
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 700,
-              fontSize: "1.3rem",
-              marginTop: 4,
-              letterSpacing: "-0.01em",
-            }}
-          >
-            Consciobite
-          </h1>
-        </div>
-
-        {/* Market Illustration - only show when not searching */}
-        {!hasResults && (
-          <div style={{ marginBottom: 20, width: "100%", maxWidth: 320 }}>
-            <MarketIllustration />
-          </div>
-        )}
-
-        {/* Search bar */}
+        {/* Subtle gradient orbs */}
         <div
-          ref={searchRef}
-          role="combobox"
-          aria-expanded={hasResults}
-          aria-controls="search-results"
-          aria-haspopup="listbox"
           style={{
-            position: "relative",
-            width: "100%",
-            maxWidth: 380,
-            marginBottom: hasResults ? 0 : 8,
+            position: "absolute",
+            top: "-20%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 800,
+            height: 500,
+            borderRadius: "50%",
+            background: isDark
+              ? "radial-gradient(ellipse, rgba(45,106,79,0.15) 0%, transparent 70%)"
+              : "radial-gradient(ellipse, rgba(45,106,79,0.08) 0%, transparent 70%)",
+            pointerEvents: "none",
           }}
-        >
-          <span
-            style={{
-              position: "absolute",
-              left: 16,
-              top: "50%",
-              transform: "translateY(-50%)",
-              fontSize: "1rem",
-              zIndex: 2,
-              opacity: 0.8,
-            }}
-          >
-            {"\uD83D\uDD0D"}
-          </span>
-          <input
-            type="text"
-            placeholder="Search for Product..."
-            value={search}
-            onChange={handleSearchChange}
-            onKeyDown={handleKeyDown}
-            onFocus={() => {
-              if (results.length > 0) setShowResults(true);
-            }}
-            aria-label="Search products"
-            aria-autocomplete="list"
-            style={{
-              width: "100%",
-              padding: "14px 48px 14px 44px",
-              borderRadius: hasResults ? "22px 22px 0 0" : 28,
-              border: "none",
-              fontSize: "0.95rem",
-              background: "#27ae60",
-              color: "#fff",
-              outline: "none",
-              fontWeight: 500,
-              transition: "border-radius 0.2s ease",
-            }}
-          />
-          <span
-            style={{
-              position: "absolute",
-              right: 16,
-              top: "50%",
-              transform: "translateY(-50%)",
-              fontSize: "1rem",
-              zIndex: 2,
-              opacity: 0.6,
-            }}
-          >
-            {"\uD83C\uDF99\uFE0F"}
-          </span>
+        />
 
-          {/* Search results panel */}
-          {hasResults && (
-            <div
-              id="search-results"
-              role="listbox"
-              style={{
-                background: "rgba(30, 100, 60, 0.85)",
-                backdropFilter: "blur(12px)",
-                borderRadius: "0 0 18px 18px",
-                padding: "8px 0",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-                animation: "fadeIn 0.15s ease",
-              }}
-            >
-              {results.map((p) => (
-                <button
-                  key={p.id}
-                  role="option"
-                  aria-selected={false}
-                  onClick={() => {
-                    setShowResults(false);
-                    navigate(`/product/${p.id}`);
-                  }}
-                  style={{
-                    width: "100%",
-                    padding: "12px 18px",
-                    border: "none",
-                    background: "transparent",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    color: "#fff",
-                    transition: "background 0.15s",
-                    gap: 12,
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "rgba(255,255,255,0.1)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
-                  }}
-                >
-                  <span
-                    style={{
-                      fontWeight: 700,
-                      fontSize: "0.95rem",
-                      textAlign: "left",
-                      flex: 1,
-                    }}
-                  >
-                    {p.brand} {p.name}
-                  </span>
-                  <span
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: "50%",
-                      background: scoreColor(p.greenGrade.score),
-                      color: "#fff",
-                      fontWeight: 700,
-                      fontSize: "0.72rem",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                      boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                    }}
-                  >
-                    {p.greenGrade.score}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Powered by GreenGrade */}
-        {!hasResults && (
-          <p
+        <div style={{ position: "relative", zIndex: 1, maxWidth: 680, margin: "0 auto" }}>
+          <div
             style={{
-              color: "rgba(255,255,255,0.45)",
-              fontSize: "0.78rem",
-              marginBottom: 16,
-              letterSpacing: "0.03em",
+              display: "inline-block",
+              padding: "6px 16px",
+              borderRadius: 20,
+              background: isDark ? "rgba(45,106,79,0.2)" : "rgba(45,106,79,0.08)",
+              color: accent,
+              fontSize: "0.8rem",
+              fontWeight: 600,
+              letterSpacing: "0.04em",
+              marginBottom: 24,
             }}
           >
             Powered by GreenGrade{"\u2122"}
-          </p>
-        )}
-
-        {/* Loading indicator */}
-        {loading && (
-          <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.85rem", marginTop: 12 }}>
-            Searching...
           </div>
-        )}
 
-        {/* Spacer */}
-        <div style={{ flex: 1 }} />
+          <h1
+            style={{
+              color: textPrimary,
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(2rem, 5.5vw, 3.2rem)",
+              lineHeight: 1.15,
+              marginBottom: 20,
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Know what you eat.
+            <br />
+            Protect what matters.
+          </h1>
 
-        {/* Motivational message */}
-        <div
-          style={{
-            textAlign: "center",
-            maxWidth: 300,
-            marginBottom: 28,
-            padding: "0 16px",
-          }}
-        >
+          <p
+            style={{
+              color: textSecondary,
+              fontSize: "clamp(1rem, 2.5vw, 1.18rem)",
+              lineHeight: 1.7,
+              maxWidth: 500,
+              margin: "0 auto 36px",
+            }}
+          >
+            Consciobite gives you real-time product ratings, carbon tracking, and personalized
+            insights so every food choice is a smart one.
+          </p>
+
+          {/* CTA buttons */}
           <div
             style={{
-              width: 40,
-              height: 40,
-              borderRadius: "50%",
-              background: "rgba(255,255,255,0.2)",
-              margin: "0 auto 12px",
+              display: "flex",
+              gap: 12,
+              justifyContent: "center",
+              flexWrap: "wrap",
+              marginBottom: 40,
             }}
-          />
+          >
+            <button
+              onClick={() => navigate("/scan")}
+              style={{
+                padding: "14px 36px",
+                borderRadius: 10,
+                border: "none",
+                background: accent,
+                color: "#fff",
+                fontSize: "0.95rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "opacity 0.2s",
+              }}
+            >
+              Try Now
+            </button>
+            <Link
+              to="/about"
+              style={{
+                padding: "14px 36px",
+                borderRadius: 10,
+                border: `1px solid ${cardBorder}`,
+                background: "transparent",
+                color: textPrimary,
+                fontSize: "0.95rem",
+                fontWeight: 600,
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+                transition: "border-color 0.2s",
+              }}
+            >
+              Learn More
+            </Link>
+          </div>
+
+          {/* Inline search widget */}
+          <div
+            ref={searchRef}
+            role="combobox"
+            aria-expanded={hasResults}
+            aria-controls="search-results"
+            aria-haspopup="listbox"
+            style={{
+              position: "relative",
+              width: "100%",
+              maxWidth: 480,
+              margin: "0 auto",
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Search for a product..."
+              value={search}
+              onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
+              onFocus={() => {
+                if (results.length > 0) setShowResults(true);
+              }}
+              aria-label="Search products"
+              aria-autocomplete="list"
+              style={{
+                width: "100%",
+                padding: "15px 24px",
+                borderRadius: hasResults ? "12px 12px 0 0" : 12,
+                border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)"}`,
+                fontSize: "0.95rem",
+                background: isDark ? "rgba(255,255,255,0.06)" : "#fff",
+                color: textPrimary,
+                outline: "none",
+                fontWeight: 500,
+                transition: "border-radius 0.15s ease",
+                boxShadow: isDark ? "none" : "0 2px 8px rgba(0,0,0,0.04)",
+              }}
+            />
+            {loading && (
+              <span
+                style={{
+                  position: "absolute",
+                  right: 16,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  color: textMuted,
+                  fontSize: "0.82rem",
+                }}
+              >
+                Searching...
+              </span>
+            )}
+
+            {hasResults && (
+              <div
+                id="search-results"
+                role="listbox"
+                style={{
+                  background: isDark ? "rgba(18,18,18,0.98)" : "#fff",
+                  borderRadius: "0 0 12px 12px",
+                  padding: "4px 0",
+                  boxShadow: "0 12px 32px rgba(0,0,0,0.12)",
+                  border: `1px solid ${cardBorder}`,
+                  borderTop: "none",
+                  position: "absolute",
+                  width: "100%",
+                  zIndex: 10,
+                }}
+              >
+                {results.map((p) => (
+                  <button
+                    key={p.id}
+                    role="option"
+                    aria-selected={false}
+                    onClick={() => {
+                      setShowResults(false);
+                      navigate(`/product/${p.id}`);
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "11px 18px",
+                      border: "none",
+                      background: "transparent",
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      color: textPrimary,
+                      transition: "background 0.12s",
+                      gap: 12,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = isDark
+                        ? "rgba(255,255,255,0.06)"
+                        : "rgba(0,0,0,0.03)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "0.92rem",
+                        textAlign: "left",
+                        flex: 1,
+                      }}
+                    >
+                      {p.brand} {p.name}
+                    </span>
+                    <span
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        background: scoreColor(p.greenGrade.score),
+                        color: "#fff",
+                        fontWeight: 700,
+                        fontSize: "0.7rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {p.greenGrade.score}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* ── How it works ── */}
+      <section
+        style={{
+          maxWidth: 900,
+          margin: "0 auto",
+          padding: "72px 24px 56px",
+        }}
+      >
+        <p
+          style={{
+            textAlign: "center",
+            color: accent,
+            fontSize: "0.82rem",
+            fontWeight: 600,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            marginBottom: 12,
+          }}
+        >
+          How it works
+        </p>
+        <h2
+          style={{
+            textAlign: "center",
+            color: textPrimary,
+            fontFamily: "'Outfit', sans-serif",
+            fontWeight: 700,
+            fontSize: "clamp(1.4rem, 3.5vw, 2rem)",
+            marginBottom: 48,
+            letterSpacing: "-0.02em",
+          }}
+        >
+          Three steps to better food choices
+        </h2>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: 32,
+          }}
+        >
+          {steps.map((s) => (
+            <div key={s.step} style={{ textAlign: "center" }}>
+              <div
+                style={{
+                  color: accent,
+                  fontFamily: "'Outfit', sans-serif",
+                  fontWeight: 800,
+                  fontSize: "2.4rem",
+                  opacity: 0.2,
+                  marginBottom: 8,
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {s.step}
+              </div>
+              <h3
+                style={{
+                  color: textPrimary,
+                  fontFamily: "'Outfit', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "1.1rem",
+                  marginBottom: 8,
+                }}
+              >
+                {s.title}
+              </h3>
+              <p style={{ color: textSecondary, fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
+                {s.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Divider ── */}
+      <div
+        style={{
+          maxWidth: 900,
+          margin: "0 auto",
+          borderTop: `1px solid ${cardBorder}`,
+        }}
+      />
+
+      {/* ── Features ── */}
+      <section style={{ maxWidth: 900, margin: "0 auto", padding: "56px 24px 48px" }}>
+        <p
+          style={{
+            textAlign: "center",
+            color: accent,
+            fontSize: "0.82rem",
+            fontWeight: 600,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            marginBottom: 12,
+          }}
+        >
+          Features
+        </p>
+        <h2
+          style={{
+            textAlign: "center",
+            color: textPrimary,
+            fontFamily: "'Outfit', sans-serif",
+            fontWeight: 700,
+            fontSize: "clamp(1.4rem, 3.5vw, 2rem)",
+            marginBottom: 12,
+            letterSpacing: "-0.02em",
+          }}
+        >
+          Everything you need to eat consciously
+        </h2>
+        <p
+          style={{
+            textAlign: "center",
+            color: textSecondary,
+            fontSize: "0.95rem",
+            maxWidth: 460,
+            margin: "0 auto 44px",
+            lineHeight: 1.6,
+          }}
+        >
+          Nutritional science, environmental data, and smart technology combined in one platform.
+        </p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: 16,
+          }}
+        >
+          {features.map((f) => (
+            <div
+              key={f.title}
+              style={{
+                background: cardBg,
+                border: `1px solid ${cardBorder}`,
+                borderRadius: 14,
+                padding: "28px 24px",
+                transition: "box-shadow 0.2s ease",
+              }}
+            >
+              <div
+                style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background: accent,
+                  marginBottom: 18,
+                }}
+              />
+              <h3
+                style={{
+                  color: textPrimary,
+                  fontFamily: "'Outfit', sans-serif",
+                  fontWeight: 700,
+                  fontSize: "1rem",
+                  marginBottom: 8,
+                }}
+              >
+                {f.title}
+              </h3>
+              <p style={{ color: textSecondary, fontSize: "0.88rem", lineHeight: 1.6, margin: 0 }}>
+                {f.desc}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CTA Banner ── */}
+      <section style={{ maxWidth: 900, margin: "0 auto", padding: "24px 24px 72px" }}>
+        <div
+          style={{
+            background: isDark
+              ? "linear-gradient(135deg, #0d2818, #1b4332)"
+              : "linear-gradient(135deg, #1b4332, #2d6a4f)",
+            borderRadius: 18,
+            padding: "56px 32px",
+            textAlign: "center",
+          }}
+        >
+          <h2
+            style={{
+              color: "#fff",
+              fontFamily: "'Outfit', sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(1.4rem, 3.5vw, 1.9rem)",
+              marginBottom: 14,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            Ready to make better food choices?
+          </h2>
           <p
             style={{
               color: "rgba(255,255,255,0.75)",
-              fontSize: "0.9rem",
-              lineHeight: 1.6,
-              fontWeight: 500,
+              fontSize: "1rem",
+              lineHeight: 1.7,
+              maxWidth: 440,
+              margin: "0 auto 32px",
             }}
           >
-            Choose a product and our latest GreenGrade rating will show you which product is the
-            best for you!
+            Try our product search and discover the GreenGrade score of your favorite foods. It only
+            takes a few seconds.
           </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <button
+              onClick={() => navigate("/scan")}
+              style={{
+                padding: "14px 36px",
+                borderRadius: 10,
+                border: "none",
+                background: "#fff",
+                color: "#1b4332",
+                fontSize: "0.95rem",
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              Try Our Product Scanner
+            </button>
+            <Link
+              to="/dashboard"
+              style={{
+                padding: "14px 36px",
+                borderRadius: 10,
+                border: "1px solid rgba(255,255,255,0.25)",
+                background: "transparent",
+                color: "#fff",
+                fontSize: "0.95rem",
+                fontWeight: 600,
+                textDecoration: "none",
+                display: "inline-flex",
+                alignItems: "center",
+              }}
+            >
+              View Dashboard
+            </Link>
+          </div>
         </div>
+      </section>
 
-        {/* Bottom action buttons */}
-        <div style={{ display: "flex", gap: 20, width: "100%", maxWidth: 380, padding: "0 16px" }}>
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            style={{
-              flex: 1,
-              padding: "13px 0",
-              borderRadius: 10,
-              border: "none",
-              background: "#27ae60",
-              color: "#fff",
-              fontSize: "0.95rem",
-              fontWeight: 700,
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              boxShadow: "0 4px 12px rgba(39,174,96,0.3)",
-            }}
-          >
-            Home
-          </button>
-          <button
-            onClick={() => navigate("/about")}
-            style={{
-              flex: 1,
-              padding: "13px 0",
-              borderRadius: 10,
-              border: "none",
-              background: "#27ae60",
-              color: "#fff",
-              fontSize: "0.95rem",
-              fontWeight: 700,
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-              boxShadow: "0 4px 12px rgba(39,174,96,0.3)",
-            }}
-          >
-            About Us
-          </button>
+      {/* ── Stats ── */}
+      <section
+        style={{
+          borderTop: `1px solid ${cardBorder}`,
+          padding: "40px 24px",
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: 56,
+            flexWrap: "wrap",
+            maxWidth: 600,
+            margin: "0 auto",
+          }}
+        >
+          {[
+            { value: "1,000+", label: "Products Rated" },
+            { value: "10+", label: "Categories" },
+            { value: "100%", label: "Transparent Data" },
+          ].map((s) => (
+            <div key={s.label}>
+              <div
+                style={{
+                  color: textPrimary,
+                  fontFamily: "'Outfit', sans-serif",
+                  fontWeight: 800,
+                  fontSize: "1.6rem",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {s.value}
+              </div>
+              <div style={{ color: textMuted, fontSize: "0.8rem", marginTop: 4 }}>{s.label}</div>
+            </div>
+          ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
