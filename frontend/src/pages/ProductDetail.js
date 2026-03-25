@@ -856,6 +856,180 @@ export default function ProductDetail() {
           </div>
         )}
 
+        {/* Data Sources & Citations */}
+        {product.dataSources && (
+          <div
+            style={{
+              width: "100%",
+              background: "#14352a",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+            }}
+          >
+            <h4
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 16,
+                fontSize: "0.95rem",
+              }}
+            >
+              Data Sources & Citations
+            </h4>
+
+            {/* Brand Information */}
+            {product.dataSources.brand && (
+              <div style={{ marginBottom: 16 }}>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#b8d4c0",
+                    marginBottom: 8,
+                    fontWeight: 600,
+                  }}
+                >
+                  Brand Information
+                </div>
+                <div
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    borderRadius: 12,
+                    padding: "12px 14px",
+                  }}
+                >
+                  <div style={{ color: "#fff", fontSize: "0.88rem", fontWeight: 600, marginBottom: 4 }}>
+                    {product.dataSources.brand.name}
+                  </div>
+                  <div style={{ color: "#d4e8da", fontSize: "0.8rem", marginBottom: 4 }}>
+                    {product.dataSources.brand.description}
+                  </div>
+                  <div style={{ color: "#d4e8da", fontSize: "0.8rem", marginBottom: 4 }}>
+                    Country of Origin: <span style={{ fontWeight: 600 }}>{product.dataSources.brand.countryOfOrigin}</span>
+                  </div>
+                  {product.dataSources.brand.website && (
+                    <a
+                      href={product.dataSources.brand.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: "#52b788",
+                        fontSize: "0.78rem",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      {product.dataSources.brand.website}
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Emissions Data Sources */}
+            {product.dataSources.emissions && product.dataSources.emissions.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#b8d4c0",
+                    marginBottom: 8,
+                    fontWeight: 600,
+                  }}
+                >
+                  Emissions Data Sources
+                </div>
+                {product.dataSources.emissions.map((source, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      background: "rgba(255,255,255,0.06)",
+                      borderRadius: 12,
+                      padding: "12px 14px",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <div style={{ color: "#fff", fontSize: "0.85rem", fontWeight: 600, marginBottom: 4 }}>
+                      {source.name}
+                    </div>
+                    <div
+                      style={{
+                        display: "inline-block",
+                        background: "rgba(82,183,136,0.2)",
+                        color: "#52b788",
+                        fontSize: "0.7rem",
+                        padding: "2px 8px",
+                        borderRadius: 6,
+                        marginBottom: 6,
+                      }}
+                    >
+                      {source.type.replace(/_/g, " ")}
+                    </div>
+                    <div style={{ color: "#d4e8da", fontSize: "0.75rem", lineHeight: 1.5, marginBottom: 4 }}>
+                      {source.citation}
+                    </div>
+                    {source.methodology && (
+                      <div style={{ color: "#7a9a7e", fontSize: "0.72rem", fontStyle: "italic", marginBottom: 4 }}>
+                        {source.methodology}
+                      </div>
+                    )}
+                    {source.doi && (
+                      <a
+                        href={source.doi}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#52b788", fontSize: "0.72rem", textDecoration: "underline" }}
+                      >
+                        DOI: {source.doi.replace("https://doi.org/", "")}
+                      </a>
+                    )}
+                    {!source.doi && source.url && (
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: "#52b788", fontSize: "0.72rem", textDecoration: "underline" }}
+                      >
+                        {source.url}
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Product Info Methodology */}
+            {product.dataSources.productInfo && (
+              <div>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#b8d4c0",
+                    marginBottom: 8,
+                    fontWeight: 600,
+                  }}
+                >
+                  Methodology
+                </div>
+                <div
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    borderRadius: 12,
+                    padding: "12px 14px",
+                  }}
+                >
+                  <div style={{ color: "#d4e8da", fontSize: "0.78rem", lineHeight: 1.6, marginBottom: 6 }}>
+                    {product.dataSources.productInfo.methodology}
+                  </div>
+                  <div style={{ color: "#7a9a7e", fontSize: "0.72rem" }}>
+                    Source: {product.dataSources.productInfo.source} | Last updated: {product.dataSources.productInfo.lastUpdated}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Description */}
         <div
           style={{
