@@ -2,11 +2,11 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
 const BOTTOM_LINKS = [
-  { to: "/", label: "Home", icon: "\uD83C\uDF3F" },
-  { to: "/scan", label: "Scan", icon: "\uD83D\uDCF7" },
-  { to: "/recipes", label: "Recipes", icon: "\uD83C\uDF73" },
-  { to: "/carbon", label: "Carbon", icon: "\uD83C\uDF0D" },
-  { to: "/favorites", label: "Favs", icon: "\u2665" },
+  { to: "/", label: "Home" },
+  { to: "/scan", label: "Scan" },
+  { to: "/recipes", label: "Recipes" },
+  { to: "/carbon", label: "Carbon" },
+  { to: "/favorites", label: "Favs" },
 ];
 
 export default function BottomNav() {
@@ -61,8 +61,7 @@ export default function BottomNav() {
                   minWidth: 48,
                 }}
               >
-                <span style={{ fontSize: "1.1rem" }}>{link.icon}</span>
-                <span style={{ fontSize: "0.65rem", fontWeight: active ? 700 : 400 }}>
+                <span style={{ fontSize: "0.75rem", fontWeight: active ? 700 : 400 }}>
                   {link.label}
                 </span>
               </Link>

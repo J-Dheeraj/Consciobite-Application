@@ -4,13 +4,13 @@ import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 
 const NAV_LINKS = [
-  { to: "/", label: "Products", icon: "\uD83C\uDF3F" },
-  { to: "/scan", label: "Scan", icon: "\uD83D\uDCF7" },
-  { to: "/compare", label: "Compare", icon: "\u2696\uFE0F" },
-  { to: "/dashboard", label: "Dashboard", icon: "\uD83D\uDCCA" },
-  { to: "/recipes", label: "Recipes", icon: "\uD83C\uDF73" },
-  { to: "/carbon", label: "Carbon", icon: "\uD83C\uDF0D" },
-  { to: "/tips", label: "Tips", icon: "\uD83C\uDF31" },
+  { to: "/", label: "Products" },
+  { to: "/scan", label: "Scan" },
+  { to: "/compare", label: "Compare" },
+  { to: "/dashboard", label: "Dashboard" },
+  { to: "/recipes", label: "Recipes" },
+  { to: "/carbon", label: "Carbon" },
+  { to: "/tips", label: "Tips" },
 ];
 
 const LeafIcon = () => (
@@ -102,11 +102,9 @@ export default function Navbar() {
                 transition: "all 0.2s ease",
                 display: "flex",
                 alignItems: "center",
-                gap: 5,
                 whiteSpace: "nowrap",
               }}
             >
-              <span style={{ fontSize: "0.85rem" }}>{link.icon}</span>
               {link.label}
             </Link>
           );
@@ -243,10 +241,9 @@ export default function Navbar() {
                   background: active ? "rgba(255,255,255,0.12)" : "transparent",
                   display: "flex",
                   alignItems: "center",
-                  gap: 10,
                 }}
               >
-                <span>{link.icon}</span> {link.label}
+                {link.label}
               </Link>
             );
           })}
@@ -256,7 +253,7 @@ export default function Navbar() {
               <div
                 style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem", padding: "8px 12px" }}
               >
-                {"\uD83D\uDC64"} {user?.name}
+                {user?.name}
               </div>
               <button
                 onClick={handleLogout}
@@ -274,7 +271,7 @@ export default function Navbar() {
                   gap: 10,
                 }}
               >
-                {"\uD83D\uDEAA"} Logout
+                Logout
               </button>
             </>
           ) : (
@@ -293,7 +290,7 @@ export default function Navbar() {
                   gap: 10,
                 }}
               >
-                {"\uD83D\uDD11"} Sign In
+                Sign In
               </Link>
               <Link
                 to="/register"
@@ -309,7 +306,7 @@ export default function Navbar() {
                   gap: 10,
                 }}
               >
-                {"\uD83C\uDF31"} Create Account
+                Create Account
               </Link>
             </>
           )}
