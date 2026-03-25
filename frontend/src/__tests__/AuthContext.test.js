@@ -8,7 +8,14 @@ function TestComponent() {
     <div>
       <span data-testid="auth-status">{isAuthenticated ? "authenticated" : "anonymous"}</span>
       <span data-testid="user-name">{user?.name || "none"}</span>
-      <button onClick={() => login({ id: "1", name: "Test User" }, "fake-token.eyJpZCI6IjEiLCJleHAiOjk5OTk5OTk5OTl9.sig")}>
+      <button
+        onClick={() =>
+          login(
+            { id: "1", name: "Test User" },
+            "fake-token.eyJpZCI6IjEiLCJleHAiOjk5OTk5OTk5OTl9.sig"
+          )
+        }
+      >
         Login
       </button>
       <button onClick={logout}>Logout</button>

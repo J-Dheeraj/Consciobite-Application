@@ -139,7 +139,7 @@ export default function Dashboard() {
     queryKey: ["dashboard"],
     queryFn: () =>
       Promise.all([fetchStats(), fetchProducts({ sort: "grade_desc", limit: 10 })]).then(
-        ([statsData, prodData]) => ({ stats: statsData, topProducts: prodData.products }),
+        ([statsData, prodData]) => ({ stats: statsData, topProducts: prodData.products })
       ),
   });
 

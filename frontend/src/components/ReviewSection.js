@@ -157,7 +157,13 @@ export default function ReviewSection({ productId }) {
             }}
           />
           {error && (
-            <p role="alert" aria-live="assertive" style={{ color: "#e63946", fontSize: "0.82rem", margin: "6px 0" }}>{error}</p>
+            <p
+              role="alert"
+              aria-live="assertive"
+              style={{ color: "#e63946", fontSize: "0.82rem", margin: "6px 0" }}
+            >
+              {error}
+            </p>
           )}
           <button
             type="submit"

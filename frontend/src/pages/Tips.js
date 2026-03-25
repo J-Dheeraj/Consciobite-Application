@@ -176,7 +176,13 @@ export default function Tips() {
                 >
                   {fact.stat}
                 </div>
-                <div style={{ fontSize: "0.75rem", color: isDark ? "#7a9a7e" : "#555", lineHeight: 1.4 }}>
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    color: isDark ? "#7a9a7e" : "#555",
+                    lineHeight: 1.4,
+                  }}
+                >
                   {fact.label}
                 </div>
               </div>
@@ -195,7 +201,9 @@ export default function Tips() {
                   background: isDark ? "#162419" : "#fff",
                   borderRadius: 14,
                   overflow: "hidden",
-                  boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.15)" : "0 2px 8px rgba(27,67,50,0.06)",
+                  boxShadow: isDark
+                    ? "0 2px 8px rgba(0,0,0,0.15)"
+                    : "0 2px 8px rgba(27,67,50,0.06)",
                   animation: `fadeInUp 0.4s ease ${(i + 1) * 80}ms both`,
                 }}
               >
@@ -226,7 +234,13 @@ export default function Tips() {
                     >
                       {section.category}
                     </h3>
-                    <p style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#888", marginTop: 2 }}>
+                    <p
+                      style={{
+                        fontSize: "0.8rem",
+                        color: isDark ? "#7a9a7e" : "#888",
+                        marginTop: 2,
+                      }}
+                    >
                       {section.tips.length} tips
                     </p>
                   </div>
@@ -248,7 +262,10 @@ export default function Tips() {
                         key={j}
                         style={{
                           padding: "14px 0",
-                          borderBottom: j < section.tips.length - 1 ? "1px solid " + (isDark ? "#2d4a35" : "#f0f0f0") : "none",
+                          borderBottom:
+                            j < section.tips.length - 1
+                              ? "1px solid " + (isDark ? "#2d4a35" : "#f0f0f0")
+                              : "none",
                         }}
                       >
                         <h4
@@ -261,7 +278,13 @@ export default function Tips() {
                         >
                           {tip.title}
                         </h4>
-                        <p style={{ fontSize: "0.85rem", color: isDark ? "#b0c4b1" : "#666", lineHeight: 1.6 }}>
+                        <p
+                          style={{
+                            fontSize: "0.85rem",
+                            color: isDark ? "#b0c4b1" : "#666",
+                            lineHeight: 1.6,
+                          }}
+                        >
                           {tip.text}
                         </p>
                       </div>

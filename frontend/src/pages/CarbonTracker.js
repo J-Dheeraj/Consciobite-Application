@@ -14,7 +14,11 @@ export default function CarbonTracker() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
-  const { data: carbonData, isLoading: loading, error } = useQuery({
+  const {
+    data: carbonData,
+    isLoading: loading,
+    error,
+  } = useQuery({
     queryKey: ["carbon"],
     queryFn: () =>
       Promise.all([fetchCarbonSummary(), fetchCarbonLogs()]).then(([summaryData, logsData]) => ({
@@ -36,7 +40,7 @@ export default function CarbonTracker() {
         /* ignore */
       }
     },
-    [queryClient],
+    [queryClient]
   );
 
   if (!isAuthenticated) {

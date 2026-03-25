@@ -899,14 +899,19 @@ export default function ProductDetail() {
                     padding: "12px 14px",
                   }}
                 >
-                  <div style={{ color: "#fff", fontSize: "0.88rem", fontWeight: 600, marginBottom: 4 }}>
+                  <div
+                    style={{ color: "#fff", fontSize: "0.88rem", fontWeight: 600, marginBottom: 4 }}
+                  >
                     {product.dataSources.brand.name}
                   </div>
                   <div style={{ color: "#d4e8da", fontSize: "0.8rem", marginBottom: 4 }}>
                     {product.dataSources.brand.description}
                   </div>
                   <div style={{ color: "#d4e8da", fontSize: "0.8rem", marginBottom: 4 }}>
-                    Country of Origin: <span style={{ fontWeight: 600 }}>{product.dataSources.brand.countryOfOrigin}</span>
+                    Country of Origin:{" "}
+                    <span style={{ fontWeight: 600 }}>
+                      {product.dataSources.brand.countryOfOrigin}
+                    </span>
                   </div>
                   {product.dataSources.brand.website && (
                     <a
@@ -949,7 +954,14 @@ export default function ProductDetail() {
                       marginBottom: 8,
                     }}
                   >
-                    <div style={{ color: "#fff", fontSize: "0.85rem", fontWeight: 600, marginBottom: 4 }}>
+                    <div
+                      style={{
+                        color: "#fff",
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        marginBottom: 4,
+                      }}
+                    >
                       {source.name}
                     </div>
                     <div
@@ -965,11 +977,25 @@ export default function ProductDetail() {
                     >
                       {source.type.replace(/_/g, " ")}
                     </div>
-                    <div style={{ color: "#d4e8da", fontSize: "0.75rem", lineHeight: 1.5, marginBottom: 4 }}>
+                    <div
+                      style={{
+                        color: "#d4e8da",
+                        fontSize: "0.75rem",
+                        lineHeight: 1.5,
+                        marginBottom: 4,
+                      }}
+                    >
                       {source.citation}
                     </div>
                     {source.methodology && (
-                      <div style={{ color: "#7a9a7e", fontSize: "0.72rem", fontStyle: "italic", marginBottom: 4 }}>
+                      <div
+                        style={{
+                          color: "#7a9a7e",
+                          fontSize: "0.72rem",
+                          fontStyle: "italic",
+                          marginBottom: 4,
+                        }}
+                      >
                         {source.methodology}
                       </div>
                     )}
@@ -978,7 +1004,11 @@ export default function ProductDetail() {
                         href={source.doi}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: "#52b788", fontSize: "0.72rem", textDecoration: "underline" }}
+                        style={{
+                          color: "#52b788",
+                          fontSize: "0.72rem",
+                          textDecoration: "underline",
+                        }}
                       >
                         DOI: {source.doi.replace("https://doi.org/", "")}
                       </a>
@@ -988,7 +1018,11 @@ export default function ProductDetail() {
                         href={source.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ color: "#52b788", fontSize: "0.72rem", textDecoration: "underline" }}
+                        style={{
+                          color: "#52b788",
+                          fontSize: "0.72rem",
+                          textDecoration: "underline",
+                        }}
                       >
                         {source.url}
                       </a>
@@ -1018,11 +1052,19 @@ export default function ProductDetail() {
                     padding: "12px 14px",
                   }}
                 >
-                  <div style={{ color: "#d4e8da", fontSize: "0.78rem", lineHeight: 1.6, marginBottom: 6 }}>
+                  <div
+                    style={{
+                      color: "#d4e8da",
+                      fontSize: "0.78rem",
+                      lineHeight: 1.6,
+                      marginBottom: 6,
+                    }}
+                  >
                     {product.dataSources.productInfo.methodology}
                   </div>
                   <div style={{ color: "#7a9a7e", fontSize: "0.72rem" }}>
-                    Source: {product.dataSources.productInfo.source} | Last updated: {product.dataSources.productInfo.lastUpdated}
+                    Source: {product.dataSources.productInfo.source} | Last updated:{" "}
+                    {product.dataSources.productInfo.lastUpdated}
                   </div>
                 </div>
               </div>

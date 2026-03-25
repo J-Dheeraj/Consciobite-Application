@@ -22,9 +22,7 @@ export default function PageHero({ icon, title, subtitle, children }) {
       >
         {title}
       </h1>
-      {subtitle && (
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>{subtitle}</p>
-      )}
+      {subtitle && <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>{subtitle}</p>}
       {children}
     </div>
   );
