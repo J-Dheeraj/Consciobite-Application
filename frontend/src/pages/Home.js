@@ -1,13 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchProducts } from "../services/api";
+import { scoreColor } from "../utils/constants";
 import MarketIllustration from "../components/MarketIllustration";
-
-const scoreColor = (score) => {
-  if (score >= 7) return "#27ae60";
-  if (score >= 4) return "#f39c12";
-  return "#e74c3c";
-};
 
 /* Decorative green blob for top-left corner */
 function GreenBlob() {

@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "../context/ThemeContext";
 import { fetchRecipes } from "../services/api";
+import Spinner from "../components/Spinner";
+import PageHero from "../components/PageHero";
 
 const TAG_LABELS = [
   { key: "", label: "All", icon: "🍽️" },
@@ -15,46 +18,24 @@ const TAG_LABELS = [
 export default function Recipes() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [recipes, setRecipes] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [tag, setTag] = useState("");
   const [expandedId, setExpandedId] = useState(null);
 
-  useEffect(() => {
-    setLoading(true);
-    fetchRecipes(tag || undefined)
-      .then((data) => setRecipes(data.recipes))
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, [tag]);
+  const { data, isLoading: loading } = useQuery({
+    queryKey: ["recipes", tag],
+    queryFn: () => fetchRecipes(tag || undefined),
+  });
+  const recipes = data?.recipes || [];
 
   const gradeColor = (score) => (score >= 7 ? "#2d6a4f" : score >= 4 ? "#e9c46a" : "#e63946");
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      <div
-        style={{
-          background: "#0d2818",
-          padding: "36px 24px 44px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "2.2rem", marginBottom: 8 }}>{"🍳"}</div>
-        <h1
-          style={{
-            color: "#fff",
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 800,
-            fontSize: "1.6rem",
-            marginBottom: 6,
-          }}
-        >
-          Sustainable Recipes
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>
-          Delicious meals made with low-emission ingredients.
-        </p>
-      </div>
+      <PageHero
+        icon={"\uD83C\uDF73"}
+        title="Sustainable Recipes"
+        subtitle="Delicious meals made with low-emission ingredients."
+      />
 
       <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 20px 40px" }}>
         {/* Tag filters */}
@@ -96,20 +77,7 @@ export default function Recipes() {
         </div>
 
         {loading ? (
-          <div style={{ padding: 40, textAlign: "center", color: "#888" }}>
-            <div
-              style={{
-                width: 36,
-                height: 36,
-                border: "3px solid #d8f3dc",
-                borderTopColor: "#2d6a4f",
-                borderRadius: "50%",
-                animation: "spin 0.8s linear infinite",
-                margin: "0 auto 12px",
-              }}
-            />
-            Loading recipes...
-          </div>
+          <Spinner message="Loading recipes..." />
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {recipes.map((recipe) => (

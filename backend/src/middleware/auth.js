@@ -1,5 +1,9 @@
 const jwt = require("jsonwebtoken");
 
+if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required in production");
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || "consciobite-dev-secret-change-in-production";
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
@@ -37,4 +41,4 @@ function optionalAuth(req, _res, next) {
   next();
 }
 
-module.exports = { generateToken, requireAuth, optionalAuth, JWT_SECRET };
+module.exports = { generateToken, requireAuth, optionalAuth };

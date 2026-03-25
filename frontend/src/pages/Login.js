@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { loginUser } from "../services/api";
+import PageHero from "../components/PageHero";
 
 export default function Login() {
   const { theme } = useTheme();
@@ -31,29 +32,11 @@ export default function Login() {
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      <div
-        style={{
-          background: "#0d2818",
-          padding: "36px 24px 44px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "2.2rem", marginBottom: 8 }}>{"🔑"}</div>
-        <h1
-          style={{
-            color: "#fff",
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 800,
-            fontSize: "1.6rem",
-            marginBottom: 6,
-          }}
-        >
-          Welcome Back
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>
-          Sign in to track your carbon footprint and leave reviews.
-        </p>
-      </div>
+      <PageHero
+        icon={"🔑"}
+        title="Welcome Back"
+        subtitle="Sign in to track your carbon footprint and leave reviews."
+      />
 
       <div style={{ maxWidth: 400, margin: "0 auto", padding: "0 20px 40px" }}>
         <form
@@ -69,6 +52,9 @@ export default function Login() {
         >
           {error && (
             <div
+              id="login-error"
+              role="alert"
+              aria-live="assertive"
               style={{
                 padding: 12,
                 background: isDark ? "#2a1519" : "#fef2f2",
@@ -100,6 +86,8 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
+              aria-describedby={error ? "login-error" : undefined}
               placeholder="you@example.com"
               style={{
                 width: "100%",
@@ -130,7 +118,8 @@ export default function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder="At least 6 characters"
+              autoComplete="current-password"
+              placeholder="Enter your password"
               style={{
                 width: "100%",
                 padding: "12px 14px",

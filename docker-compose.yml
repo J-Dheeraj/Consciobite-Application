@@ -7,7 +7,7 @@ services:
       - NODE_ENV=production
       - PORT=4000
       - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:80
-      - JWT_SECRET=${JWT_SECRET:-consciobite-production-secret-change-me}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET environment variable is required}
     volumes:
       - db-data:/app/data
     restart: unless-stopped

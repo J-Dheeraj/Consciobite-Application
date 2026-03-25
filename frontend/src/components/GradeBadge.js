@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const colorMap = {
   green: {
@@ -21,7 +22,7 @@ const colorMap = {
   },
 };
 
-export default function GradeBadge({ score, color, size = "normal" }) {
+function GradeBadge({ score, color, size = "normal" }) {
   const colors = colorMap[color] || colorMap.yellow;
   const dim = size === "large" ? 88 : 48;
   const fontSize = size === "large" ? "1.5rem" : "0.95rem";
@@ -80,3 +81,11 @@ export default function GradeBadge({ score, color, size = "normal" }) {
     </div>
   );
 }
+
+GradeBadge.propTypes = {
+  score: PropTypes.number.isRequired,
+  color: PropTypes.oneOf(["green", "yellow", "red"]).isRequired,
+  size: PropTypes.oneOf(["normal", "large"]),
+};
+
+export default React.memo(GradeBadge);

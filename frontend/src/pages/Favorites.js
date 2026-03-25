@@ -4,6 +4,8 @@ import { fetchProduct } from "../services/api";
 import ProductCard from "../components/ProductCard";
 import { useTheme } from "../context/ThemeContext";
 import { getFavoriteIds, clearFavorites } from "../utils/favorites";
+import Spinner from "../components/Spinner";
+import PageHero from "../components/PageHero";
 
 export default function Favorites() {
   const { theme } = useTheme();
@@ -30,51 +32,16 @@ export default function Favorites() {
   };
 
   if (loading) {
-    return (
-      <div
-        style={{ maxWidth: 700, margin: "0 auto", padding: 48, textAlign: "center", color: "#888" }}
-      >
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            border: "3px solid #d8f3dc",
-            borderTopColor: "#2d6a4f",
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-            margin: "0 auto 12px",
-          }}
-        />
-        Loading favorites...
-      </div>
-    );
+    return <Spinner message="Loading favorites..." />;
   }
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      <div
-        style={{
-          background: "#0d2818",
-          padding: "36px 24px 44px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "2.2rem", marginBottom: 8 }}>{"\u2665"}</div>
-        <h1
-          style={{
-            color: "#fff",
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 800,
-            fontSize: "1.6rem",
-            marginBottom: 6,
-          }}
-        >
-          My Favorites
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>
-          Products you've saved for quick access.
-        </p>
-      </div>
+      <PageHero
+        icon={"\u2665"}
+        title="My Favorites"
+        subtitle="Products you've saved for quick access."
+      />
 
       <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 20px 40px" }}>
         {products.length > 0 && (

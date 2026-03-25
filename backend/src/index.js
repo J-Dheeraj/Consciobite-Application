@@ -97,6 +97,14 @@ app.use("/api/auth", authLimiter);
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 
+// ---------- JSON parse error handler ----------
+app.use((err, _req, res, next) => {
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({ error: "Invalid JSON in request body" });
+  }
+  next(err);
+});
+
 // ---------- HTTP parameter pollution protection ----------
 app.use(hpp());
 
@@ -138,6 +146,12 @@ app.use((err, _req, res, _next) => {
   if (err.message === "Not allowed by CORS") {
     return res.status(403).json({ error: "CORS policy: origin not allowed" });
   }
+
+  // Handle operational errors (AppError instances)
+  if (err.isOperational) {
+    return res.status(err.statusCode).json({ error: err.message });
+  }
+
   logger.error("Unhandled error:", err);
   res.status(500).json({ error: "Internal server error" });
 });

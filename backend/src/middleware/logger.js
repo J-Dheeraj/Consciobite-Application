@@ -9,7 +9,7 @@ const logger = winston.createLogger({
       ? winston.format.json()
       : winston.format.combine(winston.format.colorize(), winston.format.simple())
   ),
-  defaultMeta: { service: "consciobite-api" },
+  defaultMeta: { service: "consciobite-api", env: process.env.NODE_ENV || "development" },
   transports: [new winston.transports.Console()],
 });
 

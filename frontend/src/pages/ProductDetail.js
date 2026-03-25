@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import { fetchProduct, logCarbonPurchase } from "../services/api";
+import { scoreColor } from "../utils/constants";
 import GradeBadge from "../components/GradeBadge";
 import ProductImage from "../components/ProductImage";
+import Spinner from "../components/Spinner";
 import { useAuth } from "../context/AuthContext";
 import { isFavorited, toggleFavorite } from "../utils/favorites";
-import { Link } from "react-router-dom";
 
-const scoreColor = (score) => {
-  if (score >= 7) return "#27ae60";
-  if (score >= 4) return "#f39c12";
-  return "#e74c3c";
-};
+const LEGEND_ITEMS = [
+  { color: "#27ae60", label: "Best" },
+  { color: "#f39c12", label: "Medium" },
+  { color: "#e74c3c", label: "Bad" },
+];
 
 const CATEGORY_LABELS = {
   "Land Use Change": "Land Use Change",
@@ -80,26 +82,27 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const [product, setProduct] = useState(null);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [fav, setFav] = useState(false);
   const [loggedPurchase, setLoggedPurchase] = useState(false);
   const [showStats, setShowStats] = useState(false);
 
-  useEffect(() => {
-    setError("");
-    setLoading(true);
+  const {
+    data: product,
+    isLoading: loading,
+    error: queryError,
+  } = useQuery({
+    queryKey: ["product", id],
+    queryFn: () => fetchProduct(id),
+  });
+
+  const error = queryError ? "Unable to load product details." : "";
+  const [fav, setFav] = useState(false);
+
+  // Sync favorite state when product loads
+  React.useEffect(() => {
+    if (product) setFav(isFavorited(product.id));
     setLoggedPurchase(false);
     setShowStats(false);
-    fetchProduct(id)
-      .then((data) => {
-        setProduct(data);
-        setFav(isFavorited(data.id));
-      })
-      .catch(() => setError("Unable to load product details."))
-      .finally(() => setLoading(false));
-  }, [id]);
+  }, [product]);
 
   const handleLogPurchase = async () => {
     if (!product) return;
@@ -112,22 +115,7 @@ export default function ProductDetail() {
   };
 
   if (loading) {
-    return (
-      <div style={{ padding: 48, textAlign: "center", color: "#888" }}>
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            border: "3px solid #d8f3dc",
-            borderTopColor: "#2d6a4f",
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-            margin: "0 auto 12px",
-          }}
-        />
-        Loading product...
-      </div>
-    );
+    return <Spinner message="Loading product..." />;
   }
 
   if (error || !product) {
@@ -174,6 +162,8 @@ export default function ProductDetail() {
   }
 
   const { greenGrade } = product;
+  const confLabel =
+    greenGrade.dataConfidence !== undefined ? confidenceLabel(greenGrade.dataConfidence) : null;
 
   return (
     <div
@@ -260,11 +250,7 @@ export default function ProductDetail() {
                 GreenGrade Legend
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                {[
-                  { color: "#27ae60", label: "Best" },
-                  { color: "#f39c12", label: "Medium" },
-                  { color: "#e74c3c", label: "Bad" },
-                ].map((item) => (
+                {LEGEND_ITEMS.map((item) => (
                   <div
                     key={item.label}
                     style={{
@@ -379,7 +365,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Data confidence badge */}
-          {greenGrade.dataConfidence !== undefined && (
+          {confLabel && (
             <div
               style={{
                 display: "flex",
@@ -389,8 +375,8 @@ export default function ProductDetail() {
                 marginBottom: 16,
                 padding: "8px 14px",
                 borderRadius: 20,
-                background: confidenceLabel(greenGrade.dataConfidence).bg,
-                border: `1px solid ${confidenceLabel(greenGrade.dataConfidence).color}30`,
+                background: confLabel.bg,
+                border: `1px solid ${confLabel.color}30`,
               }}
             >
               <span
@@ -398,18 +384,18 @@ export default function ProductDetail() {
                   width: 8,
                   height: 8,
                   borderRadius: "50%",
-                  background: confidenceLabel(greenGrade.dataConfidence).color,
+                  background: confLabel.color,
                   display: "inline-block",
                 }}
               />
               <span
                 style={{
-                  color: confidenceLabel(greenGrade.dataConfidence).color,
+                  color: confLabel.color,
                   fontSize: "0.78rem",
                   fontWeight: 600,
                 }}
               >
-                {confidenceLabel(greenGrade.dataConfidence).text}
+                {confLabel.text}
               </span>
               <span style={{ color: "#b8d4c0", fontSize: "0.72rem" }}>
                 {tierLabel(greenGrade.dataTier)}
@@ -714,7 +700,7 @@ export default function ProductDetail() {
                     <span
                       style={{
                         fontWeight: 600,
-                        color: confidenceLabel(greenGrade.dataConfidence).color,
+                        color: confLabel.color,
                       }}
                     >
                       {Math.round(greenGrade.dataConfidence * 100)}%
@@ -867,6 +853,222 @@ export default function ProductDetail() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Data Sources & Citations */}
+        {product.dataSources && (
+          <div
+            style={{
+              width: "100%",
+              background: "#14352a",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+            }}
+          >
+            <h4
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 16,
+                fontSize: "0.95rem",
+              }}
+            >
+              Data Sources & Citations
+            </h4>
+
+            {/* Brand Information */}
+            {product.dataSources.brand && (
+              <div style={{ marginBottom: 16 }}>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#b8d4c0",
+                    marginBottom: 8,
+                    fontWeight: 600,
+                  }}
+                >
+                  Brand Information
+                </div>
+                <div
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    borderRadius: 12,
+                    padding: "12px 14px",
+                  }}
+                >
+                  <div
+                    style={{ color: "#fff", fontSize: "0.88rem", fontWeight: 600, marginBottom: 4 }}
+                  >
+                    {product.dataSources.brand.name}
+                  </div>
+                  <div style={{ color: "#d4e8da", fontSize: "0.8rem", marginBottom: 4 }}>
+                    {product.dataSources.brand.description}
+                  </div>
+                  <div style={{ color: "#d4e8da", fontSize: "0.8rem", marginBottom: 4 }}>
+                    Country of Origin:{" "}
+                    <span style={{ fontWeight: 600 }}>
+                      {product.dataSources.brand.countryOfOrigin}
+                    </span>
+                  </div>
+                  {product.dataSources.brand.website && (
+                    <a
+                      href={product.dataSources.brand.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        color: "#52b788",
+                        fontSize: "0.78rem",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      {product.dataSources.brand.website}
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Emissions Data Sources */}
+            {product.dataSources.emissions && product.dataSources.emissions.length > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#b8d4c0",
+                    marginBottom: 8,
+                    fontWeight: 600,
+                  }}
+                >
+                  Emissions Data Sources
+                </div>
+                {product.dataSources.emissions.map((source, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      background: "rgba(255,255,255,0.06)",
+                      borderRadius: 12,
+                      padding: "12px 14px",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <div
+                      style={{
+                        color: "#fff",
+                        fontSize: "0.85rem",
+                        fontWeight: 600,
+                        marginBottom: 4,
+                      }}
+                    >
+                      {source.name}
+                    </div>
+                    <div
+                      style={{
+                        display: "inline-block",
+                        background: "rgba(82,183,136,0.2)",
+                        color: "#52b788",
+                        fontSize: "0.7rem",
+                        padding: "2px 8px",
+                        borderRadius: 6,
+                        marginBottom: 6,
+                      }}
+                    >
+                      {source.type.replace(/_/g, " ")}
+                    </div>
+                    <div
+                      style={{
+                        color: "#d4e8da",
+                        fontSize: "0.75rem",
+                        lineHeight: 1.5,
+                        marginBottom: 4,
+                      }}
+                    >
+                      {source.citation}
+                    </div>
+                    {source.methodology && (
+                      <div
+                        style={{
+                          color: "#7a9a7e",
+                          fontSize: "0.72rem",
+                          fontStyle: "italic",
+                          marginBottom: 4,
+                        }}
+                      >
+                        {source.methodology}
+                      </div>
+                    )}
+                    {source.doi && (
+                      <a
+                        href={source.doi}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: "#52b788",
+                          fontSize: "0.72rem",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        DOI: {source.doi.replace("https://doi.org/", "")}
+                      </a>
+                    )}
+                    {!source.doi && source.url && (
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          color: "#52b788",
+                          fontSize: "0.72rem",
+                          textDecoration: "underline",
+                        }}
+                      >
+                        {source.url}
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Product Info Methodology */}
+            {product.dataSources.productInfo && (
+              <div>
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    color: "#b8d4c0",
+                    marginBottom: 8,
+                    fontWeight: 600,
+                  }}
+                >
+                  Methodology
+                </div>
+                <div
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    borderRadius: 12,
+                    padding: "12px 14px",
+                  }}
+                >
+                  <div
+                    style={{
+                      color: "#d4e8da",
+                      fontSize: "0.78rem",
+                      lineHeight: 1.6,
+                      marginBottom: 6,
+                    }}
+                  >
+                    {product.dataSources.productInfo.methodology}
+                  </div>
+                  <div style={{ color: "#7a9a7e", fontSize: "0.72rem" }}>
+                    Source: {product.dataSources.productInfo.source} | Last updated:{" "}
+                    {product.dataSources.productInfo.lastUpdated}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

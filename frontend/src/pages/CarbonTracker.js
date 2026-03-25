@@ -1,73 +1,56 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { fetchCarbonSummary, fetchCarbonLogs, deleteCarbonLog } from "../services/api";
+import Spinner from "../components/Spinner";
+import PageHero from "../components/PageHero";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function CarbonTracker() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { isAuthenticated } = useAuth();
-  const [summary, setSummary] = useState(null);
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const queryClient = useQueryClient();
 
-  const loadData = useCallback(async () => {
-    if (!isAuthenticated) {
-      setLoading(false);
-      return;
-    }
-    try {
-      const [summaryData, logsData] = await Promise.all([fetchCarbonSummary(), fetchCarbonLogs()]);
-      setSummary(summaryData);
-      setLogs(logsData.logs);
-    } catch {
-      setError("Unable to load carbon data.");
-    } finally {
-      setLoading(false);
-    }
-  }, [isAuthenticated]);
+  const {
+    data: carbonData,
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: ["carbon"],
+    queryFn: () =>
+      Promise.all([fetchCarbonSummary(), fetchCarbonLogs()]).then(([summaryData, logsData]) => ({
+        summary: summaryData,
+        logs: logsData.logs,
+      })),
+    enabled: isAuthenticated,
+  });
 
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
+  const summary = carbonData?.summary || null;
+  const logs = carbonData?.logs || [];
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteCarbonLog(id);
-      loadData();
-    } catch {
-      /* ignore */
-    }
-  };
+  const handleDelete = useCallback(
+    async (id) => {
+      try {
+        await deleteCarbonLog(id);
+        queryClient.invalidateQueries({ queryKey: ["carbon"] });
+      } catch {
+        /* ignore */
+      }
+    },
+    [queryClient]
+  );
 
   if (!isAuthenticated) {
     return (
       <div style={{ animation: "fadeIn 0.4s ease" }}>
-        <div
-          style={{
-            background: "#0d2818",
-            padding: "36px 24px 44px",
-            textAlign: "center",
-          }}
-        >
-          <div style={{ fontSize: "2.2rem", marginBottom: 8 }}>{"🌍"}</div>
-          <h1
-            style={{
-              color: "#fff",
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 800,
-              fontSize: "1.6rem",
-            }}
-          >
-            Carbon Tracker
-          </h1>
-          <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>
-            Track your food carbon footprint over time.
-          </p>
-        </div>
+        <PageHero
+          icon={"🌍"}
+          title="Carbon Tracker"
+          subtitle="Track your food carbon footprint over time."
+        />
         <div style={{ maxWidth: 500, margin: "0 auto", padding: "0 20px 40px" }}>
           <div
             style={{
@@ -104,22 +87,7 @@ export default function CarbonTracker() {
   }
 
   if (loading) {
-    return (
-      <div style={{ padding: 48, textAlign: "center", color: "#888" }}>
-        <div
-          style={{
-            width: 36,
-            height: 36,
-            border: "3px solid #d8f3dc",
-            borderTopColor: "#2d6a4f",
-            borderRadius: "50%",
-            animation: "spin 0.8s linear infinite",
-            margin: "0 auto 12px",
-          }}
-        />
-        Loading carbon data...
-      </div>
-    );
+    return <Spinner message="Loading carbon data..." />;
   }
 
   const weeklyGoal = 10; // kg CO2e per week
@@ -128,33 +96,17 @@ export default function CarbonTracker() {
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
-      <div
-        style={{
-          background: "#0d2818",
-          padding: "36px 24px 44px",
-          textAlign: "center",
-        }}
-      >
-        <div style={{ fontSize: "2.2rem", marginBottom: 8 }}>{"🌍"}</div>
-        <h1
-          style={{
-            color: "#fff",
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 800,
-            fontSize: "1.6rem",
-            marginBottom: 6,
-          }}
-        >
-          Carbon Tracker
-        </h1>
-        <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "0.9rem" }}>
-          Monitor your food-related carbon footprint.
-        </p>
-      </div>
+      <PageHero
+        icon={"🌍"}
+        title="Carbon Tracker"
+        subtitle="Monitor your food-related carbon footprint."
+      />
 
       <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 20px 40px" }}>
         {error && (
           <div
+            role="alert"
+            aria-live="assertive"
             style={{
               marginTop: 16,
               padding: 14,

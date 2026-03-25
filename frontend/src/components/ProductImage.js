@@ -1,4 +1,5 @@
 import React from "react";
+import { CATEGORY_ICONS } from "../utils/constants";
 
 const CATEGORY_COLORS = {
   Protein: { bg: "#fef2f2", fg: "#e63946", accent: "#fca5a5" },
@@ -10,18 +11,6 @@ const CATEGORY_COLORS = {
   Beverages: { bg: "#f0fdfa", fg: "#0d9488", accent: "#5eead4" },
   Snacks: { bg: "#fef3c7", fg: "#b45309", accent: "#fbbf24" },
   Pantry: { bg: "#f5f3ff", fg: "#7c3aed", accent: "#c4b5fd" },
-};
-
-const CATEGORY_ICONS = {
-  Protein: "\uD83E\uDD69",
-  Seafood: "\uD83D\uDC1F",
-  "Dairy & Eggs": "\uD83E\uDD5B",
-  Grains: "\uD83C\uDF3E",
-  Fruits: "\uD83C\uDF53",
-  Vegetables: "\uD83E\uDD66",
-  Beverages: "\uD83E\uDDC3",
-  Snacks: "\uD83C\uDF6A",
-  Pantry: "\uD83C\uDF6F",
 };
 
 function hashName(name) {

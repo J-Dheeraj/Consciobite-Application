@@ -214,6 +214,22 @@ select {
   background: var(--green-600);
 }
 
+/* Navbar responsive */
+@media (max-width: 768px) {
+  .nav-desktop {
+    display: none !important;
+  }
+  .nav-hamburger {
+    display: block !important;
+  }
+  .nav-theme-mobile {
+    display: block !important;
+  }
+  .nav-mobile {
+    display: flex !important;
+  }
+}
+
 /* Responsive utilities */
 @media (max-width: 480px) {
   h1 {
