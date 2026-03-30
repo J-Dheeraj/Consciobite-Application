@@ -45,8 +45,9 @@ router.post("/:productId", requireAuth, (req, res) => {
   const productId = validator.escape(validator.trim(req.params.productId)).slice(0, 20);
   const { rating, comment } = req.body;
 
-  if (!rating || rating < 1 || rating > 5) {
-    return res.status(400).json({ error: "Rating must be between 1 and 5" });
+  const parsedRating = parseInt(rating, 10);
+  if (!Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+    return res.status(400).json({ error: "Rating must be an integer between 1 and 5" });
   }
 
   const sanitizedComment = comment ? validator.escape(validator.trim(comment)).slice(0, 500) : null;
@@ -64,7 +65,7 @@ router.post("/:productId", requireAuth, (req, res) => {
   const id = crypto.randomUUID();
   db.prepare(
     "INSERT INTO reviews (id, product_id, user_id, rating, comment) VALUES (?, ?, ?, ?, ?)"
-  ).run(id, productId, req.user.id, rating, sanitizedComment);
+  ).run(id, productId, req.user.id, parsedRating, sanitizedComment);
 
   invalidateCache(`reviews/${productId}`);
 

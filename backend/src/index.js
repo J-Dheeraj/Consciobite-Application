@@ -43,7 +43,7 @@ function isAllowedOrigin(origin) {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
   try {
     const url = new URL(origin);
-    if (url.hostname.startsWith("consciobite") && url.hostname.endsWith(".onrender.com")) {
+    if (/^consciobite-(app|api)\.onrender\.com$/.test(url.hostname)) {
       return true;
     }
   } catch (_) {
@@ -112,14 +112,16 @@ app.use(hpp());
 app.disable("x-powered-by");
 
 // ---------- API Documentation ----------
-app.use(
-  "/api/docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerSpec, {
-    customCss: ".swagger-ui .topbar { display: none }",
-    customSiteTitle: "Consciobite API Docs",
-  })
-);
+if (process.env.NODE_ENV !== "production") {
+  app.use(
+    "/api/docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+      customCss: ".swagger-ui .topbar { display: none }",
+      customSiteTitle: "Consciobite API Docs",
+    })
+  );
+}
 
 // ---------- Routes ----------
 app.get("/api/health", (_req, res) => {

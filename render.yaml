@@ -7,7 +7,7 @@ services:
     name: consciobite-api
     runtime: node
     rootDir: backend
-    buildCommand: npm install
+    buildCommand: npm ci
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -24,7 +24,7 @@ services:
     name: consciobite-app
     runtime: static
     rootDir: frontend
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci && npm run build
     staticPublishPath: build
     envVars:
       - key: REACT_APP_API_URL

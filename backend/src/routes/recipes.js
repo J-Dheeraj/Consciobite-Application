@@ -1,4 +1,5 @@
 const express = require("express");
+const validator = require("validator");
 const products = require("../data/products.json");
 const { calculateGreenGrade } = require("../services/greengrade");
 
@@ -133,11 +134,12 @@ function getGreenIngredients(category, limit = 3) {
 
 // GET /api/recipes - get recipe suggestions with green ingredients
 router.get("/", (req, res) => {
-  const tag = req.query.tag;
+  const rawTag = req.query.tag;
 
   let filtered = RECIPE_TEMPLATES;
-  if (tag) {
-    filtered = filtered.filter((r) => r.tags.includes(tag.toLowerCase()));
+  if (rawTag) {
+    const tag = validator.escape(validator.trim(rawTag)).slice(0, 50).toLowerCase();
+    filtered = filtered.filter((r) => r.tags.includes(tag));
   }
 
   const recipes = filtered.map((recipe) => {
@@ -167,7 +169,8 @@ router.get("/", (req, res) => {
 
 // GET /api/recipes/:id - get single recipe
 router.get("/:id", (req, res) => {
-  const recipe = RECIPE_TEMPLATES.find((r) => r.id === req.params.id);
+  const recipeId = validator.escape(validator.trim(req.params.id)).slice(0, 50);
+  const recipe = RECIPE_TEMPLATES.find((r) => r.id === recipeId);
   if (!recipe) {
     return res.status(404).json({ error: "Recipe not found" });
   }

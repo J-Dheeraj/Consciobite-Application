@@ -7,6 +7,36 @@ const { generateToken, requireAuth } = require("../middleware/auth");
 
 const router = express.Router();
 
+// ---------- Account lockout after repeated failed logins ----------
+const loginAttempts = new Map();
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
+
+function recordFailedAttempt(email) {
+  const entry = loginAttempts.get(email) || { count: 0, firstAttempt: Date.now() };
+  if (Date.now() - entry.firstAttempt > LOCKOUT_MS) {
+    entry.count = 1;
+    entry.firstAttempt = Date.now();
+  } else {
+    entry.count++;
+  }
+  loginAttempts.set(email, entry);
+}
+
+function isLockedOut(email) {
+  const entry = loginAttempts.get(email);
+  if (!entry) return false;
+  if (Date.now() - entry.firstAttempt > LOCKOUT_MS) {
+    loginAttempts.delete(email);
+    return false;
+  }
+  return entry.count >= MAX_ATTEMPTS;
+}
+
+function clearAttempts(email) {
+  loginAttempts.delete(email);
+}
+
 // POST /api/auth/register
 router.post("/register", async (req, res) => {
   const { email, name, password } = req.body;
@@ -17,6 +47,10 @@ router.post("/register", async (req, res) => {
 
   if (!validator.isEmail(email)) {
     return res.status(400).json({ error: "Invalid email format" });
+  }
+
+  if (password.length > 128) {
+    return res.status(400).json({ error: "Password must not exceed 128 characters" });
   }
 
   if (
@@ -36,11 +70,11 @@ router.post("/register", async (req, res) => {
   const db = getDb();
   const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(sanitizedEmail);
   if (existing) {
-    return res.status(409).json({ error: "Email already registered" });
+    return res.status(409).json({ error: "Unable to create account" });
   }
 
   const id = crypto.randomUUID();
-  const passwordHash = await bcrypt.hash(password, 10);
+  const passwordHash = await bcrypt.hash(password, 12);
 
   db.prepare("INSERT INTO users (id, email, name, password_hash) VALUES (?, ?, ?, ?)").run(
     id,
@@ -63,15 +97,23 @@ router.post("/login", async (req, res) => {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
+  const normalizedEmail = validator.normalizeEmail(email);
+
+  if (isLockedOut(normalizedEmail)) {
+    return res.status(429).json({ error: "Too many failed attempts. Please try again later." });
+  }
+
   const db = getDb();
   const user = db
-    .prepare("SELECT * FROM users WHERE email = ?")
-    .get(validator.normalizeEmail(email));
+    .prepare("SELECT id, email, name, password_hash FROM users WHERE email = ?")
+    .get(normalizedEmail);
 
   if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+    recordFailedAttempt(normalizedEmail);
     return res.status(401).json({ error: "Invalid email or password" });
   }
 
+  clearAttempts(normalizedEmail);
   const token = generateToken({ id: user.id, email: user.email });
 
   res.json({

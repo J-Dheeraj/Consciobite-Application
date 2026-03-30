@@ -45,6 +45,13 @@ export function AuthProvider({ children }) {
     }
   }, [token, logout]);
 
+  useEffect(() => {
+    // Auto-logout when a 401 is received from the API
+    const handleExpired = () => logout();
+    window.addEventListener("auth-expired", handleExpired);
+    return () => window.removeEventListener("auth-expired", handleExpired);
+  }, [logout]);
+
   return (
     <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token }}>
       {children}
