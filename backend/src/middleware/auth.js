@@ -1,15 +1,17 @@
 const jwt = require("jsonwebtoken");
 
-if (process.env.NODE_ENV === "production" && !process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET environment variable is required in production");
+if (process.env.NODE_ENV !== "test" && !process.env.JWT_SECRET) {
+  throw new Error("JWT_SECRET environment variable is required");
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || "consciobite-dev-secret-change-in-production";
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
+const JWT_SECRET = process.env.JWT_SECRET || "test-only-secret";
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "2h";
+const JWT_ALGORITHM = "HS256";
 
 function generateToken(user) {
   return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
+    algorithm: JWT_ALGORITHM,
   });
 }
 
@@ -21,7 +23,7 @@ function requireAuth(req, res, next) {
 
   try {
     const token = header.slice(7);
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
     req.user = decoded;
     next();
   } catch {
@@ -33,7 +35,7 @@ function optionalAuth(req, _res, next) {
   const header = req.headers.authorization;
   if (header && header.startsWith("Bearer ")) {
     try {
-      req.user = jwt.verify(header.slice(7), JWT_SECRET);
+      req.user = jwt.verify(header.slice(7), JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
     } catch {
       // Invalid token, proceed without auth
     }

@@ -35,6 +35,11 @@ async function safeFetch(url, options = {}) {
     },
   });
   if (!res.ok) {
+    if (res.status === 401 && localStorage.getItem("consciobite_token")) {
+      localStorage.removeItem("consciobite_token");
+      localStorage.removeItem("consciobite_user");
+      window.dispatchEvent(new Event("auth-expired"));
+    }
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Request failed (${res.status})`);
   }
