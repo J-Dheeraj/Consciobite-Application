@@ -2,12 +2,9 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { fetchProducts } from "../services/api";
 import { scoreColor } from "../utils/constants";
-import { useTheme } from "../context/ThemeContext";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
@@ -62,591 +59,704 @@ export default function Home() {
 
   const hasResults = showResults && results.length > 0;
 
-  const bg = isDark ? "#0a0a0a" : "#fafafa";
-  const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
-  const cardBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)";
-  const textPrimary = isDark ? "#ededed" : "#111";
-  const textSecondary = isDark ? "rgba(255,255,255,0.6)" : "#666";
-  const textMuted = isDark ? "rgba(255,255,255,0.4)" : "#999";
-  const accent = "#2d6a4f";
-
-  const features = [
-    {
-      title: "GreenGrade Ratings",
-      desc: "Every product scored on nutrition, environmental impact, and sustainability. Shop with confidence.",
-    },
-    {
-      title: "Carbon Tracker",
-      desc: "Track your food-related carbon emissions with personalized insights and weekly reduction goals.",
-    },
-    {
-      title: "Smart Comparisons",
-      desc: "Compare products side-by-side to instantly find healthier, greener alternatives.",
-    },
-    {
-      title: "Eco-Friendly Recipes",
-      desc: "Discover recipes that are good for you and gentle on the planet, curated by sustainability experts.",
-    },
-  ];
-
-  const steps = [
-    { step: "01", title: "Search", desc: "Look up any food product by name or barcode." },
-    {
-      step: "02",
-      title: "Understand",
-      desc: "See the GreenGrade score, nutrition facts, and carbon impact.",
-    },
-    {
-      step: "03",
-      title: "Choose better",
-      desc: "Pick the healthiest, most sustainable option every time.",
-    },
-  ];
-
   return (
-    <div style={{ background: bg, minHeight: "100vh" }}>
+    <div className="lp">
       {/* ── Hero ── */}
-      <section
-        style={{
-          position: "relative",
-          overflow: "hidden",
-          padding: "80px 24px 88px",
-          textAlign: "center",
-          background: isDark
-            ? "linear-gradient(180deg, #0a1f14 0%, #0a0a0a 100%)"
-            : "linear-gradient(180deg, #f0faf4 0%, #fafafa 100%)",
-        }}
-      >
-        {/* Subtle gradient orbs */}
-        <div
-          style={{
-            position: "absolute",
-            top: "-20%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: 800,
-            height: 500,
-            borderRadius: "50%",
-            background: isDark
-              ? "radial-gradient(ellipse, rgba(45,106,79,0.15) 0%, transparent 70%)"
-              : "radial-gradient(ellipse, rgba(45,106,79,0.08) 0%, transparent 70%)",
-            pointerEvents: "none",
-          }}
-        />
+      <section className="lp-hero">
+        <div className="lp-hero-content">
+          <span className="lp-eyebrow">Sustainability Scoring Platform</span>
 
-        <div style={{ position: "relative", zIndex: 1, maxWidth: 680, margin: "0 auto" }}>
-          <div
-            style={{
-              display: "inline-block",
-              padding: "6px 16px",
-              borderRadius: 20,
-              background: isDark ? "rgba(45,106,79,0.2)" : "rgba(45,106,79,0.08)",
-              color: accent,
-              fontSize: "0.8rem",
-              fontWeight: 600,
-              letterSpacing: "0.04em",
-              marginBottom: 24,
-            }}
-          >
-            Powered by GreenGrade{"\u2122"}
-          </div>
-
-          <h1
-            style={{
-              color: textPrimary,
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 800,
-              fontSize: "clamp(2rem, 5.5vw, 3.2rem)",
-              lineHeight: 1.15,
-              marginBottom: 20,
-              letterSpacing: "-0.03em",
-            }}
-          >
+          <h1 className="lp-h1">
             Know what you eat.
             <br />
-            Protect what matters.
+            <em>Protect what matters.</em>
           </h1>
 
-          <p
-            style={{
-              color: textSecondary,
-              fontSize: "clamp(1rem, 2.5vw, 1.18rem)",
-              lineHeight: 1.7,
-              maxWidth: 500,
-              margin: "0 auto 36px",
-            }}
-          >
-            Consciobite gives you real-time product ratings, carbon tracking, and personalized
-            insights so every food choice is a smart one.
+          <p className="lp-hero-sub">
+            GreenGrade scores every product across 7 supply-chain dimensions — from land use to
+            retail — so you can shop with confidence and cut your food carbon footprint.
           </p>
 
-          {/* CTA buttons */}
-          <div
-            style={{
-              display: "flex",
-              gap: 12,
-              justifyContent: "center",
-              flexWrap: "wrap",
-              marginBottom: 40,
-            }}
-          >
-            <button
-              onClick={() => navigate("/scan")}
-              style={{
-                padding: "14px 36px",
-                borderRadius: 10,
-                border: "none",
-                background: accent,
-                color: "#fff",
-                fontSize: "0.95rem",
-                fontWeight: 600,
-                cursor: "pointer",
-                transition: "opacity 0.2s",
-              }}
-            >
-              Try Now
+          <div className="lp-hero-actions">
+            <button className="lp-btn-primary" onClick={() => navigate("/products")}>
+              Browse Products
             </button>
-            <Link
-              to="/about"
-              style={{
-                padding: "14px 36px",
-                borderRadius: 10,
-                border: `1px solid ${cardBorder}`,
-                background: "transparent",
-                color: textPrimary,
-                fontSize: "0.95rem",
-                fontWeight: 600,
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-                transition: "border-color 0.2s",
-              }}
-            >
-              Learn More
+            <Link className="lp-btn-ghost" to="/about">
+              How it works &rarr;
             </Link>
           </div>
+        </div>
 
-          {/* Inline search widget */}
+        {/* Grade Card Demo */}
+        <div className="lp-grade-card">
+          <div style={{ marginBottom: 20 }}>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 500,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                color: "var(--lp-ink-muted)",
+                marginBottom: 8,
+              }}
+            >
+              Sample Product Score
+            </div>
+            <div style={{ fontSize: 20, fontWeight: 600, color: "var(--lp-green-900)" }}>
+              Organic Free-Range Eggs
+            </div>
+            <div style={{ fontSize: 13, color: "var(--lp-ink-light)", marginTop: 4 }}>
+              FairPrice &middot; Dairy &amp; Eggs
+            </div>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 20, marginBottom: 28 }}>
+            <div
+              style={{
+                width: 80,
+                height: 80,
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #2d7a42, #5ab870)",
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 28,
+                fontWeight: 700,
+                fontFamily: "var(--lp-serif)",
+                boxShadow: "0 4px 20px rgba(45, 122, 66, 0.3)",
+              }}
+            >
+              7.8
+            </div>
+            <div>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 600,
+                  color: "var(--lp-green-700)",
+                  marginBottom: 2,
+                }}
+              >
+                GreenGrade: Excellent
+              </div>
+              <div style={{ fontSize: 13, color: "var(--lp-ink-light)" }}>
+                Top 15% of products in category
+              </div>
+            </div>
+          </div>
+
+          {/* Mini emissions breakdown */}
           <div
-            ref={searchRef}
-            role="combobox"
-            aria-expanded={hasResults}
-            aria-controls="search-results"
-            aria-haspopup="listbox"
             style={{
-              position: "relative",
-              width: "100%",
-              maxWidth: 480,
-              margin: "0 auto",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              gap: 10,
             }}
           >
-            <input
-              type="text"
-              placeholder="Search for a product..."
-              value={search}
-              onChange={handleSearchChange}
-              onKeyDown={handleKeyDown}
-              onFocus={() => {
-                if (results.length > 0) setShowResults(true);
-              }}
-              aria-label="Search products"
-              aria-autocomplete="list"
-              style={{
-                width: "100%",
-                padding: "15px 24px",
-                borderRadius: hasResults ? "12px 12px 0 0" : 12,
-                border: `1px solid ${isDark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.1)"}`,
-                fontSize: "0.95rem",
-                background: isDark ? "rgba(255,255,255,0.06)" : "#fff",
-                color: textPrimary,
-                outline: "none",
-                fontWeight: 500,
-                transition: "border-radius 0.15s ease",
-                boxShadow: isDark ? "none" : "0 2px 8px rgba(0,0,0,0.04)",
-              }}
-            />
-            {loading && (
-              <span
-                style={{
-                  position: "absolute",
-                  right: 16,
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  color: textMuted,
-                  fontSize: "0.82rem",
-                }}
-              >
-                Searching...
-              </span>
-            )}
-
-            {hasResults && (
+            {[
+              { label: "Land Use", val: "0.8", pct: 80 },
+              { label: "Farm", val: "1.2", pct: 60 },
+              { label: "Transport", val: "0.3", pct: 90 },
+              { label: "Packaging", val: "0.1", pct: 95 },
+            ].map((item) => (
               <div
-                id="search-results"
-                role="listbox"
+                key={item.label}
                 style={{
-                  background: isDark ? "rgba(18,18,18,0.98)" : "#fff",
-                  borderRadius: "0 0 12px 12px",
-                  padding: "4px 0",
-                  boxShadow: "0 12px 32px rgba(0,0,0,0.12)",
-                  border: `1px solid ${cardBorder}`,
-                  borderTop: "none",
-                  position: "absolute",
-                  width: "100%",
-                  zIndex: 10,
+                  background: "var(--lp-green-50)",
+                  borderRadius: 10,
+                  padding: "10px 14px",
                 }}
               >
-                {results.map((p) => (
-                  <button
-                    key={p.id}
-                    role="option"
-                    aria-selected={false}
-                    onClick={() => {
-                      setShowResults(false);
-                      navigate(`/product/${p.id}`);
-                    }}
+                <div
+                  style={{
+                    fontSize: 11,
+                    color: "var(--lp-ink-muted)",
+                    marginBottom: 4,
+                    fontWeight: 500,
+                  }}
+                >
+                  {item.label}
+                </div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+                  <span
                     style={{
-                      width: "100%",
-                      padding: "11px 18px",
-                      border: "none",
-                      background: "transparent",
-                      cursor: "pointer",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      color: textPrimary,
-                      transition: "background 0.12s",
-                      gap: 12,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = isDark
-                        ? "rgba(255,255,255,0.06)"
-                        : "rgba(0,0,0,0.03)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "transparent";
+                      fontSize: 18,
+                      fontWeight: 600,
+                      color: "var(--lp-green-900)",
                     }}
                   >
-                    <span
-                      style={{
-                        fontWeight: 600,
-                        fontSize: "0.92rem",
-                        textAlign: "left",
-                        flex: 1,
-                      }}
-                    >
-                      {p.brand} {p.name}
-                    </span>
-                    <span
-                      style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: "50%",
-                        background: scoreColor(p.greenGrade.score),
-                        color: "#fff",
-                        fontWeight: 700,
-                        fontSize: "0.7rem",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {p.greenGrade.score}
-                    </span>
-                  </button>
-                ))}
+                    {item.val}
+                  </span>
+                  <span style={{ fontSize: 11, color: "var(--lp-ink-light)" }}>kg CO₂e</span>
+                </div>
+                <div
+                  style={{
+                    height: 3,
+                    borderRadius: 3,
+                    background: "var(--lp-green-200)",
+                    marginTop: 6,
+                  }}
+                >
+                  <div
+                    style={{
+                      height: "100%",
+                      width: `${item.pct}%`,
+                      borderRadius: 3,
+                      background: "var(--lp-green-500)",
+                    }}
+                  />
+                </div>
               </div>
-            )}
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── How it works ── */}
-      <section
-        style={{
-          maxWidth: 900,
-          margin: "0 auto",
-          padding: "72px 24px 56px",
-        }}
-      >
-        <p
-          style={{
-            textAlign: "center",
-            color: accent,
-            fontSize: "0.82rem",
-            fontWeight: 600,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            marginBottom: 12,
-          }}
-        >
-          How it works
-        </p>
-        <h2
-          style={{
-            textAlign: "center",
-            color: textPrimary,
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 700,
-            fontSize: "clamp(1.4rem, 3.5vw, 2rem)",
-            marginBottom: 48,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          Three steps to better food choices
-        </h2>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: 32,
-          }}
-        >
-          {steps.map((s) => (
-            <div key={s.step} style={{ textAlign: "center" }}>
-              <div
-                style={{
-                  color: accent,
-                  fontFamily: "'Outfit', sans-serif",
-                  fontWeight: 800,
-                  fontSize: "2.4rem",
-                  opacity: 0.2,
-                  marginBottom: 8,
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                {s.step}
-              </div>
-              <h3
-                style={{
-                  color: textPrimary,
-                  fontFamily: "'Outfit', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "1.1rem",
-                  marginBottom: 8,
-                }}
-              >
-                {s.title}
-              </h3>
-              <p style={{ color: textSecondary, fontSize: "0.9rem", lineHeight: 1.6, margin: 0 }}>
-                {s.desc}
-              </p>
+      {/* ── Stats Bar ── */}
+      <div className="lp-stats-bar">
+        <div className="lp-stats-inner">
+          {[
+            { num: "576+", label: "Products Scored" },
+            { num: "7", label: "Supply-Chain Dimensions" },
+            { num: "100%", label: "Transparent Methodology" },
+            { num: "Free", label: "Open Access" },
+          ].map((s) => (
+            <div key={s.label}>
+              <div className="lp-stat-num">{s.num}</div>
+              <div className="lp-stat-label">{s.label}</div>
             </div>
           ))}
         </div>
-      </section>
+      </div>
 
-      {/* ── Divider ── */}
-      <div
-        style={{
-          maxWidth: 900,
-          margin: "0 auto",
-          borderTop: `1px solid ${cardBorder}`,
-        }}
-      />
-
-      {/* ── Features ── */}
-      <section style={{ maxWidth: 900, margin: "0 auto", padding: "56px 24px 48px" }}>
-        <p
-          style={{
-            textAlign: "center",
-            color: accent,
-            fontSize: "0.82rem",
-            fontWeight: 600,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            marginBottom: 12,
-          }}
-        >
-          Features
-        </p>
-        <h2
-          style={{
-            textAlign: "center",
-            color: textPrimary,
-            fontFamily: "'Outfit', sans-serif",
-            fontWeight: 700,
-            fontSize: "clamp(1.4rem, 3.5vw, 2rem)",
-            marginBottom: 12,
-            letterSpacing: "-0.02em",
-          }}
-        >
-          Everything you need to eat consciously
+      {/* ── Product Search ── */}
+      <section className="lp-section" style={{ textAlign: "center" }}>
+        <div className="lp-label" style={{ textAlign: "center" }}>
+          Try it now
+        </div>
+        <h2 className="lp-title" style={{ textAlign: "center", margin: "0 auto 16px" }}>
+          Search any product
         </h2>
-        <p
-          style={{
-            textAlign: "center",
-            color: textSecondary,
-            fontSize: "0.95rem",
-            maxWidth: 460,
-            margin: "0 auto 44px",
-            lineHeight: 1.6,
-          }}
-        >
-          Nutritional science, environmental data, and smart technology combined in one platform.
+        <p className="lp-sub" style={{ textAlign: "center", margin: "0 auto 40px" }}>
+          Look up any food product and get its GreenGrade sustainability score instantly.
         </p>
 
         <div
+          ref={searchRef}
+          role="combobox"
+          aria-expanded={hasResults}
+          aria-controls="search-results"
+          aria-haspopup="listbox"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: 16,
-          }}
-        >
-          {features.map((f) => (
-            <div
-              key={f.title}
-              style={{
-                background: cardBg,
-                border: `1px solid ${cardBorder}`,
-                borderRadius: 14,
-                padding: "28px 24px",
-                transition: "box-shadow 0.2s ease",
-              }}
-            >
-              <div
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: accent,
-                  marginBottom: 18,
-                }}
-              />
-              <h3
-                style={{
-                  color: textPrimary,
-                  fontFamily: "'Outfit', sans-serif",
-                  fontWeight: 700,
-                  fontSize: "1rem",
-                  marginBottom: 8,
-                }}
-              >
-                {f.title}
-              </h3>
-              <p style={{ color: textSecondary, fontSize: "0.88rem", lineHeight: 1.6, margin: 0 }}>
-                {f.desc}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── CTA Banner ── */}
-      <section style={{ maxWidth: 900, margin: "0 auto", padding: "24px 24px 72px" }}>
-        <div
-          style={{
-            background: isDark
-              ? "linear-gradient(135deg, #0d2818, #1b4332)"
-              : "linear-gradient(135deg, #1b4332, #2d6a4f)",
-            borderRadius: 18,
-            padding: "56px 32px",
-            textAlign: "center",
-          }}
-        >
-          <h2
-            style={{
-              color: "#fff",
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 800,
-              fontSize: "clamp(1.4rem, 3.5vw, 1.9rem)",
-              marginBottom: 14,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            Ready to make better food choices?
-          </h2>
-          <p
-            style={{
-              color: "rgba(255,255,255,0.75)",
-              fontSize: "1rem",
-              lineHeight: 1.7,
-              maxWidth: 440,
-              margin: "0 auto 32px",
-            }}
-          >
-            Try our product search and discover the GreenGrade score of your favorite foods. It only
-            takes a few seconds.
-          </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <button
-              onClick={() => navigate("/scan")}
-              style={{
-                padding: "14px 36px",
-                borderRadius: 10,
-                border: "none",
-                background: "#fff",
-                color: "#1b4332",
-                fontSize: "0.95rem",
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
-            >
-              Try Our Product Scanner
-            </button>
-            <Link
-              to="/dashboard"
-              style={{
-                padding: "14px 36px",
-                borderRadius: 10,
-                border: "1px solid rgba(255,255,255,0.25)",
-                background: "transparent",
-                color: "#fff",
-                fontSize: "0.95rem",
-                fontWeight: 600,
-                textDecoration: "none",
-                display: "inline-flex",
-                alignItems: "center",
-              }}
-            >
-              View Dashboard
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Stats ── */}
-      <section
-        style={{
-          borderTop: `1px solid ${cardBorder}`,
-          padding: "40px 24px",
-          textAlign: "center",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: 56,
-            flexWrap: "wrap",
-            maxWidth: 600,
+            position: "relative",
+            width: "100%",
+            maxWidth: 520,
             margin: "0 auto",
           }}
         >
-          {[
-            { value: "1,000+", label: "Products Rated" },
-            { value: "10+", label: "Categories" },
-            { value: "100%", label: "Transparent Data" },
-          ].map((s) => (
-            <div key={s.label}>
-              <div
-                style={{
-                  color: textPrimary,
-                  fontFamily: "'Outfit', sans-serif",
-                  fontWeight: 800,
-                  fontSize: "1.6rem",
-                  letterSpacing: "-0.02em",
-                }}
-              >
-                {s.value}
-              </div>
-              <div style={{ color: textMuted, fontSize: "0.8rem", marginTop: 4 }}>{s.label}</div>
+          <input
+            type="text"
+            placeholder="Search for a product..."
+            value={search}
+            onChange={handleSearchChange}
+            onKeyDown={handleKeyDown}
+            onFocus={() => {
+              if (results.length > 0) setShowResults(true);
+            }}
+            aria-label="Search products"
+            aria-autocomplete="list"
+            style={{
+              width: "100%",
+              padding: "16px 24px",
+              borderRadius: hasResults ? "14px 14px 0 0" : 14,
+              border: "1.5px solid var(--lp-border)",
+              fontSize: 15,
+              background: "white",
+              color: "var(--lp-ink)",
+              outline: "none",
+              fontWeight: 500,
+              fontFamily: "var(--lp-sans)",
+              transition: "border-radius 0.15s ease",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+            }}
+          />
+          {loading && (
+            <span
+              style={{
+                position: "absolute",
+                right: 16,
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "var(--lp-ink-muted)",
+                fontSize: 13,
+              }}
+            >
+              Searching...
+            </span>
+          )}
+
+          {hasResults && (
+            <div
+              id="search-results"
+              role="listbox"
+              style={{
+                background: "white",
+                borderRadius: "0 0 14px 14px",
+                padding: "4px 0",
+                boxShadow: "0 12px 32px rgba(0,0,0,0.1)",
+                border: "1.5px solid var(--lp-border)",
+                borderTop: "none",
+                position: "absolute",
+                width: "100%",
+                zIndex: 10,
+              }}
+            >
+              {results.map((p) => (
+                <button
+                  key={p.id}
+                  role="option"
+                  aria-selected={false}
+                  onClick={() => {
+                    setShowResults(false);
+                    navigate(`/product/${p.id}`);
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: "12px 18px",
+                    border: "none",
+                    background: "transparent",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    color: "var(--lp-ink)",
+                    transition: "background 0.12s",
+                    gap: 12,
+                    fontFamily: "var(--lp-sans)",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "var(--lp-green-50)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                  }}
+                >
+                  <span
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 14,
+                      textAlign: "left",
+                      flex: 1,
+                    }}
+                  >
+                    {p.brand} {p.name}
+                  </span>
+                  <span
+                    style={{
+                      width: 34,
+                      height: 34,
+                      borderRadius: "50%",
+                      background: scoreColor(p.greenGrade.score),
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: 12,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {p.greenGrade.score}
+                  </span>
+                </button>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       </section>
+
+      {/* ── ICP Section (Who it's for) ── */}
+      <section className="lp-icp-section">
+        <div className="lp-icp-inner">
+          <div className="lp-label">Who it&rsquo;s for</div>
+          <h2 className="lp-title">Built for conscious consumers</h2>
+          <p className="lp-sub">
+            Whether you&rsquo;re shopping for your family, running a restaurant, or managing
+            procurement — GreenGrade gives you the data you need.
+          </p>
+
+          <div className="lp-icp-grid">
+            <div className="lp-icp-card">
+              <span className="lp-icp-tag">Individuals</span>
+              <h3
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  marginBottom: 8,
+                  color: "var(--lp-green-900)",
+                }}
+              >
+                Eco-Conscious Shoppers
+              </h3>
+              <p style={{ fontSize: 14, color: "var(--lp-ink-light)", marginBottom: 16 }}>
+                Compare products at the shelf. Scan barcodes, check scores, and pick the greener
+                option every time.
+              </p>
+              <p className="lp-icp-pain">
+                &ldquo;I want to buy sustainable but I can&rsquo;t tell which products are actually
+                better.&rdquo;
+              </p>
+            </div>
+
+            <div className="lp-icp-card">
+              <span className="lp-icp-tag">Families</span>
+              <h3
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  marginBottom: 8,
+                  color: "var(--lp-green-900)",
+                }}
+              >
+                Health-Minded Parents
+              </h3>
+              <p style={{ fontSize: 14, color: "var(--lp-ink-light)", marginBottom: 16 }}>
+                Track your household&rsquo;s food carbon footprint, set weekly goals, and discover
+                eco-friendly recipes.
+              </p>
+              <p className="lp-icp-pain">
+                &ldquo;I want my kids to grow up eating food that&rsquo;s good for them and the
+                planet.&rdquo;
+              </p>
+            </div>
+
+            <div className="lp-icp-card">
+              <span className="lp-icp-tag">Organizations</span>
+              <h3
+                style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  marginBottom: 8,
+                  color: "var(--lp-green-900)",
+                }}
+              >
+                Corporate Procurement
+              </h3>
+              <p style={{ fontSize: 14, color: "var(--lp-ink-light)", marginBottom: 16 }}>
+                Make data-driven purchasing decisions aligned with ESG goals. Audit product
+                sustainability at scale.
+              </p>
+              <p className="lp-icp-pain">
+                &ldquo;We need transparent supply-chain data for our sustainability
+                reporting.&rdquo;
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Value Proposition ── */}
+      <section className="lp-section">
+        <div className="lp-label">Why GreenGrade</div>
+        <h2 className="lp-title">Not just another eco-label</h2>
+        <p className="lp-sub">
+          GreenGrade uses machine learning on real emissions data — not self-reported claims — to
+          score every product transparently.
+        </p>
+
+        <div className="lp-vp-grid">
+          <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
+            {[
+              {
+                icon: "\u{1F50D}",
+                title: "7-Dimension Analysis",
+                desc: "Every score covers Land Use, Animal Feed, Farm, Processing, Transport, Packaging, and Retail emissions.",
+              },
+              {
+                icon: "\u{1F4CA}",
+                title: "Statistical ML Scoring",
+                desc: "Gaussian KDE and variance-based feature importance — no black-box models, fully auditable methodology.",
+              },
+              {
+                icon: "\u{1F50E}",
+                title: "Barcode Scanning",
+                desc: "Scan any product at the grocery store and get its GreenGrade score in seconds.",
+              },
+              {
+                icon: "\u{2696}\u{FE0F}",
+                title: "Side-by-Side Comparisons",
+                desc: "Compare any two products across all 7 dimensions and see exactly where each one is greener.",
+              },
+              {
+                icon: "\u{1F30D}",
+                title: "Carbon Footprint Tracking",
+                desc: "Log your purchases and track your personal food emissions over time with weekly reduction goals.",
+              },
+            ].map((vp) => (
+              <div className="lp-vp-point" key={vp.title}>
+                <div className="lp-vp-icon">{vp.icon}</div>
+                <div>
+                  <h4
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 600,
+                      color: "var(--lp-green-900)",
+                      marginBottom: 4,
+                    }}
+                  >
+                    {vp.title}
+                  </h4>
+                  <p style={{ fontSize: 14, color: "var(--lp-ink-light)", margin: 0 }}>{vp.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="lp-vp-quote">
+            <div
+              style={{
+                fontFamily: "var(--lp-serif)",
+                fontSize: 22,
+                fontStyle: "italic",
+                lineHeight: 1.5,
+                marginBottom: 24,
+              }}
+            >
+              &ldquo;Every food choice is a vote for the kind of world you want to live in.&rdquo;
+            </div>
+            <div style={{ fontSize: 13, opacity: 0.6, marginBottom: 32 }}>
+              &mdash; Our guiding principle
+            </div>
+            <div
+              style={{
+                background: "rgba(255,255,255,0.08)",
+                borderRadius: 14,
+                padding: "20px 24px",
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "var(--lp-serif)",
+                  fontSize: 36,
+                  color: "var(--lp-green-400)",
+                  letterSpacing: -1,
+                }}
+              >
+                576+
+              </div>
+              <div style={{ fontSize: 13, opacity: 0.6 }}>Products scored and counting</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Comparison Table ── */}
+      <section className="lp-section">
+        <div className="lp-label" style={{ textAlign: "center" }}>
+          Compare
+        </div>
+        <h2 className="lp-title" style={{ textAlign: "center", margin: "0 auto 16px" }}>
+          How we stack up
+        </h2>
+        <p className="lp-sub" style={{ textAlign: "center", margin: "0 auto 0" }}>
+          Most eco-labels rely on self-reported data. GreenGrade uses verified emissions data and
+          machine learning.
+        </p>
+
+        <div style={{ overflowX: "auto" }}>
+          <table className="lp-comp-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th className="lp-comp-head-us">GreenGrade</th>
+                <th>Generic Eco-Labels</th>
+                <th>Manual Research</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["7-dimension emissions scoring", true, false, false],
+                ["Machine learning methodology", true, false, false],
+                ["Barcode scanning", true, false, false],
+                ["Product comparison tool", true, false, true],
+                ["Carbon footprint tracking", true, false, false],
+                ["Free and open access", true, true, true],
+                ["Recipe suggestions", true, false, false],
+              ].map(([feature, us, eco, manual], i) => (
+                <tr key={i}>
+                  <td>{feature}</td>
+                  <td className="lp-comp-us">{us ? "\u2705" : "\u2014"}</td>
+                  <td>{eco ? "\u2705" : "\u2014"}</td>
+                  <td>{manual ? "\u2705" : "\u2014"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* ── Guarantee ── */}
+      <section className="lp-guarantee">
+        <div className="lp-guarantee-inner">
+          <div className="lp-guarantee-grid">
+            <div>
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 500,
+                  letterSpacing: "0.1em",
+                  textTransform: "uppercase",
+                  color: "var(--lp-green-400)",
+                  marginBottom: 16,
+                }}
+              >
+                Our Promise
+              </div>
+              <h2
+                style={{
+                  fontFamily: "var(--lp-serif)",
+                  fontSize: "clamp(28px, 3vw, 40px)",
+                  color: "var(--lp-cream)",
+                  lineHeight: 1.2,
+                  marginBottom: 40,
+                }}
+              >
+                Built on transparency,
+                <br />
+                backed by science
+              </h2>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+                {[
+                  {
+                    icon: "\u{1F52C}",
+                    title: "Open Methodology",
+                    desc: "Our scoring algorithm is fully documented and auditable. No black boxes.",
+                  },
+                  {
+                    icon: "\u{1F6E1}\u{FE0F}",
+                    title: "No Pay-to-Win",
+                    desc: "Brands cannot pay for higher scores. GreenGrade is independent and unbiased.",
+                  },
+                  {
+                    icon: "\u{1F4D6}",
+                    title: "Data Provenance",
+                    desc: "Every score links back to peer-reviewed emissions research with full citations.",
+                  },
+                  {
+                    icon: "\u{1F310}",
+                    title: "Free Forever",
+                    desc: "GreenGrade is a non-profit initiative. Product scoring will always be free for consumers.",
+                  },
+                ].map((g) => (
+                  <div key={g.title} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <div className="lp-guarantee-icon">{g.icon}</div>
+                    <div>
+                      <h4
+                        style={{
+                          fontSize: 15,
+                          fontWeight: 600,
+                          color: "var(--lp-cream)",
+                          marginBottom: 4,
+                        }}
+                      >
+                        {g.title}
+                      </h4>
+                      <p style={{ fontSize: 13, color: "rgba(250,247,242,0.55)", margin: 0 }}>
+                        {g.desc}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div
+              style={{
+                background: "rgba(255,255,255,0.04)",
+                borderRadius: 20,
+                padding: 40,
+                border: "1px solid rgba(255,255,255,0.06)",
+              }}
+            >
+              <h3
+                style={{
+                  fontFamily: "var(--lp-serif)",
+                  fontSize: 28,
+                  color: "var(--lp-cream)",
+                  marginBottom: 24,
+                }}
+              >
+                How GreenGrade Works
+              </h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                {[
+                  { step: "01", text: "Emissions data collected across 7 supply-chain categories" },
+                  { step: "02", text: "Statistical normalization using Gaussian KDE" },
+                  { step: "03", text: "Variance-based feature importance weighting" },
+                  { step: "04", text: "Sigmoid scoring mapped to 0-10 scale" },
+                  { step: "05", text: "Anomaly detection via Mahalanobis distance" },
+                ].map((s) => (
+                  <div key={s.step} style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
+                    <div
+                      style={{
+                        fontFamily: "var(--lp-serif)",
+                        fontSize: 24,
+                        color: "var(--lp-green-400)",
+                        lineHeight: 1,
+                        minWidth: 32,
+                      }}
+                    >
+                      {s.step}
+                    </div>
+                    <p style={{ fontSize: 14, color: "rgba(250,247,242,0.7)", margin: 0 }}>
+                      {s.text}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Final CTA ── */}
+      <section className="lp-final-cta">
+        <div className="lp-label" style={{ textAlign: "center" }}>
+          Get Started
+        </div>
+        <h2
+          className="lp-title"
+          style={{ textAlign: "center", margin: "0 auto 16px", maxWidth: 600 }}
+        >
+          Start making smarter food choices today
+        </h2>
+        <p className="lp-sub" style={{ textAlign: "center", margin: "0 auto 40px" }}>
+          Browse 576+ products, scan barcodes at the store, track your carbon footprint, and
+          discover greener alternatives — all for free.
+        </p>
+        <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+          <button className="lp-btn-primary" onClick={() => navigate("/products")}>
+            Browse Products
+          </button>
+          <button
+            className="lp-btn-primary"
+            onClick={() => navigate("/scan")}
+            style={{ background: "var(--lp-green-600)" }}
+          >
+            Scan a Barcode
+          </button>
+          <Link className="lp-btn-ghost" to="/dashboard">
+            View Dashboard &rarr;
+          </Link>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="lp-footer">
+        &copy; {new Date().getFullYear()} Consciobite. Built for a sustainable future.
+      </footer>
     </div>
   );
 }
