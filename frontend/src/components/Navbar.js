@@ -4,7 +4,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 
 const NAV_LINKS = [
-  { to: "/", label: "Products" },
+  { to: "/products", label: "Products" },
   { to: "/scan", label: "Scan" },
   { to: "/compare", label: "Compare" },
   { to: "/dashboard", label: "Dashboard" },

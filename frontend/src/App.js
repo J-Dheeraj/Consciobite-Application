@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import ProductDetail from "./pages/ProductDetail";
 
 // Lazy loaded (code splitting)
+const Products = lazy(() => import("./pages/Products"));
 const Scan = lazy(() => import("./pages/Scan"));
 const Compare = lazy(() => import("./pages/Compare"));
 const Favorites = lazy(() => import("./pages/Favorites"));
@@ -55,6 +56,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/products" element={<Products />} />
               <Route path="/scan" element={<Scan />} />
               <Route path="/compare" element={<Compare />} />
               <Route path="/favorites" element={<Favorites />} />

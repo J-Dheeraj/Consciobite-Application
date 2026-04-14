@@ -3,10 +3,10 @@ import { Link, useLocation } from "react-router-dom";
 
 const BOTTOM_LINKS = [
   { to: "/", label: "Home" },
+  { to: "/products", label: "Products" },
   { to: "/scan", label: "Scan" },
-  { to: "/recipes", label: "Recipes" },
+  { to: "/compare", label: "Compare" },
   { to: "/carbon", label: "Carbon" },
-  { to: "/favorites", label: "Favs" },
 ];
 
 export default function BottomNav() {
