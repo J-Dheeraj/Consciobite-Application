@@ -221,7 +221,7 @@ export default function Scan() {
 
         {result && (
           <div
-            onClick={() => navigate(`/product/${result.id}`)}
+            onClick={() => navigate(`/product/${result.id}`, { state: { product: result } })}
             style={{
               background: isDark ? "#162419" : "#fff",
               borderRadius: 14,

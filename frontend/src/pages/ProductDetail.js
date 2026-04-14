@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProduct, logCarbonPurchase } from "../services/api";
 import { scoreColor } from "../utils/constants";
@@ -81,9 +81,17 @@ function ConsciobiteLogo() {
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [loggedPurchase, setLoggedPurchase] = useState(false);
   const [showStats, setShowStats] = useState(false);
+
+  // If navigated from Scan (or another page) with product state, use it as
+  // initial data so the page renders instantly and survives a backend miss.
+  const seededProduct =
+    location.state?.product && location.state.product.id === id
+      ? location.state.product
+      : undefined;
 
   const {
     data: product,
@@ -92,6 +100,7 @@ export default function ProductDetail() {
   } = useQuery({
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
+    initialData: seededProduct,
   });
 
   const error = queryError ? "Unable to load product details." : "";
