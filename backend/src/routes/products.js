@@ -134,9 +134,59 @@ router.get("/stats", (req, res) => {
   res.json({ totalProducts: products.length, categories: stats });
 });
 
+// Lookup a product by barcode via Open Food Facts. Returns enriched product or null.
+// Skips external calls in NODE_ENV=test for deterministic results.
+async function lookupOpenFoodFacts(barcode) {
+  if (process.env.NODE_ENV === "test") return null;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
+    const response = await fetch(
+      `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json?fields=product_name,brands,categories_tags,ecoscore_grade,ecoscore_score,nutriments`,
+      { signal: controller.signal }
+    );
+    clearTimeout(timeout);
+
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    if (!data.product || data.status === 0) return null;
+
+    const p = data.product;
+    const category = mapOpenFoodFactsCategory(p.categories_tags || []);
+    const externalProduct = {
+      id: `off_${barcode}`,
+      name: p.product_name || "Unknown Product",
+      brand: p.brands || "Unknown Brand",
+      category,
+      description: `Product from Open Food Facts database. Ecoscore: ${p.ecoscore_grade || "unknown"}.`,
+      barcode,
+      emissions: estimateEmissions(p.ecoscore_grade, category),
+      source: "openfoodfacts",
+    };
+    return enrichProduct(externalProduct);
+  } catch (err) {
+    logger.warn(`Open Food Facts lookup failed for ${barcode}: ${err.message}`);
+    return null;
+  }
+}
+
 // GET /api/products/:id
-router.get("/:id", (req, res) => {
+router.get("/:id", async (req, res) => {
   const id = sanitize(req.params.id, 20);
+
+  // Open Food Facts fallback: ids like "off_<barcode>"
+  if (id.startsWith("off_")) {
+    const barcode = id.slice(4);
+    if (!validator.isNumeric(barcode) || barcode.length < 8 || barcode.length > 14) {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+    const offProduct = await lookupOpenFoodFacts(barcode);
+    if (!offProduct) return res.status(404).json({ error: "Product not found" });
+    return res.json(offProduct);
+  }
+
   if (!validator.isAlphanumeric(id)) {
     return res.status(400).json({ error: "Invalid product ID" });
   }
@@ -158,54 +208,9 @@ router.get("/scan/:barcode", async (req, res) => {
     return res.json(enrichProduct(product));
   }
 
-  // In test environment, skip external API calls for deterministic results
-  if (process.env.NODE_ENV === "test") {
-    return res.status(404).json({ error: "Product not found for this barcode" });
-  }
-
-  // Fallback to Open Food Facts API (with 10s timeout)
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
-    const response = await fetch(
-      `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json?fields=product_name,brands,categories_tags,ecoscore_grade,ecoscore_score,nutriments`,
-      { signal: controller.signal }
-    );
-    clearTimeout(timeout);
-
-    if (!response.ok) {
-      return res.status(404).json({ error: "Product not found for this barcode" });
-    }
-
-    const data = await response.json();
-    if (!data.product || data.status === 0) {
-      return res.status(404).json({ error: "Product not found for this barcode" });
-    }
-
-    const p = data.product;
-    const name = p.product_name || "Unknown Product";
-    const brand = p.brands || "Unknown Brand";
-    const category = mapOpenFoodFactsCategory(p.categories_tags || []);
-
-    // Generate estimated emissions from ecoscore if available
-    const emissions = estimateEmissions(p.ecoscore_grade, category);
-
-    const externalProduct = {
-      id: `off_${barcode}`,
-      name,
-      brand,
-      category,
-      description: `Product from Open Food Facts database. Ecoscore: ${p.ecoscore_grade || "unknown"}.`,
-      barcode,
-      emissions,
-      source: "openfoodfacts",
-    };
-
-    return res.json(enrichProduct(externalProduct));
-  } catch (err) {
-    logger.warn(`Open Food Facts lookup failed for ${barcode}: ${err.message}`);
-    return res.status(404).json({ error: "Product not found for this barcode" });
-  }
+  const offProduct = await lookupOpenFoodFacts(barcode);
+  if (offProduct) return res.json(offProduct);
+  return res.status(404).json({ error: "Product not found for this barcode" });
 });
 
 // Map Open Food Facts categories to our categories
