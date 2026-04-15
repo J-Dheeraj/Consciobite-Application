@@ -6,6 +6,7 @@ import { useTheme } from "../context/ThemeContext";
 import { getFavoriteIds, clearFavorites } from "../utils/favorites";
 import Spinner from "../components/Spinner";
 import PageHero from "../components/PageHero";
+import { pageContainer, card, primaryButton, heading } from "../utils/pageStyles";
 
 export default function Favorites() {
   const { theme } = useTheme();
@@ -43,7 +44,7 @@ export default function Favorites() {
         subtitle="Products you've saved for quick access."
       />
 
-      <div style={{ maxWidth: 700, margin: "0 auto", padding: "0 20px 40px" }}>
+      <div style={pageContainer(700)}>
         {products.length > 0 && (
           <div
             style={{
@@ -93,9 +94,7 @@ export default function Favorites() {
             <div
               onClick={(e) => e.stopPropagation()}
               style={{
-                background: isDark ? "#162419" : "#fff",
-                borderRadius: 16,
-                padding: 28,
+                ...card(isDark, { radius: 16, padding: 28 }),
                 boxShadow: "0 20px 60px rgba(0,0,0,0.3)",
                 maxWidth: 360,
                 width: "100%",
@@ -106,8 +105,7 @@ export default function Favorites() {
               <div style={{ fontSize: "2rem", marginBottom: 12 }}>{"\u26A0\uFE0F"}</div>
               <h3
                 style={{
-                  fontFamily: "'Outfit', sans-serif",
-                  fontWeight: 700,
+                  ...heading(),
                   marginBottom: 8,
                   color: isDark ? "#e8f5e9" : "#1a1a2e",
                 }}
@@ -163,12 +161,10 @@ export default function Favorites() {
         {products.length === 0 ? (
           <div
             style={{
+              ...card(isDark),
               textAlign: "center",
               padding: 48,
               marginTop: -20,
-              background: isDark ? "#162419" : "#fff",
-              borderRadius: 14,
-              boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
               animation: "fadeInUp 0.4s ease",
             }}
           >
@@ -178,19 +174,7 @@ export default function Favorites() {
             >
               You haven't saved any favorites yet.
             </p>
-            <Link
-              to="/"
-              style={{
-                display: "inline-block",
-                padding: "12px 24px",
-                background: "linear-gradient(135deg, #2d6a4f, #40916c)",
-                color: "#fff",
-                borderRadius: 12,
-                fontWeight: 600,
-                textDecoration: "none",
-                boxShadow: "0 2px 8px rgba(45,106,79,0.3)",
-              }}
-            >
+            <Link to="/" style={{ ...primaryButton(), display: "inline-block", textDecoration: "none" }}>
               Browse Products
             </Link>
           </div>
