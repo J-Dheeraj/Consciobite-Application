@@ -1,4 +1,5 @@
 const request = require("supertest");
+const { randomUUID } = require("crypto");
 
 // Set test environment before requiring app
 process.env.NODE_ENV = "test";
@@ -92,6 +93,23 @@ describe("API Endpoints", () => {
       const res = await request(app).get("/api/products/zzzzzzzzz");
       expect(res.status).toBe(404);
     });
+
+    // Open Food Facts fallback IDs (off_<barcode>) let ProductDetail reload
+    // external products that were originally resolved via /scan/:barcode.
+    test("should return 400 for off_ id with non-numeric barcode", async () => {
+      const res = await request(app).get("/api/products/off_abc");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 400 for off_ id with too-short barcode", async () => {
+      const res = await request(app).get("/api/products/off_123");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 404 for off_ id in test env (external API skipped)", async () => {
+      const res = await request(app).get("/api/products/off_99999999999");
+      expect(res.status).toBe(404);
+    });
   });
 
   describe("GET /api/products/scan/:barcode", () => {
@@ -121,7 +139,7 @@ describe("API Endpoints", () => {
   describe("Auth endpoints", () => {
     const testUser = {
       name: "Test User",
-      email: `test${Date.now()}@example.com`,
+      email: `test-${randomUUID().slice(0, 8)}@example.com`,
       password: "TestPassword123",
     };
     let authToken;

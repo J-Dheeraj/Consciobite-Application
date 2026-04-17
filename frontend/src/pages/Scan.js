@@ -5,6 +5,14 @@ import { scanBarcode } from "../services/api";
 import GradeBadge from "../components/GradeBadge";
 import { useTheme } from "../context/ThemeContext";
 import PageHero from "../components/PageHero";
+import {
+  pageContainer,
+  card,
+  primaryButton,
+  inputField,
+  errorAlert,
+  heading,
+} from "../utils/pageStyles";
 
 export default function Scan() {
   const { theme } = useTheme();
@@ -94,19 +102,18 @@ export default function Scan() {
         subtitle="Point your camera at a barcode or enter it manually."
       />
 
-      <div style={{ maxWidth: 500, margin: "0 auto", padding: "0 20px 40px" }}>
+      <div style={pageContainer(500)}>
         {/* Scanner */}
         <div style={{ marginTop: -20, animation: "fadeInUp 0.4s ease" }}>
           {!scanning ? (
             <button
               onClick={startCamera}
               style={{
+                ...card(isDark),
                 width: "100%",
                 padding: "16px 20px",
-                background: isDark ? "#162419" : "#fff",
                 color: "#2d6a4f",
                 border: "2px dashed #95d5b2",
-                borderRadius: 14,
                 cursor: "pointer",
                 fontWeight: 600,
                 fontSize: "1rem",
@@ -114,7 +121,6 @@ export default function Scan() {
                 alignItems: "center",
                 justifyContent: "center",
                 gap: 10,
-                boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
                 transition: "all 0.2s ease",
               }}
             >
@@ -177,28 +183,9 @@ export default function Scan() {
             value={barcode}
             onChange={(e) => setBarcode(e.target.value)}
             aria-label="Enter barcode"
-            style={{
-              flex: 1,
-              padding: "12px 16px",
-              borderRadius: 12,
-              border: "2px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
-              fontSize: "0.95rem",
-              transition: "border-color 0.2s",
-            }}
+            style={{ ...inputField(isDark), flex: 1 }}
           />
-          <button
-            type="submit"
-            style={{
-              padding: "12px 24px",
-              background: "linear-gradient(135deg, #2d6a4f, #40916c)",
-              color: "#fff",
-              border: "none",
-              borderRadius: 12,
-              cursor: "pointer",
-              fontWeight: 600,
-              boxShadow: "0 2px 8px rgba(45,106,79,0.3)",
-            }}
-          >
+          <button type="submit" style={primaryButton()}>
             Look Up
           </button>
         </form>
@@ -208,11 +195,9 @@ export default function Scan() {
             role="alert"
             aria-live="assertive"
             style={{
-              color: "#e63946",
+              ...errorAlert(isDark),
               marginBottom: 12,
-              padding: 14,
-              background: isDark ? "#2a1519" : "#fef2f2",
-              borderRadius: 10,
+              border: "none",
             }}
           >
             {error}
@@ -223,10 +208,8 @@ export default function Scan() {
           <div
             onClick={() => navigate(`/product/${result.id}`, { state: { product: result } })}
             style={{
-              background: isDark ? "#162419" : "#fff",
-              borderRadius: 14,
+              ...card(isDark),
               padding: 20,
-              boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
               cursor: "pointer",
               animation: "fadeInUp 0.3s ease",
               transition: "all 0.2s ease",
@@ -242,7 +225,7 @@ export default function Scan() {
               <div>
                 <h3
                   style={{
-                    fontFamily: "'Outfit', sans-serif",
+                    ...heading("1.15rem"),
                     color: isDark ? "#e8f5e9" : "inherit",
                   }}
                 >

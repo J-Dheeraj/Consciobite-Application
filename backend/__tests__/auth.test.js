@@ -1,7 +1,10 @@
 const request = require("supertest");
+const { randomUUID } = require("crypto");
 
 process.env.NODE_ENV = "test";
 const app = require("../src/index");
+
+const uid = () => randomUUID().slice(0, 8);
 
 describe("Auth endpoints - validation", () => {
   describe("POST /api/auth/register", () => {
@@ -26,7 +29,7 @@ describe("Auth endpoints - validation", () => {
         .post("/api/auth/register")
         .send({
           name: "Test",
-          email: `weakpwd${Date.now()}@example.com`,
+          email: `weakpwd-${uid()}@example.com`,
           password: "Ab1",
         });
       expect(res.status).toBe(400);
@@ -38,7 +41,7 @@ describe("Auth endpoints - validation", () => {
         .post("/api/auth/register")
         .send({
           name: "Test",
-          email: `nouppercase${Date.now()}@example.com`,
+          email: `nouppercase-${uid()}@example.com`,
           password: "lowercase1",
         });
       expect(res.status).toBe(400);
@@ -50,7 +53,7 @@ describe("Auth endpoints - validation", () => {
         .post("/api/auth/register")
         .send({
           name: "Test",
-          email: `nonum${Date.now()}@example.com`,
+          email: `nonum-${uid()}@example.com`,
           password: "NoNumberHere",
         });
       expect(res.status).toBe(400);
@@ -62,7 +65,7 @@ describe("Auth endpoints - validation", () => {
         .post("/api/auth/register")
         .send({
           name: "Strong Pwd User",
-          email: `strongpwd${Date.now()}@example.com`,
+          email: `strongpwd-${uid()}@example.com`,
           password: "StrongPass1",
         });
       expect(res.status).toBe(201);
@@ -72,7 +75,7 @@ describe("Auth endpoints - validation", () => {
   });
 
   describe("POST /api/auth/login", () => {
-    const email = `logintest${Date.now()}@example.com`;
+    const email = `logintest-${uid()}@example.com`;
     const password = "LoginPass1";
 
     beforeAll(async () => {

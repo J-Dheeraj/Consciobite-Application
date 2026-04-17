@@ -4,6 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { registerUser } from "../services/api";
 import PageHero from "../components/PageHero";
+import {
+  pageContainer,
+  card,
+  primaryButton,
+  inputField,
+  errorAlert,
+  formLabel,
+} from "../utils/pageStyles";
 
 export default function Register() {
   const { theme } = useTheme();
@@ -48,15 +56,13 @@ export default function Register() {
         subtitle="Create an account to track your sustainability journey."
       />
 
-      <div style={{ maxWidth: 400, margin: "0 auto", padding: "0 20px 40px" }}>
+      <div style={pageContainer(400)}>
         <form
           onSubmit={handleSubmit}
           style={{
+            ...card(isDark),
             marginTop: -20,
-            background: isDark ? "#162419" : "#fff",
-            borderRadius: 14,
             padding: 28,
-            boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
             animation: "fadeInUp 0.4s ease",
           }}
         >
@@ -66,13 +72,10 @@ export default function Register() {
               role="alert"
               aria-live="assertive"
               style={{
+                ...errorAlert(isDark),
                 padding: 12,
-                background: isDark ? "#2a1519" : "#fef2f2",
-                borderRadius: 10,
-                color: "#e63946",
                 fontSize: "0.88rem",
                 marginBottom: 16,
-                border: "1px solid #fecaca",
               }}
             >
               {error}
@@ -80,17 +83,7 @@ export default function Register() {
           )}
 
           <label style={{ display: "block", marginBottom: 16 }}>
-            <span
-              style={{
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                color: isDark ? "#b0c4b1" : "#555",
-                marginBottom: 6,
-                display: "block",
-              }}
-            >
-              Name
-            </span>
+            <span style={formLabel(isDark)}>Name</span>
             <input
               type="text"
               value={name}
@@ -98,29 +91,12 @@ export default function Register() {
               required
               autoComplete="name"
               placeholder="Your name"
-              style={{
-                width: "100%",
-                padding: "12px 14px",
-                borderRadius: 10,
-                border: "2px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
-                fontSize: "0.95rem",
-                boxSizing: "border-box",
-              }}
+              style={inputField(isDark, { radius: 10, fullWidth: true })}
             />
           </label>
 
           <label style={{ display: "block", marginBottom: 16 }}>
-            <span
-              style={{
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                color: isDark ? "#b0c4b1" : "#555",
-                marginBottom: 6,
-                display: "block",
-              }}
-            >
-              Email
-            </span>
+            <span style={formLabel(isDark)}>Email</span>
             <input
               type="email"
               value={email}
@@ -128,29 +104,12 @@ export default function Register() {
               required
               autoComplete="email"
               placeholder="you@example.com"
-              style={{
-                width: "100%",
-                padding: "12px 14px",
-                borderRadius: 10,
-                border: "2px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
-                fontSize: "0.95rem",
-                boxSizing: "border-box",
-              }}
+              style={inputField(isDark, { radius: 10, fullWidth: true })}
             />
           </label>
 
           <label style={{ display: "block", marginBottom: 20 }}>
-            <span
-              style={{
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                color: isDark ? "#b0c4b1" : "#555",
-                marginBottom: 6,
-                display: "block",
-              }}
-            >
-              Password
-            </span>
+            <span style={formLabel(isDark)}>Password</span>
             <input
               type="password"
               value={password}
@@ -158,14 +117,7 @@ export default function Register() {
               required
               autoComplete="new-password"
               placeholder="At least 8 characters"
-              style={{
-                width: "100%",
-                padding: "12px 14px",
-                borderRadius: 10,
-                border: "2px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
-                fontSize: "0.95rem",
-                boxSizing: "border-box",
-              }}
+              style={inputField(isDark, { radius: 10, fullWidth: true })}
             />
           </label>
 
@@ -173,16 +125,10 @@ export default function Register() {
             type="submit"
             disabled={loading}
             style={{
-              width: "100%",
+              ...primaryButton({ loading, width: "100%" }),
               padding: "14px",
-              background: loading ? "#95d5b2" : "linear-gradient(135deg, #2d6a4f, #40916c)",
-              color: "#fff",
-              border: "none",
-              borderRadius: 12,
-              cursor: loading ? "wait" : "pointer",
               fontWeight: 700,
               fontSize: "1rem",
-              boxShadow: "0 2px 8px rgba(45,106,79,0.3)",
             }}
           >
             {loading ? "Creating account..." : "Create Account"}

@@ -4,6 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { loginUser } from "../services/api";
 import PageHero from "../components/PageHero";
+import {
+  pageContainer,
+  card,
+  primaryButton,
+  inputField,
+  errorAlert,
+  formLabel,
+} from "../utils/pageStyles";
 
 export default function Login() {
   const { theme } = useTheme();
@@ -38,15 +46,13 @@ export default function Login() {
         subtitle="Sign in to track your carbon footprint and leave reviews."
       />
 
-      <div style={{ maxWidth: 400, margin: "0 auto", padding: "0 20px 40px" }}>
+      <div style={pageContainer(400)}>
         <form
           onSubmit={handleSubmit}
           style={{
+            ...card(isDark),
             marginTop: -20,
-            background: isDark ? "#162419" : "#fff",
-            borderRadius: 14,
             padding: 28,
-            boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
             animation: "fadeInUp 0.4s ease",
           }}
         >
@@ -56,13 +62,10 @@ export default function Login() {
               role="alert"
               aria-live="assertive"
               style={{
+                ...errorAlert(isDark),
                 padding: 12,
-                background: isDark ? "#2a1519" : "#fef2f2",
-                borderRadius: 10,
-                color: "#e63946",
                 fontSize: "0.88rem",
                 marginBottom: 16,
-                border: "1px solid #fecaca",
               }}
             >
               {error}
@@ -70,17 +73,7 @@ export default function Login() {
           )}
 
           <label style={{ display: "block", marginBottom: 16 }}>
-            <span
-              style={{
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                color: isDark ? "#b0c4b1" : "#555",
-                marginBottom: 6,
-                display: "block",
-              }}
-            >
-              Email
-            </span>
+            <span style={formLabel(isDark)}>Email</span>
             <input
               type="email"
               value={email}
@@ -89,30 +82,12 @@ export default function Login() {
               autoComplete="email"
               aria-describedby={error ? "login-error" : undefined}
               placeholder="you@example.com"
-              style={{
-                width: "100%",
-                padding: "12px 14px",
-                borderRadius: 10,
-                border: "2px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
-                fontSize: "0.95rem",
-                transition: "border-color 0.2s",
-                boxSizing: "border-box",
-              }}
+              style={inputField(isDark, { radius: 10, fullWidth: true })}
             />
           </label>
 
           <label style={{ display: "block", marginBottom: 20 }}>
-            <span
-              style={{
-                fontSize: "0.85rem",
-                fontWeight: 600,
-                color: isDark ? "#b0c4b1" : "#555",
-                marginBottom: 6,
-                display: "block",
-              }}
-            >
-              Password
-            </span>
+            <span style={formLabel(isDark)}>Password</span>
             <input
               type="password"
               value={password}
@@ -120,15 +95,7 @@ export default function Login() {
               required
               autoComplete="current-password"
               placeholder="Enter your password"
-              style={{
-                width: "100%",
-                padding: "12px 14px",
-                borderRadius: 10,
-                border: "2px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
-                fontSize: "0.95rem",
-                transition: "border-color 0.2s",
-                boxSizing: "border-box",
-              }}
+              style={inputField(isDark, { radius: 10, fullWidth: true })}
             />
           </label>
 
@@ -136,17 +103,10 @@ export default function Login() {
             type="submit"
             disabled={loading}
             style={{
-              width: "100%",
+              ...primaryButton({ loading, width: "100%" }),
               padding: "14px",
-              background: loading ? "#95d5b2" : "linear-gradient(135deg, #2d6a4f, #40916c)",
-              color: "#fff",
-              border: "none",
-              borderRadius: 12,
-              cursor: loading ? "wait" : "pointer",
               fontWeight: 700,
               fontSize: "1rem",
-              transition: "all 0.2s ease",
-              boxShadow: "0 2px 8px rgba(45,106,79,0.3)",
             }}
           >
             {loading ? "Signing in..." : "Sign In"}

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTheme } from "../context/ThemeContext";
 import PageHero from "../components/PageHero";
+import { pageContainer, card, heading } from "../utils/pageStyles";
 
 const TIPS = [
   {
@@ -123,24 +124,19 @@ export default function Tips() {
         subtitle="Practical ways to reduce your food's environmental footprint, one meal at a time."
       />
 
-      <div style={{ maxWidth: 720, margin: "0 auto", padding: "0 20px 40px" }}>
+      <div style={pageContainer(720)}>
         {/* Fun Facts Carousel */}
         <div
           style={{
+            ...card(isDark, { padding: "20px 24px" }),
             marginTop: -20,
-            background: isDark ? "#162419" : "#fff",
-            borderRadius: 14,
-            padding: "20px 24px",
-            boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
             marginBottom: 24,
             animation: "fadeInUp 0.4s ease",
           }}
         >
           <h3
             style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 700,
-              fontSize: "0.95rem",
+              ...heading("0.95rem"),
               marginBottom: 14,
               color: "#2d6a4f",
             }}
@@ -226,9 +222,7 @@ export default function Tips() {
                   <div style={{ flex: 1 }}>
                     <h3
                       style={{
-                        fontFamily: "'Outfit', sans-serif",
-                        fontWeight: 700,
-                        fontSize: "1rem",
+                        ...heading("1rem"),
                         color: section.color,
                       }}
                     >
