@@ -16,8 +16,13 @@ const mockOffProduct = {
   barcode: "1234567890123",
   source: "openfoodfacts",
   emissions: {
-    landUseChange: 0.5, animalFeed: 0.3, farm: 1, processing: 1,
-    transport: 0.4, packaging: 0.5, retail: 0.3,
+    landUseChange: 0.5,
+    animalFeed: 0.3,
+    farm: 1,
+    processing: 1,
+    transport: 0.4,
+    packaging: 0.5,
+    retail: 0.3,
   },
   greenGrade: {
     score: 6.2,

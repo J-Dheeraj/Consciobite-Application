@@ -20,7 +20,9 @@ export default function Favorites() {
   useEffect(() => {
     if (!showConfirm) return;
     cancelBtnRef.current?.focus();
-    const onKey = (e) => { if (e.key === "Escape") setShowConfirm(false); };
+    const onKey = (e) => {
+      if (e.key === "Escape") setShowConfirm(false);
+    };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [showConfirm]);
@@ -189,7 +191,10 @@ export default function Favorites() {
             >
               You haven't saved any favorites yet.
             </p>
-            <Link to="/" style={{ ...primaryButton(), display: "inline-block", textDecoration: "none" }}>
+            <Link
+              to="/"
+              style={{ ...primaryButton(), display: "inline-block", textDecoration: "none" }}
+            >
               Browse Products
             </Link>
           </div>
