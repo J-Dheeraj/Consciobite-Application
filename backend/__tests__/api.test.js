@@ -1,4 +1,5 @@
 const request = require("supertest");
+const { randomUUID } = require("crypto");
 
 // Set test environment before requiring app
 process.env.NODE_ENV = "test";
@@ -138,7 +139,7 @@ describe("API Endpoints", () => {
   describe("Auth endpoints", () => {
     const testUser = {
       name: "Test User",
-      email: `test${Date.now()}@example.com`,
+      email: `test-${randomUUID().slice(0, 8)}@example.com`,
       password: "TestPassword123",
     };
     let authToken;

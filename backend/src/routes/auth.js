@@ -8,34 +8,54 @@ const { generateToken, requireAuth } = require("../middleware/auth");
 const router = express.Router();
 
 // ---------- Account lockout after repeated failed logins ----------
+// Keyed by email+IP so one attacker from one IP can't lock out a victim
+// across the whole internet. Map is capped to prevent unbounded growth from
+// attacker-supplied email strings; oldest entries are evicted FIFO.
 const loginAttempts = new Map();
 const MAX_ATTEMPTS = 5;
 const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
+const MAX_TRACKED_KEYS = 10000;
 
-function recordFailedAttempt(email) {
-  const entry = loginAttempts.get(email) || { count: 0, firstAttempt: Date.now() };
+function attemptKey(email, ip) {
+  return `${email}|${ip || "unknown"}`;
+}
+
+function recordFailedAttempt(email, ip) {
+  const key = attemptKey(email, ip);
+  const entry = loginAttempts.get(key) || { count: 0, firstAttempt: Date.now() };
   if (Date.now() - entry.firstAttempt > LOCKOUT_MS) {
     entry.count = 1;
     entry.firstAttempt = Date.now();
   } else {
     entry.count++;
   }
-  loginAttempts.set(email, entry);
+  loginAttempts.set(key, entry);
+  if (loginAttempts.size > MAX_TRACKED_KEYS) {
+    const oldest = loginAttempts.keys().next().value;
+    loginAttempts.delete(oldest);
+  }
 }
 
-function isLockedOut(email) {
-  const entry = loginAttempts.get(email);
+function isLockedOut(email, ip) {
+  const key = attemptKey(email, ip);
+  const entry = loginAttempts.get(key);
   if (!entry) return false;
   if (Date.now() - entry.firstAttempt > LOCKOUT_MS) {
-    loginAttempts.delete(email);
+    loginAttempts.delete(key);
     return false;
   }
   return entry.count >= MAX_ATTEMPTS;
 }
 
-function clearAttempts(email) {
-  loginAttempts.delete(email);
+function clearAttempts(email, ip) {
+  loginAttempts.delete(attemptKey(email, ip));
 }
+
+// Pre-computed dummy hash used when a login request targets a non-existent
+// email. Running bcrypt.compare against this hash equalizes response timing
+// so an attacker cannot distinguish "user exists, wrong password" from
+// "user does not exist" by measuring latency.
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync("dummy-password-for-timing-equalization", 12);
 
 // POST /api/auth/register
 router.post("/register", async (req, res) => {
@@ -98,8 +118,9 @@ router.post("/login", async (req, res) => {
   }
 
   const normalizedEmail = validator.normalizeEmail(email);
+  const ip = req.ip;
 
-  if (isLockedOut(normalizedEmail)) {
+  if (isLockedOut(normalizedEmail, ip)) {
     return res.status(429).json({ error: "Too many failed attempts. Please try again later." });
   }
 
@@ -108,12 +129,17 @@ router.post("/login", async (req, res) => {
     .prepare("SELECT id, email, name, password_hash FROM users WHERE email = ?")
     .get(normalizedEmail);
 
-  if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-    recordFailedAttempt(normalizedEmail);
+  // Always run bcrypt.compare to keep response time constant regardless of
+  // whether the email exists - prevents user enumeration via timing.
+  const hashToCheck = user ? user.password_hash : DUMMY_PASSWORD_HASH;
+  const passwordOk = await bcrypt.compare(password, hashToCheck);
+
+  if (!user || !passwordOk) {
+    recordFailedAttempt(normalizedEmail, ip);
     return res.status(401).json({ error: "Invalid email or password" });
   }
 
-  clearAttempts(normalizedEmail);
+  clearAttempts(normalizedEmail, ip);
   const token = generateToken({ id: user.id, email: user.email });
 
   res.json({

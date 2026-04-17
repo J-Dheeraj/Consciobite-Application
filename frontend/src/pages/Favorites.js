@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchProduct } from "../services/api";
 import ProductCard from "../components/ProductCard";
@@ -14,6 +14,16 @@ export default function Favorites() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
+  const confirmHeadingId = "confirm-dialog-title";
+  const cancelBtnRef = useRef(null);
+
+  useEffect(() => {
+    if (!showConfirm) return;
+    cancelBtnRef.current?.focus();
+    const onKey = (e) => { if (e.key === "Escape") setShowConfirm(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [showConfirm]);
 
   useEffect(() => {
     const ids = getFavoriteIds();
@@ -78,6 +88,9 @@ export default function Favorites() {
         {/* Confirmation dialog */}
         {showConfirm && (
           <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={confirmHeadingId}
             style={{
               position: "fixed",
               inset: 0,
@@ -104,6 +117,7 @@ export default function Favorites() {
             >
               <div style={{ fontSize: "2rem", marginBottom: 12 }}>{"\u26A0\uFE0F"}</div>
               <h3
+                id={confirmHeadingId}
                 style={{
                   ...heading(),
                   marginBottom: 8,
@@ -124,6 +138,7 @@ export default function Favorites() {
               </p>
               <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
                 <button
+                  ref={cancelBtnRef}
                   onClick={() => setShowConfirm(false)}
                   style={{
                     padding: "10px 24px",

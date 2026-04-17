@@ -1,5 +1,5 @@
-import React, { Suspense, lazy } from "react";
-import { Routes, Route } from "react-router-dom";
+import React, { Suspense, lazy, useEffect } from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import BottomNav from "./components/BottomNav";
@@ -23,6 +23,12 @@ const CarbonTracker = lazy(() => import("./pages/CarbonTracker"));
 const Recipes = lazy(() => import("./pages/Recipes"));
 const Methodology = lazy(() => import("./pages/Methodology"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
 
 function PageLoader() {
   return (
@@ -49,6 +55,7 @@ export default function App() {
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
+      <ScrollToTop />
       <Navbar />
       <ErrorBoundary>
         <main id="main-content" style={{ flex: 1 }}>
