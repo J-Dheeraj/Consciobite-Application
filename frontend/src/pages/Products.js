@@ -8,22 +8,19 @@ const CATEGORIES = [
   "All",
   "Beverages",
   "Dairy & Eggs",
+  "Fruits",
+  "Grains",
+  "Pantry",
+  "Protein",
+  "Seafood",
   "Snacks",
-  "Grains & Cereals",
-  "Fruits & Vegetables",
-  "Meat & Seafood",
-  "Frozen Foods",
-  "Condiments",
-  "Bakery",
-  "Other",
+  "Vegetables",
 ];
 
 const SORT_OPTIONS = [
   { value: "", label: "Default" },
-  { value: "score_desc", label: "Score: High to Low" },
-  { value: "score_asc", label: "Score: Low to High" },
-  { value: "name_asc", label: "Name: A-Z" },
-  { value: "name_desc", label: "Name: Z-A" },
+  { value: "grade_desc", label: "GreenGrade: High to Low" },
+  { value: "grade_asc", label: "GreenGrade: Low to High" },
   { value: "emissions_asc", label: "Emissions: Low to High" },
   { value: "emissions_desc", label: "Emissions: High to Low" },
 ];
@@ -51,7 +48,7 @@ export default function Products() {
       if (sort) params.sort = sort;
       const data = await fetchProducts(params);
       setProducts(data.products || []);
-      setTotalPages(data.totalPages || 1);
+      setTotalPages(data.pagination?.totalPages || 1);
     } catch (err) {
       setError(err.message);
     } finally {
