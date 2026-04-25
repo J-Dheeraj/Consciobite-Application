@@ -22,6 +22,13 @@ const DELETE_LOG_SCHEMA = {
   },
 };
 
+const GET_LOGS_SCHEMA = {
+  query: {
+    page: { required: false, type: "string", pattern: /^\d+$/, message: "page must be a positive integer" },
+    limit: { required: false, type: "string", pattern: /^\d+$/, message: "limit must be a positive integer" },
+  },
+};
+
 // GET /api/carbon/summary - get user's carbon footprint summary
 router.get("/summary", requireAuth, (req, res) => {
   const db = getDb();
@@ -105,7 +112,7 @@ router.get("/summary", requireAuth, (req, res) => {
 });
 
 // GET /api/carbon/logs - get user's carbon logs
-router.get("/logs", requireAuth, (req, res) => {
+router.get("/logs", requireAuth, validate(GET_LOGS_SCHEMA), (req, res) => {
   const db = getDb();
   const page = Math.max(1, parseInt(req.query.page, 10) || 1);
   const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 20));

@@ -17,14 +17,16 @@ export default function ReviewSection({ productId }) {
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [loadError, setLoadError] = useState("");
 
   const loadReviews = useCallback(async () => {
+    setLoadError("");
     try {
       const data = await fetchReviews(productId);
       setReviews(data.reviews);
       setStats(data.stats);
-    } catch {
-      /* ignore */
+    } catch (err) {
+      setLoadError(err.message || "Unable to load reviews.");
     }
   }, [productId]);
 
@@ -53,11 +55,12 @@ export default function ReviewSection({ productId }) {
   };
 
   const handleDelete = async (reviewId) => {
+    setError("");
     try {
       await deleteReview(reviewId);
       loadReviews();
-    } catch {
-      /* ignore */
+    } catch (err) {
+      setError(err.message || "Unable to delete review.");
     }
   };
 
@@ -206,6 +209,20 @@ export default function ReviewSection({ productId }) {
       ) : null}
 
       {/* Reviews list */}
+      {loadError && (
+        <p
+          role="alert"
+          aria-live="assertive"
+          style={{
+            color: "#e63946",
+            fontSize: "0.85rem",
+            textAlign: "center",
+            padding: 10,
+          }}
+        >
+          {loadError}
+        </p>
+      )}
       {reviews.length === 0 ? (
         <p
           style={{

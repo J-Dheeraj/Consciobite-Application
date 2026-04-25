@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { AUTH_EXPIRED_EVENT } from "../utils/constants";
 
 const AuthContext = createContext();
 
@@ -48,8 +49,8 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     // Auto-logout when a 401 is received from the API
     const handleExpired = () => logout();
-    window.addEventListener("auth-expired", handleExpired);
-    return () => window.removeEventListener("auth-expired", handleExpired);
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleExpired);
+    return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleExpired);
   }, [logout]);
 
   return (

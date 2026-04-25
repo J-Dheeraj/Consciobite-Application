@@ -18,7 +18,7 @@ export default function Compare() {
   useEffect(() => {
     fetchProducts({ limit: 100 })
       .then((data) => setAllProducts(data.products))
-      .catch(() => {});
+      .catch((err) => setError(err.message || "Unable to load products."));
   }, []);
 
   const toggleProduct = (id) => {
