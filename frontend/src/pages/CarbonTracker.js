@@ -1,7 +1,6 @@
 import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { fetchCarbonSummary, fetchCarbonLogs, deleteCarbonLog } from "../services/api";
 import Spinner from "../components/Spinner";
@@ -11,7 +10,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 export default function CarbonTracker() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
 
   const {
@@ -25,7 +23,6 @@ export default function CarbonTracker() {
         summary: summaryData,
         logs: logsData.logs,
       })),
-    enabled: isAuthenticated,
   });
 
   const summary = carbonData?.summary || null;
@@ -42,49 +39,6 @@ export default function CarbonTracker() {
     },
     [queryClient]
   );
-
-  if (!isAuthenticated) {
-    return (
-      <div style={{ animation: "fadeIn 0.4s ease" }}>
-        <PageHero
-          icon={"🌍"}
-          title="Carbon Tracker"
-          subtitle="Track your food carbon footprint over time."
-        />
-        <div style={{ maxWidth: 500, margin: "0 auto", padding: "0 20px 40px" }}>
-          <div
-            style={{
-              marginTop: -20,
-              background: isDark ? "#162419" : "#fff",
-              borderRadius: 14,
-              padding: 32,
-              textAlign: "center",
-              boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
-            }}
-          >
-            <div style={{ fontSize: "3rem", marginBottom: 12, opacity: 0.4 }}>{"🔒"}</div>
-            <p style={{ color: isDark ? "#7a9a7e" : "#888", marginBottom: 20 }}>
-              Sign in to start tracking your carbon footprint.
-            </p>
-            <Link
-              to="/login"
-              style={{
-                display: "inline-block",
-                padding: "12px 28px",
-                background: "linear-gradient(135deg, #2d6a4f, #40916c)",
-                color: "#fff",
-                borderRadius: 12,
-                fontWeight: 600,
-                textDecoration: "none",
-              }}
-            >
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (loading) {
     return <Spinner message="Loading carbon data..." />;
