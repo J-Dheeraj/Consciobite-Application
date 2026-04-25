@@ -1,6 +1,13 @@
 const express = require("express");
 const validator = require("validator");
 const router = express.Router();
+const { validate } = require("../middleware/validate");
+
+const COMPARE_SCHEMA = {
+  query: {
+    ids: { required: true, type: "string", message: "Provide product IDs as ?ids=id1,id2,id3" },
+  },
+};
 const products = require("../data/products.json");
 const { calculateGreenGrade } = require("../services/greengrade");
 const { logger } = require("../middleware/logger");
@@ -76,13 +83,8 @@ router.get("/", (req, res) => {
 });
 
 // GET /api/products/compare
-router.get("/compare", (req, res) => {
-  const idsParam = req.query.ids;
-  if (!idsParam || typeof idsParam !== "string") {
-    return res.status(400).json({ error: "Provide product IDs as ?ids=id1,id2,id3" });
-  }
-
-  const ids = idsParam
+router.get("/compare", validate(COMPARE_SCHEMA), (req, res) => {
+  const ids = req.query.ids
     .split(",")
     .map((id) => sanitize(id.trim(), 20))
     .filter(Boolean);

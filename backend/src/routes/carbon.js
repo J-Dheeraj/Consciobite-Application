@@ -3,8 +3,24 @@ const validator = require("validator");
 const crypto = require("crypto");
 const { getDb } = require("../db/schema");
 const { requireAuth } = require("../middleware/auth");
+const { validate } = require("../middleware/validate");
 
 const router = express.Router();
+
+const POST_LOG_SCHEMA = {
+  body: {
+    productId:   { required: true,  type: "string", maxLength: 50,  message: "productId is required" },
+    productName: { required: true,  type: "string", maxLength: 100, message: "productName is required" },
+    emissions:   { required: true,  type: "number", min: 0,         message: "emissions must be a non-negative number" },
+    quantity:    { required: false, type: "number", min: 0.1, max: 100 },
+  },
+};
+
+const DELETE_LOG_SCHEMA = {
+  params: {
+    id: { required: true, type: "string", maxLength: 40, pattern: /^[0-9a-f-]{36}$/, message: "Invalid log ID" },
+  },
+};
 
 // GET /api/carbon/summary - get user's carbon footprint summary
 router.get("/summary", requireAuth, (req, res) => {
@@ -122,15 +138,11 @@ router.get("/logs", requireAuth, (req, res) => {
 });
 
 // POST /api/carbon/log - log a product purchase
-router.post("/log", requireAuth, (req, res) => {
+router.post("/log", requireAuth, validate(POST_LOG_SCHEMA), (req, res) => {
   const { productId, productName, quantity, emissions } = req.body;
 
-  if (!productId || !productName || !emissions) {
-    return res.status(400).json({ error: "productId, productName, and emissions are required" });
-  }
-
-  const qty = Math.max(0.1, Math.min(100, parseFloat(quantity) || 1));
-  const emissionsVal = Math.max(0, parseFloat(emissions) || 0);
+  const qty = Math.max(0.1, Math.min(100, quantity || 1));
+  const emissionsVal = emissions;
 
   const id = crypto.randomUUID();
   const db = getDb();
@@ -151,8 +163,8 @@ router.post("/log", requireAuth, (req, res) => {
 });
 
 // DELETE /api/carbon/log/:id - delete a carbon log
-router.delete("/log/:id", requireAuth, (req, res) => {
-  const logId = validator.escape(validator.trim(req.params.id)).slice(0, 40);
+router.delete("/log/:id", requireAuth, validate(DELETE_LOG_SCHEMA), (req, res) => {
+  const logId = req.params.id;
   const db = getDb();
 
   const log = db
