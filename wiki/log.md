@@ -13,6 +13,19 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-04-25 — Migration Brief Review
+
+**Operation:** REVIEW `GREENGRADE_MIGRATION_BRIEF.md` (wiki-query deep mode)
+**Pages created:** 2
+- `questions/Is the GreenGrade Migration Brief Accurate`
+- `sources/GreenGrade Migration Brief 2026-04-25`
+
+**Key findings:** 5 factual errors in the brief (JS not Python, no Tailwind, 550 not 576 products, no water footprint data, products in JSON not SQLite). Session 2 scope severely underestimated — full language rewrite required.
+
+**Index updated:** yes
+
+---
+
 ## 2026-04-25 — Initial Ingest
 
 **Operation:** INGEST `.raw/graphify-audit-2026-04-25.md`

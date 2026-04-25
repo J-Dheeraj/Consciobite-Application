@@ -15,6 +15,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 
 ## Sources
 - [[Graphify Audit 2026-04-25]]
+- [[GreenGrade Migration Brief 2026-04-25]]
 
 ## Entities
 - [[CarbonTracker Component]]
@@ -36,6 +37,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 
 ## Questions
 - [[What Did the Graphify Audit Find]]
+- [[Is the GreenGrade Migration Brief Accurate]]
 
 ## Meta
 - [[Consciobite Architecture Overview]]
