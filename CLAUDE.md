@@ -1,5 +1,14 @@
 # Consciobite — Claude Code Instructions
 
+## Session Start Protocol
+
+Every new session must do both of these before touching any code:
+
+1. **Run `/graphify`** — generates a fresh AST + semantic knowledge graph of the codebase. Surfaces new coupling, orphaned code, and structural drift since the last audit.
+2. **Read `wiki/hot.md`** — ~500-token context cache. Gives last audit findings, key invariants, and current test state without crawling the codebase.
+
+Skip neither. The graph catches what grep misses; the wiki catches what the graph doesn't persist.
+
 ## Wiki Vault
 
 This project has a live knowledge base at `wiki/`. Always read `wiki/hot.md` first when starting a new session — it gives ~500 tokens of recent context (last audit, key decisions, current test state) without crawling the whole codebase.
@@ -45,6 +54,20 @@ Use the following skills when working with the vault:
 - `AUTH_EXPIRED_EVENT` is the shared constant for the 401 event bus — never use the raw string `"auth-expired"`
 - `WEEKLY_CARBON_GOAL_KG` lives in `frontend/src/utils/constants.js`
 - `/carbon` route is protected by `RequireAuth` in `App.js` — do not add in-page auth gates
+
+## Before Every Commit
+
+Run Prettier on all modified files — CI enforces formatting and will fail without it:
+
+```bash
+# backend
+cd backend && npx prettier --write <changed files>
+
+# frontend
+cd frontend && npx prettier --write <changed files>
+```
+
+Verify with `--check` before pushing. Lesson learned: audit fixes in commit 8d50d17 introduced formatting drift that broke CI in backend/src/index.js, routes/carbon.js, routes/reviews.js and frontend/src/App.js, pages/CarbonTracker.js.
 
 ## Branch
 

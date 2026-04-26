@@ -13,7 +13,11 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-04-25 after initial ingest of graphify audit.
+**Last updated:** 2026-04-26
+
+**Session start protocol:** Run `/graphify` first (fresh knowledge graph), then read this file. Both are required — graph catches structural drift, wiki persists decisions.
+
+**Prettier invariant (learned 2026-04-26):** CI enforces Prettier formatting. Audit fixes in commit 8d50d17 introduced formatting drift; CI failed on 5 files (backend: index.js, routes/carbon.js, routes/reviews.js — frontend: App.js, pages/CarbonTracker.js). Fixed in commit 6e01ca4. Rule: run `npx prettier --write` on every modified file before committing, verify with `--check`.
 
 **Project:** Consciobite — React 18 SPA + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A–F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
