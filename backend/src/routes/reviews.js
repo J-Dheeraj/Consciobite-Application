@@ -19,7 +19,13 @@ const POST_REVIEW_SCHEMA = {
     productId: { required: true, type: "string", maxLength: 20, message: "Invalid product ID" },
   },
   body: {
-    rating: { required: true, type: "number", min: 1, max: 5, message: "Rating must be between 1 and 5" },
+    rating: {
+      required: true,
+      type: "number",
+      min: 1,
+      max: 5,
+      message: "Rating must be between 1 and 5",
+    },
     comment: { required: false, type: "string", maxLength: 500 },
   },
 };

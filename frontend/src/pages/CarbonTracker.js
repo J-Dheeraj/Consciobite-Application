@@ -131,8 +131,7 @@ export default function CarbonTracker() {
                     fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: "1.5rem",
-                    color:
-                      summary.weekly.emissions > WEEKLY_CARBON_GOAL_KG ? "#e63946" : "#2d6a4f",
+                    color: summary.weekly.emissions > WEEKLY_CARBON_GOAL_KG ? "#e63946" : "#2d6a4f",
                   }}
                 >
                   {summary.weekly.emissions}

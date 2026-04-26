@@ -80,7 +80,14 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/carbon" element={<RequireAuth><CarbonTracker /></RequireAuth>} />
+              <Route
+                path="/carbon"
+                element={
+                  <RequireAuth>
+                    <CarbonTracker />
+                  </RequireAuth>
+                }
+              />
               <Route path="/recipes" element={<Recipes />} />
               <Route path="/methodology" element={<Methodology />} />
               <Route path="*" element={<NotFound />} />

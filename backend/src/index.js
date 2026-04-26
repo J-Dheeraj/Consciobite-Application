@@ -37,15 +37,11 @@ function validateProductCatalog(catalog) {
       throw new Error("products.json: entry is not an object");
     }
     if (!p.id || !p.name || !p.category || typeof p.emissions !== "object") {
-      throw new Error(
-        `products.json: entry missing required field (id=${p.id ?? "?"})`
-      );
+      throw new Error(`products.json: entry missing required field (id=${p.id ?? "?"})`);
     }
     for (const key of REQUIRED_EMISSION_KEYS) {
       if (typeof p.emissions[key] !== "number") {
-        throw new Error(
-          `products.json: product ${p.id} emissions.${key} must be a number`
-        );
+        throw new Error(`products.json: product ${p.id} emissions.${key} must be a number`);
       }
     }
   }

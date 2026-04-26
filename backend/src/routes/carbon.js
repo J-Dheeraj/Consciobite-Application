@@ -9,23 +9,49 @@ const router = express.Router();
 
 const POST_LOG_SCHEMA = {
   body: {
-    productId:   { required: true,  type: "string", maxLength: 50,  message: "productId is required" },
-    productName: { required: true,  type: "string", maxLength: 100, message: "productName is required" },
-    emissions:   { required: true,  type: "number", min: 0,         message: "emissions must be a non-negative number" },
-    quantity:    { required: false, type: "number", min: 0.1, max: 100 },
+    productId: { required: true, type: "string", maxLength: 50, message: "productId is required" },
+    productName: {
+      required: true,
+      type: "string",
+      maxLength: 100,
+      message: "productName is required",
+    },
+    emissions: {
+      required: true,
+      type: "number",
+      min: 0,
+      message: "emissions must be a non-negative number",
+    },
+    quantity: { required: false, type: "number", min: 0.1, max: 100 },
   },
 };
 
 const DELETE_LOG_SCHEMA = {
   params: {
-    id: { required: true, type: "string", maxLength: 40, pattern: /^[0-9a-f-]{36}$/, message: "Invalid log ID" },
+    id: {
+      required: true,
+      type: "string",
+      maxLength: 40,
+      pattern: /^[0-9a-f-]{36}$/,
+      message: "Invalid log ID",
+    },
   },
 };
 
 const GET_LOGS_SCHEMA = {
   query: {
-    page: { required: false, type: "string", pattern: /^\d+$/, message: "page must be a positive integer" },
-    limit: { required: false, type: "string", pattern: /^\d+$/, message: "limit must be a positive integer" },
+    page: {
+      required: false,
+      type: "string",
+      pattern: /^\d+$/,
+      message: "page must be a positive integer",
+    },
+    limit: {
+      required: false,
+      type: "string",
+      pattern: /^\d+$/,
+      message: "limit must be a positive integer",
+    },
   },
 };
 
