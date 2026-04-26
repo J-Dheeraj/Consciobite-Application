@@ -1,0 +1,253 @@
+@import "tailwindcss";
+
+/* ── Consciobite design tokens ──────────────────────────────────────────── */
+
+:root {
+  /* Green palette (primary brand) */
+  --green-900: #1b4332;
+  --green-800: #2d6a4f;
+  --green-700: #40916c;
+  --green-600: #52b788;
+  --green-500: #74c69d;
+  --green-400: #95d5b2;
+  --green-300: #b7e4c7;
+  --green-200: #d8f3dc;
+  --green-100: #edf7f0;
+  --green-50: #f5faf7;
+
+  /* Grade colours */
+  --amber-500: #e9c46a;
+  --amber-600: #c59a1a;
+  --amber-100: #fff8e1;
+  --red-500: #e63946;
+  --red-100: #fef2f2;
+
+  /* Gray scale */
+  --gray-900: #1a1a2e;
+  --gray-500: #666;
+  --gray-400: #888;
+  --gray-200: #ccc;
+  --gray-100: #e8e8e8;
+
+  /* Semantic tokens (light mode) */
+  --bg-primary: #f5faf7;
+  --bg-card: #fff;
+  --bg-card-hover: #fafafa;
+  --text-primary: #1a1a2e;
+  --text-secondary: #555;
+  --text-muted: #888;
+  --border-color: #e0e0e0;
+  --border-light: #f0f0f0;
+  --shadow-sm: 0 1px 3px rgba(27, 67, 50, 0.06);
+  --shadow-md: 0 4px 12px rgba(27, 67, 50, 0.08);
+  --shadow-lg: 0 8px 30px rgba(27, 67, 50, 0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0f1a14;
+  --bg-card: #162419;
+  --bg-card-hover: #1c2e22;
+  --text-primary: #e8f5e9;
+  --text-secondary: #b0c4b1;
+  --text-muted: #7a9a7e;
+  --border-color: #2d4a35;
+  --border-light: #243a2b;
+  --gray-900: #e8f5e9;
+  --gray-500: #b0c4b1;
+  --gray-400: #7a9a7e;
+  --gray-200: #3d5a42;
+  --gray-100: #2d4a35;
+  --white: #162419;
+  --green-50: #0f1a14;
+  --green-100: #162419;
+  --green-200: #1c2e22;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Tailwind v4 theme tokens ───────────────────────────────────────────── */
+
+@theme inline {
+  /* Green palette → Tailwind color utilities */
+  --color-brand-900: var(--green-900);
+  --color-brand-800: var(--green-800);
+  --color-brand-700: var(--green-700);
+  --color-brand-600: var(--green-600);
+  --color-brand-500: var(--green-500);
+  --color-brand-400: var(--green-400);
+  --color-brand-300: var(--green-300);
+  --color-brand-200: var(--green-200);
+  --color-brand-100: var(--green-100);
+  --color-brand-50: var(--green-50);
+
+  /* Grade colours */
+  --color-grade-amber: var(--amber-500);
+  --color-grade-red: var(--red-500);
+
+  /* Semantic surface colours */
+  --color-surface: var(--bg-primary);
+  --color-card: var(--bg-card);
+  --color-card-hover: var(--bg-card-hover);
+
+  /* Text */
+  --color-ink: var(--text-primary);
+  --color-ink-secondary: var(--text-secondary);
+  --color-ink-muted: var(--text-muted);
+
+  /* Border */
+  --color-border: var(--border-color);
+  --color-border-light: var(--border-light);
+
+  /* Border radius */
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+}
+
+/* ── Base styles ─────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+a {
+  color: var(--green-800);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--green-700);
+}
+[data-theme="dark"] a {
+  color: var(--green-500);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--green-600);
+  outline-offset: 2px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+select {
+  appearance: auto;
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+/* ── Accessibility ───────────────────────────────────────────────────────── */
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--green-800);
+  color: #fff;
+  padding: 8px;
+  z-index: 200;
+}
+.skip-link:focus {
+  top: 0;
+}
+
+/* ── Animations ──────────────────────────────────────────────────────────── */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--green-100);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--green-400);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--green-600);
+}
+
+/* ── Dark mode overrides for inline-styled elements (migrated gradually) ─── */
+
+[data-theme="dark"] input,
+[data-theme="dark"] select {
+  background: #1c2e22 !important;
+  color: #e8f5e9 !important;
+  border-color: #2d4a35 !important;
+}
+[data-theme="dark"] input::placeholder {
+  color: #7a9a7e !important;
+}

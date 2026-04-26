@@ -1,0 +1,4402 @@
+[
+  {
+    "id": "1",
+    "name": "Firm Tofu",
+    "category": "Protein",
+    "score": 8.4,
+    "color": "green",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "2",
+    "name": "Beef Ribeye Steak",
+    "category": "Protein",
+    "score": 0.3,
+    "color": "red",
+    "totalEmissions": 40.3
+  },
+  {
+    "id": "3",
+    "name": "Chicken Breast",
+    "category": "Protein",
+    "score": 3.4,
+    "color": "red",
+    "totalEmissions": 7.2
+  },
+  {
+    "id": "4",
+    "name": "Pork Loin",
+    "category": "Protein",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 7.4
+  },
+  {
+    "id": "5",
+    "name": "Lamb Leg",
+    "category": "Protein",
+    "score": 0.9,
+    "color": "red",
+    "totalEmissions": 23.5
+  },
+  {
+    "id": "6",
+    "name": "Tempeh",
+    "category": "Protein",
+    "score": 8.7,
+    "color": "green",
+    "totalEmissions": 1.3
+  },
+  {
+    "id": "7",
+    "name": "Chicken Thigh",
+    "category": "Protein",
+    "score": 3.5,
+    "color": "red",
+    "totalEmissions": 7.4
+  },
+  {
+    "id": "8",
+    "name": "Beef Minced",
+    "category": "Protein",
+    "score": 0.7,
+    "color": "red",
+    "totalEmissions": 38
+  },
+  {
+    "id": "9",
+    "name": "Pork Belly",
+    "category": "Protein",
+    "score": 3.1,
+    "color": "red",
+    "totalEmissions": 7.7
+  },
+  {
+    "id": "10",
+    "name": "Duck Breast",
+    "category": "Protein",
+    "score": 3.1,
+    "color": "red",
+    "totalEmissions": 7.6
+  },
+  {
+    "id": "11",
+    "name": "Chicken Wings",
+    "category": "Protein",
+    "score": 3.4,
+    "color": "red",
+    "totalEmissions": 7.3
+  },
+  {
+    "id": "12",
+    "name": "Silken Tofu",
+    "category": "Protein",
+    "score": 8.5,
+    "color": "green",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "13",
+    "name": "Luncheon Meat",
+    "category": "Protein",
+    "score": 1.8,
+    "color": "red",
+    "totalEmissions": 9.2
+  },
+  {
+    "id": "14",
+    "name": "Atlantic Salmon Fillet",
+    "category": "Seafood",
+    "score": 1.9,
+    "color": "red",
+    "totalEmissions": 9.7
+  },
+  {
+    "id": "15",
+    "name": "Tiger Prawns",
+    "category": "Seafood",
+    "score": 1.4,
+    "color": "red",
+    "totalEmissions": 11.8
+  },
+  {
+    "id": "16",
+    "name": "Canned Tuna in Water",
+    "category": "Seafood",
+    "score": 5.8,
+    "color": "yellow",
+    "totalEmissions": 5.4
+  },
+  {
+    "id": "17",
+    "name": "Barramundi Fillet",
+    "category": "Seafood",
+    "score": 4.8,
+    "color": "yellow",
+    "totalEmissions": 6.9
+  },
+  {
+    "id": "18",
+    "name": "Frozen Squid Rings",
+    "category": "Seafood",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 4.5
+  },
+  {
+    "id": "19",
+    "name": "Canned Sardines in Oil",
+    "category": "Seafood",
+    "score": 7,
+    "color": "green",
+    "totalEmissions": 3.5
+  },
+  {
+    "id": "20",
+    "name": "Fish Balls",
+    "category": "Seafood",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 4.7
+  },
+  {
+    "id": "21",
+    "name": "Vannamei Prawns",
+    "category": "Seafood",
+    "score": 1.1,
+    "color": "red",
+    "totalEmissions": 13.2
+  },
+  {
+    "id": "22",
+    "name": "Fresh Whole Milk",
+    "category": "Dairy & Eggs",
+    "score": 5.9,
+    "color": "yellow",
+    "totalEmissions": 4
+  },
+  {
+    "id": "23",
+    "name": "Free-Range Eggs",
+    "category": "Dairy & Eggs",
+    "score": 5.1,
+    "color": "yellow",
+    "totalEmissions": 4.8
+  },
+  {
+    "id": "24",
+    "name": "Cheddar Cheese Block",
+    "category": "Dairy & Eggs",
+    "score": 1.2,
+    "color": "red",
+    "totalEmissions": 12.9
+  },
+  {
+    "id": "25",
+    "name": "Unsalted Butter",
+    "category": "Dairy & Eggs",
+    "score": 2.1,
+    "color": "red",
+    "totalEmissions": 11.3
+  },
+  {
+    "id": "26",
+    "name": "Greek Yogurt",
+    "category": "Dairy & Eggs",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 4.4
+  },
+  {
+    "id": "27",
+    "name": "Mozzarella Cheese",
+    "category": "Dairy & Eggs",
+    "score": 1.2,
+    "color": "red",
+    "totalEmissions": 11.6
+  },
+  {
+    "id": "28",
+    "name": "Cream Cheese",
+    "category": "Dairy & Eggs",
+    "score": 2.4,
+    "color": "red",
+    "totalEmissions": 9.3
+  },
+  {
+    "id": "29",
+    "name": "Cage-Free Eggs",
+    "category": "Dairy & Eggs",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 4.3
+  },
+  {
+    "id": "30",
+    "name": "Whipping Cream",
+    "category": "Dairy & Eggs",
+    "score": 2.9,
+    "color": "red",
+    "totalEmissions": 9
+  },
+  {
+    "id": "31",
+    "name": "Parmesan Cheese",
+    "category": "Dairy & Eggs",
+    "score": 0.8,
+    "color": "red",
+    "totalEmissions": 14.1
+  },
+  {
+    "id": "32",
+    "name": "Jasmine Rice",
+    "category": "Grains",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 4.4
+  },
+  {
+    "id": "33",
+    "name": "Basmati Rice",
+    "category": "Grains",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 4.5
+  },
+  {
+    "id": "34",
+    "name": "Rolled Oats",
+    "category": "Grains",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "35",
+    "name": "Spaghetti Pasta",
+    "category": "Grains",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "36",
+    "name": "Wholemeal Bread",
+    "category": "Grains",
+    "score": 8,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "37",
+    "name": "Instant Noodles Mi Goreng",
+    "category": "Grains",
+    "score": 4.3,
+    "color": "yellow",
+    "totalEmissions": 2.6
+  },
+  {
+    "id": "38",
+    "name": "Brown Rice",
+    "category": "Grains",
+    "score": 4.2,
+    "color": "yellow",
+    "totalEmissions": 3.9
+  },
+  {
+    "id": "39",
+    "name": "Penne Pasta",
+    "category": "Grains",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "40",
+    "name": "White Bread",
+    "category": "Grains",
+    "score": 8.3,
+    "color": "green",
+    "totalEmissions": 1.3
+  },
+  {
+    "id": "41",
+    "name": "Bee Hoon Rice Vermicelli",
+    "category": "Grains",
+    "score": 5,
+    "color": "yellow",
+    "totalEmissions": 3.4
+  },
+  {
+    "id": "42",
+    "name": "Instant Noodles Curry",
+    "category": "Grains",
+    "score": 4,
+    "color": "yellow",
+    "totalEmissions": 2.8
+  },
+  {
+    "id": "43",
+    "name": "Bananas",
+    "category": "Fruits",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "44",
+    "name": "Fuji Apples",
+    "category": "Fruits",
+    "score": 8.1,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "45",
+    "name": "Navel Oranges",
+    "category": "Fruits",
+    "score": 7.8,
+    "color": "green",
+    "totalEmissions": 0.8
+  },
+  {
+    "id": "46",
+    "name": "Frozen Blueberries",
+    "category": "Fruits",
+    "score": 5,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "47",
+    "name": "Avocado",
+    "category": "Fruits",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "48",
+    "name": "Red Grapes",
+    "category": "Fruits",
+    "score": 6.9,
+    "color": "yellow",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "49",
+    "name": "Watermelon",
+    "category": "Fruits",
+    "score": 8.3,
+    "color": "green",
+    "totalEmissions": 0.5
+  },
+  {
+    "id": "50",
+    "name": "Mangoes",
+    "category": "Fruits",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "51",
+    "name": "Strawberries",
+    "category": "Fruits",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "52",
+    "name": "Kiwi Fruit",
+    "category": "Fruits",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 1
+  },
+  {
+    "id": "53",
+    "name": "Pineapple",
+    "category": "Fruits",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 0.8
+  },
+  {
+    "id": "54",
+    "name": "Broccoli",
+    "category": "Vegetables",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 0.9
+  },
+  {
+    "id": "55",
+    "name": "Spinach",
+    "category": "Vegetables",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "56",
+    "name": "Potatoes",
+    "category": "Vegetables",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "57",
+    "name": "Tomatoes",
+    "category": "Vegetables",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 1.3
+  },
+  {
+    "id": "58",
+    "name": "Carrots",
+    "category": "Vegetables",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "59",
+    "name": "Onions",
+    "category": "Vegetables",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "60",
+    "name": "Mushrooms",
+    "category": "Vegetables",
+    "score": 5.8,
+    "color": "yellow",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "61",
+    "name": "Capsicum Bell Peppers",
+    "category": "Vegetables",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "62",
+    "name": "Garlic",
+    "category": "Vegetables",
+    "score": 7.3,
+    "color": "green",
+    "totalEmissions": 0.8
+  },
+  {
+    "id": "63",
+    "name": "Ginger",
+    "category": "Vegetables",
+    "score": 7.3,
+    "color": "green",
+    "totalEmissions": 0.8
+  },
+  {
+    "id": "64",
+    "name": "Sweet Potato",
+    "category": "Vegetables",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "65",
+    "name": "Corn on the Cob",
+    "category": "Vegetables",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "66",
+    "name": "Celery",
+    "category": "Vegetables",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "67",
+    "name": "Bok Choy",
+    "category": "Vegetables",
+    "score": 7.9,
+    "color": "green",
+    "totalEmissions": 0.6
+  },
+  {
+    "id": "68",
+    "name": "Kailan",
+    "category": "Vegetables",
+    "score": 7.9,
+    "color": "green",
+    "totalEmissions": 0.6
+  },
+  {
+    "id": "69",
+    "name": "Arabica Coffee Beans",
+    "category": "Beverages",
+    "score": 1.7,
+    "color": "red",
+    "totalEmissions": 12.1
+  },
+  {
+    "id": "70",
+    "name": "Green Tea Bags",
+    "category": "Beverages",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "71",
+    "name": "Oat Milk Barista",
+    "category": "Beverages",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "72",
+    "name": "Soy Milk Unsweetened",
+    "category": "Beverages",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "73",
+    "name": "Almond Milk",
+    "category": "Beverages",
+    "score": 4.3,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "74",
+    "name": "Orange Juice",
+    "category": "Beverages",
+    "score": 4.8,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "75",
+    "name": "Instant Coffee 3-in-1",
+    "category": "Beverages",
+    "score": 1.9,
+    "color": "red",
+    "totalEmissions": 9.1
+  },
+  {
+    "id": "76",
+    "name": "Coconut Water",
+    "category": "Beverages",
+    "score": 6.2,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "77",
+    "name": "Milo Powder",
+    "category": "Beverages",
+    "score": 0.4,
+    "color": "red",
+    "totalEmissions": 7.2
+  },
+  {
+    "id": "78",
+    "name": "Teh Tarik Milk Tea",
+    "category": "Beverages",
+    "score": 2,
+    "color": "red",
+    "totalEmissions": 3.4
+  },
+  {
+    "id": "79",
+    "name": "Dark Chocolate Bar 70%",
+    "category": "Snacks",
+    "score": 2.1,
+    "color": "red",
+    "totalEmissions": 10.8
+  },
+  {
+    "id": "80",
+    "name": "Mixed Nuts",
+    "category": "Snacks",
+    "score": 6,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "81",
+    "name": "Peanut Butter Creamy",
+    "category": "Snacks",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "82",
+    "name": "Potato Chips Original",
+    "category": "Snacks",
+    "score": 6,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "83",
+    "name": "Biscuit Cream Crackers",
+    "category": "Snacks",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "84",
+    "name": "Oreo Cookies",
+    "category": "Snacks",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "85",
+    "name": "Prawn Crackers",
+    "category": "Snacks",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 2.6
+  },
+  {
+    "id": "86",
+    "name": "Milk Chocolate Bar",
+    "category": "Snacks",
+    "score": 0.4,
+    "color": "red",
+    "totalEmissions": 9.7
+  },
+  {
+    "id": "87",
+    "name": "Granola Bar",
+    "category": "Snacks",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "88",
+    "name": "Seaweed Snack",
+    "category": "Snacks",
+    "score": 8.4,
+    "color": "green",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "89",
+    "name": "Coconut Oil Virgin",
+    "category": "Pantry",
+    "score": 3.4,
+    "color": "red",
+    "totalEmissions": 3.6
+  },
+  {
+    "id": "90",
+    "name": "Olive Oil Extra Virgin",
+    "category": "Pantry",
+    "score": 2.8,
+    "color": "red",
+    "totalEmissions": 4.7
+  },
+  {
+    "id": "91",
+    "name": "Palm Cooking Oil",
+    "category": "Pantry",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 6.3
+  },
+  {
+    "id": "92",
+    "name": "Canned Chickpeas",
+    "category": "Pantry",
+    "score": 7.5,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "93",
+    "name": "Soy Sauce",
+    "category": "Pantry",
+    "score": 7.6,
+    "color": "green",
+    "totalEmissions": 1.3
+  },
+  {
+    "id": "94",
+    "name": "Canned Baked Beans",
+    "category": "Pantry",
+    "score": 6.9,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "95",
+    "name": "Coconut Milk",
+    "category": "Pantry",
+    "score": 3.7,
+    "color": "red",
+    "totalEmissions": 3.1
+  },
+  {
+    "id": "96",
+    "name": "Canned Lentils",
+    "category": "Pantry",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 1.3
+  },
+  {
+    "id": "97",
+    "name": "Tomato Ketchup",
+    "category": "Pantry",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "98",
+    "name": "Oyster Sauce",
+    "category": "Pantry",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "99",
+    "name": "Sambal Chilli Paste",
+    "category": "Pantry",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "100",
+    "name": "Fish Sauce",
+    "category": "Pantry",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 2.6
+  },
+  {
+    "id": "101",
+    "name": "Sesame Oil",
+    "category": "Pantry",
+    "score": 5.8,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "102",
+    "name": "Curry Paste Red",
+    "category": "Pantry",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "103",
+    "name": "Honey",
+    "category": "Pantry",
+    "score": 7.3,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "104",
+    "name": "Canned Corn Kernels",
+    "category": "Pantry",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "105",
+    "name": "Japanese Silken Tofu",
+    "category": "Protein",
+    "score": 8.5,
+    "color": "green",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "106",
+    "name": "Egg Tofu",
+    "category": "Protein",
+    "score": 7.6,
+    "color": "green",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "107",
+    "name": "Pressed Tofu",
+    "category": "Protein",
+    "score": 8.4,
+    "color": "green",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "108",
+    "name": "Chicken Mid Wings",
+    "category": "Protein",
+    "score": 2.9,
+    "color": "red",
+    "totalEmissions": 7.7
+  },
+  {
+    "id": "109",
+    "name": "Chicken Drumsticks",
+    "category": "Protein",
+    "score": 3.4,
+    "color": "red",
+    "totalEmissions": 7
+  },
+  {
+    "id": "110",
+    "name": "Chicken Nuggets",
+    "category": "Protein",
+    "score": 2.8,
+    "color": "red",
+    "totalEmissions": 7.4
+  },
+  {
+    "id": "111",
+    "name": "Kampong Chicken Whole",
+    "category": "Protein",
+    "score": 4.2,
+    "color": "yellow",
+    "totalEmissions": 6.3
+  },
+  {
+    "id": "112",
+    "name": "Chicken Wings",
+    "category": "Protein",
+    "score": 4,
+    "color": "yellow",
+    "totalEmissions": 6.6
+  },
+  {
+    "id": "113",
+    "name": "Beef Mince",
+    "category": "Protein",
+    "score": 0.7,
+    "color": "red",
+    "totalEmissions": 36.9
+  },
+  {
+    "id": "114",
+    "name": "Pork Belly Sliced",
+    "category": "Protein",
+    "score": 3,
+    "color": "red",
+    "totalEmissions": 7.8
+  },
+  {
+    "id": "115",
+    "name": "Minced Pork",
+    "category": "Protein",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 7.2
+  },
+  {
+    "id": "116",
+    "name": "Luncheon Meat Original",
+    "category": "Protein",
+    "score": 1.5,
+    "color": "red",
+    "totalEmissions": 9.4
+  },
+  {
+    "id": "117",
+    "name": "Luncheon Meat Less Sodium",
+    "category": "Protein",
+    "score": 1.5,
+    "color": "red",
+    "totalEmissions": 9.5
+  },
+  {
+    "id": "118",
+    "name": "Lamb Shoulder",
+    "category": "Protein",
+    "score": 1,
+    "color": "red",
+    "totalEmissions": 22.6
+  },
+  {
+    "id": "119",
+    "name": "Lamb Rack",
+    "category": "Protein",
+    "score": 0.7,
+    "color": "red",
+    "totalEmissions": 24.3
+  },
+  {
+    "id": "120",
+    "name": "Marinated Tempeh",
+    "category": "Protein",
+    "score": 8.7,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "121",
+    "name": "Salmon Fillet",
+    "category": "Seafood",
+    "score": 2.6,
+    "color": "red",
+    "totalEmissions": 9.7
+  },
+  {
+    "id": "122",
+    "name": "Barramundi Portion",
+    "category": "Seafood",
+    "score": 3.6,
+    "color": "red",
+    "totalEmissions": 8.2
+  },
+  {
+    "id": "123",
+    "name": "Barramundi Whole",
+    "category": "Seafood",
+    "score": 3.9,
+    "color": "red",
+    "totalEmissions": 7.5
+  },
+  {
+    "id": "124",
+    "name": "Smoked Salmon",
+    "category": "Seafood",
+    "score": 1.1,
+    "color": "red",
+    "totalEmissions": 11.4
+  },
+  {
+    "id": "125",
+    "name": "Salmon Portions",
+    "category": "Seafood",
+    "score": 2,
+    "color": "red",
+    "totalEmissions": 10.5
+  },
+  {
+    "id": "126",
+    "name": "Sardines in Tomato",
+    "category": "Seafood",
+    "score": 6,
+    "color": "yellow",
+    "totalEmissions": 3.9
+  },
+  {
+    "id": "127",
+    "name": "Mackerel in Tomato",
+    "category": "Seafood",
+    "score": 5.9,
+    "color": "yellow",
+    "totalEmissions": 4.1
+  },
+  {
+    "id": "128",
+    "name": "Tuna Chunks in Oil",
+    "category": "Seafood",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 4.8
+  },
+  {
+    "id": "129",
+    "name": "Frozen Baby Squid",
+    "category": "Seafood",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 4
+  },
+  {
+    "id": "130",
+    "name": "White Fish Fillet",
+    "category": "Seafood",
+    "score": 4.3,
+    "color": "yellow",
+    "totalEmissions": 6.3
+  },
+  {
+    "id": "131",
+    "name": "Frozen Scallops",
+    "category": "Seafood",
+    "score": 5.9,
+    "color": "yellow",
+    "totalEmissions": 4.8
+  },
+  {
+    "id": "132",
+    "name": "Premium Fish Sauce",
+    "category": "Seafood",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 3.5
+  },
+  {
+    "id": "133",
+    "name": "Oyster Sauce",
+    "category": "Seafood",
+    "score": 7,
+    "color": "green",
+    "totalEmissions": 3.1
+  },
+  {
+    "id": "134",
+    "name": "Plant-Based Mince",
+    "category": "Protein",
+    "score": 8,
+    "color": "green",
+    "totalEmissions": 2
+  },
+  {
+    "id": "135",
+    "name": "Plant-Based Nuggets",
+    "category": "Protein",
+    "score": 7.6,
+    "color": "green",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "136",
+    "name": "Plant-Based Pieces",
+    "category": "Protein",
+    "score": 8,
+    "color": "green",
+    "totalEmissions": 2
+  },
+  {
+    "id": "137",
+    "name": "Fresh Milk Full Cream",
+    "category": "Dairy & Eggs",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 3.9
+  },
+  {
+    "id": "138",
+    "name": "Low Fat Yoghurt Strawberry",
+    "category": "Dairy & Eggs",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 4.3
+  },
+  {
+    "id": "139",
+    "name": "HL Low Fat Milk",
+    "category": "Dairy & Eggs",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 3.5
+  },
+  {
+    "id": "140",
+    "name": "Chocolate Milk",
+    "category": "Dairy & Eggs",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 4.5
+  },
+  {
+    "id": "141",
+    "name": "Low Fat Milk",
+    "category": "Dairy & Eggs",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 3.5
+  },
+  {
+    "id": "142",
+    "name": "Strawberry Milk",
+    "category": "Dairy & Eggs",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 4.2
+  },
+  {
+    "id": "143",
+    "name": "Tasty Cheddar Block",
+    "category": "Dairy & Eggs",
+    "score": 1.1,
+    "color": "red",
+    "totalEmissions": 11.5
+  },
+  {
+    "id": "144",
+    "name": "Cream Cheese Spread",
+    "category": "Dairy & Eggs",
+    "score": 1.8,
+    "color": "red",
+    "totalEmissions": 10
+  },
+  {
+    "id": "145",
+    "name": "Stringers Cheese",
+    "category": "Dairy & Eggs",
+    "score": 1.3,
+    "color": "red",
+    "totalEmissions": 11
+  },
+  {
+    "id": "146",
+    "name": "Unsalted Butter",
+    "category": "Dairy & Eggs",
+    "score": 1.5,
+    "color": "red",
+    "totalEmissions": 12.2
+  },
+  {
+    "id": "147",
+    "name": "Brie Cheese",
+    "category": "Dairy & Eggs",
+    "score": 1,
+    "color": "red",
+    "totalEmissions": 11.9
+  },
+  {
+    "id": "148",
+    "name": "Camembert Cheese",
+    "category": "Dairy & Eggs",
+    "score": 1,
+    "color": "red",
+    "totalEmissions": 11.9
+  },
+  {
+    "id": "149",
+    "name": "Garlic & Herb Cream Cheese",
+    "category": "Dairy & Eggs",
+    "score": 1.7,
+    "color": "red",
+    "totalEmissions": 9.8
+  },
+  {
+    "id": "150",
+    "name": "Light Cream Cheese",
+    "category": "Dairy & Eggs",
+    "score": 2.5,
+    "color": "red",
+    "totalEmissions": 8.6
+  },
+  {
+    "id": "151",
+    "name": "Vanilla Ice Cream",
+    "category": "Dairy & Eggs",
+    "score": 2.7,
+    "color": "red",
+    "totalEmissions": 7.3
+  },
+  {
+    "id": "152",
+    "name": "Chocolate Ice Cream",
+    "category": "Dairy & Eggs",
+    "score": 2.5,
+    "color": "red",
+    "totalEmissions": 7.5
+  },
+  {
+    "id": "153",
+    "name": "Greek Style Yoghurt",
+    "category": "Dairy & Eggs",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 4.9
+  },
+  {
+    "id": "154",
+    "name": "Strawberry Yoghurt",
+    "category": "Dairy & Eggs",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 4.9
+  },
+  {
+    "id": "155",
+    "name": "Free Range Eggs",
+    "category": "Dairy & Eggs",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 3.6
+  },
+  {
+    "id": "156",
+    "name": "Omega-3 Eggs",
+    "category": "Dairy & Eggs",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 3.8
+  },
+  {
+    "id": "157",
+    "name": "Brown Rice",
+    "category": "Grains",
+    "score": 4.2,
+    "color": "yellow",
+    "totalEmissions": 4.2
+  },
+  {
+    "id": "158",
+    "name": "Basmati Rice",
+    "category": "Grains",
+    "score": 4,
+    "color": "yellow",
+    "totalEmissions": 4.2
+  },
+  {
+    "id": "159",
+    "name": "Glutinous Rice",
+    "category": "Grains",
+    "score": 4.2,
+    "color": "yellow",
+    "totalEmissions": 4.1
+  },
+  {
+    "id": "160",
+    "name": "Wholemeal Bread High Fibre",
+    "category": "Grains",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "161",
+    "name": "Raisin Bread",
+    "category": "Grains",
+    "score": 4.3,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "162",
+    "name": "Butterscotch Bread",
+    "category": "Grains",
+    "score": 4.6,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "163",
+    "name": "Penne Pasta",
+    "category": "Grains",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "164",
+    "name": "Fusilli Pasta",
+    "category": "Grains",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "165",
+    "name": "Lasagne Sheets",
+    "category": "Grains",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "166",
+    "name": "Mi Goreng BBQ Chicken",
+    "category": "Grains",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "167",
+    "name": "Soto Mie Flavour",
+    "category": "Grains",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "168",
+    "name": "Special Fried Noodles",
+    "category": "Grains",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "169",
+    "name": "Seafood Cup Noodle",
+    "category": "Grains",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "170",
+    "name": "Tom Yam Cup Noodle",
+    "category": "Grains",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "171",
+    "name": "Chicken Cup Noodle",
+    "category": "Grains",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "172",
+    "name": "Instant Oats",
+    "category": "Grains",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "173",
+    "name": "Oat Cookies",
+    "category": "Grains",
+    "score": 4.8,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "174",
+    "name": "Enriched White Bread",
+    "category": "Grains",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "175",
+    "name": "Wholemeal Bread",
+    "category": "Grains",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "176",
+    "name": "Lemons",
+    "category": "Fruits",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "177",
+    "name": "Grapefruit",
+    "category": "Fruits",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "178",
+    "name": "Cara Cara Oranges",
+    "category": "Fruits",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "179",
+    "name": "Gold Kiwi",
+    "category": "Fruits",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "180",
+    "name": "Green Kiwi",
+    "category": "Fruits",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "181",
+    "name": "Pineapple Slices",
+    "category": "Fruits",
+    "score": 4.7,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "182",
+    "name": "Fruit Cocktail",
+    "category": "Fruits",
+    "score": 3.4,
+    "color": "red",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "183",
+    "name": "Peach Halves",
+    "category": "Fruits",
+    "score": 4.7,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "184",
+    "name": "Dragon Fruit Red",
+    "category": "Fruits",
+    "score": 7,
+    "color": "green",
+    "totalEmissions": 0.8
+  },
+  {
+    "id": "185",
+    "name": "Seedless Watermelon",
+    "category": "Fruits",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 0.6
+  },
+  {
+    "id": "186",
+    "name": "Mango",
+    "category": "Fruits",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "187",
+    "name": "Papaya",
+    "category": "Fruits",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "188",
+    "name": "Hass Avocado",
+    "category": "Fruits",
+    "score": 4.6,
+    "color": "yellow",
+    "totalEmissions": 1.3
+  },
+  {
+    "id": "189",
+    "name": "Bananas",
+    "category": "Fruits",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "190",
+    "name": "Pineapple",
+    "category": "Fruits",
+    "score": 7,
+    "color": "green",
+    "totalEmissions": 0.8
+  },
+  {
+    "id": "191",
+    "name": "Mixed Berries Frozen",
+    "category": "Fruits",
+    "score": 3.4,
+    "color": "red",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "192",
+    "name": "Cherry Tomatoes",
+    "category": "Vegetables",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "193",
+    "name": "Sweet Corn",
+    "category": "Vegetables",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "194",
+    "name": "Mushrooms Button",
+    "category": "Vegetables",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "195",
+    "name": "Cauliflower",
+    "category": "Vegetables",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 0.9
+  },
+  {
+    "id": "196",
+    "name": "Celery Sticks",
+    "category": "Vegetables",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 0.8
+  },
+  {
+    "id": "197",
+    "name": "Pumpkin",
+    "category": "Vegetables",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "198",
+    "name": "Mixed Salad Leaves",
+    "category": "Vegetables",
+    "score": 4.6,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "199",
+    "name": "Bean Sprouts",
+    "category": "Vegetables",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "200",
+    "name": "Frozen Mixed Vegetables",
+    "category": "Vegetables",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "201",
+    "name": "Frozen Edamame",
+    "category": "Vegetables",
+    "score": 5,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "202",
+    "name": "Frozen Broccoli",
+    "category": "Vegetables",
+    "score": 5,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "203",
+    "name": "Organic Spinach",
+    "category": "Vegetables",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "204",
+    "name": "Organic Kale",
+    "category": "Vegetables",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "205",
+    "name": "Organic Mixed Lettuce",
+    "category": "Vegetables",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "206",
+    "name": "Oolong Tea",
+    "category": "Beverages",
+    "score": 7.8,
+    "color": "green",
+    "totalEmissions": 1
+  },
+  {
+    "id": "207",
+    "name": "Jasmine Green Tea",
+    "category": "Beverages",
+    "score": 7.8,
+    "color": "green",
+    "totalEmissions": 1
+  },
+  {
+    "id": "208",
+    "name": "Ice Lemon Tea",
+    "category": "Beverages",
+    "score": 7.6,
+    "color": "green",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "209",
+    "name": "Chocolate Oat Milk",
+    "category": "Beverages",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "210",
+    "name": "Oat Milk Barista Edition",
+    "category": "Beverages",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "211",
+    "name": "Low Fat Oat Milk",
+    "category": "Beverages",
+    "score": 6,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "212",
+    "name": "Vanilla Almond Milk",
+    "category": "Beverages",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "213",
+    "name": "Unsweetened Almond Milk",
+    "category": "Beverages",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "214",
+    "name": "3-in-1 Original",
+    "category": "Beverages",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 3.2
+  },
+  {
+    "id": "215",
+    "name": "Gold Instant Coffee",
+    "category": "Beverages",
+    "score": 2.7,
+    "color": "red",
+    "totalEmissions": 3.9
+  },
+  {
+    "id": "216",
+    "name": "Latte Instant Coffee",
+    "category": "Beverages",
+    "score": 2.9,
+    "color": "red",
+    "totalEmissions": 3.5
+  },
+  {
+    "id": "217",
+    "name": "Ginger Tea",
+    "category": "Beverages",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "218",
+    "name": "Honey Chrysanthemum Tea",
+    "category": "Beverages",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "219",
+    "name": "Teh Halia",
+    "category": "Beverages",
+    "score": 6,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "220",
+    "name": "3-in-1 Hazelnut",
+    "category": "Beverages",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 3.1
+  },
+  {
+    "id": "221",
+    "name": "2-in-1 White Coffee",
+    "category": "Beverages",
+    "score": 3.3,
+    "color": "red",
+    "totalEmissions": 2.9
+  },
+  {
+    "id": "222",
+    "name": "Peel Fresh Orange Juice",
+    "category": "Beverages",
+    "score": 5,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "223",
+    "name": "Peel Fresh Apple Juice",
+    "category": "Beverages",
+    "score": 5.9,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "224",
+    "name": "Hot & Spicy Potato Chips",
+    "category": "Snacks",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "225",
+    "name": "Seaweed Potato Chips",
+    "category": "Snacks",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "226",
+    "name": "Honey Butter Chips",
+    "category": "Snacks",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "227",
+    "name": "Crispy Seaweed Original",
+    "category": "Snacks",
+    "score": 8.3,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "228",
+    "name": "Crispy Seaweed Wasabi",
+    "category": "Snacks",
+    "score": 8.3,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "229",
+    "name": "Crispy Seaweed Tom Yum",
+    "category": "Snacks",
+    "score": 8.3,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "230",
+    "name": "Double Stuf Cookies",
+    "category": "Snacks",
+    "score": 4.3,
+    "color": "yellow",
+    "totalEmissions": 3
+  },
+  {
+    "id": "231",
+    "name": "Golden Cookies",
+    "category": "Snacks",
+    "score": 5.1,
+    "color": "yellow",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "232",
+    "name": "Mini Cookies",
+    "category": "Snacks",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 2.6
+  },
+  {
+    "id": "233",
+    "name": "Fruit & Nut Chocolate",
+    "category": "Snacks",
+    "score": 3.1,
+    "color": "red",
+    "totalEmissions": 5.2
+  },
+  {
+    "id": "234",
+    "name": "Hazelnut Chocolate",
+    "category": "Snacks",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 5
+  },
+  {
+    "id": "235",
+    "name": "Oreo Chocolate Bar",
+    "category": "Snacks",
+    "score": 3.1,
+    "color": "red",
+    "totalEmissions": 5.1
+  },
+  {
+    "id": "236",
+    "name": "Dark Chocolate 70%",
+    "category": "Snacks",
+    "score": 3,
+    "color": "red",
+    "totalEmissions": 5.7
+  },
+  {
+    "id": "237",
+    "name": "Dark Chocolate 85%",
+    "category": "Snacks",
+    "score": 2.9,
+    "color": "red",
+    "totalEmissions": 6.1
+  },
+  {
+    "id": "238",
+    "name": "Lindor Milk Chocolate Truffles",
+    "category": "Snacks",
+    "score": 2.8,
+    "color": "red",
+    "totalEmissions": 5.7
+  },
+  {
+    "id": "239",
+    "name": "Oats & Dark Chocolate Bar",
+    "category": "Snacks",
+    "score": 4.8,
+    "color": "yellow",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "240",
+    "name": "Protein Bar Peanut Butter",
+    "category": "Snacks",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2.6
+  },
+  {
+    "id": "241",
+    "name": "Cream Crackers",
+    "category": "Snacks",
+    "score": 7.2,
+    "color": "green",
+    "totalEmissions": 2
+  },
+  {
+    "id": "242",
+    "name": "Sugar Crackers",
+    "category": "Snacks",
+    "score": 7,
+    "color": "green",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "243",
+    "name": "Chunky Peanut Butter",
+    "category": "Snacks",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "244",
+    "name": "Natural Peanut Butter",
+    "category": "Snacks",
+    "score": 5.8,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "245",
+    "name": "Teriyaki Sauce",
+    "category": "Pantry",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "246",
+    "name": "Sweet Soy Sauce",
+    "category": "Pantry",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "247",
+    "name": "Ponzu Citrus Sauce",
+    "category": "Pantry",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "248",
+    "name": "Hoisin Sauce",
+    "category": "Pantry",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "249",
+    "name": "Chilli Garlic Sauce",
+    "category": "Pantry",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "250",
+    "name": "Sesame Oil",
+    "category": "Pantry",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "251",
+    "name": "Yellow Mustard",
+    "category": "Pantry",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "252",
+    "name": "BBQ Sauce",
+    "category": "Pantry",
+    "score": 5.1,
+    "color": "yellow",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "253",
+    "name": "Tomato Ketchup Squeeze",
+    "category": "Pantry",
+    "score": 5.1,
+    "color": "yellow",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "254",
+    "name": "Coconut Cream",
+    "category": "Pantry",
+    "score": 5,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "255",
+    "name": "Baked Beans",
+    "category": "Pantry",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "256",
+    "name": "Chickpeas",
+    "category": "Pantry",
+    "score": 7,
+    "color": "green",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "257",
+    "name": "Chilli Sauce",
+    "category": "Pantry",
+    "score": 7.5,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "258",
+    "name": "Satay Sauce",
+    "category": "Pantry",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "259",
+    "name": "Laksa Paste",
+    "category": "Pantry",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "260",
+    "name": "Classico Olive Oil",
+    "category": "Pantry",
+    "score": 3.3,
+    "color": "red",
+    "totalEmissions": 3.3
+  },
+  {
+    "id": "261",
+    "name": "Olive Oil Spray",
+    "category": "Pantry",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 3
+  },
+  {
+    "id": "262",
+    "name": "Green Curry Paste",
+    "category": "Pantry",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "263",
+    "name": "Red Curry Paste",
+    "category": "Pantry",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "264",
+    "name": "Sweet Chilli Sauce",
+    "category": "Pantry",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "265",
+    "name": "Sesame Oil Pure",
+    "category": "Pantry",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "266",
+    "name": "Vegetable Oil",
+    "category": "Pantry",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "267",
+    "name": "Oyster Sauce",
+    "category": "Pantry",
+    "score": 7.2,
+    "color": "green",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "268",
+    "name": "Dark Soy Sauce",
+    "category": "Pantry",
+    "score": 7.5,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "269",
+    "name": "Tomato Sauce",
+    "category": "Pantry",
+    "score": 7.3,
+    "color": "green",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "270",
+    "name": "Pure Honey Squeeze",
+    "category": "Pantry",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "271",
+    "name": "Manuka Honey MGO 30+",
+    "category": "Pantry",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "272",
+    "name": "Condensed Milk",
+    "category": "Pantry",
+    "score": 1.2,
+    "color": "red",
+    "totalEmissions": 4.5
+  },
+  {
+    "id": "273",
+    "name": "Evaporated Milk",
+    "category": "Pantry",
+    "score": 1.6,
+    "color": "red",
+    "totalEmissions": 4
+  },
+  {
+    "id": "274",
+    "name": "Milo Activ-Go",
+    "category": "Pantry",
+    "score": 2.7,
+    "color": "red",
+    "totalEmissions": 4
+  },
+  {
+    "id": "275",
+    "name": "Cold Pressed Coconut Oil",
+    "category": "Pantry",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "276",
+    "name": "Coconut Oil Regular",
+    "category": "Pantry",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "277",
+    "name": "White Sugar",
+    "category": "Pantry",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "278",
+    "name": "Plain Flour",
+    "category": "Pantry",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "279",
+    "name": "Canned Tomatoes",
+    "category": "Pantry",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "280",
+    "name": "Salted Butter",
+    "category": "Dairy & Eggs",
+    "score": 1.6,
+    "color": "red",
+    "totalEmissions": 11.9
+  },
+  {
+    "id": "281",
+    "name": "Extra Cream",
+    "category": "Dairy & Eggs",
+    "score": 2.9,
+    "color": "red",
+    "totalEmissions": 8.3
+  },
+  {
+    "id": "282",
+    "name": "Parmigiano Reggiano Shredded",
+    "category": "Dairy & Eggs",
+    "score": 0.4,
+    "color": "red",
+    "totalEmissions": 14.1
+  },
+  {
+    "id": "283",
+    "name": "Parmigiano Reggiano Wedge 24M",
+    "category": "Dairy & Eggs",
+    "score": 0.5,
+    "color": "red",
+    "totalEmissions": 14.3
+  },
+  {
+    "id": "284",
+    "name": "Penne Rigate",
+    "category": "Grains",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "285",
+    "name": "Fusilli Pasta",
+    "category": "Grains",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "286",
+    "name": "Omega-3 Eggs",
+    "category": "Dairy & Eggs",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 3.8
+  },
+  {
+    "id": "287",
+    "name": "Cage Free Eggs",
+    "category": "Dairy & Eggs",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 3.6
+  },
+  {
+    "id": "288",
+    "name": "Coconut Cream",
+    "category": "Pantry",
+    "score": 5.1,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "289",
+    "name": "Coconut Water With Pulp",
+    "category": "Beverages",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "290",
+    "name": "Sour Cream & Onion Chips",
+    "category": "Snacks",
+    "score": 6.2,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "291",
+    "name": "BBQ Flavour Chips",
+    "category": "Snacks",
+    "score": 6.2,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "292",
+    "name": "Chicken Frankfurters",
+    "category": "Protein",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 6.9
+  },
+  {
+    "id": "293",
+    "name": "Chicken Gyoza",
+    "category": "Protein",
+    "score": 3.1,
+    "color": "red",
+    "totalEmissions": 7
+  },
+  {
+    "id": "294",
+    "name": "Chicken Karaage",
+    "category": "Protein",
+    "score": 2.7,
+    "color": "red",
+    "totalEmissions": 7.6
+  },
+  {
+    "id": "295",
+    "name": "Pork Wonton",
+    "category": "Protein",
+    "score": 2.6,
+    "color": "red",
+    "totalEmissions": 7.7
+  },
+  {
+    "id": "296",
+    "name": "Chicken Drumsticks",
+    "category": "Protein",
+    "score": 4.3,
+    "color": "yellow",
+    "totalEmissions": 6.1
+  },
+  {
+    "id": "297",
+    "name": "Chicken Breast Boneless",
+    "category": "Protein",
+    "score": 4.5,
+    "color": "yellow",
+    "totalEmissions": 5.8
+  },
+  {
+    "id": "298",
+    "name": "Pork Meatballs",
+    "category": "Protein",
+    "score": 1.7,
+    "color": "red",
+    "totalEmissions": 9
+  },
+  {
+    "id": "299",
+    "name": "Stewed Pork Slices",
+    "category": "Protein",
+    "score": 1.5,
+    "color": "red",
+    "totalEmissions": 9.5
+  },
+  {
+    "id": "300",
+    "name": "Lamb Mince",
+    "category": "Protein",
+    "score": 1.1,
+    "color": "red",
+    "totalEmissions": 22
+  },
+  {
+    "id": "301",
+    "name": "Lamb Chops",
+    "category": "Protein",
+    "score": 1,
+    "color": "red",
+    "totalEmissions": 23.1
+  },
+  {
+    "id": "302",
+    "name": "Cashew Nuts Salted",
+    "category": "Protein",
+    "score": 8.1,
+    "color": "green",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "303",
+    "name": "Almonds Baked",
+    "category": "Protein",
+    "score": 8.2,
+    "color": "green",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "304",
+    "name": "Plant-Based Sausages",
+    "category": "Protein",
+    "score": 7.6,
+    "color": "green",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "305",
+    "name": "Plant-Based Burger",
+    "category": "Protein",
+    "score": 7.6,
+    "color": "green",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "306",
+    "name": "Fish Fingers",
+    "category": "Seafood",
+    "score": 3.6,
+    "color": "red",
+    "totalEmissions": 6.2
+  },
+  {
+    "id": "307",
+    "name": "Tempura Prawns",
+    "category": "Seafood",
+    "score": 2.4,
+    "color": "red",
+    "totalEmissions": 8.2
+  },
+  {
+    "id": "308",
+    "name": "Crumbed Fish Fillets",
+    "category": "Seafood",
+    "score": 3.5,
+    "color": "red",
+    "totalEmissions": 6.5
+  },
+  {
+    "id": "309",
+    "name": "Calamari Rings",
+    "category": "Seafood",
+    "score": 6.2,
+    "color": "yellow",
+    "totalEmissions": 4.4
+  },
+  {
+    "id": "310",
+    "name": "Salmon Steaks",
+    "category": "Seafood",
+    "score": 1.9,
+    "color": "red",
+    "totalEmissions": 10.7
+  },
+  {
+    "id": "311",
+    "name": "Hot Smoked Salmon Pieces",
+    "category": "Seafood",
+    "score": 1,
+    "color": "red",
+    "totalEmissions": 11.8
+  },
+  {
+    "id": "312",
+    "name": "Sriracha Chilli Sauce",
+    "category": "Seafood",
+    "score": 7.9,
+    "color": "green",
+    "totalEmissions": 2
+  },
+  {
+    "id": "313",
+    "name": "Anchovy Sauce",
+    "category": "Seafood",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 3.1
+  },
+  {
+    "id": "314",
+    "name": "Chunk Light Tuna",
+    "category": "Seafood",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 4.5
+  },
+  {
+    "id": "315",
+    "name": "Pink Salmon",
+    "category": "Seafood",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 5.8
+  },
+  {
+    "id": "316",
+    "name": "Smoked Oysters",
+    "category": "Seafood",
+    "score": 6.2,
+    "color": "yellow",
+    "totalEmissions": 3.9
+  },
+  {
+    "id": "317",
+    "name": "Salted Butter",
+    "category": "Dairy & Eggs",
+    "score": 1.8,
+    "color": "red",
+    "totalEmissions": 11.3
+  },
+  {
+    "id": "318",
+    "name": "Unsalted Butter",
+    "category": "Dairy & Eggs",
+    "score": 1.8,
+    "color": "red",
+    "totalEmissions": 11.3
+  },
+  {
+    "id": "319",
+    "name": "Spreadable Butter",
+    "category": "Dairy & Eggs",
+    "score": 2.3,
+    "color": "red",
+    "totalEmissions": 9.7
+  },
+  {
+    "id": "320",
+    "name": "Ghee",
+    "category": "Dairy & Eggs",
+    "score": 1.3,
+    "color": "red",
+    "totalEmissions": 12.7
+  },
+  {
+    "id": "321",
+    "name": "Full Cream Milk Powder",
+    "category": "Dairy & Eggs",
+    "score": 2.5,
+    "color": "red",
+    "totalEmissions": 7.9
+  },
+  {
+    "id": "322",
+    "name": "Whipping Cream",
+    "category": "Dairy & Eggs",
+    "score": 2.7,
+    "color": "red",
+    "totalEmissions": 8.7
+  },
+  {
+    "id": "323",
+    "name": "Vanilla Yoghurt",
+    "category": "Dairy & Eggs",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 4.9
+  },
+  {
+    "id": "324",
+    "name": "Mango Yoghurt",
+    "category": "Dairy & Eggs",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 4.9
+  },
+  {
+    "id": "325",
+    "name": "Chive Cream Cheese",
+    "category": "Dairy & Eggs",
+    "score": 2,
+    "color": "red",
+    "totalEmissions": 9.3
+  },
+  {
+    "id": "326",
+    "name": "Cream Cheese Block",
+    "category": "Dairy & Eggs",
+    "score": 1.6,
+    "color": "red",
+    "totalEmissions": 10.1
+  },
+  {
+    "id": "327",
+    "name": "Strawberry Ice Cream",
+    "category": "Dairy & Eggs",
+    "score": 2.7,
+    "color": "red",
+    "totalEmissions": 7.3
+  },
+  {
+    "id": "328",
+    "name": "Thickened Cream",
+    "category": "Dairy & Eggs",
+    "score": 3.1,
+    "color": "red",
+    "totalEmissions": 8.2
+  },
+  {
+    "id": "329",
+    "name": "Kampong Eggs",
+    "category": "Dairy & Eggs",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 3.4
+  },
+  {
+    "id": "330",
+    "name": "Fresh Eggs Large",
+    "category": "Dairy & Eggs",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 3.6
+  },
+  {
+    "id": "331",
+    "name": "Mee Goreng Instant Noodles",
+    "category": "Grains",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "332",
+    "name": "Curry Flavour Noodles",
+    "category": "Grains",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "333",
+    "name": "Tom Yam Noodles",
+    "category": "Grains",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "334",
+    "name": "Chicken Stock Cubes",
+    "category": "Grains",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "335",
+    "name": "Spaghetti No.5",
+    "category": "Grains",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "336",
+    "name": "Linguine Pasta",
+    "category": "Grains",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "337",
+    "name": "Multigrain Bread",
+    "category": "Grains",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "338",
+    "name": "Hot Dog Buns",
+    "category": "Grains",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "339",
+    "name": "Steel Cut Oats",
+    "category": "Grains",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "340",
+    "name": "Granola Oats Honey",
+    "category": "Grains",
+    "score": 5,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "341",
+    "name": "Strawberries",
+    "category": "Fruits",
+    "score": 4.5,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "342",
+    "name": "Blueberries",
+    "category": "Fruits",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "343",
+    "name": "Raspberries",
+    "category": "Fruits",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "344",
+    "name": "Blackberries",
+    "category": "Fruits",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "345",
+    "name": "Mandarin Oranges",
+    "category": "Fruits",
+    "score": 5.1,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "346",
+    "name": "Tropical Fruit Mix",
+    "category": "Fruits",
+    "score": 5,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "347",
+    "name": "Red Kiwi",
+    "category": "Fruits",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "348",
+    "name": "Organic Green Kiwi",
+    "category": "Fruits",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "349",
+    "name": "Valencia Oranges",
+    "category": "Fruits",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "350",
+    "name": "Kimchi Original",
+    "category": "Vegetables",
+    "score": 3.7,
+    "color": "red",
+    "totalEmissions": 2
+  },
+  {
+    "id": "351",
+    "name": "Seaweed Crisps",
+    "category": "Vegetables",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "352",
+    "name": "Frozen Dumplings Chicken",
+    "category": "Vegetables",
+    "score": 0.8,
+    "color": "red",
+    "totalEmissions": 3.6
+  },
+  {
+    "id": "353",
+    "name": "Gochujang Sauce",
+    "category": "Vegetables",
+    "score": 4.1,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "354",
+    "name": "Organic Cherry Tomatoes",
+    "category": "Vegetables",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 0.9
+  },
+  {
+    "id": "355",
+    "name": "Organic Broccoli",
+    "category": "Vegetables",
+    "score": 7.5,
+    "color": "green",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "356",
+    "name": "Frozen Garden Peas",
+    "category": "Vegetables",
+    "score": 4.8,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "357",
+    "name": "Frozen Sweet Corn",
+    "category": "Vegetables",
+    "score": 4.8,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "358",
+    "name": "Frozen Stir Fry Vegetables",
+    "category": "Vegetables",
+    "score": 4.7,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "359",
+    "name": "Frozen Spinach",
+    "category": "Vegetables",
+    "score": 5.9,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "360",
+    "name": "Old Ginger",
+    "category": "Vegetables",
+    "score": 7.5,
+    "color": "green",
+    "totalEmissions": 0.6
+  },
+  {
+    "id": "361",
+    "name": "Garlic Peeled",
+    "category": "Vegetables",
+    "score": 7.2,
+    "color": "green",
+    "totalEmissions": 0.8
+  },
+  {
+    "id": "362",
+    "name": "Red Chilli",
+    "category": "Vegetables",
+    "score": 6.9,
+    "color": "yellow",
+    "totalEmissions": 0.8
+  },
+  {
+    "id": "363",
+    "name": "Spring Onion",
+    "category": "Vegetables",
+    "score": 8.1,
+    "color": "green",
+    "totalEmissions": 0.4
+  },
+  {
+    "id": "364",
+    "name": "Shiitake Mushrooms",
+    "category": "Vegetables",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "365",
+    "name": "Eggplant",
+    "category": "Vegetables",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 0.7
+  },
+  {
+    "id": "366",
+    "name": "Chrysanthemum Tea",
+    "category": "Beverages",
+    "score": 7.8,
+    "color": "green",
+    "totalEmissions": 1
+  },
+  {
+    "id": "367",
+    "name": "Soy Bean Milk",
+    "category": "Beverages",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "368",
+    "name": "Lemon Barley",
+    "category": "Beverages",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "369",
+    "name": "Sugar Cane Drink",
+    "category": "Beverages",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "370",
+    "name": "Winter Melon Tea",
+    "category": "Beverages",
+    "score": 7.8,
+    "color": "green",
+    "totalEmissions": 1
+  },
+  {
+    "id": "371",
+    "name": "Orange Sparkling",
+    "category": "Beverages",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "372",
+    "name": "Grape Sparkling",
+    "category": "Beverages",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "373",
+    "name": "Sarsi",
+    "category": "Beverages",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "374",
+    "name": "Ice Cream Soda",
+    "category": "Beverages",
+    "score": 7.1,
+    "color": "green",
+    "totalEmissions": 1.2
+  },
+  {
+    "id": "375",
+    "name": "Mocha White Coffee",
+    "category": "Beverages",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 3.1
+  },
+  {
+    "id": "376",
+    "name": "Cane Sugar White Coffee",
+    "category": "Beverages",
+    "score": 3.3,
+    "color": "red",
+    "totalEmissions": 2.9
+  },
+  {
+    "id": "377",
+    "name": "Chocolate Almond Milk",
+    "category": "Beverages",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "378",
+    "name": "Barista Blend Almond Milk",
+    "category": "Beverages",
+    "score": 5.8,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "379",
+    "name": "Coconut Milk",
+    "category": "Beverages",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "380",
+    "name": "Velvet Coconut Water",
+    "category": "Beverages",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "381",
+    "name": "Peanut Butter Sandwich",
+    "category": "Snacks",
+    "score": 6.2,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "382",
+    "name": "Cheese Sandwich",
+    "category": "Snacks",
+    "score": 4.6,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "383",
+    "name": "Butter Waffles",
+    "category": "Snacks",
+    "score": 6,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "384",
+    "name": "Oat 25 Biscuits",
+    "category": "Snacks",
+    "score": 7,
+    "color": "green",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "385",
+    "name": "Lexus Cream Sandwich",
+    "category": "Snacks",
+    "score": 7,
+    "color": "green",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "386",
+    "name": "Oat Krunch",
+    "category": "Snacks",
+    "score": 6.2,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "387",
+    "name": "Muzic Wafer",
+    "category": "Snacks",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 2.6
+  },
+  {
+    "id": "388",
+    "name": "Funmix Assorted Biscuits",
+    "category": "Snacks",
+    "score": 5.9,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "389",
+    "name": "Ping Pong Biscuits",
+    "category": "Snacks",
+    "score": 7.2,
+    "color": "green",
+    "totalEmissions": 2
+  },
+  {
+    "id": "390",
+    "name": "Cap Kaki Crackers",
+    "category": "Snacks",
+    "score": 7.2,
+    "color": "green",
+    "totalEmissions": 2
+  },
+  {
+    "id": "391",
+    "name": "Reduced Fat Peanut Butter",
+    "category": "Snacks",
+    "score": 6,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "392",
+    "name": "Peanut Butter with Honey",
+    "category": "Snacks",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "393",
+    "name": "Crunchy Oats & Honey",
+    "category": "Snacks",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "394",
+    "name": "Fruit & Nut Trail Mix Bar",
+    "category": "Snacks",
+    "score": 4.8,
+    "color": "yellow",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "395",
+    "name": "Classic Salted Chips",
+    "category": "Snacks",
+    "score": 6.2,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "396",
+    "name": "Nori Seaweed Chips",
+    "category": "Snacks",
+    "score": 6.2,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "397",
+    "name": "Singapore Laksa Paste",
+    "category": "Pantry",
+    "score": 5.8,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "398",
+    "name": "Singapore Curry Paste",
+    "category": "Pantry",
+    "score": 5.8,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "399",
+    "name": "Chilli Crab Paste",
+    "category": "Pantry",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "400",
+    "name": "Hainanese Chicken Rice Paste",
+    "category": "Pantry",
+    "score": 7,
+    "color": "green",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "401",
+    "name": "Japanese Mayonnaise",
+    "category": "Pantry",
+    "score": 2.1,
+    "color": "red",
+    "totalEmissions": 3.2
+  },
+  {
+    "id": "402",
+    "name": "Roasted Sesame Dressing",
+    "category": "Pantry",
+    "score": 4.8,
+    "color": "yellow",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "403",
+    "name": "Wafu Dressing",
+    "category": "Pantry",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "404",
+    "name": "Spicy Mayonnaise",
+    "category": "Pantry",
+    "score": 2.1,
+    "color": "red",
+    "totalEmissions": 3.2
+  },
+  {
+    "id": "405",
+    "name": "Golden Curry Mild",
+    "category": "Pantry",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "406",
+    "name": "Golden Curry Medium Hot",
+    "category": "Pantry",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "407",
+    "name": "Wasabi Paste",
+    "category": "Pantry",
+    "score": 7.6,
+    "color": "green",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "408",
+    "name": "Japanese Curry Hot",
+    "category": "Pantry",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "409",
+    "name": "Organic Honey",
+    "category": "Pantry",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "410",
+    "name": "Raw Honey",
+    "category": "Pantry",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "411",
+    "name": "Canola Oil",
+    "category": "Pantry",
+    "score": 5,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "412",
+    "name": "Peanut Oil",
+    "category": "Pantry",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "413",
+    "name": "Coconut Milk Powder",
+    "category": "Pantry",
+    "score": 4.3,
+    "color": "yellow",
+    "totalEmissions": 2.2
+  },
+  {
+    "id": "414",
+    "name": "Desiccated Coconut",
+    "category": "Pantry",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "415",
+    "name": "Light Olive Oil",
+    "category": "Pantry",
+    "score": 4.6,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "416",
+    "name": "Pasta Sauce Tomato Basil",
+    "category": "Pantry",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "417",
+    "name": "Solid White Albacore Tuna",
+    "category": "Seafood",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 4.8
+  },
+  {
+    "id": "418",
+    "name": "Sardines in Oil",
+    "category": "Seafood",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 3.5
+  },
+  {
+    "id": "419",
+    "name": "Parmigiano Reggiano Grated",
+    "category": "Dairy & Eggs",
+    "score": 0.7,
+    "color": "red",
+    "totalEmissions": 13.8
+  },
+  {
+    "id": "420",
+    "name": "Parmigiano Reggiano Sticks",
+    "category": "Dairy & Eggs",
+    "score": 0.6,
+    "color": "red",
+    "totalEmissions": 13.7
+  },
+  {
+    "id": "421",
+    "name": "Peanut Butter Smooth",
+    "category": "Pantry",
+    "score": 4.1,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "422",
+    "name": "Dairy Milk Fruit & Nut",
+    "category": "Snacks",
+    "score": 1,
+    "color": "red",
+    "totalEmissions": 5.7
+  },
+  {
+    "id": "423",
+    "name": "Prawn Crackers Original",
+    "category": "Snacks",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "424",
+    "name": "Sliced Peaches",
+    "category": "Fruits",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "425",
+    "name": "Fine Grain Bread",
+    "category": "Grains",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "426",
+    "name": "Ginger Lemon Drink",
+    "category": "Beverages",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "427",
+    "name": "Baked Beans",
+    "category": "Pantry",
+    "score": 6,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "428",
+    "name": "Soto Mie Noodles",
+    "category": "Grains",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "429",
+    "name": "Ponzu Sauce",
+    "category": "Pantry",
+    "score": 5.9,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "430",
+    "name": "Barramundi Steaks",
+    "category": "Seafood",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 6.9
+  },
+  {
+    "id": "431",
+    "name": "Char Siu Sauce",
+    "category": "Pantry",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "432",
+    "name": "Excellence 85% Cocoa",
+    "category": "Snacks",
+    "score": 3.3,
+    "color": "red",
+    "totalEmissions": 5.7
+  },
+  {
+    "id": "433",
+    "name": "Panang Curry Paste",
+    "category": "Pantry",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "434",
+    "name": "Fresh Milk Low Fat",
+    "category": "Dairy & Eggs",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 4.3
+  },
+  {
+    "id": "435",
+    "name": "KitKat 4 Finger",
+    "category": "Snacks",
+    "score": 1.7,
+    "color": "red",
+    "totalEmissions": 4.7
+  },
+  {
+    "id": "436",
+    "name": "Cup Noodles Seafood",
+    "category": "Grains",
+    "score": 5.1,
+    "color": "yellow",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "437",
+    "name": "Gold Blend",
+    "category": "Beverages",
+    "score": 2.9,
+    "color": "red",
+    "totalEmissions": 3.7
+  },
+  {
+    "id": "438",
+    "name": "Oat Drink Chocolate",
+    "category": "Beverages",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "439",
+    "name": "Double Stuf",
+    "category": "Snacks",
+    "score": 3.1,
+    "color": "red",
+    "totalEmissions": 3
+  },
+  {
+    "id": "440",
+    "name": "Peach Oolong Tea",
+    "category": "Beverages",
+    "score": 7.6,
+    "color": "green",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "441",
+    "name": "Emmental Cheese",
+    "category": "Dairy & Eggs",
+    "score": 1.3,
+    "color": "red",
+    "totalEmissions": 11.2
+  },
+  {
+    "id": "442",
+    "name": "Thai Hom Mali Brown Rice",
+    "category": "Grains",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 2.3
+  },
+  {
+    "id": "443",
+    "name": "Rigatoni Pasta",
+    "category": "Grains",
+    "score": 5.1,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "444",
+    "name": "Black Soy Sauce",
+    "category": "Pantry",
+    "score": 6.9,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "445",
+    "name": "Grilled Seaweed Spicy",
+    "category": "Snacks",
+    "score": 8.4,
+    "color": "green",
+    "totalEmissions": 1.3
+  },
+  {
+    "id": "446",
+    "name": "Sesame Oil",
+    "category": "Pantry",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "447",
+    "name": "Chicken Nuggets",
+    "category": "Protein",
+    "score": 3.2,
+    "color": "red",
+    "totalEmissions": 7
+  },
+  {
+    "id": "448",
+    "name": "Fish Cakes",
+    "category": "Seafood",
+    "score": 3.9,
+    "color": "red",
+    "totalEmissions": 5.7
+  },
+  {
+    "id": "449",
+    "name": "Cooking Butter",
+    "category": "Dairy & Eggs",
+    "score": 1.9,
+    "color": "red",
+    "totalEmissions": 11
+  },
+  {
+    "id": "450",
+    "name": "Oyster Sauce",
+    "category": "Pantry",
+    "score": 7.3,
+    "color": "green",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "451",
+    "name": "Mixed Berries",
+    "category": "Fruits",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "452",
+    "name": "Korean BBQ Sauce",
+    "category": "Pantry",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "453",
+    "name": "Frozen Broccoli Florets",
+    "category": "Vegetables",
+    "score": 5.9,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "454",
+    "name": "Sparkling Water",
+    "category": "Beverages",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 0.9
+  },
+  {
+    "id": "455",
+    "name": "Le-Mond Cheddar Cheese",
+    "category": "Snacks",
+    "score": 4.9,
+    "color": "yellow",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "456",
+    "name": "Captain Munch Chocolate",
+    "category": "Snacks",
+    "score": 5.1,
+    "color": "yellow",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "457",
+    "name": "Rendang Paste",
+    "category": "Pantry",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "458",
+    "name": "Deep Roasted Sesame Dressing",
+    "category": "Pantry",
+    "score": 4.8,
+    "color": "yellow",
+    "totalEmissions": 2.1
+  },
+  {
+    "id": "459",
+    "name": "Nanami Togarashi",
+    "category": "Pantry",
+    "score": 7.7,
+    "color": "green",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "460",
+    "name": "Shin Ramyun",
+    "category": "Grains",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2.6
+  },
+  {
+    "id": "461",
+    "name": "Chapagetti",
+    "category": "Grains",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2.6
+  },
+  {
+    "id": "462",
+    "name": "Kimchi Ramyun",
+    "category": "Grains",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2.6
+  },
+  {
+    "id": "463",
+    "name": "Neoguri Seafood",
+    "category": "Grains",
+    "score": 3.3,
+    "color": "red",
+    "totalEmissions": 2.8
+  },
+  {
+    "id": "464",
+    "name": "Onion Rings Snack",
+    "category": "Snacks",
+    "score": 7.5,
+    "color": "green",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "465",
+    "name": "Hot Chicken Ramen",
+    "category": "Grains",
+    "score": 3.8,
+    "color": "red",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "466",
+    "name": "2x Spicy Hot Chicken Ramen",
+    "category": "Grains",
+    "score": 3.8,
+    "color": "red",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "467",
+    "name": "Carbonara Hot Chicken Ramen",
+    "category": "Grains",
+    "score": 2.4,
+    "color": "red",
+    "totalEmissions": 3.1
+  },
+  {
+    "id": "468",
+    "name": "Cheese Hot Chicken Ramen",
+    "category": "Grains",
+    "score": 2.4,
+    "color": "red",
+    "totalEmissions": 3.1
+  },
+  {
+    "id": "469",
+    "name": "Jjajang Hot Chicken Ramen",
+    "category": "Grains",
+    "score": 3.8,
+    "color": "red",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "470",
+    "name": "Salmon Portions Skin On",
+    "category": "Seafood",
+    "score": 2,
+    "color": "red",
+    "totalEmissions": 10.4
+  },
+  {
+    "id": "471",
+    "name": "Cold Smoked Salmon",
+    "category": "Seafood",
+    "score": 1.1,
+    "color": "red",
+    "totalEmissions": 11.4
+  },
+  {
+    "id": "472",
+    "name": "Ocean Trout Portions",
+    "category": "Seafood",
+    "score": 2.1,
+    "color": "red",
+    "totalEmissions": 9.9
+  },
+  {
+    "id": "473",
+    "name": "Salmon Sashimi Grade",
+    "category": "Seafood",
+    "score": 2,
+    "color": "red",
+    "totalEmissions": 10.9
+  },
+  {
+    "id": "474",
+    "name": "Salmon Belly",
+    "category": "Seafood",
+    "score": 2.2,
+    "color": "red",
+    "totalEmissions": 10.5
+  },
+  {
+    "id": "475",
+    "name": "Frozen Scallops",
+    "category": "Seafood",
+    "score": 5.4,
+    "color": "yellow",
+    "totalEmissions": 5.3
+  },
+  {
+    "id": "476",
+    "name": "Lobster Tails",
+    "category": "Seafood",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 8.5
+  },
+  {
+    "id": "477",
+    "name": "Frozen Clams",
+    "category": "Seafood",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 3.7
+  },
+  {
+    "id": "478",
+    "name": "Frozen Shrimp Peeled",
+    "category": "Seafood",
+    "score": 2.3,
+    "color": "red",
+    "totalEmissions": 8
+  },
+  {
+    "id": "479",
+    "name": "Crab Meat",
+    "category": "Seafood",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 7.8
+  },
+  {
+    "id": "480",
+    "name": "Chicken Breast Boneless",
+    "category": "Protein",
+    "score": 3.8,
+    "color": "red",
+    "totalEmissions": 6.5
+  },
+  {
+    "id": "481",
+    "name": "Pork Loin Chop",
+    "category": "Protein",
+    "score": 2.8,
+    "color": "red",
+    "totalEmissions": 7.7
+  },
+  {
+    "id": "482",
+    "name": "Pork Collar",
+    "category": "Protein",
+    "score": 2.7,
+    "color": "red",
+    "totalEmissions": 8
+  },
+  {
+    "id": "483",
+    "name": "Streaky Bacon",
+    "category": "Protein",
+    "score": 1.8,
+    "color": "red",
+    "totalEmissions": 9.3
+  },
+  {
+    "id": "484",
+    "name": "Pork Ribs",
+    "category": "Protein",
+    "score": 2.6,
+    "color": "red",
+    "totalEmissions": 8.3
+  },
+  {
+    "id": "485",
+    "name": "Pork Belly Frozen",
+    "category": "Protein",
+    "score": 2.4,
+    "color": "red",
+    "totalEmissions": 8.6
+  },
+  {
+    "id": "486",
+    "name": "Full Cream UHT Milk",
+    "category": "Dairy & Eggs",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 4.3
+  },
+  {
+    "id": "487",
+    "name": "Low Fat UHT Milk",
+    "category": "Dairy & Eggs",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 3.9
+  },
+  {
+    "id": "488",
+    "name": "Chocolate Milk",
+    "category": "Dairy & Eggs",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 4.6
+  },
+  {
+    "id": "489",
+    "name": "Strawberry Milk",
+    "category": "Dairy & Eggs",
+    "score": 5.5,
+    "color": "yellow",
+    "totalEmissions": 4.4
+  },
+  {
+    "id": "490",
+    "name": "Calcium Plus Milk",
+    "category": "Dairy & Eggs",
+    "score": 5.6,
+    "color": "yellow",
+    "totalEmissions": 4.3
+  },
+  {
+    "id": "491",
+    "name": "Fresh Milk Full Cream",
+    "category": "Dairy & Eggs",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 4.6
+  },
+  {
+    "id": "492",
+    "name": "Fresh Milk Skim",
+    "category": "Dairy & Eggs",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 3.6
+  },
+  {
+    "id": "493",
+    "name": "Yogurt Drink Strawberry",
+    "category": "Dairy & Eggs",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 4.1
+  },
+  {
+    "id": "494",
+    "name": "Mozzarella Cheese",
+    "category": "Dairy & Eggs",
+    "score": 2.2,
+    "color": "red",
+    "totalEmissions": 9.2
+  },
+  {
+    "id": "495",
+    "name": "Cheddar Cheese Slices",
+    "category": "Dairy & Eggs",
+    "score": 2.3,
+    "color": "red",
+    "totalEmissions": 9.1
+  },
+  {
+    "id": "496",
+    "name": "Yakult Original",
+    "category": "Dairy & Eggs",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 3.2
+  },
+  {
+    "id": "497",
+    "name": "Yakult Light",
+    "category": "Dairy & Eggs",
+    "score": 6.4,
+    "color": "yellow",
+    "totalEmissions": 3.2
+  },
+  {
+    "id": "498",
+    "name": "Yakult Ace",
+    "category": "Dairy & Eggs",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 3.3
+  },
+  {
+    "id": "499",
+    "name": "Yakult Gold",
+    "category": "Dairy & Eggs",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 3.5
+  },
+  {
+    "id": "500",
+    "name": "Yakult 1000",
+    "category": "Dairy & Eggs",
+    "score": 5.9,
+    "color": "yellow",
+    "totalEmissions": 3.6
+  },
+  {
+    "id": "501",
+    "name": "Isotonic Drink Original",
+    "category": "Beverages",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "502",
+    "name": "Isotonic Drink Lemon Lime",
+    "category": "Beverages",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "503",
+    "name": "Isotonic Drink Berry",
+    "category": "Beverages",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "504",
+    "name": "Isotonic Drink Zero Sugar",
+    "category": "Beverages",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "505",
+    "name": "Isotonic Drink Active",
+    "category": "Beverages",
+    "score": 7.4,
+    "color": "green",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "506",
+    "name": "Blackcurrant Drink",
+    "category": "Beverages",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "507",
+    "name": "Blackcurrant Less Sugar",
+    "category": "Beverages",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "508",
+    "name": "Blackcurrant Cordial",
+    "category": "Beverages",
+    "score": 6.3,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "509",
+    "name": "Sparkling Blackcurrant",
+    "category": "Beverages",
+    "score": 6.5,
+    "color": "yellow",
+    "totalEmissions": 1.5
+  },
+  {
+    "id": "510",
+    "name": "Strawberry Drink",
+    "category": "Beverages",
+    "score": 6.8,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "511",
+    "name": "Fuji Apple",
+    "category": "Fruits",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "512",
+    "name": "Korean Pear",
+    "category": "Fruits",
+    "score": 6.7,
+    "color": "yellow",
+    "totalEmissions": 1
+  },
+  {
+    "id": "513",
+    "name": "Shine Muscat Grapes",
+    "category": "Fruits",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 1.3
+  },
+  {
+    "id": "514",
+    "name": "Red Globe Grapes",
+    "category": "Fruits",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "515",
+    "name": "Mango",
+    "category": "Fruits",
+    "score": 6.1,
+    "color": "yellow",
+    "totalEmissions": 1.1
+  },
+  {
+    "id": "516",
+    "name": "Dried Cranberries",
+    "category": "Fruits",
+    "score": 5.8,
+    "color": "yellow",
+    "totalEmissions": 1.7
+  },
+  {
+    "id": "517",
+    "name": "Cranberry Juice Classic",
+    "category": "Fruits",
+    "score": 6.9,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "518",
+    "name": "Cran-Grape Juice",
+    "category": "Fruits",
+    "score": 6.9,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "519",
+    "name": "Reduced Sugar Dried Cranberries",
+    "category": "Fruits",
+    "score": 6,
+    "color": "yellow",
+    "totalEmissions": 1.6
+  },
+  {
+    "id": "520",
+    "name": "Cran-Mango Juice",
+    "category": "Fruits",
+    "score": 6.9,
+    "color": "yellow",
+    "totalEmissions": 1.4
+  },
+  {
+    "id": "521",
+    "name": "Original Chips",
+    "category": "Snacks",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "522",
+    "name": "Sour Cream & Onion",
+    "category": "Snacks",
+    "score": 4.4,
+    "color": "yellow",
+    "totalEmissions": 2.8
+  },
+  {
+    "id": "523",
+    "name": "Hot & Spicy",
+    "category": "Snacks",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "524",
+    "name": "BBQ Chips",
+    "category": "Snacks",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "525",
+    "name": "Cheese Chips",
+    "category": "Snacks",
+    "score": 3.6,
+    "color": "red",
+    "totalEmissions": 3
+  },
+  {
+    "id": "526",
+    "name": "Chocolate Biscuit Sticks",
+    "category": "Snacks",
+    "score": 3.1,
+    "color": "red",
+    "totalEmissions": 3.3
+  },
+  {
+    "id": "527",
+    "name": "Strawberry Biscuit Sticks",
+    "category": "Snacks",
+    "score": 3.3,
+    "color": "red",
+    "totalEmissions": 3
+  },
+  {
+    "id": "528",
+    "name": "Matcha Biscuit Sticks",
+    "category": "Snacks",
+    "score": 3.4,
+    "color": "red",
+    "totalEmissions": 2.9
+  },
+  {
+    "id": "529",
+    "name": "Almond Crush Sticks",
+    "category": "Snacks",
+    "score": 4.5,
+    "color": "yellow",
+    "totalEmissions": 3.1
+  },
+  {
+    "id": "530",
+    "name": "Cookies & Cream Sticks",
+    "category": "Snacks",
+    "score": 3.3,
+    "color": "red",
+    "totalEmissions": 3
+  },
+  {
+    "id": "531",
+    "name": "Hazelnut Chocolates 16pc",
+    "category": "Snacks",
+    "score": 0.8,
+    "color": "red",
+    "totalEmissions": 6.2
+  },
+  {
+    "id": "532",
+    "name": "Hazelnut Chocolates 30pc",
+    "category": "Snacks",
+    "score": 0.8,
+    "color": "red",
+    "totalEmissions": 6.2
+  },
+  {
+    "id": "533",
+    "name": "Raffaello Coconut",
+    "category": "Snacks",
+    "score": 1,
+    "color": "red",
+    "totalEmissions": 5.6
+  },
+  {
+    "id": "534",
+    "name": "Nutella Hazelnut Spread",
+    "category": "Snacks",
+    "score": 0.9,
+    "color": "red",
+    "totalEmissions": 6.4
+  },
+  {
+    "id": "535",
+    "name": "Kinder Bueno",
+    "category": "Snacks",
+    "score": 1,
+    "color": "red",
+    "totalEmissions": 5.8
+  },
+  {
+    "id": "536",
+    "name": "Chilli Oil with Peanuts",
+    "category": "Pantry",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "537",
+    "name": "Chilli Oil Original",
+    "category": "Pantry",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 1.9
+  },
+  {
+    "id": "538",
+    "name": "Black Bean Chilli Sauce",
+    "category": "Pantry",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "539",
+    "name": "Preserved Black Beans",
+    "category": "Pantry",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "540",
+    "name": "Chilli Bean Paste",
+    "category": "Pantry",
+    "score": 6.6,
+    "color": "yellow",
+    "totalEmissions": 1.8
+  },
+  {
+    "id": "541",
+    "name": "Traditional Pasta Sauce",
+    "category": "Pantry",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "542",
+    "name": "Mushroom Pasta Sauce",
+    "category": "Pantry",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "543",
+    "name": "Marinara Pasta Sauce",
+    "category": "Pantry",
+    "score": 5.7,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "544",
+    "name": "Carbonara Sauce",
+    "category": "Pantry",
+    "score": 2.4,
+    "color": "red",
+    "totalEmissions": 2.7
+  },
+  {
+    "id": "545",
+    "name": "Cheesy Tomato Sauce",
+    "category": "Pantry",
+    "score": 2.9,
+    "color": "red",
+    "totalEmissions": 2.4
+  },
+  {
+    "id": "546",
+    "name": "Korean Curry Mild",
+    "category": "Pantry",
+    "score": 5.3,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "547",
+    "name": "Sesame Oil Korean",
+    "category": "Pantry",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "548",
+    "name": "Korean Pancake Mix",
+    "category": "Pantry",
+    "score": 5.2,
+    "color": "yellow",
+    "totalEmissions": 2
+  },
+  {
+    "id": "549",
+    "name": "Jin Ramen",
+    "category": "Pantry",
+    "score": 3.7,
+    "color": "red",
+    "totalEmissions": 2.5
+  },
+  {
+    "id": "550",
+    "name": "Cheese Ramen",
+    "category": "Pantry",
+    "score": 2.1,
+    "color": "red",
+    "totalEmissions": 2.7
+  }
+]
