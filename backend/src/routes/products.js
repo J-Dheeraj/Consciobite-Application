@@ -1,6 +1,13 @@
 const express = require("express");
 const validator = require("validator");
 const router = express.Router();
+const { validate } = require("../middleware/validate");
+
+const COMPARE_SCHEMA = {
+  query: {
+    ids: { required: true, type: "string", message: "Provide product IDs as ?ids=id1,id2,id3" },
+  },
+};
 const products = require("../data/products.json");
 const { calculateGreenGrade } = require("../services/greengrade");
 const { logger } = require("../middleware/logger");
@@ -21,6 +28,7 @@ function sanitize(str, maxLen = 100) {
 const VALID_SORTS = ["grade_asc", "grade_desc", "emissions_asc", "emissions_desc"];
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
+const OPEN_FOOD_FACTS_TIMEOUT_MS = 10_000;
 
 // GET /api/products
 router.get("/", (req, res) => {
@@ -76,13 +84,8 @@ router.get("/", (req, res) => {
 });
 
 // GET /api/products/compare
-router.get("/compare", (req, res) => {
-  const idsParam = req.query.ids;
-  if (!idsParam || typeof idsParam !== "string") {
-    return res.status(400).json({ error: "Provide product IDs as ?ids=id1,id2,id3" });
-  }
-
-  const ids = idsParam
+router.get("/compare", validate(COMPARE_SCHEMA), (req, res) => {
+  const ids = req.query.ids
     .split(",")
     .map((id) => sanitize(id.trim(), 20))
     .filter(Boolean);
@@ -141,7 +144,7 @@ async function lookupOpenFoodFacts(barcode) {
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
+    const timeout = setTimeout(() => controller.abort(), OPEN_FOOD_FACTS_TIMEOUT_MS);
     const response = await fetch(
       `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json?fields=product_name,brands,categories_tags,ecoscore_grade,ecoscore_score,nutriments`,
       { signal: controller.signal }
@@ -173,44 +176,52 @@ async function lookupOpenFoodFacts(barcode) {
 }
 
 // GET /api/products/:id
-router.get("/:id", async (req, res) => {
-  const id = sanitize(req.params.id, 20);
+router.get("/:id", async (req, res, next) => {
+  try {
+    const id = sanitize(req.params.id, 20);
 
-  // Open Food Facts fallback: ids like "off_<barcode>"
-  if (id.startsWith("off_")) {
-    const barcode = id.slice(4);
-    if (!validator.isNumeric(barcode) || barcode.length < 8 || barcode.length > 14) {
+    // Open Food Facts fallback: ids like "off_<barcode>"
+    if (id.startsWith("off_")) {
+      const barcode = id.slice(4);
+      if (!validator.isNumeric(barcode) || barcode.length < 8 || barcode.length > 14) {
+        return res.status(400).json({ error: "Invalid product ID" });
+      }
+      const offProduct = await lookupOpenFoodFacts(barcode);
+      if (!offProduct) return res.status(404).json({ error: "Product not found" });
+      return res.json(offProduct);
+    }
+
+    if (!validator.isAlphanumeric(id)) {
       return res.status(400).json({ error: "Invalid product ID" });
     }
-    const offProduct = await lookupOpenFoodFacts(barcode);
-    if (!offProduct) return res.status(404).json({ error: "Product not found" });
-    return res.json(offProduct);
+    const product = enrichedProducts.find((p) => p.id === id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+    res.json(product);
+  } catch (err) {
+    next(err);
   }
-
-  if (!validator.isAlphanumeric(id)) {
-    return res.status(400).json({ error: "Invalid product ID" });
-  }
-  const product = enrichedProducts.find((p) => p.id === id);
-  if (!product) return res.status(404).json({ error: "Product not found" });
-  res.json(product);
 });
 
 // GET /api/products/scan/:barcode - barcode lookup with Open Food Facts fallback
-router.get("/scan/:barcode", async (req, res) => {
-  const barcode = sanitize(req.params.barcode, 20);
-  if (!validator.isNumeric(barcode) || barcode.length < 8 || barcode.length > 14) {
-    return res.status(400).json({ error: "Invalid barcode format" });
-  }
+router.get("/scan/:barcode", async (req, res, next) => {
+  try {
+    const barcode = sanitize(req.params.barcode, 20);
+    if (!validator.isNumeric(barcode) || barcode.length < 8 || barcode.length > 14) {
+      return res.status(400).json({ error: "Invalid barcode format" });
+    }
 
-  // Try local database first
-  const product = products.find((p) => p.barcode === barcode);
-  if (product) {
-    return res.json(enrichProduct(product));
-  }
+    // Try local database first
+    const product = products.find((p) => p.barcode === barcode);
+    if (product) {
+      return res.json(enrichProduct(product));
+    }
 
-  const offProduct = await lookupOpenFoodFacts(barcode);
-  if (offProduct) return res.json(offProduct);
-  return res.status(404).json({ error: "Product not found for this barcode" });
+    const offProduct = await lookupOpenFoodFacts(barcode);
+    if (offProduct) return res.json(offProduct);
+    return res.status(404).json({ error: "Product not found for this barcode" });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Map Open Food Facts categories to our categories

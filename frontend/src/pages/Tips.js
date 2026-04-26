@@ -205,6 +205,8 @@ export default function Tips() {
               >
                 <button
                   onClick={() => setExpandedCategory(isOpen ? -1 : i)}
+                  aria-expanded={isOpen}
+                  aria-label={`${isOpen ? "Collapse" : "Expand"} ${section.category} tips`}
                   style={{
                     width: "100%",
                     padding: "18px 20px",

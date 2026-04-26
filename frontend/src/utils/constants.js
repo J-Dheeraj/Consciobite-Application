@@ -15,3 +15,7 @@ export const scoreColor = (score) => {
   if (score >= 4) return "#f39c12";
   return "#e74c3c";
 };
+
+export const WEEKLY_CARBON_GOAL_KG = 10;
+
+export const AUTH_EXPIRED_EVENT = "auth-expired";

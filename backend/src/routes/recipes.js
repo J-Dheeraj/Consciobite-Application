@@ -2,8 +2,27 @@ const express = require("express");
 const validator = require("validator");
 const products = require("../data/products.json");
 const { calculateGreenGrade } = require("../services/greengrade");
+const { validate } = require("../middleware/validate");
 
 const router = express.Router();
+
+const TAG_QUERY_SCHEMA = {
+  query: {
+    tag: { required: false, type: "string", maxLength: 50 },
+  },
+};
+
+const RECIPE_ID_SCHEMA = {
+  params: {
+    id: {
+      required: true,
+      type: "string",
+      maxLength: 50,
+      pattern: /^[a-z0-9-]+$/,
+      message: "Invalid recipe ID",
+    },
+  },
+};
 
 // Curated recipe templates with ingredient categories
 const RECIPE_TEMPLATES = [
@@ -133,7 +152,7 @@ function getGreenIngredients(category, limit = 3) {
 }
 
 // GET /api/recipes - get recipe suggestions with green ingredients
-router.get("/", (req, res) => {
+router.get("/", validate(TAG_QUERY_SCHEMA), (req, res) => {
   const rawTag = req.query.tag;
 
   let filtered = RECIPE_TEMPLATES;
@@ -168,8 +187,8 @@ router.get("/", (req, res) => {
 });
 
 // GET /api/recipes/:id - get single recipe
-router.get("/:id", (req, res) => {
-  const recipeId = validator.escape(validator.trim(req.params.id)).slice(0, 50);
+router.get("/:id", validate(RECIPE_ID_SCHEMA), (req, res) => {
+  const recipeId = req.params.id;
   const recipe = RECIPE_TEMPLATES.find((r) => r.id === recipeId);
   if (!recipe) {
     return res.status(404).json({ error: "Recipe not found" });

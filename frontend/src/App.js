@@ -1,5 +1,6 @@
 import React, { Suspense, lazy, useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import BottomNav from "./components/BottomNav";
@@ -23,6 +24,11 @@ const CarbonTracker = lazy(() => import("./pages/CarbonTracker"));
 const Recipes = lazy(() => import("./pages/Recipes"));
 const Methodology = lazy(() => import("./pages/Methodology"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+
+function RequireAuth({ children }) {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+}
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -74,7 +80,14 @@ export default function App() {
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/carbon" element={<CarbonTracker />} />
+              <Route
+                path="/carbon"
+                element={
+                  <RequireAuth>
+                    <CarbonTracker />
+                  </RequireAuth>
+                }
+              />
               <Route path="/recipes" element={<Recipes />} />
               <Route path="/methodology" element={<Methodology />} />
               <Route path="*" element={<NotFound />} />

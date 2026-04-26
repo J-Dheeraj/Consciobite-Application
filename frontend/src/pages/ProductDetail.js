@@ -84,6 +84,7 @@ export default function ProductDetail() {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
   const [loggedPurchase, setLoggedPurchase] = useState(false);
+  const [logError, setLogError] = useState("");
   const [showStats, setShowStats] = useState(false);
 
   // If navigated from Scan (or another page) with product state, use it as
@@ -110,16 +111,18 @@ export default function ProductDetail() {
   React.useEffect(() => {
     if (product) setFav(isFavorited(product.id));
     setLoggedPurchase(false);
+    setLogError("");
     setShowStats(false);
   }, [product]);
 
   const handleLogPurchase = async () => {
     if (!product) return;
+    setLogError("");
     try {
       await logCarbonPurchase(product.id, product.name, 1, product.greenGrade.totalEmissions);
       setLoggedPurchase(true);
-    } catch {
-      /* ignore */
+    } catch (err) {
+      setLogError(err.message || "Unable to log purchase. Please try again.");
     }
   };
 
@@ -509,25 +512,40 @@ export default function ProductDetail() {
             </a>
           ) : (
             isAuthenticated && (
-              <button
-                onClick={handleLogPurchase}
-                disabled={loggedPurchase}
-                style={{
-                  width: "100%",
-                  padding: "13px 0",
-                  borderRadius: 28,
-                  border: "none",
-                  background: loggedPurchase ? "#1a5e3a" : "#27ae60",
-                  color: "#fff",
-                  fontSize: "0.95rem",
-                  fontWeight: 700,
-                  cursor: loggedPurchase ? "default" : "pointer",
-                  marginBottom: 10,
-                  boxShadow: "0 4px 12px rgba(39,174,96,0.3)",
-                }}
-              >
-                {loggedPurchase ? "\u2713 Logged to Carbon Tracker" : "Log Purchase"}
-              </button>
+              <>
+                <button
+                  onClick={handleLogPurchase}
+                  disabled={loggedPurchase}
+                  style={{
+                    width: "100%",
+                    padding: "13px 0",
+                    borderRadius: 28,
+                    border: "none",
+                    background: loggedPurchase ? "#1a5e3a" : "#27ae60",
+                    color: "#fff",
+                    fontSize: "0.95rem",
+                    fontWeight: 700,
+                    cursor: loggedPurchase ? "default" : "pointer",
+                    marginBottom: 10,
+                    boxShadow: "0 4px 12px rgba(39,174,96,0.3)",
+                  }}
+                >
+                  {loggedPurchase ? "\u2713 Logged to Carbon Tracker" : "Log Purchase"}
+                </button>
+                {logError && (
+                  <p
+                    role="alert"
+                    aria-live="assertive"
+                    style={{
+                      color: "#e63946",
+                      fontSize: "0.85rem",
+                      marginBottom: 10,
+                    }}
+                  >
+                    {logError}
+                  </p>
+                )}
+              </>
             )
           )}
 

@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+import { AUTH_EXPIRED_EVENT } from "../utils/constants";
+
 // Determine the API base URL at runtime
 function getApiBase() {
   if (typeof window !== "undefined") {
@@ -38,7 +40,7 @@ async function safeFetch(url, options = {}) {
     if (res.status === 401 && localStorage.getItem("consciobite_token")) {
       localStorage.removeItem("consciobite_token");
       localStorage.removeItem("consciobite_user");
-      window.dispatchEvent(new Event("auth-expired"));
+      window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
     }
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Request failed (${res.status})`);
