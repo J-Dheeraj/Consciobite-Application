@@ -1,0 +1,40 @@
+import Providers from "@/components/Providers";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import BottomNav from "@/components/BottomNav";
+import "./globals.css";
+
+export const metadata = {
+  title: "Consciobite - Sustainable Food Choices",
+  description:
+    "Browse 550+ products with GreenGrade sustainability scoring. Compare environmental impact, track your carbon footprint, and discover greener alternatives.",
+  icons: { icon: "/favicon.ico" },
+};
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
+            <a href="#main-content" className="skip-link">
+              Skip to main content
+            </a>
+            <Navbar />
+            <main id="main-content" style={{ flex: 1 }}>
+              {children}
+            </main>
+            <Footer />
+            <BottomNav />
+          </div>
+        </Providers>
+      </body>
+    </html>
+  );
+}

@@ -1,7 +1,9 @@
+"use client";
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
-import { useAuth } from "../context/AuthContext";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
 
 const NAV_LINKS = [
   { to: "/products", label: "Products" },
@@ -34,8 +36,8 @@ const LeafIcon = () => (
 );
 
 export default function Navbar() {
-  const location = useLocation();
-  const navigate = useNavigate();
+  const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { isAuthenticated, user, logout } = useAuth();
@@ -43,7 +45,7 @@ export default function Navbar() {
   const handleLogout = () => {
     logout();
     setMenuOpen(false);
-    navigate("/");
+    router.push("/");
   };
 
   return (
@@ -65,7 +67,7 @@ export default function Navbar() {
       aria-label="Main navigation"
     >
       <Link
-        to="/"
+        href="/"
         style={{
           color: "#fff",
           fontFamily: "'Outfit', sans-serif",
@@ -86,11 +88,11 @@ export default function Navbar() {
         className="nav-desktop"
       >
         {NAV_LINKS.map((link) => {
-          const active = location.pathname === link.to;
+          const active = pathname === link.to;
           return (
             <Link
               key={link.to}
-              to={link.to}
+              href={link.to}
               aria-current={active ? "page" : undefined}
               style={{
                 color: active ? "#fff" : "rgba(255,255,255,0.7)",
@@ -132,7 +134,7 @@ export default function Navbar() {
           </div>
         ) : (
           <Link
-            to="/login"
+            href="/login"
             style={{
               color: "#fff",
               fontWeight: 500,
@@ -277,7 +279,7 @@ export default function Navbar() {
           ) : (
             <>
               <Link
-                to="/login"
+                href="/login"
                 onClick={() => setMenuOpen(false)}
                 style={{
                   color: "rgba(255,255,255,0.7)",
@@ -293,7 +295,7 @@ export default function Navbar() {
                 Sign In
               </Link>
               <Link
-                to="/register"
+                href="/register"
                 onClick={() => setMenuOpen(false)}
                 style={{
                   color: "rgba(255,255,255,0.7)",

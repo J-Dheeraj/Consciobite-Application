@@ -1,0 +1,250 @@
+"use client";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { Html5Qrcode } from "html5-qrcode";
+import { scanBarcode } from "@/services/api";
+import GradeBadge from "@/components/GradeBadge";
+import { useTheme } from "@/context/ThemeContext";
+import PageHero from "@/components/PageHero";
+import {
+  pageContainer,
+  card,
+  primaryButton,
+  inputField,
+  errorAlert,
+  heading,
+} from "@/utils/pageStyles";
+
+export default function Scan() {
+  const { theme } = useTheme();
+  const isDark = theme === "dark";
+  const [barcode, setBarcode] = useState("");
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+  const [scanning, setScanning] = useState(false);
+  const [cameraError, setCameraError] = useState("");
+  const scannerRef = useRef(null);
+  const router = useRouter();
+
+  const lookupBarcode = useCallback(async (code) => {
+    setError("");
+    setResult(null);
+    setBarcode(code);
+    try {
+      const data = await scanBarcode(code.trim());
+      setResult(data);
+    } catch (err) {
+      setError(err.message || "Product not found for this barcode.");
+    }
+  }, []);
+
+  const startCamera = useCallback(async () => {
+    setCameraError("");
+    setError("");
+    setResult(null);
+    try {
+      const scanner = new Html5Qrcode("barcode-reader");
+      scannerRef.current = scanner;
+      await scanner.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 150 },
+          formatsToSupport: [0, 2, 3, 4, 5, 10, 9],
+        },
+        (decodedText) => {
+          scanner.stop().then(() => {
+            scannerRef.current = null;
+            setScanning(false);
+            lookupBarcode(decodedText);
+          });
+        },
+        () => {}
+      );
+      setScanning(true);
+    } catch {
+      setCameraError(
+        "Unable to access camera. Please check permissions or use manual entry below."
+      );
+    }
+  }, [lookupBarcode]);
+
+  const stopCamera = useCallback(async () => {
+    if (scannerRef.current) {
+      try {
+        await scannerRef.current.stop();
+      } catch (_) {
+        /* ignore */
+      }
+      scannerRef.current = null;
+    }
+    setScanning(false);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.stop().catch(() => {});
+        scannerRef.current = null;
+      }
+    };
+  }, []);
+
+  const handleManualSubmit = (e) => {
+    e.preventDefault();
+    if (barcode.trim()) lookupBarcode(barcode.trim());
+  };
+
+  return (
+    <div style={{ animation: "fadeIn 0.4s ease" }}>
+      <PageHero
+        icon={"📷"}
+        title="Scan a Product"
+        subtitle="Point your camera at a barcode or enter it manually."
+      />
+
+      <div style={pageContainer(500)}>
+        {/* Scanner */}
+        <div style={{ marginTop: -20, animation: "fadeInUp 0.4s ease" }}>
+          {!scanning ? (
+            <button
+              onClick={startCamera}
+              style={{
+                ...card(isDark),
+                width: "100%",
+                padding: "16px 20px",
+                color: "#2d6a4f",
+                border: "2px dashed #95d5b2",
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: "1rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 10,
+                transition: "all 0.2s ease",
+              }}
+            >
+              <span style={{ fontSize: "1.3rem" }}>{"📸"}</span> Open Camera to Scan
+            </button>
+          ) : (
+            <button
+              onClick={stopCamera}
+              style={{
+                width: "100%",
+                padding: "12px 20px",
+                background: "#e63946",
+                color: "#fff",
+                border: "none",
+                borderRadius: 12,
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                marginBottom: 8,
+              }}
+            >
+              Stop Camera
+            </button>
+          )}
+          {cameraError && (
+            <p style={{ color: "#e63946", fontSize: "0.85rem", marginTop: 8 }}>{cameraError}</p>
+          )}
+          <div
+            id="barcode-reader"
+            style={{
+              marginTop: scanning ? 12 : 0,
+              borderRadius: 12,
+              overflow: "hidden",
+              display: scanning ? "block" : "none",
+            }}
+          />
+        </div>
+
+        {/* Divider */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            margin: "24px 0 20px",
+            color: isDark ? "#7a9a7e" : "#aaa",
+            fontSize: "0.85rem",
+          }}
+        >
+          <div style={{ flex: 1, height: 1, background: isDark ? "#2d4a35" : "#e0e0e0" }} />
+          or enter manually
+          <div style={{ flex: 1, height: 1, background: isDark ? "#2d4a35" : "#e0e0e0" }} />
+        </div>
+
+        {/* Manual entry */}
+        <form onSubmit={handleManualSubmit} style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+          <input
+            type="text"
+            placeholder="Enter barcode (e.g. 1234567890123)"
+            value={barcode}
+            onChange={(e) => setBarcode(e.target.value)}
+            aria-label="Enter barcode"
+            style={{ ...inputField(isDark), flex: 1 }}
+          />
+          <button type="submit" style={primaryButton()}>
+            Look Up
+          </button>
+        </form>
+
+        {error && (
+          <p
+            role="alert"
+            aria-live="assertive"
+            style={{
+              ...errorAlert(isDark),
+              marginBottom: 12,
+              border: "none",
+            }}
+          >
+            {error}
+          </p>
+        )}
+
+        {result && (
+          <div
+            onClick={() => router.push(`/product/${result.id}`)}
+            style={{
+              ...card(isDark),
+              padding: 20,
+              cursor: "pointer",
+              animation: "fadeInUp 0.3s ease",
+              transition: "all 0.2s ease",
+              borderLeft: "3px solid #52b788",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <GradeBadge
+                score={result.greenGrade.score}
+                color={result.greenGrade.color}
+                size="large"
+              />
+              <div>
+                <h3
+                  style={{
+                    ...heading("1.15rem"),
+                    color: isDark ? "#e8f5e9" : "inherit",
+                  }}
+                >
+                  {result.name}
+                </h3>
+                <div style={{ color: isDark ? "#7a9a7e" : "#666", fontSize: "0.85rem" }}>
+                  {result.brand} {"·"} {result.category}
+                </div>
+                <div
+                  style={{ fontSize: "0.8rem", color: "#52b788", marginTop: 4, fontWeight: 600 }}
+                >
+                  Tap to see full details {"→"}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

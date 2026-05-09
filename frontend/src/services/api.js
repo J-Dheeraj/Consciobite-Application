@@ -1,24 +1,5 @@
-/* eslint-disable no-undef */
-// Determine the API base URL at runtime
-function getApiBase() {
-  if (typeof window !== "undefined") {
-    const { hostname, protocol } = window.location;
-    if (hostname.endsWith(".onrender.com")) {
-      const apiHost = hostname.replace("-app", "-api");
-      return `${protocol}//${apiHost}/api`;
-    }
-  }
-
-  const envHost = process.env.REACT_APP_API_URL;
-  if (envHost && envHost.includes(".")) {
-    const base = envHost.startsWith("http") ? envHost : `https://${envHost}`;
-    return `${base.replace(/\/$/, "")}/api`;
-  }
-
-  return "http://localhost:4000/api";
-}
-
-const API_BASE = getApiBase();
+// Next.js rewrites proxy /api/* to the backend (see next.config.js)
+const API_BASE = "/api";
 
 function getAuthHeaders() {
   const token = localStorage.getItem("consciobite_token");

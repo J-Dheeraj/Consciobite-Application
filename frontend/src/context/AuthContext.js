@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 const AuthContext = createContext();
@@ -7,6 +8,7 @@ const USER_KEY = "consciobite_user";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
+    if (typeof window === "undefined") return null;
     try {
       const stored = localStorage.getItem(USER_KEY);
       return stored ? JSON.parse(stored) : null;
@@ -15,7 +17,10 @@ export function AuthProvider({ children }) {
     }
   });
 
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState(() => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(TOKEN_KEY);
+  });
 
   const login = useCallback((userData, authToken) => {
     setUser(userData);

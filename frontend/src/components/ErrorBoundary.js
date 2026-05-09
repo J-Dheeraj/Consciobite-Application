@@ -1,5 +1,5 @@
 import React from "react";
-import { captureError } from "../services/sentry";
+import { captureError } from "@/services/sentry";
 
 export default class ErrorBoundary extends React.Component {
   constructor(props) {

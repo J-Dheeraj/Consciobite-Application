@@ -1,5 +1,6 @@
+"use client";
 import React from "react";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -67,7 +68,7 @@ export default function Footer() {
               ].map((link) => (
                 <Link
                   key={link.to}
-                  to={link.to}
+                  href={link.to}
                   style={{
                     color: "rgba(255,255,255,0.6)",
                     fontSize: "0.85rem",
@@ -103,7 +104,7 @@ export default function Footer() {
               ].map((link) => (
                 <Link
                   key={link.to}
-                  to={link.to}
+                  href={link.to}
                   style={{
                     color: "rgba(255,255,255,0.6)",
                     fontSize: "0.85rem",

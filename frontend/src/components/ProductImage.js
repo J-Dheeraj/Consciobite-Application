@@ -1,5 +1,5 @@
 import React from "react";
-import { CATEGORY_ICONS } from "../utils/constants";
+import { CATEGORY_ICONS } from "@/utils/constants";
 
 const CATEGORY_COLORS = {
   Protein: { bg: "#fef2f2", fg: "#e63946", accent: "#fca5a5" },

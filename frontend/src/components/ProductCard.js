@@ -1,11 +1,12 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import GradeBadge from "./GradeBadge";
-import ProductImage from "./ProductImage";
-import { useTheme } from "../context/ThemeContext";
-import { isFavorited, toggleFavorite } from "../utils/favorites";
-import { CATEGORY_ICONS } from "../utils/constants";
+import Link from "next/link";
+import GradeBadge from "@/components/GradeBadge";
+import ProductImage from "@/components/ProductImage";
+import { useTheme } from "@/context/ThemeContext";
+import { isFavorited, toggleFavorite } from "@/utils/favorites";
+import { CATEGORY_ICONS } from "@/utils/constants";
 
 function ProductCard({ product, delay = 0 }) {
   const { theme } = useTheme();
@@ -53,7 +54,7 @@ function ProductCard({ product, delay = 0 }) {
       }}
     >
       <Link
-        to={`/product/${product.id}`}
+        href={`/product/${product.id}`}
         style={{
           display: "flex",
           alignItems: "center",

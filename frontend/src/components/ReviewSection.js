@@ -1,8 +1,9 @@
+"use client";
 import React, { useEffect, useState, useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
-import { fetchReviews, submitReview, deleteReview } from "../services/api";
-import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
+import { fetchReviews, submitReview, deleteReview } from "@/services/api";
+import Link from "next/link";
 
 const STARS = [1, 2, 3, 4, 5];
 
@@ -197,7 +198,7 @@ export default function ReviewSection({ productId }) {
           <p
             style={{ fontSize: "0.88rem", color: isDark ? "#7a9a7e" : "#888", margin: "0 0 10px" }}
           >
-            <Link to="/login" style={{ color: "#52b788", fontWeight: 600 }}>
+            <Link href="/login" style={{ color: "#52b788", fontWeight: 600 }}>
               Sign in
             </Link>{" "}
             to leave a review.
