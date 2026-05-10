@@ -5,6 +5,8 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer
+      role="contentinfo"
+      aria-label="Site footer"
       style={{
         background: "linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #1b4332 100%)",
         color: "rgba(255,255,255,0.7)",

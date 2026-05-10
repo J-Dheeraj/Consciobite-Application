@@ -12,6 +12,7 @@ const carbonRoutes = require("./routes/carbon");
 const recipeRoutes = require("./routes/recipes");
 const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
+const { csrfProtection } = require("./middleware/auth");
 const { swaggerSpec } = require("./swagger");
 const { getDb, closeDb } = require("./db/schema");
 const { runMigrations } = require("./db/migrate");
@@ -66,8 +67,9 @@ app.use(
       if (isAllowedOrigin(origin)) return callback(null, true);
       callback(new Error("Not allowed by CORS"));
     },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
     maxAge: 86400,
   })
 );
@@ -144,15 +146,15 @@ app.get("/api/methodology", (_req, res) => {
 
 app.use("/api/products", cacheMiddleware(120), productRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/carbon", carbonRoutes);
+app.use("/api/reviews", csrfProtection, reviewRoutes);
+app.use("/api/carbon", csrfProtection, carbonRoutes);
 app.use("/api/recipes", cacheMiddleware(600), recipeRoutes);
 
 // Versioned aliases (v1 = current)
 app.use("/api/v1/products", cacheMiddleware(120), productRoutes);
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/reviews", reviewRoutes);
-app.use("/api/v1/carbon", carbonRoutes);
+app.use("/api/v1/reviews", csrfProtection, reviewRoutes);
+app.use("/api/v1/carbon", csrfProtection, carbonRoutes);
 app.use("/api/v1/recipes", cacheMiddleware(600), recipeRoutes);
 
 // ---------- 404 handler ----------

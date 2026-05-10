@@ -4,16 +4,13 @@ import PropTypes from "prop-types";
 import Link from "next/link";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
-import { useTheme } from "@/context/ThemeContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
 import { CATEGORY_ICONS } from "@/utils/constants";
+import styles from "./ProductCard.module.css";
 
 function ProductCard({ product, delay = 0 }) {
-  const { theme } = useTheme();
-  const isDark = theme === "dark";
   const { greenGrade } = product;
   const [fav, setFav] = useState(() => isFavorited(product.id));
-  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     const handler = () => setFav(isFavorited(product.id));
@@ -21,7 +18,7 @@ function ProductCard({ product, delay = 0 }) {
     return () => window.removeEventListener("favorites-updated", handler);
   }, [product.id]);
 
-  const icon = CATEGORY_ICONS[product.category] || "\uD83C\uDF3F";
+  const icon = CATEGORY_ICONS[product.category] || "🌿";
   const accent =
     greenGrade.color === "green"
       ? "#52b788"
@@ -30,84 +27,27 @@ function ProductCard({ product, delay = 0 }) {
         : "#e63946";
 
   return (
-    <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        background: isDark ? "#162419" : "#fff",
-        borderRadius: 14,
-        padding: "12px 14px",
-        boxShadow: hovered
-          ? isDark
-            ? "0 8px 24px rgba(0,0,0,0.3)"
-            : "0 8px 24px rgba(27,67,50,0.12)"
-          : isDark
-            ? "0 1px 4px rgba(0,0,0,0.15)"
-            : "0 1px 4px rgba(27,67,50,0.06)",
-        transition: "all 0.25s ease",
-        transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        borderLeft: `3px solid ${accent}`,
-        animation: `fadeInUp 0.4s ease ${delay}ms both`,
-      }}
+    <article
+      className={styles.card}
+      style={{ "--accent-color": accent, animationDelay: `${delay}ms` }}
     >
-      <Link
-        href={`/product/${product.id}`}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 12,
-          flex: 1,
-          minWidth: 0,
-          textDecoration: "none",
-          color: "inherit",
-        }}
-      >
+      <Link href={`/product/${product.id}`} className={styles.link}>
         <ProductImage name={product.name} category={product.category} size={44} />
         <GradeBadge score={greenGrade.score} color={greenGrade.color} />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              fontWeight: 600,
-              fontSize: "0.92rem",
-              marginBottom: 2,
-              color: isDark ? "#e8f5e9" : "inherit",
-            }}
-          >
-            {product.name}
-          </div>
-          <div
-            style={{
-              fontSize: "0.8rem",
-              color: isDark ? "#7a9a7e" : "#888",
-              display: "flex",
-              alignItems: "center",
-              gap: 4,
-            }}
-          >
+          <div className={styles.name}>{product.name}</div>
+          <div className={styles.meta}>
             <span>{product.brand}</span>
-            <span style={{ color: isDark ? "#3d5a42" : "#ccc" }}>{"\u00B7"}</span>
+            <span>{"·"}</span>
             <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
               <span style={{ fontSize: "0.72rem" }}>{icon}</span>
               {product.category}
             </span>
           </div>
         </div>
-        <div
-          style={{
-            fontSize: "0.76rem",
-            color: isDark ? "#7a9a7e" : "#888",
-            whiteSpace: "nowrap",
-            textAlign: "right",
-            lineHeight: 1.3,
-          }}
-        >
-          <div style={{ fontWeight: 600, color: isDark ? "#b0c4b1" : "#555" }}>
-            {greenGrade.totalEmissions}
-          </div>
-          <div>kg CO{"\u2082"}e</div>
+        <div className={styles.emissions}>
+          <div className={styles.emissionsValue}>{greenGrade.totalEmissions}</div>
+          <div>kg CO{"₂"}e</div>
         </div>
       </Link>
       <button
@@ -117,21 +57,11 @@ function ProductCard({ product, delay = 0 }) {
         }}
         aria-label={fav ? "Remove from favorites" : "Add to favorites"}
         title={fav ? "Remove from favorites" : "Add to favorites"}
-        style={{
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          fontSize: "1.2rem",
-          padding: 4,
-          color: fav ? "#e63946" : isDark ? "#3d5a42" : "#d0d0d0",
-          flexShrink: 0,
-          transition: "all 0.2s ease",
-          transform: fav ? "scale(1.1)" : "scale(1)",
-        }}
+        className={`${styles.favButton} ${fav ? styles.favActive : styles.favInactive}`}
       >
-        {fav ? "\u2665" : "\u2661"}
+        {fav ? "♥" : "♡"}
       </button>
-    </div>
+    </article>
   );
 }
 

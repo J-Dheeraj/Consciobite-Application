@@ -113,7 +113,7 @@ export default function ReviewSection({ productId }) {
             border: "1px solid " + (isDark ? "#2d4a35" : "#eee"),
           }}
         >
-          <div style={{ marginBottom: 10 }}>
+          <div style={{ marginBottom: 10 }} role="radiogroup" aria-label="Rating">
             <span
               style={{ fontSize: "0.85rem", fontWeight: 600, color: isDark ? "#b0c4b1" : "#555" }}
             >
@@ -126,6 +126,8 @@ export default function ReviewSection({ productId }) {
                 onClick={() => setRating(s)}
                 onMouseEnter={() => setHoverRating(s)}
                 onMouseLeave={() => setHoverRating(0)}
+                aria-label={`${s} star${s > 1 ? "s" : ""}`}
+                aria-pressed={rating === s}
                 style={{
                   background: "none",
                   border: "none",

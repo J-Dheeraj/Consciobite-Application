@@ -35,6 +35,8 @@ function GradeBadge({ score, color, size = "normal" }) {
 
   return (
     <div
+      role="img"
+      aria-label={`GreenGrade score: ${score} out of 10, rated ${color}`}
       style={{ width: dim, height: dim, position: "relative", flexShrink: 0 }}
       title={`GreenGrade: ${score}/10`}
     >

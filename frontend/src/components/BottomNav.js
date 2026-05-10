@@ -49,6 +49,8 @@ export default function BottomNav() {
               <Link
                 key={link.to}
                 href={link.to}
+                aria-current={active ? "page" : undefined}
+                aria-label={link.label}
                 style={{
                   display: "flex",
                   flexDirection: "column",

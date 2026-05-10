@@ -40,12 +40,17 @@ export function AuthProvider({ children }) {
     localStorage.setItem(TOKEN_KEY, authToken);
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     setUser(null);
     setToken(null);
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(TOKEN_KEY);
     if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    try {
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    } catch {
+      // Best-effort cookie clear
+    }
   }, []);
 
   useEffect(() => {
@@ -57,12 +62,12 @@ export function AuthProvider({ children }) {
       return;
     }
 
-    // Refresh 5 minutes before expiry
     const refreshIn = Math.max(0, expiry - Date.now() - 5 * 60 * 1000);
     refreshTimer.current = setTimeout(async () => {
       try {
         const res = await fetch("/api/auth/refresh", {
           method: "POST",
+          credentials: "include",
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
