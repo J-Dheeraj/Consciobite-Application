@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 if (process.env.NODE_ENV !== "test" && !process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is required");
@@ -43,4 +44,53 @@ function optionalAuth(req, _res, next) {
   next();
 }
 
-module.exports = { generateToken, requireAuth, optionalAuth };
+function refreshToken(req, res) {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  try {
+    const token = header.slice(7);
+    const decoded = jwt.verify(token, JWT_SECRET, {
+      algorithms: [JWT_ALGORITHM],
+      ignoreExpiration: false,
+    });
+    const newToken = generateToken({ id: decoded.id, email: decoded.email });
+    res.json({ token: newToken });
+  } catch {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+}
+
+function csrfProtection(req, res, next) {
+  if (["GET", "HEAD", "OPTIONS"].includes(req.method)) {
+    return next();
+  }
+
+  const headerToken = req.headers["x-csrf-token"];
+  const cookieToken = req.cookies && req.cookies["csrf-token"];
+
+  if (!headerToken || !cookieToken) {
+    return res.status(403).json({ error: "CSRF token missing" });
+  }
+
+  if (!crypto.timingSafeEqual(Buffer.from(headerToken), Buffer.from(cookieToken))) {
+    return res.status(403).json({ error: "CSRF token mismatch" });
+  }
+
+  next();
+}
+
+function generateCsrfToken(_req, res) {
+  const token = crypto.randomBytes(32).toString("hex");
+  res.cookie("csrf-token", token, {
+    httpOnly: false,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: 24 * 60 * 60 * 1000,
+  });
+  res.json({ csrfToken: token });
+}
+
+module.exports = { generateToken, requireAuth, optionalAuth, refreshToken, csrfProtection, generateCsrfToken };

@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const crypto = require("crypto");
 const { getDb } = require("../db/schema");
-const { generateToken, requireAuth } = require("../middleware/auth");
+const { generateToken, requireAuth, refreshToken, generateCsrfToken } = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -161,5 +161,11 @@ router.get("/me", requireAuth, (req, res) => {
 
   res.json({ user });
 });
+
+// POST /api/auth/refresh - refresh an unexpired token
+router.post("/refresh", refreshToken);
+
+// GET /api/auth/csrf - get a CSRF token
+router.get("/csrf", generateCsrfToken);
 
 module.exports = router;

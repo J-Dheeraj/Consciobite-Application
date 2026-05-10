@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
 const swaggerUi = require("swagger-ui-express");
@@ -92,6 +93,9 @@ const authLimiter = rateLimit({
   message: { error: "Too many auth attempts, please try again later." },
 });
 app.use("/api/auth", authLimiter);
+
+// ---------- Cookie parsing ----------
+app.use(cookieParser());
 
 // ---------- Body parsing ----------
 app.use(express.json({ limit: "10kb" }));

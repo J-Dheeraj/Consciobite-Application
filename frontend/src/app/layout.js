@@ -27,11 +27,17 @@ export default function RootLayout({ children }) {
               Skip to main content
             </a>
             <Navbar />
-            <main id="main-content" style={{ flex: 1 }}>
+            <main id="main-content" role="main" style={{ flex: 1 }}>
               {children}
             </main>
             <Footer />
             <BottomNav />
+            <div
+              aria-live="polite"
+              aria-atomic="true"
+              id="announcer"
+              style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}
+            />
           </div>
         </Providers>
       </body>
