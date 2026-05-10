@@ -14,6 +14,17 @@ export default function Home() {
   const searchRef = useRef(null);
   const debounceRef = useRef(null);
 
+  const doSearch = (query) => {
+    setLoading(true);
+    fetchProducts({ search: query, limit: 8 })
+      .then((data) => {
+        setResults(data.products);
+        setShowResults(true);
+      })
+      .catch(() => setResults([]))
+      .finally(() => setLoading(false));
+  };
+
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearch(val);
@@ -23,29 +34,13 @@ export default function Home() {
       setShowResults(false);
       return;
     }
-    setLoading(true);
-    debounceRef.current = setTimeout(() => {
-      fetchProducts({ search: val, limit: 8 })
-        .then((data) => {
-          setResults(data.products);
-          setShowResults(true);
-        })
-        .catch(() => setResults([]))
-        .finally(() => setLoading(false));
-    }, 250);
+    debounceRef.current = setTimeout(() => doSearch(val), 250);
   };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && search.trim().length >= 2) {
       if (debounceRef.current) clearTimeout(debounceRef.current);
-      setLoading(true);
-      fetchProducts({ search, limit: 8 })
-        .then((data) => {
-          setResults(data.products);
-          setShowResults(true);
-        })
-        .catch(() => setResults([]))
-        .finally(() => setLoading(false));
+      doSearch(search);
     }
   };
 

@@ -226,11 +226,11 @@ export default function Navbar() {
           }}
         >
           {NAV_LINKS.map((link) => {
-            const active = location.pathname === link.to;
+            const active = pathname === link.to;
             return (
               <Link
                 key={link.to}
-                to={link.to}
+                href={link.to}
                 onClick={() => setMenuOpen(false)}
                 aria-current={active ? "page" : undefined}
                 style={{
