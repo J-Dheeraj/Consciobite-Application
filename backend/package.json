@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
+    "migrate": "node -e \"require('./src/db/schema').getDb(); require('./src/db/migrate').runMigrations()\"",
     "test": "jest --forceExit --detectOpenHandles",
     "lint": "eslint src/ __tests__/",
     "format": "prettier --write \"src/**/*.js\" \"__tests__/**/*.js\"",

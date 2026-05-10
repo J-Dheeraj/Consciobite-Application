@@ -8,7 +8,21 @@ export const metadata = {
   title: "Consciobite - Sustainable Food Choices",
   description:
     "Browse 550+ products with GreenGrade sustainability scoring. Compare environmental impact, track your carbon footprint, and discover greener alternatives.",
-  icons: { icon: "/favicon.ico" },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/icon-192.png",
+  },
+  manifest: "/manifest.json",
+  themeColor: "#2d6a4f",
+  openGraph: {
+    title: "Consciobite - Sustainable Food Choices",
+    description: "Browse 550+ products with GreenGrade sustainability scoring.",
+    siteName: "Consciobite",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }) {

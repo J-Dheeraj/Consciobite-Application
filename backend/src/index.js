@@ -14,15 +14,21 @@ const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
 const { swaggerSpec } = require("./swagger");
 const { getDb, closeDb } = require("./db/schema");
+const { runMigrations } = require("./db/migrate");
+const { CONFIG, validateConfig } = require("./config");
 const { trainModel } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
 const products = require("./data/products.json");
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = CONFIG.port;
+
+// ---------- Validate configuration ----------
+validateConfig();
 
 // ---------- Initialize database ----------
 getDb();
+runMigrations();
 logger.info("Database initialized");
 
 // ---------- Train GreenGrade ML model on product catalog ----------
@@ -127,9 +133,9 @@ if (process.env.NODE_ENV !== "production") {
   );
 }
 
-// ---------- Routes ----------
+// ---------- Routes (v1) ----------
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "Consciobite API", version: "2.0.0" });
+  res.json({ status: "ok", service: "Consciobite API", version: "2.0.0", apiVersion: "v1" });
 });
 
 app.get("/api/methodology", (_req, res) => {
@@ -141,6 +147,13 @@ app.use("/api/auth", authRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/carbon", carbonRoutes);
 app.use("/api/recipes", cacheMiddleware(600), recipeRoutes);
+
+// Versioned aliases (v1 = current)
+app.use("/api/v1/products", cacheMiddleware(120), productRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/carbon", carbonRoutes);
+app.use("/api/v1/recipes", cacheMiddleware(600), recipeRoutes);
 
 // ---------- 404 handler ----------
 app.use((_req, res) => {
