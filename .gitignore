@@ -26,6 +26,3 @@ npm-debug.log*
 .idea/
 *.swp
 *.swo
-
-# Generated graph output (graphify)
-graphify-out/
