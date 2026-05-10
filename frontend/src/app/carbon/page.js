@@ -1,10 +1,11 @@
 "use client";
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchCarbonSummary, fetchCarbonLogs, deleteCarbonLog } from "@/services/api";
+import { WEEKLY_CARBON_GOAL_KG } from "@/utils/constants";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
@@ -14,6 +15,7 @@ export default function CarbonTracker() {
   const isDark = theme === "dark";
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
+  const [deleteError, setDeleteError] = useState("");
 
   const {
     data: carbonData,
@@ -26,7 +28,6 @@ export default function CarbonTracker() {
         summary: summaryData,
         logs: logsData.logs,
       })),
-    enabled: isAuthenticated,
   });
 
   const summary = carbonData?.summary || null;
@@ -34,11 +35,12 @@ export default function CarbonTracker() {
 
   const handleDelete = useCallback(
     async (id) => {
+      setDeleteError("");
       try {
         await deleteCarbonLog(id);
         queryClient.invalidateQueries({ queryKey: ["carbon"] });
-      } catch {
-        /* ignore */
+      } catch (err) {
+        setDeleteError(err.message || "Failed to delete log. Please try again.");
       }
     },
     [queryClient]
@@ -91,8 +93,9 @@ export default function CarbonTracker() {
     return <Spinner message="Loading carbon data..." />;
   }
 
-  const weeklyGoal = 10; // kg CO2e per week
-  const weeklyProgress = summary ? Math.min((summary.weekly.emissions / weeklyGoal) * 100, 100) : 0;
+  const weeklyProgress = summary
+    ? Math.min((summary.weekly.emissions / WEEKLY_CARBON_GOAL_KG) * 100, 100)
+    : 0;
   const trendData = summary?.trend || [];
 
   return (
@@ -117,6 +120,22 @@ export default function CarbonTracker() {
             }}
           >
             {error}
+          </div>
+        )}
+
+        {deleteError && (
+          <div
+            role="alert"
+            aria-live="assertive"
+            style={{
+              marginTop: 16,
+              padding: 14,
+              background: isDark ? "#2a1519" : "#fef2f2",
+              borderRadius: 10,
+              color: "#e63946",
+            }}
+          >
+            {deleteError}
           </div>
         )}
 
@@ -158,7 +177,7 @@ export default function CarbonTracker() {
                     fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: "1.5rem",
-                    color: summary.weekly.emissions > weeklyGoal ? "#e63946" : "#2d6a4f",
+                    color: summary.weekly.emissions > WEEKLY_CARBON_GOAL_KG ? "#e63946" : "#2d6a4f",
                   }}
                 >
                   {summary.weekly.emissions}
@@ -262,7 +281,7 @@ export default function CarbonTracker() {
                     color: isDark ? "#e8f5e9" : "#333",
                   }}
                 >
-                  Weekly Goal: {weeklyGoal} kg CO{"\u2082"}e
+                  Weekly Goal: {WEEKLY_CARBON_GOAL_KG} kg CO{"\u2082"}e
                 </span>
                 <span
                   style={{
@@ -464,6 +483,7 @@ export default function CarbonTracker() {
                       borderRadius: 6,
                     }}
                     title="Remove log"
+                    aria-label={`Remove log for ${log.product_name}`}
                   >
                     {"\u2715"}
                   </button>

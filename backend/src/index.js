@@ -21,6 +21,38 @@ const { trainModel } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
 const products = require("./data/products.json");
 
+const DEFAULT_PORT = 4000;
+const REQUIRED_EMISSION_KEYS = [
+  "landUseChange",
+  "animalFeed",
+  "farm",
+  "processing",
+  "transport",
+  "packaging",
+  "retail",
+];
+
+function validateProductCatalog(catalog) {
+  if (!Array.isArray(catalog)) {
+    throw new Error("products.json: root must be an array");
+  }
+  for (const p of catalog) {
+    if (!p || typeof p !== "object") {
+      throw new Error("products.json: entry is not an object");
+    }
+    if (!p.id || !p.name || !p.category || typeof p.emissions !== "object") {
+      throw new Error(`products.json: entry missing required field (id=${p.id ?? "?"})`);
+    }
+    for (const key of REQUIRED_EMISSION_KEYS) {
+      if (typeof p.emissions[key] !== "number") {
+        throw new Error(`products.json: product ${p.id} emissions.${key} must be a number`);
+      }
+    }
+  }
+}
+
+validateProductCatalog(products);
+
 const app = express();
 const PORT = CONFIG.port;
 
@@ -47,11 +79,15 @@ const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
   : ["http://localhost:3000"];
 
+const ALLOWED_ORIGIN_PATTERN = process.env.ALLOWED_ORIGIN_PATTERN
+  ? new RegExp(process.env.ALLOWED_ORIGIN_PATTERN)
+  : /^consciobite-(app|api)\.onrender\.com$/;
+
 function isAllowedOrigin(origin) {
   if (ALLOWED_ORIGINS.includes(origin)) return true;
   try {
     const url = new URL(origin);
-    if (/^consciobite-(app|api)\.onrender\.com$/.test(url.hostname)) {
+    if (ALLOWED_ORIGIN_PATTERN.test(url.hostname)) {
       return true;
     }
   } catch (_) {

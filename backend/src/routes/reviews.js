@@ -3,12 +3,47 @@ const validator = require("validator");
 const crypto = require("crypto");
 const { getDb } = require("../db/schema");
 const { requireAuth, optionalAuth } = require("../middleware/auth");
+const { validate } = require("../middleware/validate");
 const { invalidateCache } = require("../middleware/cache");
 
 const router = express.Router();
 
+const PRODUCT_PARAM_SCHEMA = {
+  params: {
+    productId: { required: true, type: "string", maxLength: 20, message: "Invalid product ID" },
+  },
+};
+
+const POST_REVIEW_SCHEMA = {
+  params: {
+    productId: { required: true, type: "string", maxLength: 20, message: "Invalid product ID" },
+  },
+  body: {
+    rating: {
+      required: true,
+      type: "number",
+      min: 1,
+      max: 5,
+      message: "Rating must be between 1 and 5",
+    },
+    comment: { required: false, type: "string", maxLength: 500 },
+  },
+};
+
+const DELETE_REVIEW_SCHEMA = {
+  params: {
+    reviewId: {
+      required: true,
+      type: "string",
+      maxLength: 40,
+      pattern: /^[0-9a-f-]{36}$/,
+      message: "Invalid review ID",
+    },
+  },
+};
+
 // GET /api/reviews/:productId - get reviews for a product
-router.get("/:productId", optionalAuth, (req, res) => {
+router.get("/:productId", optionalAuth, validate(PRODUCT_PARAM_SCHEMA), (req, res) => {
   const productId = validator.escape(validator.trim(req.params.productId)).slice(0, 20);
   const db = getDb();
 
@@ -41,12 +76,12 @@ router.get("/:productId", optionalAuth, (req, res) => {
 });
 
 // POST /api/reviews/:productId - add a review
-router.post("/:productId", requireAuth, (req, res) => {
+router.post("/:productId", requireAuth, validate(POST_REVIEW_SCHEMA), (req, res) => {
   const productId = validator.escape(validator.trim(req.params.productId)).slice(0, 20);
   const { rating, comment } = req.body;
 
-  const parsedRating = parseInt(rating, 10);
-  if (!Number.isInteger(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+  const parsedRating = Math.round(rating);
+  if (parsedRating < 1 || parsedRating > 5) {
     return res.status(400).json({ error: "Rating must be an integer between 1 and 5" });
   }
 
@@ -84,8 +119,8 @@ router.post("/:productId", requireAuth, (req, res) => {
 });
 
 // DELETE /api/reviews/:reviewId - delete own review
-router.delete("/:reviewId", requireAuth, (req, res) => {
-  const reviewId = validator.escape(validator.trim(req.params.reviewId)).slice(0, 40);
+router.delete("/:reviewId", requireAuth, validate(DELETE_REVIEW_SCHEMA), (req, res) => {
+  const reviewId = req.params.reviewId;
   const db = getDb();
 
   const review = db.prepare("SELECT * FROM reviews WHERE id = ?").get(reviewId);

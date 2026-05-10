@@ -98,6 +98,8 @@ export default function Recipes() {
                 {/* Recipe header */}
                 <button
                   onClick={() => setExpandedId(expandedId === recipe.id ? null : recipe.id)}
+                  aria-expanded={expandedId === recipe.id}
+                  aria-label={`${expandedId === recipe.id ? "Collapse" : "Expand"} ${recipe.name}`}
                   style={{
                     width: "100%",
                     padding: "18px 20px",
