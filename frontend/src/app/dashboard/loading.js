@@ -1,7 +1,13 @@
 export default function DashboardLoading() {
   return (
     <div style={{ padding: "32px 24px", maxWidth: 1200, margin: "0 auto" }}>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 16 }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gap: 16,
+        }}
+      >
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}

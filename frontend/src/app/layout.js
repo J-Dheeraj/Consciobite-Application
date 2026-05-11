@@ -50,7 +50,13 @@ export default function RootLayout({ children }) {
               aria-live="polite"
               aria-atomic="true"
               id="announcer"
-              style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clip: "rect(0,0,0,0)" }}
+              style={{
+                position: "absolute",
+                width: 1,
+                height: 1,
+                overflow: "hidden",
+                clip: "rect(0,0,0,0)",
+              }}
             />
           </div>
         </Providers>

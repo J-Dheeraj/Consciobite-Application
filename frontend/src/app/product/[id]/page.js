@@ -525,7 +525,6 @@ export default function ProductDetail() {
                   </p>
                 )}
               </>
-
             )
           )}
 

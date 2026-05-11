@@ -57,7 +57,11 @@ export async function httpClient(url, options = {}) {
       }
       throw new Error(body.error || `Request failed (${res.status})`);
     }
-    if (res.status === 401 && typeof window !== "undefined" && localStorage.getItem("consciobite_token")) {
+    if (
+      res.status === 401 &&
+      typeof window !== "undefined" &&
+      localStorage.getItem("consciobite_token")
+    ) {
       localStorage.removeItem("consciobite_token");
       localStorage.removeItem("consciobite_user");
       window.dispatchEvent(new Event("auth-expired"));

@@ -128,7 +128,10 @@ export default function Navbar() {
           <div className={styles.divider} />
           {isAuthenticated ? (
             <>
-              <div className={styles.mobileLink} style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem" }}>
+              <div
+                className={styles.mobileLink}
+                style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem" }}
+              >
                 {user?.name}
               </div>
               <button
@@ -144,7 +147,11 @@ export default function Navbar() {
               <Link href="/login" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>
                 Sign In
               </Link>
-              <Link href="/register" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>
+              <Link
+                href="/register"
+                onClick={() => setMenuOpen(false)}
+                className={styles.mobileLink}
+              >
                 Create Account
               </Link>
             </>
