@@ -15,18 +15,16 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN npm run build
 
-FROM node:20-alpine
+FROM nginx:alpine
 
-WORKDIR /app
+RUN chown -R nginx:nginx /var/cache/nginx /var/log/nginx /etc/nginx/conf.d && \
+    touch /var/run/nginx.pid && chown nginx:nginx /var/run/nginx.pid
 
-ENV NODE_ENV=production
+COPY --from=build /app/build /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/next.config.js ./next.config.js
+USER nginx
 
-EXPOSE 3000
+EXPOSE 80
 
-CMD ["node_modules/.bin/next", "start"]
+CMD ["nginx", "-g", "daemon off;"]
