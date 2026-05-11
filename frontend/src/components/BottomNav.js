@@ -1,5 +1,7 @@
+"use client";
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const BOTTOM_LINKS = [
   { to: "/", label: "Home" },
@@ -10,7 +12,7 @@ const BOTTOM_LINKS = [
 ];
 
 export default function BottomNav() {
-  const location = useLocation();
+  const pathname = usePathname();
 
   return (
     <>
@@ -42,11 +44,13 @@ export default function BottomNav() {
           }}
         >
           {BOTTOM_LINKS.map((link) => {
-            const active = location.pathname === link.to;
+            const active = pathname === link.to;
             return (
               <Link
                 key={link.to}
-                to={link.to}
+                href={link.to}
+                aria-current={active ? "page" : undefined}
+                aria-label={link.label}
                 style={{
                   display: "flex",
                   flexDirection: "column",

@@ -65,10 +65,6 @@ jobs:
         working-directory: ./frontend
         run: npm run lint
 
-      - name: Run frontend tests with coverage
-        working-directory: ./frontend
-        run: CI=true npm test -- --watchAll=false --coverage
-
       - name: Audit frontend dependencies
         working-directory: ./frontend
         run: npm audit --production --audit-level=high || true

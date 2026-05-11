@@ -1,8 +1,9 @@
+"use client";
 import React, { useEffect, useState, useCallback } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useTheme } from "../context/ThemeContext";
-import { fetchReviews, submitReview, deleteReview } from "../services/api";
-import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import { useTheme } from "@/context/ThemeContext";
+import { fetchReviews, submitReview, deleteReview } from "@/services/api";
+import Link from "next/link";
 
 const STARS = [1, 2, 3, 4, 5];
 
@@ -115,7 +116,7 @@ export default function ReviewSection({ productId }) {
             border: "1px solid " + (isDark ? "#2d4a35" : "#eee"),
           }}
         >
-          <div style={{ marginBottom: 10 }}>
+          <div style={{ marginBottom: 10 }} role="radiogroup" aria-label="Rating">
             <span
               style={{ fontSize: "0.85rem", fontWeight: 600, color: isDark ? "#b0c4b1" : "#555" }}
             >
@@ -128,6 +129,8 @@ export default function ReviewSection({ productId }) {
                 onClick={() => setRating(s)}
                 onMouseEnter={() => setHoverRating(s)}
                 onMouseLeave={() => setHoverRating(0)}
+                aria-label={`${s} star${s > 1 ? "s" : ""}`}
+                aria-pressed={rating === s}
                 style={{
                   background: "none",
                   border: "none",
@@ -200,7 +203,7 @@ export default function ReviewSection({ productId }) {
           <p
             style={{ fontSize: "0.88rem", color: isDark ? "#7a9a7e" : "#888", margin: "0 0 10px" }}
           >
-            <Link to="/login" style={{ color: "#52b788", fontWeight: 600 }}>
+            <Link href="/login" style={{ color: "#52b788", fontWeight: 600 }}>
               Sign in
             </Link>{" "}
             to leave a review.

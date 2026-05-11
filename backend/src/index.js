@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const cookieParser = require("cookie-parser");
 const rateLimit = require("express-rate-limit");
 const hpp = require("hpp");
 const swaggerUi = require("swagger-ui-express");
@@ -11,8 +12,11 @@ const carbonRoutes = require("./routes/carbon");
 const recipeRoutes = require("./routes/recipes");
 const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
+const { csrfProtection } = require("./middleware/auth");
 const { swaggerSpec } = require("./swagger");
 const { getDb, closeDb } = require("./db/schema");
+const { runMigrations } = require("./db/migrate");
+const { CONFIG, validateConfig } = require("./config");
 const { trainModel } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
 const products = require("./data/products.json");
@@ -50,10 +54,14 @@ function validateProductCatalog(catalog) {
 validateProductCatalog(products);
 
 const app = express();
-const PORT = process.env.PORT || DEFAULT_PORT;
+const PORT = CONFIG.port;
+
+// ---------- Validate configuration ----------
+validateConfig();
 
 // ---------- Initialize database ----------
 getDb();
+runMigrations();
 logger.info("Database initialized");
 
 // ---------- Train GreenGrade ML model on product catalog ----------
@@ -95,8 +103,9 @@ app.use(
       if (isAllowedOrigin(origin)) return callback(null, true);
       callback(new Error("Not allowed by CORS"));
     },
+    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token"],
     maxAge: 86400,
   })
 );
@@ -129,6 +138,9 @@ const authLimiter = rateLimit({
 });
 app.use("/api/auth", authLimiter);
 
+// ---------- Cookie parsing ----------
+app.use(cookieParser());
+
 // ---------- Body parsing ----------
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
@@ -159,9 +171,9 @@ if (process.env.NODE_ENV !== "production") {
   );
 }
 
-// ---------- Routes ----------
+// ---------- Routes (v1) ----------
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "Consciobite API", version: "2.0.0" });
+  res.json({ status: "ok", service: "Consciobite API", version: "2.0.0", apiVersion: "v1" });
 });
 
 app.get("/api/methodology", (_req, res) => {
@@ -170,9 +182,16 @@ app.get("/api/methodology", (_req, res) => {
 
 app.use("/api/products", cacheMiddleware(120), productRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/carbon", carbonRoutes);
+app.use("/api/reviews", csrfProtection, reviewRoutes);
+app.use("/api/carbon", csrfProtection, carbonRoutes);
 app.use("/api/recipes", cacheMiddleware(600), recipeRoutes);
+
+// Versioned aliases (v1 = current)
+app.use("/api/v1/products", cacheMiddleware(120), productRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/reviews", csrfProtection, reviewRoutes);
+app.use("/api/v1/carbon", csrfProtection, carbonRoutes);
+app.use("/api/v1/recipes", cacheMiddleware(600), recipeRoutes);
 
 // ---------- 404 handler ----------
 app.use((_req, res) => {

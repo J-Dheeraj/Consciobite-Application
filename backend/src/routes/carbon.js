@@ -22,19 +22,13 @@ const POST_LOG_SCHEMA = {
       min: 0,
       message: "emissions must be a non-negative number",
     },
-    quantity: { required: false, type: "number", min: 0.1, max: 100 },
+    quantity: { required: false, type: "number", min: 0.1 },
   },
 };
 
 const DELETE_LOG_SCHEMA = {
   params: {
-    id: {
-      required: true,
-      type: "string",
-      maxLength: 40,
-      pattern: /^[0-9a-f-]{36}$/,
-      message: "Invalid log ID",
-    },
+    id: { required: true, type: "string", maxLength: 40, message: "Invalid log ID" },
   },
 };
 

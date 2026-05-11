@@ -10,13 +10,13 @@ const router = express.Router();
 
 const PRODUCT_PARAM_SCHEMA = {
   params: {
-    productId: { required: true, type: "string", maxLength: 20, message: "Invalid product ID" },
+    productId: { required: true, type: "string", maxLength: 50, message: "Invalid product ID" },
   },
 };
 
 const POST_REVIEW_SCHEMA = {
   params: {
-    productId: { required: true, type: "string", maxLength: 20, message: "Invalid product ID" },
+    productId: { required: true, type: "string", maxLength: 50, message: "Invalid product ID" },
   },
   body: {
     rating: {
@@ -32,13 +32,7 @@ const POST_REVIEW_SCHEMA = {
 
 const DELETE_REVIEW_SCHEMA = {
   params: {
-    reviewId: {
-      required: true,
-      type: "string",
-      maxLength: 40,
-      pattern: /^[0-9a-f-]{36}$/,
-      message: "Invalid review ID",
-    },
+    reviewId: { required: true, type: "string", maxLength: 40, message: "Invalid review ID" },
   },
 };
 

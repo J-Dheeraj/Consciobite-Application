@@ -3,7 +3,14 @@ const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const crypto = require("crypto");
 const { getDb } = require("../db/schema");
-const { generateToken, requireAuth } = require("../middleware/auth");
+const {
+  generateToken,
+  setAuthCookie,
+  clearAuthCookie,
+  requireAuth,
+  refreshToken,
+  generateCsrfToken,
+} = require("../middleware/auth");
 
 const router = express.Router();
 
@@ -105,6 +112,7 @@ router.post("/register", async (req, res) => {
 
   const user = { id, email: sanitizedEmail, name: sanitizedName };
   const token = generateToken(user);
+  setAuthCookie(res, token);
 
   res.status(201).json({ user, token });
 });
@@ -141,11 +149,18 @@ router.post("/login", async (req, res) => {
 
   clearAttempts(normalizedEmail, ip);
   const token = generateToken({ id: user.id, email: user.email });
+  setAuthCookie(res, token);
 
   res.json({
     user: { id: user.id, email: user.email, name: user.name },
     token,
   });
+});
+
+// POST /api/auth/logout - clear the auth cookie
+router.post("/logout", (_req, res) => {
+  clearAuthCookie(res);
+  res.json({ message: "Logged out" });
 });
 
 // GET /api/auth/me
@@ -161,5 +176,11 @@ router.get("/me", requireAuth, (req, res) => {
 
   res.json({ user });
 });
+
+// POST /api/auth/refresh - refresh an unexpired token
+router.post("/refresh", refreshToken);
+
+// GET /api/auth/csrf - get a CSRF token
+router.get("/csrf", generateCsrfToken);
 
 module.exports = router;

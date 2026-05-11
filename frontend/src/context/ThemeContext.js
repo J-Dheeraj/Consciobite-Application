@@ -1,8 +1,10 @@
+"use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 const ThemeContext = createContext();
 
 function getInitialTheme() {
+  if (typeof window === "undefined") return "light";
   try {
     const stored = localStorage.getItem("consciobite_theme");
     if (stored === "dark" || stored === "light") return stored;

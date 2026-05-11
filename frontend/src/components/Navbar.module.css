@@ -1,0 +1,200 @@
+.nav {
+  background: #0d1f17;
+  color: #fff;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 56px;
+  border-bottom: 1px solid rgba(45, 106, 79, 0.2);
+}
+
+.brand {
+  color: #fff;
+  font-family: "Outfit", sans-serif;
+  font-weight: 800;
+  font-size: 1.4rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  letter-spacing: -0.02em;
+}
+
+.desktopLinks {
+  display: flex;
+  gap: 2px;
+  font-size: 0.85rem;
+  align-items: center;
+}
+
+.navLink {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  text-decoration: none;
+  padding: 7px 11px;
+  border-radius: 8px;
+  background: transparent;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.navLink:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.navLinkActive {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.userName {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 0 6px;
+}
+
+.btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.signInLink {
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 0.85rem;
+  margin-left: 4px;
+}
+
+.signInLink:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.themeBtn {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-left: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.themeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mobileButtons {
+  display: flex;
+  gap: 4px;
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
+.hamburger:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.hamburgerOpen {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.mobileMenu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #0d1f17;
+  padding: 8px 16px 16px;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 100;
+  box-shadow: 0 8px 30px rgba(27, 67, 50, 0.3);
+  animation: slideDown 0.25s ease;
+}
+
+.mobileLink {
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 400;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: transparent;
+  display: flex;
+  align-items: center;
+}
+
+.mobileLink:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mobileLinkActive {
+  color: #fff;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.divider {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  margin: 4px 0;
+}
+
+.mobileTheme {
+  display: none;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .desktopLinks {
+    display: none !important;
+  }
+  .hamburger {
+    display: block !important;
+  }
+  .mobileTheme {
+    display: block !important;
+  }
+  .mobileMenu {
+    display: flex !important;
+  }
+}

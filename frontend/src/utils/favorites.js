@@ -1,4 +1,5 @@
 export function getFavoriteIds() {
+  if (typeof window === "undefined") return [];
   try {
     return JSON.parse(localStorage.getItem("consciobite_favorites") || "[]");
   } catch {
@@ -23,6 +24,7 @@ export function toggleFavorite(id) {
 }
 
 export function clearFavorites() {
+  if (typeof window === "undefined") return;
   localStorage.setItem("consciobite_favorites", "[]");
   window.dispatchEvent(new Event("favorites-updated"));
 }

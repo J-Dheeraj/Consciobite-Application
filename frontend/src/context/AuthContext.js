@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+"use client";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { AUTH_EXPIRED_EVENT } from "../utils/constants";
 
 const AuthContext = createContext();
@@ -6,8 +7,18 @@ const AuthContext = createContext();
 const TOKEN_KEY = "consciobite_token";
 const USER_KEY = "consciobite_user";
 
+function getTokenExpiry(token) {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.exp * 1000;
+  } catch {
+    return 0;
+  }
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
+    if (typeof window === "undefined") return null;
     try {
       const stored = localStorage.getItem(USER_KEY);
       return stored ? JSON.parse(stored) : null;
@@ -16,7 +27,12 @@ export function AuthProvider({ children }) {
     }
   });
 
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState(() => {
+    if (typeof window === "undefined") return null;
+    return localStorage.getItem(TOKEN_KEY);
+  });
+
+  const refreshTimer = useRef(null);
 
   const login = useCallback((userData, authToken) => {
     setUser(userData);
@@ -25,29 +41,54 @@ export function AuthProvider({ children }) {
     localStorage.setItem(TOKEN_KEY, authToken);
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
     setUser(null);
     setToken(null);
     localStorage.removeItem(USER_KEY);
     localStorage.removeItem(TOKEN_KEY);
+    if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    try {
+      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+    } catch {
+      // Best-effort cookie clear
+    }
   }, []);
 
   useEffect(() => {
-    // Validate token on mount
-    if (token) {
+    if (!token) return;
+
+    const expiry = getTokenExpiry(token);
+    if (expiry < Date.now()) {
+      logout();
+      return;
+    }
+
+    const refreshIn = Math.max(0, expiry - Date.now() - 5 * 60 * 1000);
+    refreshTimer.current = setTimeout(async () => {
       try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        if (payload.exp * 1000 < Date.now()) {
+        const res = await fetch("/api/auth/refresh", {
+          method: "POST",
+          credentials: "include",
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setToken(data.token);
+          localStorage.setItem(TOKEN_KEY, data.token);
+        } else {
           logout();
         }
       } catch {
         logout();
       }
-    }
+    }, refreshIn);
+
+    return () => {
+      if (refreshTimer.current) clearTimeout(refreshTimer.current);
+    };
   }, [token, logout]);
 
   useEffect(() => {
-    // Auto-logout when a 401 is received from the API
     const handleExpired = () => logout();
     window.addEventListener(AUTH_EXPIRED_EVENT, handleExpired);
     return () => window.removeEventListener(AUTH_EXPIRED_EVENT, handleExpired);
