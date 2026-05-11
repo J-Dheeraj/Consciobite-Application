@@ -1,5 +1,5 @@
 {
-  "extends": ["react-app", "react-app/jest"],
+  "extends": ["next/core-web-vitals"],
   "plugins": ["jsx-a11y"],
   "rules": {
     "no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],

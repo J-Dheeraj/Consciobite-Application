@@ -122,7 +122,7 @@ export default function Login() {
               color: isDark ? "#7a9a7e" : "#888",
             }}
           >
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/register" style={{ color: "#52b788", fontWeight: 600 }}>
               Create one
             </Link>

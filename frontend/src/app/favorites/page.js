@@ -190,7 +190,7 @@ export default function Favorites() {
             <p
               style={{ color: isDark ? "#7a9a7e" : "#888", marginBottom: 20, fontSize: "0.95rem" }}
             >
-              You haven't saved any favorites yet.
+              You haven&apos;t saved any favorites yet.
             </p>
             <Link
               href="/"
