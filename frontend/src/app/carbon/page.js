@@ -501,7 +501,8 @@ export default function CarbonTracker() {
             color: isDark ? "#7a9a7e" : "#aaa",
           }}
         >
-          Tip: Visit any product page and click &ldquo;Log Purchase&rdquo; to add it to your carbon tracker.
+          Tip: Visit any product page and click &ldquo;Log Purchase&rdquo; to add it to your carbon
+          tracker.
         </p>
       </div>
     </div>
