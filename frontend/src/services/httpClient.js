@@ -1,4 +1,17 @@
-const API_BASE = "/api";
+import { AUTH_EXPIRED_EVENT } from "../utils/constants";
+
+function getApiBase() {
+  if (typeof window !== "undefined") {
+    const { hostname, protocol } = window.location;
+    if (hostname.endsWith(".onrender.com")) {
+      const apiHost = hostname.replace("-app", "-api");
+      return `${protocol}//${apiHost}/api`;
+    }
+  }
+  return "/api";
+}
+
+const API_BASE = getApiBase();
 
 let csrfToken = null;
 
@@ -64,7 +77,7 @@ export async function httpClient(url, options = {}) {
     ) {
       localStorage.removeItem("consciobite_token");
       localStorage.removeItem("consciobite_user");
-      window.dispatchEvent(new Event("auth-expired"));
+      window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
     }
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Request failed (${res.status})`);
