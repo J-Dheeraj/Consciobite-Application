@@ -16,7 +16,10 @@ function ensureMigrationsTable(db) {
 }
 
 function getAppliedMigrations(db) {
-  return db.prepare("SELECT name FROM _migrations ORDER BY id").all().map((r) => r.name);
+  return db
+    .prepare("SELECT name FROM _migrations ORDER BY id")
+    .all()
+    .map((r) => r.name);
 }
 
 function getPendingMigrations(applied) {

@@ -40,9 +40,7 @@ describe("Review endpoints", () => {
 
   describe("POST /api/reviews/:productId", () => {
     test("should require authentication", async () => {
-      const res = await request(app)
-        .post("/api/reviews/1")
-        .send({ rating: 4, comment: "Great!" });
+      const res = await request(app).post("/api/reviews/1").send({ rating: 4, comment: "Great!" });
       expect(res.status).toBe(401);
     });
 

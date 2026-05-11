@@ -3,7 +3,14 @@ const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const crypto = require("crypto");
 const { getDb } = require("../db/schema");
-const { generateToken, setAuthCookie, clearAuthCookie, requireAuth, refreshToken, generateCsrfToken } = require("../middleware/auth");
+const {
+  generateToken,
+  setAuthCookie,
+  clearAuthCookie,
+  requireAuth,
+  refreshToken,
+  generateCsrfToken,
+} = require("../middleware/auth");
 
 const router = express.Router();
 

@@ -128,4 +128,13 @@ function generateCsrfToken(_req, res) {
   res.json({ csrfToken: token });
 }
 
-module.exports = { generateToken, setAuthCookie, clearAuthCookie, requireAuth, optionalAuth, refreshToken, csrfProtection, generateCsrfToken };
+module.exports = {
+  generateToken,
+  setAuthCookie,
+  clearAuthCookie,
+  requireAuth,
+  optionalAuth,
+  refreshToken,
+  csrfProtection,
+  generateCsrfToken,
+};
