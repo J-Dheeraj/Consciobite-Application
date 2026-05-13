@@ -10,7 +10,6 @@ const {
   buildKdeStats,
   mahalanobisDistance2,
   computeCentroid,
-  computeCovarianceInverse,
   invertMatrix,
 } = require("../src/services/greengrade");
 

@@ -21,7 +21,6 @@ const { trainModel } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
 const products = require("./data/products.json");
 
-const DEFAULT_PORT = 4000;
 const REQUIRED_EMISSION_KEYS = [
   "landUseChange",
   "animalFeed",
