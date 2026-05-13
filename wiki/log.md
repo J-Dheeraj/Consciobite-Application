@@ -13,6 +13,20 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-13 — Code Quality Cleanup
+
+**Operation:** CLEAN `backend/src/index.js`, `backend/src/services/greengrade.js`, `backend/__tests__/greengrade.test.js`, `backend/__tests__/reviews.test.js`, `frontend/src/app/carbon/page.js`
+**Branch:** `claude/dreamy-dirac-E7XTw` · commit `f39b27d`
+**Pages updated:** `hot.md`
+
+**Changes:**
+- Removed 4 unused variables flagged by ESLint: `DEFAULT_PORT`, `DIM`, `computeCovarianceInverse` (import), `userId`
+- Fixed React anti-pattern: `key={i}` → `key={p.product_id}` in carbon page topProducts list
+
+**Result:** Backend lint clean (0 warnings). All 117 tests pass.
+
+---
+
 ## 2026-04-25 — Migration Brief Review
 
 **Operation:** REVIEW `GREENGRADE_MIGRATION_BRIEF.md` (wiki-query deep mode)
