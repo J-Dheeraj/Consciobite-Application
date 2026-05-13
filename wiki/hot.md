@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-04-25 after initial ingest of graphify audit.
+**Last updated:** 2026-05-13 — session on branch `claude/nifty-goodall-wcPQN`.
 
 **Project:** Consciobite — React 18 SPA + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A–F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -35,6 +35,11 @@ tags: [hot-cache, meta]
 - B2: Cache only wraps public routes — no per-user data leak risk
 - B4: `requireAuth` returns 401 in catch; `optionalAuth` continues without user — both intentional
 
-**Current test status:** 95 backend + 44 frontend tests all passing.
+**Current test status:** 117 backend tests passing. Frontend has testing libraries installed (@testing-library/react) but no test script defined — tests can't be run yet.
+
+**Fixes landed this session (2026-05-13, branch claude/nifty-goodall-wcPQN):**
+- `dashboard/page.js:286` — `bestCategory` null-access crash: added optional-chain guard (`bestCategory?.category ?? "—"`) so an empty stats response can't crash the page
+- `products/page.js:282` — emission chip was never rendered: `greenGrade` exposes `.totalEmissions` (not `.emissions.total`); chip now correctly reads `p.greenGrade.totalEmissions`
+- `products/page.js:113` — search fired an API call on every keystroke: added 300 ms `useRef` debounce (same pattern as home page), reducing backend load during typing
 
 **Architectural quirk worth remembering:** The `auth-expired` event bus is the invisible coupling between `safeFetch()` (api.js) and `AuthContext.js`. The graphify graph flagged it because AST cannot see event-name string equality across files; it looked like two unrelated nodes. Fixing it with a shared constant removes the hidden coupling.
