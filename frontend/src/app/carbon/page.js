@@ -379,7 +379,7 @@ export default function CarbonTracker() {
                 </h3>
                 {summary.topProducts.map((p, i) => (
                   <div
-                    key={i}
+                    key={p.product_id}
                     style={{
                       display: "flex",
                       justifyContent: "space-between",

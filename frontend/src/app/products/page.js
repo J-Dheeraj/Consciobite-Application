@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { fetchProducts } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
@@ -34,17 +34,25 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedSearch(search), 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [search]);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const params = { page, limit: 24 };
-      if (search.trim()) params.search = search.trim();
+      if (debouncedSearch.trim()) params.search = debouncedSearch.trim();
       if (category !== "All") params.category = category;
       if (sort) params.sort = sort;
       const data = await fetchProducts(params);
@@ -55,7 +63,7 @@ export default function Products() {
     } finally {
       setLoading(false);
     }
-  }, [search, category, sort, page]);
+  }, [debouncedSearch, category, sort, page]);
 
   useEffect(() => {
     loadProducts();
@@ -63,7 +71,7 @@ export default function Products() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, category, sort]);
+  }, [debouncedSearch, category, sort]);
 
   const bg = isDark ? "#0a0a0a" : "#f8f9fa";
   const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
@@ -279,7 +287,7 @@ export default function Products() {
                   </div>
                 </div>
 
-                {p.greenGrade?.emissions && (
+                {p.greenGrade?.totalEmissions !== undefined && p.greenGrade.totalEmissions !== null && (
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     <span
                       style={{
@@ -291,7 +299,7 @@ export default function Products() {
                         fontWeight: 500,
                       }}
                     >
-                      {p.greenGrade.emissions.total?.toFixed(1)} kg CO₂e
+                      {p.greenGrade.totalEmissions.toFixed(1)} kg CO₂e
                     </span>
                     {p.category && (
                       <span

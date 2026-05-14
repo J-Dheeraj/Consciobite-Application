@@ -283,8 +283,8 @@ export default function Dashboard() {
           <StatCard
             icon={"\uD83C\uDFC6"}
             label="Best Category"
-            value={bestCategory.category}
-            subtext={`Score: ${bestCategory.avgScore}`}
+            value={bestCategory?.category ?? "\u2014"}
+            subtext={`Score: ${bestCategory?.avgScore ?? "\u2014"}`}
             isDark={isDark}
           />
         </div>

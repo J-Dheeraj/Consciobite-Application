@@ -6,7 +6,6 @@ const app = require("../src/index");
 
 describe("Review endpoints", () => {
   let authToken;
-  let userId;
   const email = `reviewer-${randomUUID().slice(0, 8)}@example.com`;
 
   beforeAll(async () => {
@@ -16,7 +15,6 @@ describe("Review endpoints", () => {
       password: "ReviewPass1",
     });
     authToken = res.body.token;
-    userId = res.body.user.id;
   });
 
   describe("GET /api/reviews/:productId", () => {
