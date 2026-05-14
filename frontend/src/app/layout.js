@@ -4,6 +4,10 @@ import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 import "./globals.css";
 
+export const viewport = {
+  themeColor: "#2d6a4f",
+};
+
 export const metadata = {
   title: "Consciobite - Sustainable Food Choices",
   description:
@@ -16,7 +20,6 @@ export const metadata = {
     apple: "/icon-192.png",
   },
   manifest: "/manifest.json",
-  themeColor: "#2d6a4f",
   openGraph: {
     title: "Consciobite - Sustainable Food Choices",
     description: "Browse 550+ products with GreenGrade sustainability scoring.",
