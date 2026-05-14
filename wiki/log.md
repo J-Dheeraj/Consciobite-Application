@@ -13,6 +13,23 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-14 — Session Audit & viewport Fix
+
+**Operation:** SESSION START — full audit on branch `claude/nifty-goodall-jeEyv`
+**Actions taken:**
+- Confirmed all PLAN.md findings resolved (21 ✅, 2 ❌ false positives)
+- Confirmed 117 backend tests passing (5 suites)
+- Ran `next build` — found `themeColor` deprecation warning in `layout.js`
+- Fixed: moved `themeColor` to `viewport` export (Next.js 14 requirement) — build now clean
+- Confirmed ESLint clean, Prettier clean, zero build warnings
+- Pushed commit `b3d68bf` to `claude/nifty-goodall-jeEyv`
+- Updated hot cache
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-04-25 — Migration Brief Review
 
 **Operation:** REVIEW `GREENGRADE_MIGRATION_BRIEF.md` (wiki-query deep mode)
