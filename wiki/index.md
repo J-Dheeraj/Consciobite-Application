@@ -2,7 +2,7 @@
 type: meta
 title: "Consciobite Wiki — Index"
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-05-13
 status: developing
 tags: [index, consciobite, codebase]
 ---
@@ -26,8 +26,11 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 
 ## Concepts
 - [[Auth-Expired Event Bus]]
+- [[Docker Build Context]]
 - [[GreenGrade KDE Scoring]]
 - [[Product Catalog Schema]]
+- [[Render Deployment]]
+- [[Static Export Pipeline]]
 - [[Validate Middleware Pattern]]
 
 ## Domains

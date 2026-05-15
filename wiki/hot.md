@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-05-13
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,28 +13,33 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-04-25 after initial ingest of graphify audit.
+**Last updated:** 2026-05-13 after CI/deployment fix session.
 
-**Project:** Consciobite — React 18 SPA + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A–F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
+**Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
-**Audit summary (graphify, 2026-04-25):** Full-codebase analysis via AST + LLM semantic knowledge graph. 255 nodes, 45 communities, 23 findings. 2 findings fixed immediately (RequireAuth guard, validate() wiring). 19 additional findings fixed this session. 2 confirmed false positives.
+**Stack migration (2026-05):** Frontend migrated from CRA-style React SPA to Next.js 14 App Router with `output: 'export'`. Build produces static HTML in `build/` directory (Next.js outputs to `out/`, build script renames via `rm -rf build && mv out build`). Dynamic route `/product/[id]` uses `generateStaticParams()` reading 550 product IDs from `backend/src/data/products.json` at build time. Product page split into server wrapper (`page.js`) + client component (`ProductDetailClient.js`).
 
-**Key fixes landed:**
-- CORS pattern now configurable via `ALLOWED_ORIGIN_PATTERN` env var
-- `products.json` validated at startup against required schema (id, name, category, 7 emission keys)
-- Async `GET /:id` and `GET /scan/:barcode` handlers wrapped in try/catch
-- `validate()` middleware wired into all remaining routes: reviews (GET/POST/DELETE), recipes (GET/GET:id), carbon (GET /logs)
-- `OPEN_FOOD_FACTS_TIMEOUT_MS` extracted as named constant
-- `DEFAULT_PORT` extracted as named constant
-- `AUTH_EXPIRED_EVENT` centralised in `src/utils/constants.js`; both `api.js` and `AuthContext.js` import it
-- `WEEKLY_CARBON_GOAL_KG` constant added to shared constants
-- 5 silent catch blocks replaced with visible error feedback (CarbonTracker delete, ReviewSection load+delete, ProductDetail log, Compare initial load)
-- `aria-label` + `aria-expanded` added to expand/collapse buttons in Tips and Recipes; `aria-label` added to CarbonTracker delete button
+**API architecture:** Domain-decomposed modules in `frontend/src/services/` — `httpClient.js` + `products.js`, `auth.js`, `reviews.js`, `carbon.js`, `recipes.js`. `httpClient.js` has `getApiBase()` for Render hostname auto-detection (`-app` -> `-api` suffix swap). No `next.config.js` rewrites (incompatible with static export).
 
-**False positives confirmed:**
-- B2: Cache only wraps public routes — no per-user data leak risk
-- B4: `requireAuth` returns 401 in catch; `optionalAuth` continues without user — both intentional
+**Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
 
-**Current test status:** 95 backend + 44 frontend tests all passing.
+**Recent fixes landed (2026-05-13):**
+- 7 merge conflicts resolved between feature branch and main
+- Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
+- `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
+- Frontend ESLint migrated from `react-app` to `next/core-web-vitals`
+- Unescaped JSX entities fixed (`"` -> `&ldquo;`/`&rdquo;`, `'` -> `&apos;`)
+- Docker build context changed from `./frontend` to `.` (repo root) so products.json is accessible
+- Dockerfile updated for repo-root-relative COPY paths
+- `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Architectural quirk worth remembering:** The `auth-expired` event bus is the invisible coupling between `safeFetch()` (api.js) and `AuthContext.js`. The graphify graph flagged it because AST cannot see event-name string equality across files; it looked like two unrelated nodes. Fixing it with a shared constant removes the hidden coupling.
+**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+
+**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+
+**Key invariants (unchanged):**
+- `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
+- `WEEKLY_CARBON_GOAL_KG` in `frontend/src/utils/constants.js`
+- `/carbon` protected by `RequireAuth` — no in-page auth gates
+- httpOnly cookies for JWT; CSRF double-submit pattern
+- All Express routes use `validate()` middleware with `pattern:` not `type: "number"`
