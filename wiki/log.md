@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-15 — Feature Session: Recommendations + Product Count Fix
+
+**Operation:** Add product recommendations feature and fix factual inaccuracies on branch `claude/dreamy-dirac-sXNmZ`.
+
+**Pages updated:** 2
+- `hot.md` — updated with current branch, new features, invariants
+- `log.md` — this entry
+
+**Key changes:**
+1. **"576+" count fix** — Home page (`frontend/src/app/page.js`) had "576+" hardcoded in 3 places (stats bar, value prop section, final CTA copy). Corrected to "550+" to match actual product catalog size and existing layout.js metadata.
+2. **Backend recommendations endpoint** — Added `GET /api/products/:id/recommendations` to `backend/src/routes/products.js`. Returns up to 6 similar products from same category, ranked by score proximity (absolute score difference). Registered before the catch-all `/:id` route to avoid conflicts.
+3. **Similar Products UI** — `ProductDetailClient.js` now fetches recommendations via `useQuery` and renders a horizontal scroll strip of up to 6 similar product cards at the bottom of the product detail page. Skipped for Open Food Facts (`off_`) products. Each card shows score badge, product name, and brand with click-through to the product page.
+
+**Commits (chronological):**
+- `feat: add product recommendations endpoint and similar products UI`
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.

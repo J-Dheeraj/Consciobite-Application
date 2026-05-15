@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, fetchRecommendations, logCarbonPurchase } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -94,6 +94,13 @@ export default function ProductDetail() {
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
   });
+
+  const { data: recsData } = useQuery({
+    queryKey: ["recommendations", id],
+    queryFn: () => fetchRecommendations(id),
+    enabled: !!id && !id.startsWith("off_"),
+  });
+  const recommendations = recsData?.recommendations || [];
 
   const error = queryError ? "Unable to load product details." : "";
   const [fav, setFav] = useState(false);
@@ -1086,6 +1093,97 @@ export default function ProductDetail() {
             {product.description}
           </p>
         </div>
+
+        {/* Similar Products */}
+        {recommendations.length > 0 && (
+          <div
+            style={{
+              width: "100%",
+              background: "#0b2a1a",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+              animation: "fadeInUp 0.4s ease",
+            }}
+          >
+            <h4
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 14,
+                fontSize: "0.95rem",
+              }}
+            >
+              Similar Products in {product.category}
+            </h4>
+            <div
+              style={{
+                display: "flex",
+                gap: 10,
+                overflowX: "auto",
+                WebkitOverflowScrolling: "touch",
+                paddingBottom: 4,
+              }}
+            >
+              {recommendations.map((rec) => (
+                <button
+                  key={rec.id}
+                  onClick={() => router.push(`/product/${rec.id}`)}
+                  style={{
+                    flexShrink: 0,
+                    width: 130,
+                    background: "#14352a",
+                    borderRadius: 12,
+                    padding: "12px 10px",
+                    border: "1px solid rgba(82,183,136,0.2)",
+                    cursor: "pointer",
+                    textAlign: "center",
+                    transition: "border-color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(82,183,136,0.6)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = "rgba(82,183,136,0.2)";
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: "50%",
+                      background: scoreColor(rec.greenGrade.score),
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: "0.8rem",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 auto 8px",
+                    }}
+                  >
+                    {rec.greenGrade.score}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      color: "#e8f5e9",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      marginBottom: 2,
+                    }}
+                  >
+                    {rec.name}
+                  </div>
+                  <div style={{ fontSize: "0.68rem", color: "#7a9a7e" }}>{rec.brand}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Back button */}
         <div style={{ width: "100%", maxWidth: 380, padding: "0 16px" }}>
