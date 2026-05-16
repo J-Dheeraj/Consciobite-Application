@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-16 after Compare page fix session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -23,7 +23,10 @@ tags: [hot-cache, meta]
 
 **Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
 
-**Recent fixes landed (2026-05-13):**
+**Recent fixes landed (2026-05-16):**
+- Compare page bug: was calling `fetchProducts({ limit: 100 })` — only exposed 100 of 550 products in the selector. Fixed by adding `GET /api/products/names` backend endpoint (no page-size cap, returns `{id, name, brand, category, greenGrade}` for all products) and a `fetchProductNames()` frontend service. Compare page now uses `fetchProductNames()`.
+
+**Previous fixes (2026-05-13):**
 - 7 merge conflicts resolved between feature branch and main
 - Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
 - `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
@@ -35,7 +38,7 @@ tags: [hot-cache, meta]
 
 **Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-4yJwc` — pushed, no PR yet.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

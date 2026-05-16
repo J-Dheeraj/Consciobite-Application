@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-16 — Compare Page Product Coverage Fix
+
+**Operation:** Fix Compare page only loading 100 of 550 products on branch `claude/dreamy-dirac-4yJwc`.
+
+**Root cause:** `fetchProducts({ limit: 100 })` capped by `MAX_PAGE_SIZE = 100` in the backend products route. 450 products were invisible in the compare selector.
+
+**Changes:**
+1. `backend/src/routes/products.js` — Added `GET /api/products/names` before the `/:id` wildcard. Returns `[{id, name, brand, category, greenGrade:{score, color, totalEmissions}}]` for all products without a page cap.
+2. `frontend/src/services/products.js` — Added `fetchProductNames()` calling the new endpoint.
+3. `frontend/src/services/api.js` — Re-exported `fetchProductNames`.
+4. `frontend/src/app/compare/page.js` — Replaced `fetchProducts({ limit: 100 })` with `fetchProductNames()`.
+
+**Test status:** 117 backend tests passing (unchanged).
+
+**Commit:** `c7c5680` — fix: let Compare page show all 550 products instead of first 100
+
+**Index updated:** no (no new wiki pages created)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.
