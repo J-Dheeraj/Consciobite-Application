@@ -22,6 +22,10 @@ export async function compareProducts(ids) {
   return httpClient(`${API_BASE}/products/compare?ids=${ids.map(encodeURIComponent).join(",")}`);
 }
 
+export async function fetchProductNames() {
+  return httpClient(`${API_BASE}/products/names`);
+}
+
 export async function fetchStats() {
   return httpClient(`${API_BASE}/products/stats`);
 }

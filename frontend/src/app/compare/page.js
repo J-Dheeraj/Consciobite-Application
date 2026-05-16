@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { fetchProducts, compareProducts } from "@/services/api";
+import { fetchProductNames, compareProducts } from "@/services/api";
 import GradeBadge from "@/components/GradeBadge";
 import GradeBreakdown from "@/components/GradeBreakdown";
 import { useTheme } from "@/context/ThemeContext";
@@ -17,8 +17,8 @@ export default function Compare() {
   const [searchFilter, setSearchFilter] = useState("");
 
   useEffect(() => {
-    fetchProducts({ limit: 100 })
-      .then((data) => setAllProducts(data.products))
+    fetchProductNames()
+      .then((data) => setAllProducts(data))
       .catch((err) => setError(err.message || "Unable to load products."));
   }, []);
 

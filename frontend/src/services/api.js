@@ -1,6 +1,7 @@
 export {
   fetchProducts,
   fetchProduct,
+  fetchProductNames,
   scanBarcode,
   compareProducts,
   fetchStats,

@@ -137,6 +137,23 @@ router.get("/stats", (req, res) => {
   res.json({ totalProducts: products.length, categories: stats });
 });
 
+// GET /api/products/names — lightweight list for selector UIs (no page limit)
+router.get("/names", (req, res) => {
+  res.json(
+    enrichedProducts.map((p) => ({
+      id: p.id,
+      name: p.name,
+      brand: p.brand,
+      category: p.category,
+      greenGrade: {
+        score: p.greenGrade.score,
+        color: p.greenGrade.color,
+        totalEmissions: p.greenGrade.totalEmissions,
+      },
+    }))
+  );
+});
+
 // Lookup a product by barcode via Open Food Facts. Returns enriched product or null.
 // Skips external calls in NODE_ENV=test for deterministic results.
 async function lookupOpenFoodFacts(barcode) {
