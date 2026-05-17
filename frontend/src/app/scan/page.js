@@ -21,6 +21,7 @@ export default function Scan() {
   const [barcode, setBarcode] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [barcodeError, setBarcodeError] = useState("");
   const [scanning, setScanning] = useState(false);
   const [cameraError, setCameraError] = useState("");
   const scannerRef = useRef(null);
@@ -90,9 +91,29 @@ export default function Scan() {
     };
   }, []);
 
+  const validateBarcode = (value) => {
+    const trimmed = value.trim();
+    if (!/^\d+$/.test(trimmed)) return "Barcode must contain only digits.";
+    if (trimmed.length < 8) return "Barcode must be at least 8 digits.";
+    if (trimmed.length > 14) return "Barcode must be 14 digits or fewer.";
+    return "";
+  };
+
   const handleManualSubmit = (e) => {
     e.preventDefault();
-    if (barcode.trim()) lookupBarcode(barcode.trim());
+    const trimmed = barcode.trim();
+    const validationMsg = validateBarcode(trimmed);
+    if (validationMsg) {
+      setBarcodeError(validationMsg);
+      return;
+    }
+    setBarcodeError("");
+    lookupBarcode(trimmed);
+  };
+
+  const handleBarcodeChange = (e) => {
+    setBarcode(e.target.value);
+    if (barcodeError) setBarcodeError("");
   };
 
   return (
@@ -182,14 +203,36 @@ export default function Scan() {
             type="text"
             placeholder="Enter barcode (e.g. 1234567890123)"
             value={barcode}
-            onChange={(e) => setBarcode(e.target.value)}
+            onChange={handleBarcodeChange}
             aria-label="Enter barcode"
-            style={{ ...inputField(isDark), flex: 1 }}
+            aria-describedby={barcodeError ? "barcode-error" : undefined}
+            aria-invalid={barcodeError ? "true" : undefined}
+            style={{
+              ...inputField(isDark),
+              flex: 1,
+              border: barcodeError
+                ? "1px solid #e63946"
+                : inputField(isDark).border,
+            }}
           />
           <button type="submit" style={primaryButton()}>
             Look Up
           </button>
         </form>
+        {barcodeError && (
+          <p
+            id="barcode-error"
+            role="alert"
+            style={{
+              color: "#e63946",
+              fontSize: "0.82rem",
+              marginTop: -12,
+              marginBottom: 12,
+            }}
+          >
+            {barcodeError}
+          </p>
+        )}
 
         {error && (
           <p

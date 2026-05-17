@@ -16,31 +16,44 @@ export default function CarbonTracker() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [deleteError, setDeleteError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
+  const [page, setPage] = useState(1);
 
   const {
-    data: carbonData,
-    isLoading: loading,
-    error,
+    data: summary,
+    isLoading: summaryLoading,
+    error: summaryError,
   } = useQuery({
-    queryKey: ["carbon"],
-    queryFn: () =>
-      Promise.all([fetchCarbonSummary(), fetchCarbonLogs()]).then(([summaryData, logsData]) => ({
-        summary: summaryData,
-        logs: logsData.logs,
-      })),
+    queryKey: ["carbon", "summary"],
+    queryFn: fetchCarbonSummary,
+    enabled: isAuthenticated,
   });
 
-  const summary = carbonData?.summary || null;
-  const logs = carbonData?.logs || [];
+  const {
+    data: logsData,
+    isLoading: logsLoading,
+  } = useQuery({
+    queryKey: ["carbon", "logs", page],
+    queryFn: () => fetchCarbonLogs(page),
+    enabled: isAuthenticated,
+  });
+
+  const logs = logsData?.logs || [];
+  const pagination = logsData?.pagination || null;
+  const loading = summaryLoading || logsLoading;
+  const error = summaryError;
 
   const handleDelete = useCallback(
     async (id) => {
       setDeleteError("");
+      setDeletingId(id);
       try {
         await deleteCarbonLog(id);
         queryClient.invalidateQueries({ queryKey: ["carbon"] });
       } catch (err) {
         setDeleteError(err.message || "Failed to delete log. Please try again.");
+      } finally {
+        setDeletingId(null);
       }
     },
     [queryClient]
@@ -442,54 +455,123 @@ export default function CarbonTracker() {
               No logs yet. Browse products and log your purchases to start tracking!
             </p>
           ) : (
-            logs.slice(0, 10).map((log) => (
-              <div
-                key={log.id}
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  padding: "10px 0",
-                  borderBottom: "1px solid " + (isDark ? "#2d4a35" : "#f0f0f0"),
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      fontWeight: 500,
-                      fontSize: "0.88rem",
-                      color: isDark ? "#e8f5e9" : "#333",
-                    }}
-                  >
-                    {log.product_name}
+            <>
+              {logs.map((log) => (
+                <div
+                  key={log.id}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    padding: "10px 0",
+                    borderBottom: "1px solid " + (isDark ? "#2d4a35" : "#f0f0f0"),
+                  }}
+                >
+                  <div>
+                    <div
+                      style={{
+                        fontWeight: 500,
+                        fontSize: "0.88rem",
+                        color: isDark ? "#e8f5e9" : "#333",
+                      }}
+                    >
+                      {log.product_name}
+                    </div>
+                    <div style={{ fontSize: "0.78rem", color: isDark ? "#7a9a7e" : "#888" }}>
+                      {new Date(log.logged_at).toLocaleDateString()} · Qty: {log.quantity}
+                    </div>
                   </div>
-                  <div style={{ fontSize: "0.78rem", color: isDark ? "#7a9a7e" : "#888" }}>
-                    {new Date(log.logged_at).toLocaleDateString()} · Qty: {log.quantity}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#e9c46a" }}>
+                      {(log.emissions * log.quantity).toFixed(2)} kg
+                    </span>
+                    <button
+                      onClick={() => handleDelete(log.id)}
+                      disabled={deletingId === log.id}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: deletingId === log.id ? (isDark ? "#7a9a7e" : "#aaa") : "#e63946",
+                        cursor: deletingId === log.id ? "wait" : "pointer",
+                        fontSize: "0.8rem",
+                        padding: "4px 8px",
+                        borderRadius: 6,
+                      }}
+                      title="Remove log"
+                      aria-label={`Remove log for ${log.product_name}`}
+                    >
+                      {deletingId === log.id ? "\u2026" : "\u2715"}
+                    </button>
                   </div>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "#e9c46a" }}>
-                    {(log.emissions * log.quantity).toFixed(2)} kg
+              ))}
+              {pagination && pagination.totalPages > 1 && (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingTop: 16,
+                    marginTop: 4,
+                  }}
+                >
+                  <button
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page === 1}
+                    style={{
+                      padding: "6px 16px",
+                      borderRadius: 8,
+                      border: "1px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
+                      background: page === 1 ? "transparent" : isDark ? "#1c2e22" : "#f9fafb",
+                      color:
+                        page === 1
+                          ? isDark
+                            ? "#3d5a42"
+                            : "#ccc"
+                          : isDark
+                            ? "#95d5b2"
+                            : "#2d6a4f",
+                      cursor: page === 1 ? "default" : "pointer",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
+                    }}
+                  >
+                    {"\u2190"} Prev
+                  </button>
+                  <span style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888" }}>
+                    Page {page} of {pagination.totalPages}
                   </span>
                   <button
-                    onClick={() => handleDelete(log.id)}
+                    onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+                    disabled={page === pagination.totalPages}
                     style={{
-                      background: "none",
-                      border: "none",
-                      color: "#e63946",
-                      cursor: "pointer",
-                      fontSize: "0.8rem",
-                      padding: "4px 8px",
-                      borderRadius: 6,
+                      padding: "6px 16px",
+                      borderRadius: 8,
+                      border: "1px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
+                      background:
+                        page === pagination.totalPages
+                          ? "transparent"
+                          : isDark
+                            ? "#1c2e22"
+                            : "#f9fafb",
+                      color:
+                        page === pagination.totalPages
+                          ? isDark
+                            ? "#3d5a42"
+                            : "#ccc"
+                          : isDark
+                            ? "#95d5b2"
+                            : "#2d6a4f",
+                      cursor: page === pagination.totalPages ? "default" : "pointer",
+                      fontSize: "0.82rem",
+                      fontWeight: 600,
                     }}
-                    title="Remove log"
-                    aria-label={`Remove log for ${log.product_name}`}
                   >
-                    {"\u2715"}
+                    Next {"\u2192"}
                   </button>
                 </div>
-              </div>
-            ))
+              )}
+            </>
           )}
         </div>
 

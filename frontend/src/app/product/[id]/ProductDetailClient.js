@@ -7,6 +7,7 @@ import { fetchProduct, logCarbonPurchase } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
+import ReviewSection from "@/components/ReviewSection";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/AuthContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
@@ -1087,8 +1088,13 @@ export default function ProductDetail() {
           </p>
         </div>
 
+        {/* Reviews */}
+        <div style={{ width: "100%" }}>
+          <ReviewSection productId={product.id} />
+        </div>
+
         {/* Back button */}
-        <div style={{ width: "100%", maxWidth: 380, padding: "0 16px" }}>
+        <div style={{ width: "100%", maxWidth: 380, padding: "0 16px", marginTop: 16 }}>
           <button
             onClick={() => router.push("/")}
             style={{
