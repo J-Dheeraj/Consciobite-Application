@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-13
+updated: 2026-05-17
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-17 after UX improvement session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -23,19 +23,18 @@ tags: [hot-cache, meta]
 
 **Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
 
-**Recent fixes landed (2026-05-13):**
-- 7 merge conflicts resolved between feature branch and main
-- Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
-- `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
-- Frontend ESLint migrated from `react-app` to `next/core-web-vitals`
-- Unescaped JSX entities fixed (`"` -> `&ldquo;`/`&rdquo;`, `'` -> `&apos;`)
-- Docker build context changed from `./frontend` to `.` (repo root) so products.json is accessible
-- Dockerfile updated for repo-root-relative COPY paths
-- `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
+**Recent fixes landed (2026-05-17) — branch `claude/dreamy-dirac-Tt37m`:**
+- **Review section on product pages** — `ProductDetailClient.js` now imports and renders the pre-built `ReviewSection` component (star ratings + comment form + list) below the product description. Works for authenticated and unauthenticated users.
+- **Carbon log pagination** — `carbon/page.js` refactored from a combined `Promise.all` query to two separate React Query queries (`["carbon","summary"]` + `["carbon","logs", page]`). Shows all 20 logs per page (backend default) with Prev/Next controls. `slice(0, 10)` cap removed.
+- **Delete loading state** — `deletingId` state tracks which carbon log is being deleted; button shows `…` and `wait` cursor while in-flight, preventing double-clicks.
+- **Barcode input validation** — `scan/page.js` validates manual barcode entry (digits only, 8–14 chars) with inline red error message and red border before hitting the API. Clears on each keystroke.
+
+**Previous fixes landed (2026-05-13):**
+- 7 merge conflicts resolved, ESLint migrated, Docker/Render deployment fixed, validate() schemas corrected.
 
 **Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-Tt37m` — in progress.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
@@ -43,3 +42,4 @@ tags: [hot-cache, meta]
 - `/carbon` protected by `RequireAuth` — no in-page auth gates
 - httpOnly cookies for JWT; CSRF double-submit pattern
 - All Express routes use `validate()` middleware with `pattern:` not `type: "number"`
+- Carbon logs query keys: `["carbon","summary"]` and `["carbon","logs",page]` — invalidate with `queryKey: ["carbon"]` prefix

@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-17 — UX Improvement Session
+
+**Operation:** Add review section, carbon pagination, delete loading states, and barcode validation on branch `claude/dreamy-dirac-Tt37m`.
+
+**Pages updated:** 1
+- `hot.md` — refreshed with current work summary and new query key invariant
+
+**Key changes:**
+1. **Review section** — `ProductDetailClient.js` imports `ReviewSection` component and renders it after the product description. The component was already fully built with star-rating form, review list, and delete; it just wasn't wired to any page.
+2. **Carbon log pagination** — `carbon/page.js` refactored from a single combined Promise.all query to two separate React Query queries. Added `page` state and Prev/Next buttons that appear when `pagination.totalPages > 1`. Removed the `slice(0, 10)` cap that silently hid logs.
+3. **Delete loading state** — Added `deletingId` state to carbon page. Delete button shows `…` and `wait` cursor while the request is in flight; disables re-click.
+4. **Barcode validation** — `scan/page.js` validates manual entry: digits only, 8–14 chars. Shows red border on input + inline error message. Error clears on each keystroke.
+
+**Commits:**
+- `ad373e3` — feat: add review section, carbon pagination, delete loading state, barcode validation
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.
