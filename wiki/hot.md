@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-13
+updated: 2026-05-18
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-18 after frontend bug-fix session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,15 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
+**Recent fixes landed (2026-05-18):**
+- Dashboard `bestCategory` null crash fixed — `useMemo` can return `null` when catalog has no categories; wrapped StatCard render in `{bestCategory && (...)}` guard
+- Dashboard `NaN%` green-products percentage fixed — guards `totalProducts > 0` before division
+- `httpClient.js` CSRF retry now throws the retry response's error (not the original CSRF message) when the retry also fails (line 68–69)
+- `Navbar.js` `handleLogout` made `async` and now `await`s `logout()` before redirecting, ensuring server-side cookie clear completes
+
 **Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-S8bOy`
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

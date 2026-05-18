@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-18 — Frontend Bug-Fix Session
+
+**Operation:** Fix 4 concrete frontend bugs on `claude/nifty-goodall-S8bOy` branch.
+
+**Files changed:** 3
+- `frontend/src/app/dashboard/page.js` — null guard + division guard
+- `frontend/src/services/httpClient.js` — CSRF retry error propagation
+- `frontend/src/components/Navbar.js` — async logout
+
+**Bugs fixed:**
+1. **Dashboard crash on empty catalog** (`dashboard/page.js` L283–291): `useMemo` returns `bestCategory: null` when `categories` is empty; rendering `bestCategory.category` crashed. Fixed with `{bestCategory && (...)}` conditional.
+2. **Dashboard NaN% green percentage** (`dashboard/page.js` L551): `Math.round((greenCount / 0) * 100)` produces `NaN%` when `totalProducts` is 0. Fixed with `totalProducts > 0 ? ... : 0`.
+3. **httpClient CSRF retry swallows retry error** (`httpClient.js` L65–70): when a CSRF-triggered retry also fails, the original CSRF error message was re-thrown. Now parses the retry response and throws its error.
+4. **Navbar logout race condition** (`Navbar.js` L46–50): `logout()` in AuthContext is async (fires a POST to `/api/auth/logout`) but was not awaited; `router.push("/")` could fire before cookie clear. Made `handleLogout` async and awaits `logout()`.
+
+**Test status:** 117 backend tests passing. Frontend builds 566 static pages with no errors.
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.

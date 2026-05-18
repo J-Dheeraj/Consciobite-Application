@@ -280,13 +280,15 @@ export default function Dashboard() {
             subtext="kg CO\u2082e per product"
             isDark={isDark}
           />
-          <StatCard
-            icon={"\uD83C\uDFC6"}
-            label="Best Category"
-            value={bestCategory.category}
-            subtext={`Score: ${bestCategory.avgScore}`}
-            isDark={isDark}
-          />
+          {bestCategory && (
+            <StatCard
+              icon={"\uD83C\uDFC6"}
+              label="Best Category"
+              value={bestCategory.category}
+              subtext={`Score: ${bestCategory.avgScore}`}
+              isDark={isDark}
+            />
+          )}
         </div>
 
         {/* Score by Category Chart */}
@@ -548,7 +550,7 @@ export default function Dashboard() {
               color: "#fff",
             }}
           >
-            {Math.round((greenCount / totalProducts) * 100)}%
+            {totalProducts > 0 ? Math.round((greenCount / totalProducts) * 100) : 0}%
           </div>
           <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "0.9rem" }}>
             of tracked products fall in categories with green-rated average scores (7+)

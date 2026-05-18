@@ -66,6 +66,8 @@ export async function httpClient(url, options = {}) {
           headers["X-CSRF-Token"] = retryToken;
           const retryRes = await fetch(url, { ...options, credentials: "include", headers });
           if (retryRes.ok) return retryRes.json();
+          const retryBody = await retryRes.json().catch(() => ({}));
+          throw new Error(retryBody.error || `Request failed (${retryRes.status})`);
         }
       }
       throw new Error(body.error || `Request failed (${res.status})`);
