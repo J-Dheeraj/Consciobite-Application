@@ -13,6 +13,25 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-18 — Frontend Bug Fix Session
+
+**Operation:** Audit and fix frontend rendering bugs on branch `claude/dreamy-dirac-bYYNx`.
+
+**Pages updated:** 1
+- `hot.md` — refreshed with GreenGrade shape invariants and fix summary
+
+**Key changes:**
+1. **`products/page.js`** — Emissions badge silently never rendered. Guard `p.greenGrade?.emissions` was always falsy because `greenGrade` has `totalEmissions` (scalar), not an `emissions` object. Fixed to `p.greenGrade?.totalEmissions !== null && !== undefined` and updated value to `p.greenGrade.totalEmissions.toFixed(1)`.
+2. **`ProductDetailClient.js`** — Percentile displayed as a nonsensical value. `Math.round((1 - greenGrade.percentile) * 100)` was wrong: `greenGrade.percentile` is already an integer 0–100 so (1 - 78) * 100 = -7700. Simplified display to `greenGrade.percentile` directly.
+3. **`carbon/page.js`** — React Query `error` (an Error object) was rendered directly as a React child, causing a React crash. Changed to `error.message`. Also separated `weeklyProgressRaw` (for label display, uncapped) from `weeklyProgress` (for bar width, capped at 100) so users see actual overshoot like "150%" instead of a misleading "100%".
+
+**Commit:** `958c951` — fix: three frontend rendering bugs
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.
