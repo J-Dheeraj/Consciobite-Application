@@ -622,7 +622,7 @@ export default function ProductDetail() {
                 >
                   <span>Percentile</span>
                   <span style={{ fontWeight: 600 }}>
-                    Top {Math.round((1 - greenGrade.percentile) * 100)}%
+                    Top {greenGrade.percentile}%
                   </span>
                 </div>
               )}

@@ -93,9 +93,10 @@ export default function CarbonTracker() {
     return <Spinner message="Loading carbon data..." />;
   }
 
-  const weeklyProgress = summary
-    ? Math.min((summary.weekly.emissions / WEEKLY_CARBON_GOAL_KG) * 100, 100)
+  const weeklyProgressRaw = summary
+    ? (summary.weekly.emissions / WEEKLY_CARBON_GOAL_KG) * 100
     : 0;
+  const weeklyProgress = Math.min(weeklyProgressRaw, 100);
   const trendData = summary?.trend || [];
 
   return (
@@ -119,7 +120,7 @@ export default function CarbonTracker() {
               color: "#e63946",
             }}
           >
-            {error}
+            {error.message || "Unable to load carbon data."}
           </div>
         )}
 
@@ -290,7 +291,7 @@ export default function CarbonTracker() {
                     fontWeight: 600,
                   }}
                 >
-                  {Math.round(weeklyProgress)}%
+                  {Math.round(weeklyProgressRaw)}%
                 </span>
               </div>
               <div

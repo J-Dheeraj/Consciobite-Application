@@ -279,7 +279,7 @@ export default function Products() {
                   </div>
                 </div>
 
-                {p.greenGrade?.emissions && (
+                {p.greenGrade?.totalEmissions !== null && p.greenGrade?.totalEmissions !== undefined && (
                   <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                     <span
                       style={{
@@ -291,7 +291,7 @@ export default function Products() {
                         fontWeight: 500,
                       }}
                     >
-                      {p.greenGrade.emissions.total?.toFixed(1)} kg CO₂e
+                      {p.greenGrade.totalEmissions.toFixed(1)} kg CO₂e
                     </span>
                     {p.category && (
                       <span
