@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-19 — UX / Accessibility / Dead Code Fix Session
+
+**Operation:** Codebase audit via graphify + Explore agent; surgical fixes on `claude/dreamy-dirac-T99xc`.
+
+**Commits:**
+- `c57cbdb` — feat: debounce search, improve a11y, remove dead API call
+
+**Files changed (3):**
+- `frontend/src/app/products/page.js` — search debounce (400 ms), stale-grid opacity during pagination, aria-labels, role="alert", maxLength
+- `frontend/src/app/compare/page.js` — useMemo for filtered list, maxLength on search
+- `frontend/src/services/products.js` — removed dead `fetchRecommendations()` (endpoint doesn't exist)
+
+**Key findings from audit (Explore agent):**
+- `fetchRecommendations()` called `/api/products/:id/recommendations` — endpoint missing in backend; always returns network error
+- Products page fired API request on every keystroke; no debounce
+- Products page showed blank spinner during pagination (stale data disappeared)
+- Form controls (search, category, sort, product cards) lacked aria-labels
+- Error banners lacked `role="alert"`
+- `filtered` list in compare page recalculated on every parent re-render
+
+**Tests:** 117 backend ✅ · ESLint: 0 errors ✅
+
+**Index updated:** no (no new pages created)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.

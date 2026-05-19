@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-19 after UX/accessibility/debounce fix session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,16 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages). ESLint: 0 errors.
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-T99xc` — branched from `main` (all prior work merged).
+
+**Recent fixes landed (2026-05-19):**
+- Search debouncing (400 ms) in `products/page.js` — prevents N+1 API calls on rapid typing
+- Stale product grid stays visible with opacity fade during pagination loads (better UX than blank spinner)
+- Accessibility: `aria-label` on search/category/sort controls, `role="alert"` on error banner, `aria-label` on each product card button, `maxLength=100` on search inputs
+- `useMemo` wrapping filtered list in `compare/page.js`
+- Removed dead `fetchRecommendations()` from `services/products.js` — endpoint `/api/products/:id/recommendations` does not exist in the backend
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
