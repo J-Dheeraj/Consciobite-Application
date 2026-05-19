@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { fetchProducts } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
@@ -34,17 +34,26 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const debounceTimer = useRef(null);
+
+  const handleSearchChange = useCallback((e) => {
+    const value = e.target.value;
+    setSearch(value);
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => setDebouncedSearch(value), 400);
+  }, []);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const params = { page, limit: 24 };
-      if (search.trim()) params.search = search.trim();
+      if (debouncedSearch.trim()) params.search = debouncedSearch.trim();
       if (category !== "All") params.category = category;
       if (sort) params.sort = sort;
       const data = await fetchProducts(params);
@@ -55,7 +64,7 @@ export default function Products() {
     } finally {
       setLoading(false);
     }
-  }, [search, category, sort, page]);
+  }, [debouncedSearch, category, sort, page]);
 
   useEffect(() => {
     loadProducts();
@@ -63,7 +72,7 @@ export default function Products() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, category, sort]);
+  }, [debouncedSearch, category, sort]);
 
   const bg = isDark ? "#0a0a0a" : "#f8f9fa";
   const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
@@ -109,8 +118,10 @@ export default function Products() {
           <input
             type="text"
             placeholder="Search products..."
+            aria-label="Search products"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
+            maxLength={100}
             style={{
               flex: "1 1 240px",
               padding: "11px 16px",
@@ -126,6 +137,7 @@ export default function Products() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            aria-label="Filter by category"
             style={{
               padding: "11px 16px",
               borderRadius: 10,
@@ -146,6 +158,7 @@ export default function Products() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
+            aria-label="Sort products"
             style={{
               padding: "11px 16px",
               borderRadius: 10,
@@ -168,6 +181,8 @@ export default function Products() {
         {/* Error */}
         {error && (
           <div
+            role="alert"
+            aria-live="assertive"
             style={{
               padding: "14px 20px",
               borderRadius: 10,
@@ -181,8 +196,8 @@ export default function Products() {
           </div>
         )}
 
-        {/* Loading */}
-        {loading && (
+        {/* Initial loading spinner */}
+        {loading && products.length === 0 && (
           <div style={{ padding: 48, textAlign: "center", color: textMuted }}>
             <div
               style={{
@@ -206,19 +221,24 @@ export default function Products() {
           </div>
         )}
 
-        {/* Product Grid */}
-        {!loading && products.length > 0 && (
+        {/* Product Grid — kept visible with reduced opacity during pagination */}
+        {products.length > 0 && (
           <div
+            aria-busy={loading}
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
               gap: 16,
+              opacity: loading ? 0.5 : 1,
+              transition: "opacity 0.2s",
+              pointerEvents: loading ? "none" : "auto",
             }}
           >
             {products.map((p) => (
               <button
                 key={p.id}
                 onClick={() => router.push(`/product/${p.id}`)}
+                aria-label={`View ${p.name}${p.brand ? ` by ${p.brand}` : ""}, GreenGrade score ${p.greenGrade?.score ?? "unavailable"}`}
                 style={{
                   background: cardBg,
                   border: `1px solid ${cardBorder}`,
@@ -315,7 +335,7 @@ export default function Products() {
         )}
 
         {/* Pagination */}
-        {!loading && totalPages > 1 && (
+        {totalPages > 1 && products.length > 0 && (
           <div
             style={{
               display: "flex",

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { fetchProducts, compareProducts } from "@/services/api";
 import GradeBadge from "@/components/GradeBadge";
 import GradeBreakdown from "@/components/GradeBreakdown";
@@ -45,13 +45,17 @@ export default function Compare() {
     }
   };
 
-  const filtered = searchFilter
-    ? allProducts.filter(
-        (p) =>
-          p.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-          p.brand.toLowerCase().includes(searchFilter.toLowerCase())
-      )
-    : allProducts;
+  const filtered = useMemo(
+    () =>
+      searchFilter
+        ? allProducts.filter(
+            (p) =>
+              p.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
+              p.brand.toLowerCase().includes(searchFilter.toLowerCase())
+          )
+        : allProducts,
+    [allProducts, searchFilter]
+  );
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
@@ -80,6 +84,7 @@ export default function Compare() {
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
             aria-label="Search products to compare"
+            maxLength={100}
             style={{
               width: "100%",
               padding: "10px 14px",

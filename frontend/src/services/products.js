@@ -26,6 +26,3 @@ export async function fetchStats() {
   return httpClient(`${API_BASE}/products/stats`);
 }
 
-export async function fetchRecommendations(id) {
-  return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/recommendations`);
-}
