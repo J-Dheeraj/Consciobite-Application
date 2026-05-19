@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-19 — Sentry & AuthContext Bug-Fix Session
+
+**Operation:** Audit codebase on fresh branch `claude/nifty-goodall-c9OBd` for regressions left by the CRA→Next.js migration.
+
+**Files changed:** 3
+- `frontend/src/services/sentry.js`
+- `frontend/src/context/AuthContext.js`
+- `frontend/src/components/Providers.js`
+
+**Bugs fixed:**
+1. `sentry.js` — `REACT_APP_SENTRY_DSN` → `NEXT_PUBLIC_SENTRY_DSN`. Next.js only exposes `NEXT_PUBLIC_*` vars to the browser; the CRA prefix was silently `undefined`, so Sentry would never initialise.
+2. `AuthContext.js` — imported `API_BASE` from `httpClient.js` and replaced two hardcoded `/api/auth/logout` and `/api/auth/refresh` fetch URLs. The relative paths work in dev but break on Render (frontend at `consciobite-app.onrender.com`, API at `consciobite-api.onrender.com`).
+3. `Providers.js` — added `initSentry()` call at module level. The function existed but was never invoked, so Sentry was dead even if a DSN was provided.
+
+**Tests:** 117 backend ✅ · ESLint ✅ (no errors)
+
+**Commit:** `59ce845`
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.

@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-19 after Sentry/AuthContext bug-fix session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -23,7 +23,13 @@ tags: [hot-cache, meta]
 
 **Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
 
-**Recent fixes landed (2026-05-13):**
+**Recent fixes landed (2026-05-19):**
+- `sentry.js`: `REACT_APP_SENTRY_DSN` → `NEXT_PUBLIC_SENTRY_DSN` (CRA prefix silently undefined in Next.js)
+- `AuthContext.js`: hardcoded `/api/auth/logout` and `/api/auth/refresh` replaced with `${API_BASE}/…` (was broken on Render where API is on a different origin)
+- `Providers.js`: `initSentry()` now called at module level so Sentry actually initialises when DSN is set
+- Branch: `claude/nifty-goodall-c9OBd`
+
+**Recent fixes landed (2026-05-13) (merged to main):**
 - 7 merge conflicts resolved between feature branch and main
 - Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
 - `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
@@ -35,7 +41,7 @@ tags: [hot-cache, meta]
 
 **Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-c9OBd` — bug-fix commit pushed, no PR yet.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
