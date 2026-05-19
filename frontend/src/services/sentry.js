@@ -1,6 +1,6 @@
 import * as Sentry from "@sentry/react";
 
-const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN;
+const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 
 export function initSentry() {
   if (!SENTRY_DSN) return;
