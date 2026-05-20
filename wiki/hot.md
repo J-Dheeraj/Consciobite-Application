@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-13
+updated: 2026-05-20
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-20 after compare page + Sentry improvements session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,14 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
+**Recent improvements landed (2026-05-20) on `claude/dreamy-dirac-rJLHs`:**
+- Compare page (`compare/page.js`): replaced pre-loading 100 products with debounced (300ms) server-side search via `fetchProducts({ search, limit: 50 })` — all 550 products now reachable. Empty state prompts user to type; loading state shows "Searching..." feedback.
+- `sentry.js`: fixed env var from `REACT_APP_SENTRY_DSN` (CRA prefix) to `NEXT_PUBLIC_SENTRY_DSN` (Next.js required prefix for client bundles).
+- `Providers.js`: added `useEffect(() => initSentry(), [])` so Sentry SDK actually initialises on mount when the DSN env var is provided.
+
 **Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-rJLHs` — pushed, 1 commit ahead of main.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
@@ -43,3 +48,4 @@ tags: [hot-cache, meta]
 - `/carbon` protected by `RequireAuth` — no in-page auth gates
 - httpOnly cookies for JWT; CSRF double-submit pattern
 - All Express routes use `validate()` middleware with `pattern:` not `type: "number"`
+- Sentry: `NEXT_PUBLIC_SENTRY_DSN` env var controls activation; `initSentry()` called once in `Providers.js`; `captureError()` used in `ErrorBoundary.js`

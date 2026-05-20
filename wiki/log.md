@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-05-20
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,27 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-05-20 — Compare Page + Sentry Improvements
+
+**Operation:** Feature improvement and bug fix on `claude/dreamy-dirac-rJLHs` branch.
+
+**Pages updated:** 2
+- `hot.md` — refreshed with new branch, changes, and Sentry invariant
+- `log.md` — this entry
+
+**Key changes:**
+1. **Compare page — full catalog search** (`frontend/src/app/compare/page.js`): Previous implementation pre-loaded only 100 products (client-side filter). Replaced with 300ms debounced server-side search via `fetchProducts({ search, limit: 50 })`. Now exposes all 550 products. Empty state shows hint text; in-flight search shows "Searching..." indicator. No API changes needed.
+2. **Sentry env var** (`frontend/src/services/sentry.js`): `REACT_APP_SENTRY_DSN` (Create React App prefix) changed to `NEXT_PUBLIC_SENTRY_DSN` (required prefix for Next.js client-side env vars). Without this, the DSN was always `undefined` in the Next.js build.
+3. **Sentry initialisation** (`frontend/src/components/Providers.js`): `initSentry()` called in `useEffect` on mount. Previously `initSentry` was exported but never called — Sentry SDK never initialised even when DSN was provided.
+
+**Commits:**
+- `63df1b9` — feat: search all 550 products in compare page, fix Sentry for Next.js
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
 
 ---
 
