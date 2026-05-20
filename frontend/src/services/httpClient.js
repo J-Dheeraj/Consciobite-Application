@@ -35,6 +35,26 @@ async function ensureCsrfToken() {
   return csrfToken;
 }
 
+const MAX_RETRIES = 2;
+const RETRY_BASE_MS = 500;
+
+async function fetchWithRetry(url, options, attempt = 0) {
+  try {
+    const res = await fetch(url, options);
+    if (res.status >= 500 && attempt < MAX_RETRIES) {
+      await new Promise((r) => setTimeout(r, RETRY_BASE_MS * 2 ** attempt));
+      return fetchWithRetry(url, options, attempt + 1);
+    }
+    return res;
+  } catch (err) {
+    if (attempt < MAX_RETRIES) {
+      await new Promise((r) => setTimeout(r, RETRY_BASE_MS * 2 ** attempt));
+      return fetchWithRetry(url, options, attempt + 1);
+    }
+    throw err;
+  }
+}
+
 export async function httpClient(url, options = {}) {
   const headers = {
     "Content-Type": "application/json",
@@ -50,11 +70,8 @@ export async function httpClient(url, options = {}) {
     }
   }
 
-  const res = await fetch(url, {
-    ...options,
-    credentials: "include",
-    headers,
-  });
+  const fetchOptions = { ...options, credentials: "include", headers };
+  const res = await fetchWithRetry(url, fetchOptions);
 
   if (!res.ok) {
     if (res.status === 403) {

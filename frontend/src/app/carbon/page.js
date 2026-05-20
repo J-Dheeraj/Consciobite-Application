@@ -9,12 +9,14 @@ import { WEEKLY_CARBON_GOAL_KG } from "@/utils/constants";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useToast } from "@/context/ToastContext";
 
 export default function CarbonTracker() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
+  const toast = useToast();
   const [deleteError, setDeleteError] = useState("");
 
   const {
@@ -39,11 +41,12 @@ export default function CarbonTracker() {
       try {
         await deleteCarbonLog(id);
         queryClient.invalidateQueries({ queryKey: ["carbon"] });
+        toast?.success("Log removed");
       } catch (err) {
         setDeleteError(err.message || "Failed to delete log. Please try again.");
       }
     },
-    [queryClient]
+    [queryClient, toast]
   );
 
   if (!isAuthenticated) {

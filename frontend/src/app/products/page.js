@@ -97,7 +97,10 @@ export default function Products() {
         </div>
 
         {/* Filters */}
-        <div
+        <form
+          role="search"
+          aria-label="Filter products"
+          onSubmit={(e) => e.preventDefault()}
           style={{
             display: "flex",
             gap: 12,
@@ -107,7 +110,7 @@ export default function Products() {
           }}
         >
           <input
-            type="text"
+            type="search"
             placeholder="Search products..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -126,6 +129,7 @@ export default function Products() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            aria-label="Filter by category"
             style={{
               padding: "11px 16px",
               borderRadius: 10,
@@ -146,6 +150,7 @@ export default function Products() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
+            aria-label="Sort products"
             style={{
               padding: "11px 16px",
               borderRadius: 10,
@@ -163,7 +168,7 @@ export default function Products() {
               </option>
             ))}
           </select>
-        </div>
+        </form>
 
         {/* Error */}
         {error && (

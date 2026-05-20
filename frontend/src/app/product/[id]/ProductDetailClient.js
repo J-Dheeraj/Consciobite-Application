@@ -10,6 +10,7 @@ import ProductImage from "@/components/ProductImage";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/AuthContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
+import { useToast } from "@/context/ToastContext";
 
 const LEGEND_ITEMS = [
   { color: "#27ae60", label: "Best" },
@@ -82,6 +83,7 @@ export default function ProductDetail() {
   const { id } = useParams();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const toast = useToast();
   const [loggedPurchase, setLoggedPurchase] = useState(false);
   const [logError, setLogError] = useState("");
   const [showStats, setShowStats] = useState(false);
@@ -111,6 +113,7 @@ export default function ProductDetail() {
     try {
       await logCarbonPurchase(product.id, product.name, 1, product.greenGrade.totalEmissions);
       setLoggedPurchase(true);
+      toast?.success("Purchase logged to Carbon Tracker");
     } catch (err) {
       setLogError(err.message || "Unable to log purchase. Please try again.");
     }
@@ -290,7 +293,11 @@ export default function ProductDetail() {
 
           <div style={{ display: "flex", justifyContent: "center" }}>
             <button
-              onClick={() => setFav(toggleFavorite(product.id))}
+              onClick={() => {
+                const next = toggleFavorite(product.id);
+                setFav(next);
+                toast?.success(next ? "Added to favorites" : "Removed from favorites");
+              }}
               aria-label={fav ? "Remove from favorites" : "Add to favorites"}
               style={{
                 background: "rgba(255,255,255,0.12)",

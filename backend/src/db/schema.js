@@ -58,6 +58,7 @@ function initSchema() {
 
     CREATE INDEX IF NOT EXISTS idx_carbon_user ON carbon_logs(user_id);
     CREATE INDEX IF NOT EXISTS idx_carbon_date ON carbon_logs(logged_at);
+    CREATE INDEX IF NOT EXISTS idx_carbon_user_date ON carbon_logs(user_id, logged_at DESC);
   `);
 }
 
