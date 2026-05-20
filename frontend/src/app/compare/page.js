@@ -9,7 +9,8 @@ import PageHero from "@/components/PageHero";
 export default function Compare() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [allProducts, setAllProducts] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching] = useState(false);
   const [selected, setSelected] = useState([]);
   const [compared, setCompared] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -17,10 +18,23 @@ export default function Compare() {
   const [searchFilter, setSearchFilter] = useState("");
 
   useEffect(() => {
-    fetchProducts({ limit: 100 })
-      .then((data) => setAllProducts(data.products))
-      .catch((err) => setError(err.message || "Unable to load products."));
-  }, []);
+    if (!searchFilter.trim()) {
+      setSearchResults([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const data = await fetchProducts({ search: searchFilter.trim(), limit: 50 });
+        setSearchResults(data.products);
+      } catch {
+        // ignore transient search errors
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchFilter]);
 
   const toggleProduct = (id) => {
     setSelected((prev) => {
@@ -45,13 +59,7 @@ export default function Compare() {
     }
   };
 
-  const filtered = searchFilter
-    ? allProducts.filter(
-        (p) =>
-          p.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-          p.brand.toLowerCase().includes(searchFilter.toLowerCase())
-      )
-    : allProducts;
+  const displayProducts = searchFilter.trim() ? searchResults : [];
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
@@ -76,7 +84,7 @@ export default function Compare() {
         >
           <input
             type="text"
-            placeholder="Search to find products..."
+            placeholder="Search all 550 products by name or brand..."
             value={searchFilter}
             onChange={(e) => setSearchFilter(e.target.value)}
             aria-label="Search products to compare"
@@ -98,7 +106,7 @@ export default function Compare() {
               borderRadius: 10,
             }}
           >
-            {filtered.map((p) => (
+            {displayProducts.map((p) => (
               <label
                 key={p.id}
                 style={{
@@ -140,7 +148,24 @@ export default function Compare() {
                 </div>
               </label>
             ))}
-            {filtered.length === 0 && (
+            {!searchFilter.trim() && (
+              <p
+                style={{
+                  padding: 16,
+                  color: isDark ? "#7a9a7e" : "#aaa",
+                  textAlign: "center",
+                  fontSize: "0.85rem",
+                }}
+              >
+                Type to search across all 550 products
+              </p>
+            )}
+            {searchFilter.trim() && searching && (
+              <p style={{ padding: 16, color: "#888", textAlign: "center", fontSize: "0.85rem" }}>
+                Searching...
+              </p>
+            )}
+            {searchFilter.trim() && !searching && displayProducts.length === 0 && (
               <p style={{ padding: 16, color: "#888", textAlign: "center" }}>No products found.</p>
             )}
           </div>
