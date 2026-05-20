@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-20 after resilience/UX improvements session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,18 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
+**Recent improvements (2026-05-20) on `claude/nifty-goodall-2HExS`:**
+- `httpClient.js`: retry up to 2× on network errors and 5xx responses (500ms → 1s exponential backoff); does not retry 4xx
+- `schema.js`: added composite index `idx_carbon_user_date ON carbon_logs(user_id, logged_at DESC)` for faster carbon log pagination queries
+- `ToastContext.js`: new lightweight toast notification system (success/error/info, auto-dismisses after 3s, `aria-live="polite"`) — rendered above BottomNav at `bottom: 80px`
+- `Providers.js`: wrapped app with `ToastProvider`
+- `ProductDetailClient.js`: toast on log purchase (`"Purchase logged to Carbon Tracker"`) and on favorites toggle
+- `carbon/page.js`: toast on successful log deletion (`"Log removed"`)
+- `products/page.js`: converted filter div to `<form role="search">`, `type="search"` input, `aria-label` on category/sort selects
+
 **Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-2HExS` — pushed, no PR yet.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

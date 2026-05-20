@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-20 — Resilience & UX Improvements Session
+
+**Operation:** Add retry logic, toast notifications, DB index, and accessibility fixes on `claude/nifty-goodall-2HExS`.
+
+**Pages updated:** 2
+- `hot.md` — refreshed with 2026-05-20 session summary
+- `log.md` — this entry
+
+**Key changes (1 commit: `7638862`):**
+1. **httpClient retry** — `fetchWithRetry()` wraps all fetches; retries up to 2× on network errors and 5xx (500ms → 1s backoff). 4xx, 401, and CSRF-403 paths unchanged.
+2. **Composite DB index** — `idx_carbon_user_date ON carbon_logs(user_id, logged_at DESC)` added to `schema.js`; serves `WHERE user_id = ? ORDER BY logged_at DESC` without a sort step.
+3. **Toast system** — `frontend/src/context/ToastContext.js` (new file): `ToastProvider` + `useToast()` hook; renders a `aria-live="polite"` stack above the BottomNav. Integrated in `Providers.js`.
+4. **Toast wired up** — `ProductDetailClient.js` (log purchase + favorites toggle), `carbon/page.js` (log deletion).
+5. **Search accessibility** — `products/page.js`: filter container is now `<form role="search">`, search input is `type="search"`, selects have `aria-label`.
+
+**Build/test result:** 117 backend tests pass; frontend builds 566 pages; ESLint + Prettier clean.
+
+**Index updated:** no (no new wiki pages created)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.
