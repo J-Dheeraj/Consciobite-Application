@@ -31,6 +31,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 - [[GreenGrade KDE Scoring]]
 - [[Product Catalog Schema]]
 - [[Render Deployment]]
+- [[Stack Migration Plan]]
 - [[Static Export Pipeline]]
 - [[Validate Middleware Pattern]]
 
