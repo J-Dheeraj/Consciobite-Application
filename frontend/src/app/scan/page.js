@@ -24,6 +24,7 @@ export default function Scan() {
   const [scanning, setScanning] = useState(false);
   const [cameraError, setCameraError] = useState("");
   const scannerRef = useRef(null);
+  const mountedRef = useRef(true);
   const router = useRouter();
 
   const lookupBarcode = useCallback(async (code) => {
@@ -32,9 +33,9 @@ export default function Scan() {
     setBarcode(code);
     try {
       const data = await scanBarcode(code.trim());
-      setResult(data);
+      if (mountedRef.current) setResult(data);
     } catch (err) {
-      setError(err.message || "Product not found for this barcode.");
+      if (mountedRef.current) setError(err.message || "Product not found for this barcode.");
     }
   }, []);
 
@@ -82,7 +83,9 @@ export default function Scan() {
   }, []);
 
   useEffect(() => {
+    mountedRef.current = true;
     return () => {
+      mountedRef.current = false;
       if (scannerRef.current) {
         scannerRef.current.stop().catch(() => {});
         scannerRef.current = null;

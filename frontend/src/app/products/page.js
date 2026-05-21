@@ -218,6 +218,7 @@ export default function Products() {
             {products.map((p) => (
               <button
                 key={p.id}
+                aria-label={`View ${p.name}${p.brand ? ` by ${p.brand}` : ""}`}
                 onClick={() => router.push(`/product/${p.id}`)}
                 style={{
                   background: cardBg,

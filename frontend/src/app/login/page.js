@@ -30,7 +30,7 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      const data = await loginUser(email, password);
+      const data = await loginUser(email.trim(), password);
       login(data.user, data.token);
       router.push("/");
     } catch (err) {

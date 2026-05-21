@@ -16,6 +16,7 @@ export default function CarbonTracker() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [deleteError, setDeleteError] = useState("");
+  const [deletingId, setDeletingId] = useState(null);
 
   const {
     data: carbonData,
@@ -36,11 +37,14 @@ export default function CarbonTracker() {
   const handleDelete = useCallback(
     async (id) => {
       setDeleteError("");
+      setDeletingId(id);
       try {
         await deleteCarbonLog(id);
         queryClient.invalidateQueries({ queryKey: ["carbon"] });
       } catch (err) {
         setDeleteError(err.message || "Failed to delete log. Please try again.");
+      } finally {
+        setDeletingId(null);
       }
     },
     [queryClient]
@@ -473,19 +477,22 @@ export default function CarbonTracker() {
                   </span>
                   <button
                     onClick={() => handleDelete(log.id)}
+                    disabled={deletingId === log.id}
                     style={{
                       background: "none",
                       border: "none",
-                      color: "#e63946",
-                      cursor: "pointer",
+                      color: deletingId === log.id ? "#aaa" : "#e63946",
+                      cursor: deletingId === log.id ? "not-allowed" : "pointer",
                       fontSize: "0.8rem",
                       padding: "4px 8px",
                       borderRadius: 6,
+                      opacity: deletingId === log.id ? 0.5 : 1,
                     }}
                     title="Remove log"
                     aria-label={`Remove log for ${log.product_name}`}
+                    aria-busy={deletingId === log.id}
                   >
-                    {"\u2715"}
+                    {deletingId === log.id ? "\u2026" : "\u2715"}
                   </button>
                 </div>
               </div>

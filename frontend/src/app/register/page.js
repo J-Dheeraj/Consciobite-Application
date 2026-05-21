@@ -40,7 +40,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      const data = await registerUser(name, email, password);
+      const data = await registerUser(name.trim(), email.trim(), password);
       login(data.user, data.token);
       router.push("/");
     } catch (err) {
