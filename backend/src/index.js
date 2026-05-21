@@ -10,6 +10,7 @@ const authRoutes = require("./routes/auth");
 const reviewRoutes = require("./routes/reviews");
 const carbonRoutes = require("./routes/carbon");
 const recipeRoutes = require("./routes/recipes");
+const adminRoutes = require("./routes/admin");
 const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
 const { csrfProtection } = require("./middleware/auth");
@@ -17,8 +18,9 @@ const { swaggerSpec } = require("./swagger");
 const { getDb, closeDb } = require("./db/schema");
 const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
-const { trainModel } = require("./services/greengrade");
+const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
+const { snapshotScores } = require("./services/scoreAudit");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -67,6 +69,14 @@ logger.info("Database initialized");
 // ---------- Train GreenGrade ML model on product catalog ----------
 trainModel(products);
 logger.info(`GreenGrade model trained on ${products.length} products`);
+
+// Snapshot scores on startup to detect future changes
+const scoreChanges = snapshotScores(products, (product) =>
+  calculateGreenGrade(product.emissions, product.category, product)
+);
+if (scoreChanges.length > 0) {
+  logger.warn(`Score audit: ${scoreChanges.length} score change(s) detected on startup`);
+}
 
 // ---------- Structured logging ----------
 app.use(requestLogger);
@@ -185,6 +195,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/reviews", csrfProtection, reviewRoutes);
 app.use("/api/carbon", csrfProtection, carbonRoutes);
 app.use("/api/recipes", cacheMiddleware(600), recipeRoutes);
+app.use("/api/admin", csrfProtection, adminRoutes);
 
 // Versioned aliases (v1 = current)
 app.use("/api/v1/products", cacheMiddleware(120), productRoutes);

@@ -37,7 +37,7 @@ tags: [hot-cache, meta]
 
 **Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
 
-**Open business item (2026-05-21):** Investor flagged conflict of interest — manufacturer-pays-for-grading vs. independent scoring claims. Proposed fix: Independent Grading Advisory Board (academic + SFA civil servant + non-client industry rep). See [[Grading Independence Governance]] for action plan. No code changes yet — Phase 2 technical work (methodology page expansion, scoring changelog, audit trail) tracked there.
+**Governance layer (2026-05-21):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. Stack migration plan created for future Prisma/Supabase/Tailwind transition — see [[Stack Migration Plan]].
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

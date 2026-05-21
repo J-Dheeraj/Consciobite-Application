@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-21 — Session 1: Governance Database Layer
+
+**Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.
+
+**Files created:** 4
+- `backend/src/db/migrations/002_governance_layer.sql` — manufacturers, product_manufacturers, score_change_logs, product_scores tables + users.role column
+- `backend/src/services/scoreAudit.js` — logScoreChange(), snapshotScores(), getConflictLog(), getConflictStats()
+- `backend/src/routes/admin.js` — admin-only API routes (conflict-log, rescore, manufacturers, product-manufacturer linking, fee acknowledgement)
+- `wiki/concepts/Stack Migration Plan.md` — 4-phase plan: Prisma → Tailwind/shadcn → Supabase DB → Supabase Auth
+
+**Files modified:** 2
+- `backend/src/middleware/auth.js` — added requireAdmin middleware (checks users.role = 'admin')
+- `backend/src/index.js` — mounted admin routes, added score snapshot on startup
+
+**Verification:**
+- Migration creates all tables correctly (verified via PRAGMA)
+- 550 product scores snapshotted on first startup
+- 0 score changes on first run (correct — no previous baseline)
+- 117 backend tests still passing
+- Prettier and ESLint clean
+
+**Index updated:** yes
+
+---
+
 ## 2026-05-21 — Investor Feedback: Grading Independence
 
 **Operation:** Document investor feedback on conflict of interest in business model (manufacturer-pays-for-grading vs. independent scoring claims).
