@@ -16,12 +16,16 @@ Cross-cutting concern: ensuring GreenGrade scoring is (and is perceived as) inde
 
 Consciobite charges manufacturers for listing and grading. GreenGrade scores claim to be objective. These two facts create a conflict of interest that investors, regulators, and retail partners will flag.
 
-## Current State
+## Current State (updated 2026-05-21)
 
 - GreenGrade algorithm is deterministic (KDE + sigmoid, 7 emission dimensions) — see [[GreenGrade KDE Scoring]]
 - Methodology page exists at `/methodology` in the frontend
-- No external oversight or audit trail for scoring parameter changes
-- No public disclosure of the manufacturer-pays-for-grading model
+- **Audit trail implemented** — [[Score Audit Service]] logs every score change with paying-client flag
+- **Admin conflict log** — [[Admin Routes]] at `/api/admin/conflict-log` with paying/non-paying filter and aggregate stats
+- **Manufacturer tracking** — `manufacturers` + `product_manufacturers` tables in SQLite
+- **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
+- Advisory board not yet formed (business initiative, not code)
+- No public disclosure page yet (Session 3 of governance brief)
 
 ## Action Plan
 
@@ -56,15 +60,23 @@ Set up an **Independent Grading Advisory Board** (3 members minimum):
 
 ## Technical Touchpoints
 
-| File | Relevance |
-|------|-----------|
-| `backend/src/services/greengrade.js` | Core scoring algorithm — any parameter changes need audit trail |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency |
-| `backend/src/data/products.json` | Product catalog with emission data — provenance matters |
+| File | Relevance | Status |
+|------|-----------|--------|
+| `backend/src/services/scoreAudit.js` | Score change audit trail | Done (Session 1) |
+| `backend/src/routes/admin.js` | Admin conflict log + manufacturer CRUD | Done (Session 1) |
+| `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
+| `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
+| `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
+| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links
 
 - [[Investor Feedback 2026-05-21]] — original feedback
+- [[Score Audit Service]] — audit trail implementation
+- [[Admin Routes]] — admin API endpoints
+- [[Stack Migration Plan]] — future Prisma/Supabase migration
 - [[GreenGrade KDE Scoring]] — algorithm details
 - [[GreenGrade Service]] — implementation
 - [[Data Provenance]] — where emission data comes from
