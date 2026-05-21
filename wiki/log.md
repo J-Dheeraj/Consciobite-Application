@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-21 — UX, Accessibility & Safety Fix Session
+
+**Operation:** Audit full frontend for remaining improvement opportunities; implement 5 targeted fixes on branch `claude/nifty-goodall-fxZO4`.
+
+**Files changed:** 6
+- `frontend/src/app/login/page.js` — trim email before submission
+- `frontend/src/app/register/page.js` — trim name and email before submission
+- `frontend/src/app/products/page.js` — add `aria-label` to product card buttons
+- `frontend/src/app/page.js` — keyboard navigation (ArrowDown/Up/Escape/Enter) + `aria-activedescendant` for homepage search combobox
+- `frontend/src/app/carbon/page.js` — per-row `deletingId` state prevents double-click on delete
+- `frontend/src/app/scan/page.js` — `mountedRef` guard prevents setState after unmount in async barcode lookup
+
+**Key findings from audit:** 43 total issues found; DB `idx_carbon_date` already exists (false positive); most HIGH-severity items already addressed in prior sessions. Implemented the 5 cleanest, highest-value remaining fixes.
+
+**Commits:** `0997960` — fix: UX, accessibility, and safety improvements across frontend
+
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.

@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-21 after UX/accessibility fix session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -23,19 +23,23 @@ tags: [hot-cache, meta]
 
 **Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
 
-**Recent fixes landed (2026-05-13):**
+**Recent fixes landed (2026-05-21):**
+- Login/register: trim email (and name) before submission — prevents auth failures from accidental whitespace
+- Products page: added `aria-label` to every product card button for screen readers
+- Homepage search: full keyboard navigation — ArrowDown/Up cycles results, Escape closes, Enter selects highlighted item; `aria-activedescendant` wired for ARIA compliance
+- Carbon tracker: added `deletingId` state — delete button shows `…`, disabled, and greyed while request in flight (prevents double-click)
+- Scan page: added `mountedRef` guard in `lookupBarcode` — prevents setState on unmounted component after async barcode API response
+
+**Previous fixes landed (2026-05-13):**
 - 7 merge conflicts resolved between feature branch and main
 - Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
-- `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
+- `validate()` schema fixes: removed `max: 100` from carbon quantity, raised reviews `productId` maxLength, removed UUID patterns from delete schemas
 - Frontend ESLint migrated from `react-app` to `next/core-web-vitals`
-- Unescaped JSX entities fixed (`"` -> `&ldquo;`/`&rdquo;`, `'` -> `&apos;`)
-- Docker build context changed from `./frontend` to `.` (repo root) so products.json is accessible
-- Dockerfile updated for repo-root-relative COPY paths
-- `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
+- Unescaped JSX entities fixed; Docker build context changed to repo root
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 117 backend tests passing. Frontend lint clean (0 warnings/errors).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-fxZO4` — development branch (no open PR yet).
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
