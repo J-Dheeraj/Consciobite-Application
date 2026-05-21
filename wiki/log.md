@@ -13,6 +13,24 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-21 — CI Fix: Governance Layer Prettier (dreamy-dirac branch)
+
+**Operation:** Diagnose and fix failing Backend Tests CI check on PR #30. Root cause: `backend/src/routes/admin.js` was not Prettier-formatted. All 117 tests and ESLint were already passing; only `npm run format:check` was blocking CI.
+
+**Branch:** `claude/dreamy-dirac-9KsYf` (branched from main)
+
+**Changes:**
+- Applied all governance layer changes from `claude/improve-application-S5njo` branch (same 14 files: backend governance layer + wiki + frontend copy fix)
+- Fixed `backend/src/routes/admin.js` with `prettier --write` before committing
+
+**Verification:** `npm run format:check` ✓ · `npm run lint` ✓ (4 pre-existing warnings, 0 errors) · `npm test` 117/117 ✓
+
+**Commit:** `dc3021a` — feat: governance layer + CI fix pushed to `claude/dreamy-dirac-9KsYf`
+
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-21 — Session 1: Governance Database Layer
 
 **Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.
