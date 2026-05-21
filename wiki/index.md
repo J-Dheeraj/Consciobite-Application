@@ -19,10 +19,12 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 - [[Investor Feedback 2026-05-21]]
 
 ## Entities
+- [[Admin Routes]]
 - [[CarbonTracker Component]]
 - [[GreenGrade Service]]
 - [[Open Food Facts Integration]]
 - [[RequireAuth Guard]]
+- [[Score Audit Service]]
 - [[validate() Middleware]]
 
 ## Concepts
