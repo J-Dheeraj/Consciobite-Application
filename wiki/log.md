@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-05-21
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,53 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-05-21 — Session 1: Governance Database Layer
+
+**Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.
+
+**Files created:** 4
+- `backend/src/db/migrations/002_governance_layer.sql` — manufacturers, product_manufacturers, score_change_logs, product_scores tables + users.role column
+- `backend/src/services/scoreAudit.js` — logScoreChange(), snapshotScores(), getConflictLog(), getConflictStats()
+- `backend/src/routes/admin.js` — admin-only API routes (conflict-log, rescore, manufacturers, product-manufacturer linking, fee acknowledgement)
+- `wiki/concepts/Stack Migration Plan.md` — 4-phase plan: Prisma → Tailwind/shadcn → Supabase DB → Supabase Auth
+
+**Files modified:** 2
+- `backend/src/middleware/auth.js` — added requireAdmin middleware (checks users.role = 'admin')
+- `backend/src/index.js` — mounted admin routes, added score snapshot on startup
+
+**Verification:**
+- Migration creates all tables correctly (verified via PRAGMA)
+- 550 product scores snapshotted on first startup
+- 0 score changes on first run (correct — no previous baseline)
+- 117 backend tests still passing
+- Prettier and ESLint clean
+
+**Index updated:** yes
+
+---
+
+## 2026-05-21 — Investor Feedback: Grading Independence
+
+**Operation:** Document investor feedback on conflict of interest in business model (manufacturer-pays-for-grading vs. independent scoring claims).
+
+**Pages created:** 2
+- `sources/Investor Feedback 2026-05-21`
+- `domains/Grading Independence Governance`
+
+**Key points:**
+1. **Conflict identified:** Revenue model (manufacturers pay for listing/grading) conflicts with independence claims of GreenGrade scoring
+2. **Proposed fix:** Independent Grading Advisory Board (3 members: academic, civil servant e.g. SFA, non-client industry rep)
+3. **Board mandate:** Annual methodology audit, sign-off on scoring parameter changes, published audit summary, conflict-of-interest register
+4. **Technical follow-ups:** Expand `/methodology` page, add scoring changelog, board disclosure page, audit trail for `greengrade.js` parameter changes
+5. **Strategic value:** Transforms defensive weakness into proactive governance narrative; pre-empts EU Green Claims Directive and Singapore regulatory scrutiny
+
+**Action required:** Business/governance initiative — no immediate code changes. Phase 2 technical work tracked in the governance domain page.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
