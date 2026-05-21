@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-05-21
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,28 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-05-21 — Investor Feedback: Grading Independence
+
+**Operation:** Document investor feedback on conflict of interest in business model (manufacturer-pays-for-grading vs. independent scoring claims).
+
+**Pages created:** 2
+- `sources/Investor Feedback 2026-05-21`
+- `domains/Grading Independence Governance`
+
+**Key points:**
+1. **Conflict identified:** Revenue model (manufacturers pay for listing/grading) conflicts with independence claims of GreenGrade scoring
+2. **Proposed fix:** Independent Grading Advisory Board (3 members: academic, civil servant e.g. SFA, non-client industry rep)
+3. **Board mandate:** Annual methodology audit, sign-off on scoring parameter changes, published audit summary, conflict-of-interest register
+4. **Technical follow-ups:** Expand `/methodology` page, add scoring changelog, board disclosure page, audit trail for `greengrade.js` parameter changes
+5. **Strategic value:** Transforms defensive weakness into proactive governance narrative; pre-empts EU Green Claims Directive and Singapore regulatory scrutiny
+
+**Action required:** Business/governance initiative — no immediate code changes. Phase 2 technical work tracked in the governance domain page.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
