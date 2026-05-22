@@ -20,7 +20,7 @@ const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
-const { snapshotScores } = require("./services/scoreAudit");
+const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -188,6 +188,66 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
+});
+
+app.get("/api/transparency", (_req, res) => {
+  const methodology = getMethodology();
+  const auditStats = getConflictStats();
+  res.json({
+    statement:
+      "GreenGrade scores are determined solely by lifecycle emission data across seven dimensions. " +
+      "Commercial relationships with manufacturers have no influence on score outcomes. " +
+      "Listing fees are non-contingent on score results.",
+    algorithmVersion: methodology.version,
+    governance: {
+      advisoryBoard: {
+        status: "forming",
+        seats: [
+          { role: "Academic", field: "Food Systems / Life Cycle Assessment", status: "open" },
+          {
+            role: "Regulator",
+            field: "Food Safety or Environmental Agency (e.g. SFA)",
+            status: "open",
+          },
+          {
+            role: "Industry",
+            field: "Non-client food industry professional",
+            status: "open",
+          },
+        ],
+        mandate: [
+          "Annual audit of GreenGrade scoring parameters",
+          "Sign-off on any changes to scoring weights or thresholds",
+          "Published audit summary after each review",
+          "Maintenance of a conflict-of-interest register",
+        ],
+      },
+      principles: [
+        {
+          title: "Score Independence",
+          description:
+            "Scoring parameters are fixed at algorithm design time. No manufacturer can request a rescore or adjust inputs.",
+        },
+        {
+          title: "Audit Trail",
+          description:
+            "Every score change is logged with a timestamp, reason, and whether the affected product belongs to a paying client.",
+        },
+        {
+          title: "Transparent Methodology",
+          description:
+            "The full scoring algorithm — KDE model, 7 emission dimensions, confidence scoring — is publicly documented.",
+        },
+        {
+          title: "Data Provenance",
+          description:
+            "All emission factors are sourced from peer-reviewed databases (IPCC AR6, Poore & Nemecek 2018, FAO). Sources are disclosed per product.",
+        },
+      ],
+    },
+    auditStats,
+    lastUpdated: new Date().toISOString(),
+  });
 });
 
 app.use("/api/products", cacheMiddleware(120), productRoutes);

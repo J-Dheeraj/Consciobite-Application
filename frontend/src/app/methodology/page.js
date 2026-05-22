@@ -537,6 +537,55 @@ export default function Methodology() {
             ))}
           </div>
         </SectionCard>
+
+        {/* Governance */}
+        <SectionCard title="Grading Independence" isDark={isDark}>
+          <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 14 }}>
+            GreenGrade scores are determined solely by lifecycle emission data. Commercial
+            relationships with manufacturers have no influence on score outcomes — listing fees are
+            non-contingent on score results.
+          </p>
+          <div
+            style={{
+              padding: "12px 16px",
+              borderRadius: 10,
+              background: isDark ? "#1c2e22" : "#edf7f0",
+              border: `1px solid ${isDark ? "#2d4a35" : "#b7e4c7"}`,
+              marginBottom: 14,
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.82rem",
+                fontWeight: 600,
+                color: isDark ? "#95d5b2" : "#2d6a4f",
+                marginBottom: 4,
+              }}
+            >
+              Independent Grading Advisory Board
+            </div>
+            <p style={{ fontSize: "0.82rem", color: textColor, lineHeight: 1.5 }}>
+              An independent advisory board — comprising an academic, a regulator, and a non-client
+              industry professional — audits our methodology annually and signs off on any scoring
+              parameter changes.
+            </p>
+          </div>
+          <a
+            href="/transparency"
+            style={{
+              display: "inline-block",
+              padding: "9px 20px",
+              borderRadius: 10,
+              background: "#2d6a4f",
+              color: "#fff",
+              textDecoration: "none",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+            }}
+          >
+            View Transparency Report
+          </a>
+        </SectionCard>
       </div>
     </div>
   );
