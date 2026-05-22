@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-05-22
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,42 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-05-22 — Session 2: Transparency Features + CI Fix
+
+**Operation:** Fix CI format failure on PR #30, then implement public transparency page (Session 3 governance brief features).
+
+**Context:** Branch `claude/nifty-goodall-ELcfU`. Merged `claude/improve-application-S5njo` governance layer, fixed `admin.js` Prettier formatting (was blocking CI `format:check`), then built transparency features.
+
+**Files created:** 1
+- `frontend/src/app/transparency/page.js` — public Grading Independence page
+
+**Files modified:** 4
+- `backend/src/routes/admin.js` — Prettier formatting fix (CI was failing on `format:check`)
+- `backend/src/index.js` — added `getConflictStats` import, added `GET /api/transparency` endpoint
+- `frontend/src/services/recipes.js` — added `fetchTransparency()` function
+- `frontend/src/services/api.js` — re-exported `fetchTransparency`
+- `frontend/src/app/methodology/page.js` — added Grading Independence section card
+
+**Key changes:**
+1. **CI fix** — `admin.js` had 5 lines of inline styles that needed wrapping per Prettier rules. Fixed with `npx prettier --write`.
+2. **`GET /api/transparency`** — public endpoint returning: independence statement, algorithm version, advisory board (3 seats open), governance principles, and 12-month aggregate score-change stats. Calls `getConflictStats()` from `scoreAudit.js`.
+3. **`/transparency` page** — displays audit stats (3 stat boxes: total/paying/non-paying), advisory board seats (Academic/Regulator/Industry all open), governance principles, links to methodology.
+4. **Methodology governance card** — final card on `/methodology` with brief independence statement and CTA linking to `/transparency`.
+
+**Verification:**
+- 117 backend tests passing
+- Backend: `format:check` clean, `lint` 0 errors (4 pre-existing warnings)
+- Frontend: `format:check` clean, `lint` 0 errors, build produces 567 static pages
+
+**Commits:**
+- `9d5d76f` — fix: apply Prettier formatting to admin.js to pass CI format check
+- `10e2aa4` — feat: add public transparency page and governance section
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 

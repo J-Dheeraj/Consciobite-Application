@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-05-22
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-21 after governance Session 1 implementation.
+**Last updated:** 2026-05-22 after governance Session 2 (transparency features + CI fix).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,13 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 117 backend tests passing. Frontend builds 567 static pages (17 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-ELcfU` — includes governance Session 1 + Session 2 changes.
 
 **Governance layer (2026-05-21):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. Stack migration plan created for future Prisma/Supabase/Tailwind transition — see [[Stack Migration Plan]].
+
+**Transparency features (2026-05-22):** Session 2 complete. Public `GET /api/transparency` endpoint — aggregate audit stats, advisory board roster, governance principles, independence statement (no auth required). New `/transparency` frontend page — score audit stats, board seats (all open), governance principles. Methodology page updated with Grading Independence section card linking to `/transparency`. CI fix: `admin.js` Prettier formatting corrected to pass `format:check` step.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
