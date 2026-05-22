@@ -13,6 +13,20 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-22 — CI Fix: Prettier Formatting on admin.js
+
+**Operation:** Resume from PR #30 (`claude/improve-application-S5njo`) which had failing Backend Tests. Merged governance layer onto new branch `claude/dreamy-dirac-24kQ4` with fix applied.
+
+**Root cause:** `admin.js` was committed without running Prettier. CI `format:check` step failed before tests even ran.
+
+**Fix:** `npx prettier --write src/routes/admin.js` — single line change (trailing commas, quote normalization).
+
+**Branch:** `claude/dreamy-dirac-24kQ4` (new working branch)
+**Verification:** 117 backend tests pass, `format:check` clean, `lint` clean (4 pre-existing warnings, 0 errors).
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-21 — Session 1: Governance Database Layer
 
 **Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.
