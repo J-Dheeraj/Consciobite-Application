@@ -2,7 +2,7 @@
 type: meta
 title: "Consciobite Wiki — Index"
 created: 2026-04-25
-updated: 2026-05-13
+updated: 2026-05-21
 status: developing
 tags: [index, consciobite, codebase]
 ---
@@ -16,12 +16,15 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 ## Sources
 - [[Graphify Audit 2026-04-25]]
 - [[GreenGrade Migration Brief 2026-04-25]]
+- [[Investor Feedback 2026-05-21]]
 
 ## Entities
+- [[Admin Routes]]
 - [[CarbonTracker Component]]
 - [[GreenGrade Service]]
 - [[Open Food Facts Integration]]
 - [[RequireAuth Guard]]
+- [[Score Audit Service]]
 - [[validate() Middleware]]
 
 ## Concepts
@@ -30,6 +33,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 - [[GreenGrade KDE Scoring]]
 - [[Product Catalog Schema]]
 - [[Render Deployment]]
+- [[Stack Migration Plan]]
 - [[Static Export Pipeline]]
 - [[Validate Middleware Pattern]]
 
@@ -37,6 +41,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 - [[Backend Security]]
 - [[Frontend Accessibility]]
 - [[Frontend Error Handling]]
+- [[Grading Independence Governance]]
 
 ## Questions
 - [[What Did the Graphify Audit Find]]
