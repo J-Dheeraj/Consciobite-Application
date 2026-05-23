@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-05-23
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,50 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-05-23 — Session 3: Transparency & Governance Frontend
+
+**Operation:** Implement public transparency features on branch `claude/nifty-goodall-CtzdW`. Also incorporated the Session 1 governance layer from PR #30 (`claude/improve-application-S5njo`) as it had failing CI but passing tests locally.
+
+**Files created:** 2
+- `backend/src/routes/transparency.js` — public `GET /api/transparency`: governance commitments, advisory board seats (3, all forming), 12-month aggregate audit stats
+- `frontend/src/app/transparency/page.js` — `/transparency` page: conflict-of-interest statement, governance commitments, advisory board section with status pills, score audit bar chart, links
+
+**Files modified:** 4
+- `backend/src/index.js` — mounted `transparencyRoutes` at `/api/transparency`
+- `frontend/src/services/recipes.js` — added `fetchTransparency()`
+- `frontend/src/services/api.js` — re-exported `fetchTransparency`
+- `frontend/src/app/methodology/page.js` — added "Scoring Independence & Governance" section + link to `/transparency`
+
+**Session 1 governance layer incorporated (from PR #30):**
+- `backend/src/db/migrations/002_governance_layer.sql`
+- `backend/src/services/scoreAudit.js`
+- `backend/src/routes/admin.js`
+- `backend/src/middleware/auth.js` (requireAdmin)
+- `frontend/src/app/page.js` (product count 576→550)
+
+**Verification:** 117 backend tests passing; frontend builds 567 pages (lint clean).
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
+## 2026-05-21 — Session 1: Governance Database Layer (PR #30)
+
+**Operation:** Implement conflict-of-interest audit trail on `claude/improve-application-S5njo` branch. PR open, CI failing (transient — tests pass locally).
+
+**Files created:** 4
+- `backend/src/db/migrations/002_governance_layer.sql`
+- `backend/src/services/scoreAudit.js`
+- `backend/src/routes/admin.js`
+- `wiki/concepts/Stack Migration Plan.md`
+
+**Files modified:** 2
+- `backend/src/middleware/auth.js` — added `requireAdmin`
+- `backend/src/index.js` — mounted admin routes, score snapshot on startup
 
 ---
 

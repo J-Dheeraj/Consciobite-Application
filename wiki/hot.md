@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-13
+updated: 2026-05-23
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-23 after governance Session 3 (transparency features).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -23,19 +23,21 @@ tags: [hot-cache, meta]
 
 **Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
 
-**Recent fixes landed (2026-05-13):**
-- 7 merge conflicts resolved between feature branch and main
-- Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
-- `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
-- Frontend ESLint migrated from `react-app` to `next/core-web-vitals`
-- Unescaped JSX entities fixed (`"` -> `&ldquo;`/`&rdquo;`, `'` -> `&apos;`)
-- Docker build context changed from `./frontend` to `.` (repo root) so products.json is accessible
-- Dockerfile updated for repo-root-relative COPY paths
-- `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
+**Governance layer (2026-05-21, Session 1 — merged in PR #29):**
+- SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`; `users.role` column added
+- `backend/src/services/scoreAudit.js` — logs every score change with paying-client flag
+- `backend/src/routes/admin.js` — admin-protected CRUD and conflict-log at `/api/admin/*`
+- Scores snapshotted on startup (550 products); drift auto-detected on server restart
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Transparency features (2026-05-23, Session 3 — active branch `claude/nifty-goodall-CtzdW`):**
+- `backend/src/routes/transparency.js` — public `GET /api/transparency` returning governance commitments, advisory board structure (forming), and 12-month audit stats
+- `frontend/src/app/transparency/page.js` — public governance & audit stats page at `/transparency`
+- `frontend/src/app/methodology/page.js` — added "Scoring Independence & Governance" section + link to `/transparency`
+- `frontend/src/services/recipes.js` — added `fetchTransparency()` export
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Current test status:** 117 backend tests passing. Frontend builds 567 static pages (17 routes + 550 product pages).
+
+**Active branch:** `claude/nifty-goodall-CtzdW`
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

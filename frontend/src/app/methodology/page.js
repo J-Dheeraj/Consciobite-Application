@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchMethodology } from "@/services/api";
 import Spinner from "@/components/Spinner";
@@ -536,6 +537,36 @@ export default function Methodology() {
               </div>
             ))}
           </div>
+        </SectionCard>
+
+        {/* Governance */}
+        <SectionCard title="Scoring Independence & Governance" isDark={isDark}>
+          <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 14 }}>
+            GreenGrade scores are computed by a deterministic algorithm — manufacturer listing fees
+            do not and cannot influence score outcomes. Every score change is logged with a
+            timestamp, reason, and paying-client attribution so systematic bias can be detected and
+            audited.
+          </p>
+          <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 16 }}>
+            An independent advisory board (currently forming) will audit this methodology annually
+            and sign off on any parameter changes. Aggregate audit statistics are published
+            publicly.
+          </p>
+          <Link
+            href="/transparency"
+            style={{
+              display: "inline-block",
+              padding: "10px 20px",
+              borderRadius: 10,
+              background: "#2d6a4f",
+              color: "#fff",
+              fontSize: "0.88rem",
+              fontWeight: 600,
+              textDecoration: "none",
+            }}
+          >
+            View Governance & Audit Stats
+          </Link>
         </SectionCard>
       </div>
     </div>
