@@ -537,6 +537,72 @@ export default function Methodology() {
             ))}
           </div>
         </SectionCard>
+
+        {/* Governance & Independence */}
+        <SectionCard title="Governance &amp; Independence" isDark={isDark}>
+          <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 14 }}>
+            Consciobite charges manufacturers for listing on the platform. To prevent this from
+            influencing scores, three interlocking controls are in place:
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+            {[
+              {
+                label: "Deterministic algorithm",
+                desc: "Identical emission data always produces the same score. There is no manual override mechanism.",
+              },
+              {
+                label: "Append-only audit log",
+                desc: "Every score change is recorded and flagged with whether the affected product belongs to a paying client.",
+              },
+              {
+                label: "Independent advisory board",
+                desc: "A three-member board (academic, civil servant, non-client industry rep) audits methodology annually and must sign off on parameter changes.",
+              },
+            ].map(({ label, desc }) => (
+              <div
+                key={label}
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: 10,
+                  background: isDark ? "#1c2e22" : "#f8faf8",
+                  border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+                }}
+              >
+                <div
+                  style={{
+                    fontWeight: 700,
+                    fontSize: "0.88rem",
+                    marginBottom: 4,
+                    color: isDark ? "#e8f5e9" : "#1a3a2a",
+                  }}
+                >
+                  {label}
+                </div>
+                <div style={{ fontSize: "0.83rem", color: textColor, lineHeight: 1.55 }}>
+                  {desc}
+                </div>
+              </div>
+            ))}
+          </div>
+          <a
+            href="/transparency"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "9px 18px",
+              borderRadius: 10,
+              background: isDark ? "#1c2e22" : "#edf7f0",
+              color: isDark ? "#74c69d" : "#2d6a4f",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              textDecoration: "none",
+              border: `1px solid ${isDark ? "#2d4a35" : "#b7e4c7"}`,
+            }}
+          >
+            {"🛡️"} Full governance &amp; transparency report
+          </a>
+        </SectionCard>
       </div>
     </div>
   );

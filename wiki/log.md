@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-05-23
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,37 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-05-23 — Session 3: Public Transparency Pages
+
+**Operation:** Implement public-facing governance disclosure (Session 3 of governance brief). Cherry-picked Session 1 governance layer from `claude/improve-application-S5njo` onto active branch `claude/dreamy-dirac-YR6bw` first.
+
+**Files created:** 1
+- `frontend/src/app/transparency/page.js` — public Grading Independence & Governance page
+
+**Files modified:** 2
+- `frontend/src/app/methodology/page.js` — added "Governance & Independence" section at end with 3-control summary + link to transparency page
+- `frontend/src/components/Footer.js` — added "Transparency" and "Methodology" links under Resources column
+
+**Transparency page sections:**
+1. Hero — badges: deterministic algorithm / audit trail / independent board
+2. Conflict of Interest We Acknowledge — honest statement of the tension + 3-control resolution
+3. Independence Pledges — 5 commitments (deterministic, audit trail, public methodology, no overrides, regulatory alignment)
+4. Independent Grading Advisory Board — formation-in-progress badge, 3 seats (Academic, Regulator, Industry non-client), board mandate list
+5. Score Change Audit Trail — field-by-field reference for what's logged
+6. Algorithm Integrity — 4-cell grid + version-control note + link to methodology
+7. Regulatory Alignment — EU Green Claims Directive (Aligned) + Singapore (Monitoring)
+8. Contact CTA — links to /about
+
+**Verification:**
+- 117 backend tests passing
+- ESLint clean (`✔ No ESLint warnings or errors`)
+- Prettier formatted both modified files
+
+**Index updated:** yes (Transparency entity pending — no separate wiki entity needed, covered by Grading Independence Governance domain page)
+**Hot cache updated:** yes
 
 ---
 

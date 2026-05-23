@@ -16,16 +16,16 @@ Cross-cutting concern: ensuring GreenGrade scoring is (and is perceived as) inde
 
 Consciobite charges manufacturers for listing and grading. GreenGrade scores claim to be objective. These two facts create a conflict of interest that investors, regulators, and retail partners will flag.
 
-## Current State (updated 2026-05-21)
+## Current State (updated 2026-05-23)
 
 - GreenGrade algorithm is deterministic (KDE + sigmoid, 7 emission dimensions) — see [[GreenGrade KDE Scoring]]
-- Methodology page exists at `/methodology` in the frontend
+- Methodology page exists at `/methodology` in the frontend — **expanded with Governance & Independence section (Session 3)**
 - **Audit trail implemented** — [[Score Audit Service]] logs every score change with paying-client flag
 - **Admin conflict log** — [[Admin Routes]] at `/api/admin/conflict-log` with paying/non-paying filter and aggregate stats
 - **Manufacturer tracking** — `manufacturers` + `product_manufacturers` tables in SQLite
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
-- Advisory board not yet formed (business initiative, not code)
-- No public disclosure page yet (Session 3 of governance brief)
+- Advisory board not yet formed (business initiative, not code) — **formation-in-progress shown on transparency page**
+- **Public disclosure page live** — `/transparency` (Session 3 complete): conflict acknowledgement, independence pledges, advisory board structure, audit trail field reference, algorithm integrity, EU/SG regulatory alignment
 
 ## Action Plan
 
@@ -67,8 +67,8 @@ Set up an **Independent Grading Advisory Board** (3 members minimum):
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Done (Session 3) |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done (Session 3) |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links
