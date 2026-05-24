@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-05-24
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,23 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-05-24 — CI Fix: Prettier Format in admin.js
+
+**Operation:** Diagnose and fix failing backend CI check on PR #30 (`claude/improve-application-S5njo`).
+
+**Root cause:** `backend/src/routes/admin.js` was not formatted with Prettier (a multi-line destructure was written where Prettier prefers a single-line import). CI runs `npm run format:check` before tests — this step failed, so tests never ran.
+
+**Fix:** Ran `npx prettier --write src/routes/admin.js` from `backend/`. Changed 5 lines to 1 line (collapsed 4-line destructure into single-line). Verified lint, tests (117 pass), format check all green.
+
+**Commits:**
+- `9637878` — fix: apply Prettier formatting to admin.js to pass CI format check
+
+**Branch:** `claude/improve-application-S5njo` — pushed to origin, CI should now pass.
+
+**Hot cache updated:** yes
 
 ---
 
