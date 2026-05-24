@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchMethodology } from "@/services/api";
@@ -506,6 +507,80 @@ export default function Methodology() {
               </li>
             ))}
           </ul>
+        </SectionCard>
+
+        {/* Governance & Independence */}
+        <SectionCard title="Governance & Independence" isDark={isDark}>
+          <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 16 }}>
+            GreenGrade scores are independent of commercial relationships. Listing fees paid by
+            manufacturers do not influence score outcomes. All scores are computed by the same
+            deterministic algorithm applied equally to every product in the catalog.
+          </p>
+          <div
+            style={{
+              padding: "14px 18px",
+              borderRadius: 12,
+              background: isDark ? "#1c2e22" : "#edf7f0",
+              border: `1px solid ${isDark ? "#2d4a35" : "#b7e4c7"}`,
+              marginBottom: 14,
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: "0.88rem",
+                color: isDark ? "#e8f5e9" : "#1a3a2a",
+                marginBottom: 4,
+              }}
+            >
+              Independent Advisory Board
+            </div>
+            <p style={{ fontSize: "0.85rem", color: textColor, lineHeight: 1.6, margin: 0 }}>
+              An independent three-seat advisory board &mdash; comprising an academic researcher, a
+              regulatory representative, and a non-client industry professional &mdash; audits this
+              methodology annually and must approve any changes to scoring parameters.
+            </p>
+          </div>
+          <div
+            style={{
+              padding: "14px 18px",
+              borderRadius: 12,
+              background: isDark ? "#1c2e22" : "#edf7f0",
+              border: `1px solid ${isDark ? "#2d4a35" : "#b7e4c7"}`,
+              marginBottom: 14,
+            }}
+          >
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: "0.88rem",
+                color: isDark ? "#e8f5e9" : "#1a3a2a",
+                marginBottom: 4,
+              }}
+            >
+              Score Audit Trail
+            </div>
+            <p style={{ fontSize: "0.85rem", color: textColor, lineHeight: 1.6, margin: 0 }}>
+              Every score change is logged with a timestamp, old score, new score, and a flag
+              indicating whether the affected product has a paying manufacturer. This log is
+              append-only and reviewed in the annual board audit.
+            </p>
+          </div>
+          <Link
+            href="/transparency"
+            style={{
+              display: "inline-block",
+              padding: "10px 22px",
+              borderRadius: 10,
+              background: isDark ? "#52b788" : "#2d6a4f",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: "0.88rem",
+              textDecoration: "none",
+            }}
+          >
+            View Transparency & Governance
+          </Link>
         </SectionCard>
 
         {/* References */}
