@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-24 after transparency/governance Session 3 implementation.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -23,19 +23,18 @@ tags: [hot-cache, meta]
 
 **Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
 
-**Recent fixes landed (2026-05-13):**
-- 7 merge conflicts resolved between feature branch and main
-- Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
-- `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
-- Frontend ESLint migrated from `react-app` to `next/core-web-vitals`
-- Unescaped JSX entities fixed (`"` -> `&ldquo;`/`&rdquo;`, `'` -> `&apos;`)
-- Docker build context changed from `./frontend` to `.` (repo root) so products.json is accessible
-- Dockerfile updated for repo-root-relative COPY paths
-- `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
+**Governance Session 3 (2026-05-24):** Transparency & independence frontend implemented on `claude/nifty-goodall-a4zAO`.
+- Created `frontend/src/app/transparency/page.js` — 6 sections: acknowledged conflict, independence commitments, advisory board (3 seats: academic/regulatory/industry), score integrity mechanisms, FAQ disclosures, regulatory alignment (EU Green Claims Directive, SG Green Plan 2030)
+- Updated `frontend/src/app/methodology/page.js` — added "Governance & Independence" SectionCard with advisory board note, score audit trail note, and link to /transparency
+- Updated `Navbar.js` — added "Transparency" to both desktop and mobile nav
+- Updated `Footer.js` — added Methodology + Transparency to Resources section
+- Frontend builds 567 static pages (17 routes + 550 product pages). 0 ESLint warnings. 117 backend tests passing.
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Note:** Governance backend layer (admin routes, scoreAudit.js, migration 002) is in open PR #30 (`claude/improve-application-S5njo`), not yet merged. Transparency page is frontend-only, no dependency on those backend APIs.
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-a4zAO` — development branch for Session 3.
+
+**Previous branch:** `claude/improve-application-S5njo` — PR #30 open (governance backend layer, unstable CI — tests pass locally).
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

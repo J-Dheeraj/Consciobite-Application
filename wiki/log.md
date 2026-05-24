@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-24 — Session 3: Transparency & Governance Frontend
+
+**Operation:** Implement frontend transparency/governance features (Session 3 of governance brief) on branch `claude/nifty-goodall-a4zAO`. Builds on investor feedback documented in Session 1 wiki pages; does not depend on the unremerged PR #30 governance backend.
+
+**Files created:** 1
+- `frontend/src/app/transparency/page.js` — 6-section public transparency page: acknowledged conflict, independence commitments, advisory board (3 forming seats), score integrity mechanisms, FAQ disclosures (expandable), regulatory alignment
+
+**Files modified:** 3
+- `frontend/src/app/methodology/page.js` — added `Link` import, added "Governance & Independence" SectionCard at end with advisory board note, audit trail note, and link to /transparency
+- `frontend/src/components/Navbar.js` — added `{ to: "/transparency", label: "Transparency" }` to `NAV_LINKS` (desktop + mobile menu)
+- `frontend/src/components/Footer.js` — added Methodology + Transparency to Resources section links
+
+**Verification:**
+- Frontend builds cleanly: 567 static pages (17 routes + 550 product pages)
+- 0 ESLint warnings (`next lint` clean)
+- 0 Prettier issues
+- 117 backend tests passing
+- Committed and pushed to `claude/nifty-goodall-a4zAO`
+
+**Index updated:** no (no new wiki entity pages created this session)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.
