@@ -3,11 +3,7 @@ const crypto = require("crypto");
 const { requireAdmin } = require("../middleware/auth");
 const { validate } = require("../middleware/validate");
 const { getDb } = require("../db/schema");
-const {
-  getConflictLog,
-  getConflictStats,
-  snapshotScores,
-} = require("../services/scoreAudit");
+const { getConflictLog, getConflictStats, snapshotScores } = require("../services/scoreAudit");
 const { calculateGreenGrade } = require("../services/greengrade");
 const products = require("../data/products.json");
 
