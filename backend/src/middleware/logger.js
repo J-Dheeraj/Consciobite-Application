@@ -1,4 +1,5 @@
 const winston = require("winston");
+const crypto = require("crypto");
 
 const logger = winston.createLogger({
   level: process.env.NODE_ENV === "test" ? "error" : process.env.LOG_LEVEL || "info",
@@ -14,11 +15,16 @@ const logger = winston.createLogger({
 });
 
 function requestLogger(req, res, next) {
+  req.requestId = crypto.randomUUID();
+  res.setHeader("X-Request-Id", req.requestId);
   const start = Date.now();
   res.on("finish", () => {
     const duration = Date.now() - start;
     const level = res.statusCode >= 400 ? "warn" : "info";
-    logger[level](`${req.method} ${req.originalUrl} ${res.statusCode} ${duration}ms`);
+    logger[level](`${req.method} ${req.originalUrl} ${res.statusCode} ${duration}ms`, {
+      requestId: req.requestId,
+      ip: req.ip,
+    });
   });
   next();
 }

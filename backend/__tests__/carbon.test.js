@@ -33,6 +33,14 @@ describe("Carbon tracking endpoints", () => {
       expect(res.status).toBe(400);
     });
 
+    test("should reject emissions above 1000", async () => {
+      const res = await request(app)
+        .post("/api/carbon/log")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ productId: "1", productName: "Test", emissions: 1001 });
+      expect(res.status).toBe(400);
+    });
+
     test("should log a purchase", async () => {
       const res = await request(app)
         .post("/api/carbon/log")

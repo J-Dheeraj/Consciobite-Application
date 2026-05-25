@@ -20,6 +20,7 @@ const POST_LOG_SCHEMA = {
       required: true,
       type: "number",
       min: 0,
+      max: 1000,
       message: "emissions must be a non-negative number",
     },
     quantity: { required: false, type: "number", min: 0.1 },

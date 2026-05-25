@@ -1,13 +1,13 @@
 import { httpClient, API_BASE } from "./httpClient";
 
-export async function fetchProducts({ search, category, sort, page, limit } = {}) {
+export async function fetchProducts({ search, category, sort, page, limit } = {}, signal) {
   const params = new URLSearchParams();
   if (search) params.set("search", search);
   if (category) params.set("category", category);
   if (sort) params.set("sort", sort);
   if (page) params.set("page", String(page));
   if (limit) params.set("limit", String(limit));
-  return httpClient(`${API_BASE}/products?${params}`);
+  return httpClient(`${API_BASE}/products?${params}`, signal ? { signal } : {});
 }
 
 export async function fetchProduct(id) {

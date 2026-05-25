@@ -11,23 +11,40 @@ export default function Home() {
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [searchError, setSearchError] = useState("");
   const searchRef = useRef(null);
   const debounceRef = useRef(null);
+  const abortRef = useRef(null);
 
   const doSearch = (query) => {
+    if (abortRef.current) abortRef.current.abort();
+    abortRef.current = new AbortController();
     setLoading(true);
-    fetchProducts({ search: query, limit: 8 })
+    setSearchError("");
+    fetchProducts({ search: query, limit: 8 }, abortRef.current.signal)
       .then((data) => {
         setResults(data.products);
         setShowResults(true);
       })
-      .catch(() => setResults([]))
+      .catch((err) => {
+        if (err.name === "AbortError") return;
+        setResults([]);
+        setSearchError("Search failed. Please try again.");
+      })
       .finally(() => setLoading(false));
   };
+
+  useEffect(() => {
+    return () => {
+      if (abortRef.current) abortRef.current.abort();
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearch(val);
+    setSearchError("");
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (val.trim().length < 2) {
       setResults([]);
@@ -291,6 +308,26 @@ export default function Home() {
             >
               Searching...
             </span>
+          )}
+
+          {searchError && !loading && (
+            <div
+              role="alert"
+              style={{
+                position: "absolute",
+                top: "calc(100% + 8px)",
+                width: "100%",
+                background: "rgba(231,57,60,0.08)",
+                border: "1px solid #fecaca",
+                borderRadius: 10,
+                padding: "10px 16px",
+                color: "#c0392b",
+                fontSize: 13,
+                textAlign: "left",
+              }}
+            >
+              {searchError}
+            </div>
           )}
 
           {hasResults && (

@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const validator = require("validator");
 const crypto = require("crypto");
 const { getDb } = require("../db/schema");
+const { logger } = require("../middleware/logger");
 const {
   generateToken,
   setAuthCookie,
@@ -114,6 +115,7 @@ router.post("/register", async (req, res) => {
   const token = generateToken(user);
   setAuthCookie(res, token);
 
+  logger.info("auth.register.success", { userId: id, ip: req.ip });
   res.status(201).json({ user, token });
 });
 
@@ -144,6 +146,7 @@ router.post("/login", async (req, res) => {
 
   if (!user || !passwordOk) {
     recordFailedAttempt(normalizedEmail, ip);
+    logger.warn("auth.login.failed", { email: normalizedEmail, ip, reason: !user ? "unknown_email" : "bad_password" });
     return res.status(401).json({ error: "Invalid email or password" });
   }
 
@@ -151,6 +154,7 @@ router.post("/login", async (req, res) => {
   const token = generateToken({ id: user.id, email: user.email });
   setAuthCookie(res, token);
 
+  logger.info("auth.login.success", { userId: user.id, ip });
   res.json({
     user: { id: user.id, email: user.email, name: user.name },
     token,
@@ -158,7 +162,8 @@ router.post("/login", async (req, res) => {
 });
 
 // POST /api/auth/logout - clear the auth cookie
-router.post("/logout", (_req, res) => {
+router.post("/logout", (req, res) => {
+  if (req.user) logger.info("auth.logout", { userId: req.user.id, ip: req.ip });
   clearAuthCookie(res);
   res.json({ message: "Logged out" });
 });

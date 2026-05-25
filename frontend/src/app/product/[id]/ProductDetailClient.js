@@ -90,9 +90,12 @@ export default function ProductDetail() {
     data: product,
     isLoading: loading,
     error: queryError,
+    refetch,
   } = useQuery({
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
+    retry: 2,
+    retryDelay: (attempt) => 1000 * Math.pow(2, attempt),
   });
 
   const error = queryError ? "Unable to load product details." : "";
@@ -143,21 +146,38 @@ export default function ProductDetail() {
           }}
         >
           <p>{error || "Product not found."}</p>
-          <button
-            onClick={() => router.push("/")}
-            style={{
-              marginTop: 12,
-              padding: "10px 24px",
-              background: "#27ae60",
-              color: "#fff",
-              border: "none",
-              borderRadius: 10,
-              cursor: "pointer",
-              fontWeight: 600,
-            }}
-          >
-            Back to Home
-          </button>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 12 }}>
+            {error && (
+              <button
+                onClick={() => refetch()}
+                style={{
+                  padding: "10px 24px",
+                  background: "#e63946",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 10,
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                Try Again
+              </button>
+            )}
+            <button
+              onClick={() => router.push("/")}
+              style={{
+                padding: "10px 24px",
+                background: "#27ae60",
+                color: "#fff",
+                border: "none",
+                borderRadius: 10,
+                cursor: "pointer",
+                fontWeight: 600,
+              }}
+            >
+              Back to Home
+            </button>
+          </div>
         </div>
       </div>
     );

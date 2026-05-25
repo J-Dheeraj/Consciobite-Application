@@ -173,7 +173,16 @@ if (process.env.NODE_ENV !== "production") {
 
 // ---------- Routes (v1) ----------
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "Consciobite API", version: "2.0.0", apiVersion: "v1" });
+  let dbStatus = "ok";
+  try {
+    getDb().prepare("SELECT 1").get();
+  } catch (_) {
+    dbStatus = "error";
+  }
+  const status = dbStatus === "ok" ? "ok" : "degraded";
+  res
+    .status(dbStatus === "ok" ? 200 : 503)
+    .json({ status, service: "Consciobite API", version: "2.0.0", apiVersion: "v1", db: dbStatus, uptime: Math.floor(process.uptime()) });
 });
 
 app.get("/api/methodology", (_req, res) => {
