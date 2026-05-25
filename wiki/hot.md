@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-13 after CI/deployment fix session.
+**Last updated:** 2026-05-25 after backend hardening + frontend UX session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,19 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Recent fixes landed (2026-05-25):**
+- Carbon log `emissions` field now bounded to max 1000 kg CO₂e (+ test)
+- Auth routes log structured events: `auth.login.success`, `auth.login.failed`, `auth.register.success`, `auth.logout`
+- `requestLogger` now attaches `crypto.randomUUID()` as `req.requestId` and emits `X-Request-Id` response header
+- `/api/health` now pings SQLite (`SELECT 1`), returns `db` status + `uptime` seconds; returns 503 if DB is down
+- Home page search shows inline error banner on fetch failure (no more silent empty results)
+- Search debounce uses `AbortController` — in-flight requests cancelled on unmount or new keystroke
+- Product detail page: `useQuery` now has `retry: 2` with exponential backoff
+- Product detail error screen: "Try Again" button added (calls `refetch()`), shown only when there is a fetch error
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Current test status:** 118 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+
+**Active branch:** `claude/nifty-goodall-lRjMk` — work committed and pushed.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

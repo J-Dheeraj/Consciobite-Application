@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-25 — Backend Hardening & Frontend UX Session
+
+**Operation:** Audit codebase on `claude/nifty-goodall-lRjMk`, implement targeted improvements.
+
+**Pages updated:** 2
+- `hot.md` — refreshed with current fixes and test count
+- `log.md` — this entry
+
+**Key changes (commit `264c421`):**
+1. **Carbon emissions cap** — `POST /api/carbon/log` now rejects `emissions > 1000`; validated at schema layer via `max: 1000` in `POST_LOG_SCHEMA`; new regression test added
+2. **Auth event logging** — `auth.js` imports Winston logger; emits `auth.register.success`, `auth.login.success`, `auth.login.failed` (with reason field), `auth.logout` — all include `userId`/`ip` for incident tracing
+3. **Request ID tracking** — `requestLogger` middleware assigns `crypto.randomUUID()` to `req.requestId`, sets `X-Request-Id` response header, and includes `requestId` + `ip` in all HTTP access logs
+4. **Health endpoint** — `/api/health` now executes `SELECT 1` against SQLite; returns `db: "ok"` or `db: "error"` and HTTP 503 if DB is down; also reports `uptime` in seconds
+5. **Search error state** — home page `doSearch` now sets `searchError` state on failure and renders an inline alert banner (`role="alert"`) instead of silently clearing results
+6. **AbortController for search** — in-flight `fetchProducts` requests are aborted on unmount and when a new search keystroke arrives; `products.js` threads `signal` through to `httpClient`
+7. **Product detail retry** — `useQuery` has `retry: 2` + exponential delay (1s, 2s); error screen adds a "Try Again" button that calls `refetch()` from useQuery
+
+**Test count:** 118 backend tests (was 117) — all passing.
+
+**Active branch:** `claude/nifty-goodall-lRjMk`
+
+---
+
 ## 2026-05-13 — CI/Deployment Fix Session
 
 **Operation:** Fix CI failures, Render deployment, Docker build, and merge conflicts on `claude/improve-application-S5njo` branch.
