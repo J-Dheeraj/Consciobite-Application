@@ -115,6 +115,10 @@ router.get("/compare", validate(COMPARE_SCHEMA), (req, res) => {
 // GET /api/products/stats
 router.get("/stats", (req, res) => {
   const categories = {};
+  let totalScore = 0;
+  let green = 0;
+  let yellow = 0;
+  let red = 0;
 
   for (const p of enrichedProducts) {
     if (!categories[p.category]) {
@@ -123,18 +127,28 @@ router.get("/stats", (req, res) => {
     categories[p.category].count++;
     categories[p.category].totalScore += p.greenGrade.score;
     categories[p.category].totalEmissions += p.greenGrade.totalEmissions;
+    totalScore += p.greenGrade.score;
+    if (p.greenGrade.color === "green") green++;
+    else if (p.greenGrade.color === "yellow") yellow++;
+    else red++;
   }
 
-  const stats = Object.entries(categories).map(([name, data]) => ({
+  const categoryStats = Object.entries(categories).map(([name, data]) => ({
     category: name,
     productCount: data.count,
     avgScore: Math.round((data.totalScore / data.count) * 10) / 10,
     avgEmissions: Math.round((data.totalEmissions / data.count) * 100) / 100,
   }));
 
-  stats.sort((a, b) => b.avgScore - a.avgScore);
+  categoryStats.sort((a, b) => b.avgScore - a.avgScore);
 
-  res.json({ totalProducts: products.length, categories: stats });
+  const total = enrichedProducts.length;
+  res.json({
+    totalProducts: total,
+    avgScore: Math.round((totalScore / total) * 10) / 10,
+    gradeDistribution: { green, yellow, red },
+    categories: categoryStats,
+  });
 });
 
 // Lookup a product by barcode via Open Food Facts. Returns enriched product or null.

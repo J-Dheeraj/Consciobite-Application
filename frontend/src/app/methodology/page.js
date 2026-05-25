@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchMethodology } from "@/services/api";
@@ -536,6 +537,61 @@ export default function Methodology() {
               </div>
             ))}
           </div>
+        </SectionCard>
+
+        {/* Governance */}
+        <SectionCard title="Governance & Independence" isDark={isDark}>
+          <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 16 }}>
+            Consciobite charges manufacturers a listing fee while simultaneously claiming GreenGrade
+            scores are objective. We address this conflict of interest through three mechanisms:
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
+            {[
+              "Scores are computed by a deterministic algorithm — parameters cannot be changed per-product.",
+              "Listing fees are fixed and non-contingent on the score outcome.",
+              "An Independent Grading Advisory Board audits the algorithm annually and must approve any parameter changes.",
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                <span
+                  style={{
+                    width: 22,
+                    height: 22,
+                    borderRadius: "50%",
+                    background: "#2d6a4f",
+                    color: "#fff",
+                    fontSize: "0.7rem",
+                    fontWeight: 700,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                    marginTop: 1,
+                  }}
+                >
+                  {i + 1}
+                </span>
+                <span style={{ fontSize: "0.87rem", color: textColor, lineHeight: 1.6 }}>
+                  {item}
+                </span>
+              </div>
+            ))}
+          </div>
+          <Link
+            href="/transparency"
+            style={{
+              display: "inline-block",
+              padding: "10px 20px",
+              borderRadius: 10,
+              background: isDark ? "#1c2e22" : "#edf7f0",
+              color: "#2d6a4f",
+              fontSize: "0.88rem",
+              fontWeight: 600,
+              textDecoration: "none",
+              border: `1px solid ${isDark ? "#2d4a35" : "#b7e4c7"}`,
+            }}
+          >
+            View Transparency Report →
+          </Link>
         </SectionCard>
       </div>
     </div>
