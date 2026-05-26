@@ -190,6 +190,48 @@ app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
 });
 
+const ADVISORY_BOARD = [
+  {
+    seat: "Academic",
+    description: "Sustainability / food-science researcher",
+    purpose: "Scientific credibility for methodology and scoring parameters",
+    status: "Seat being constituted",
+  },
+  {
+    seat: "Regulator",
+    description: "Civil servant (e.g. Singapore Food Agency)",
+    purpose: "Regulatory legitimacy and policy alignment",
+    status: "Seat being constituted",
+  },
+  {
+    seat: "Industry",
+    description: "Industry professional — not a paying Consciobite client",
+    purpose: "Practical relevance and market perspective",
+    status: "Seat being constituted",
+  },
+];
+
+const GOVERNANCE_COMMITMENTS = [
+  "Annual methodology audit signed off by the Independent Advisory Board",
+  "All scoring parameter changes logged with reason and timestamp",
+  "Conflict-of-interest register monitored and published annually",
+  "Paying vs. non-paying score drift reported transparently",
+  "Algorithm documentation kept current at /methodology",
+  "No scoring parameter changes without Advisory Board sign-off",
+];
+
+app.get("/api/transparency", (_req, res) => {
+  const stats = getConflictStats();
+  res.json({
+    productsScored: products.length,
+    governanceVersion: "1.0",
+    lastUpdated: new Date().toISOString().slice(0, 10),
+    advisoryBoard: ADVISORY_BOARD,
+    commitments: GOVERNANCE_COMMITMENTS,
+    scoreChangeStats: stats,
+  });
+});
+
 app.use("/api/products", cacheMiddleware(120), productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/reviews", csrfProtection, reviewRoutes);

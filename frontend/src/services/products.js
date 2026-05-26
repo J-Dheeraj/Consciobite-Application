@@ -29,3 +29,7 @@ export async function fetchStats() {
 export async function fetchRecommendations(id) {
   return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/recommendations`);
 }
+
+export async function fetchTransparency() {
+  return httpClient(`${API_BASE}/transparency`);
+}

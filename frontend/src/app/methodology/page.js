@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchMethodology } from "@/services/api";
@@ -537,6 +538,54 @@ export default function Methodology() {
             ))}
           </div>
         </SectionCard>
+
+        {/* Governance callout */}
+        <div
+          style={{
+            padding: "20px 24px",
+            borderRadius: 14,
+            background: "linear-gradient(135deg, #0d2818 0%, #1b4332 100%)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 16,
+            flexWrap: "wrap",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                marginBottom: 4,
+              }}
+            >
+              Independent Grading Governance
+            </div>
+            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.83rem", margin: 0 }}>
+              Our conflict-of-interest register, advisory board structure, and scoring audit trail
+              are publicly available.
+            </p>
+          </div>
+          <Link
+            href="/transparency"
+            style={{
+              padding: "10px 20px",
+              borderRadius: 10,
+              background: "#2d6a4f",
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: "0.88rem",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            View Transparency
+          </Link>
+        </div>
       </div>
     </div>
   );
