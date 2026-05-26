@@ -214,7 +214,7 @@ export default function Home() {
       <div className="lp-stats-bar">
         <div className="lp-stats-inner">
           {[
-            { num: "576+", label: "Products Scored" },
+            { num: "550+", label: "Products Scored" },
             { num: "7", label: "Supply-Chain Dimensions" },
             { num: "100%", label: "Transparent Methodology" },
             { num: "Free", label: "Open Access" },
@@ -540,7 +540,7 @@ export default function Home() {
                   letterSpacing: -1,
                 }}
               >
-                576+
+                550+
               </div>
               <div style={{ fontSize: 13, opacity: 0.6 }}>Products scored and counting</div>
             </div>
@@ -633,8 +633,8 @@ export default function Home() {
                   },
                   {
                     icon: "\u{1F6E1}\u{FE0F}",
-                    title: "No Pay-to-Win",
-                    desc: "Brands cannot pay for higher scores. GreenGrade is independent and unbiased.",
+                    title: "Independent Scoring",
+                    desc: "Listing fees are non-contingent on score outcome. An independent advisory panel audits our methodology.",
                   },
                   {
                     icon: "\u{1F4D6}",
@@ -730,7 +730,7 @@ export default function Home() {
           Start making smarter food choices today
         </h2>
         <p className="lp-sub" style={{ textAlign: "center", margin: "0 auto 40px" }}>
-          Browse 576+ products, scan barcodes at the store, track your carbon footprint, and
+          Browse 550+ products, scan barcodes at the store, track your carbon footprint, and
           discover greener alternatives — all for free.
         </p>
         <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
