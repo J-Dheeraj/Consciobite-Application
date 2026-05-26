@@ -16,7 +16,7 @@ Cross-cutting concern: ensuring GreenGrade scoring is (and is perceived as) inde
 
 Consciobite charges manufacturers for listing and grading. GreenGrade scores claim to be objective. These two facts create a conflict of interest that investors, regulators, and retail partners will flag.
 
-## Current State (updated 2026-05-21)
+## Current State (updated 2026-05-26)
 
 - GreenGrade algorithm is deterministic (KDE + sigmoid, 7 emission dimensions) — see [[GreenGrade KDE Scoring]]
 - Methodology page exists at `/methodology` in the frontend
@@ -24,8 +24,10 @@ Consciobite charges manufacturers for listing and grading. GreenGrade scores cla
 - **Admin conflict log** — [[Admin Routes]] at `/api/admin/conflict-log` with paying/non-paying filter and aggregate stats
 - **Manufacturer tracking** — `manufacturers` + `product_manufacturers` tables in SQLite
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
+- **Public transparency page** — `/transparency` frontend page shows live scoring independence stats, advisory board seats, and governance commitments
+- **Public API endpoint** — `GET /api/transparency` returns aggregate stats + advisory board + commitments (no private data)
 - Advisory board not yet formed (business initiative, not code)
-- No public disclosure page yet (Session 3 of governance brief)
+- Footer + methodology page both link to transparency page
 
 ## Action Plan
 
@@ -47,10 +49,10 @@ Set up an **Independent Grading Advisory Board** (3 members minimum):
 
 ### Phase 2 — Transparency Features (code changes)
 
-1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members
-2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions)
-3. **Board disclosure page** — names, affiliations, conflict-of-interest declarations
-4. **Audit trail** — backend logging for when/why scoring parameters change (currently hardcoded in `backend/src/services/greengrade.js`)
+1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members *(methodology page links to transparency page — done)*
+2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions) *(pending)*
+3. **Board disclosure page** — `/transparency` page with board seats (vacancy cards) + conflict-of-interest register *(done — 2026-05-26)*
+4. **Audit trail public endpoint** — `GET /api/transparency` exposes aggregate paying/non-paying stats *(done — 2026-05-26)*
 
 ### Phase 3 — Certification (long-term)
 
@@ -67,8 +69,10 @@ Set up an **Independent Grading Advisory Board** (3 members minimum):
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/methodology/page.js` | Public methodology page — links to transparency | Done (Session 2) |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done (Session 2) |
+| `frontend/src/services/products.js` | `fetchTransparency()` API call | Done (Session 2) |
+| `backend/src/index.js` | `GET /api/transparency` public endpoint | Done (Session 2) |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links

@@ -13,6 +13,32 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-26 — Session 2: Transparency Page (Phase 2 Governance)
+
+**Operation:** Implement Phase 2 transparency features from governance roadmap — public `/transparency` page and live conflict-of-interest stats API endpoint.
+
+**Files created:** 1
+- `frontend/src/app/transparency/page.js` — public governance page with advisory board seats, live scoring independence stats, governance commitments, and link to methodology
+
+**Files modified:** 5
+- `backend/src/index.js` — added `GET /api/transparency` public endpoint returning aggregate stats + advisory board + commitments
+- `frontend/src/services/products.js` — added `fetchTransparency()` service function
+- `frontend/src/services/api.js` — exported `fetchTransparency`
+- `frontend/src/components/Footer.js` — added Methodology and Transparency links to Resources section
+- `frontend/src/app/methodology/page.js` — added governance callout card linking to `/transparency`
+
+**Verification:**
+- 117 backend tests still passing
+- Frontend builds 567 static pages (added /transparency)
+- ESLint: no warnings or errors
+- Prettier: clean
+
+**Branch:** `claude/dreamy-dirac-jHcG8`
+
+**Index updated:** yes
+
+---
+
 ## 2026-05-21 — Session 1: Governance Database Layer
 
 **Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.
