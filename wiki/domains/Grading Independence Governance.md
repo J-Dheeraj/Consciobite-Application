@@ -67,8 +67,8 @@ Set up an **Independent Grading Advisory Board** (3 members minimum):
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Done (Session 3) |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done (Session 3) |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links

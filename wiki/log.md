@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-05-26
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,35 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-05-26 — Session 3: Governance Transparency Features
+
+**Operation:** Implement public governance transparency page and extend methodology API with governance section (Session 3 of governance brief).
+
+**Files created:** 1
+- `frontend/src/app/transparency/page.js` — public governance transparency page
+
+**Files modified:** 3
+- `backend/src/services/dataProvenance.js` — added `governance` field to `getMethodology()` response
+- `frontend/src/app/methodology/page.js` — added "Governance & Independence" section with advisory board and link to transparency page
+- `frontend/src/components/Footer.js` — added Methodology and Transparency to Resources column
+
+**Governance data added to API:**
+- `governance.independenceStatement` — public commitment text
+- `governance.scoringIntegrity[]` — 4 technical safeguards
+- `governance.advisoryBoard` — description, mandate (4 items), 3 vacant seats (Academic, Regulatory, Industry)
+- `governance.regulatoryAlignment[]` — EU Green Claims Directive, SG Green Plan 2030, GHG Protocol
+
+**Verification:**
+- 117 backend tests still passing
+- Frontend builds 567 static pages (17 routes + 550 product pages)
+- Prettier and ESLint clean
+- `/transparency` route included in Next.js build
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 

@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-05-26
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-21 after governance Session 1 implementation.
+**Last updated:** 2026-05-26 after governance Session 3 (transparency page).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,13 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 117 backend tests passing. Frontend builds 567 static pages (17 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-i2KcB` — includes governance Session 1 (merged from `claude/improve-application-S5njo`) + Session 3 transparency work.
 
-**Governance layer (2026-05-21):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. Stack migration plan created for future Prisma/Supabase/Tailwind transition — see [[Stack Migration Plan]].
+**Governance layer (2026-05-21 — Session 1):** SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart.
+
+**Governance transparency (2026-05-26 — Session 3):** `getMethodology()` extended with `governance` object (independence statement, scoringIntegrity[], advisoryBoard with 3 vacant seats, regulatoryAlignment[]). New `/transparency` public page — fetches from `/api/methodology`, shows independence commitment, technical safeguards, advisory board structure with seat vacancies, and regulatory alignment cards. `/methodology` page now includes "Governance & Independence" section with advisory board vacancies and link to transparency page. Footer Resources column now lists Methodology and Transparency links.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
