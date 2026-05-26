@@ -59,6 +59,28 @@ function requireAuth(req, res, next) {
   }
 }
 
+function requireAdmin(req, res, next) {
+  const token = extractToken(req);
+  if (!token) {
+    return res.status(401).json({ error: "Authentication required" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
+    req.user = decoded;
+  } catch {
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+
+  const { getDb } = require("../db/schema");
+  const row = getDb().prepare("SELECT role FROM users WHERE id = ?").get(req.user.id);
+  if (!row || row.role !== "admin") {
+    return res.status(403).json({ error: "Admin access required" });
+  }
+
+  next();
+}
+
 function optionalAuth(req, _res, next) {
   const token = extractToken(req);
   if (token) {
@@ -133,6 +155,7 @@ module.exports = {
   setAuthCookie,
   clearAuthCookie,
   requireAuth,
+  requireAdmin,
   optionalAuth,
   refreshToken,
   csrfProtection,
