@@ -665,6 +665,51 @@ function getMethodology() {
       "The scoring model is trained on the current product catalog and may shift as new products are added.",
     ],
     references: [DATA_SOURCES.poore_nemecek_2018, DATA_SOURCES.our_world_in_data],
+    governance: {
+      independenceStatement:
+        "GreenGrade scores are determined solely by lifecycle emission data and statistical methodology. Manufacturer listing fees are non-contingent on score outcomes.",
+      scoringIntegrity: [
+        "Scores are computed by a deterministic algorithm (GreenGrade v3) with no human override capability.",
+        "Every score change is logged with timestamp, before/after values, and reason for the change.",
+        "Score change logs are tagged with paying vs. non-paying manufacturer status to enable independent bias detection.",
+        "Score snapshots are taken on every server restart; any drift is auto-detected and recorded.",
+      ],
+      advisoryBoard: {
+        description:
+          "An Independent Grading Advisory Board audits our scoring methodology annually, reviews parameter changes, and publishes an audit summary accessible to the public.",
+        mandate: [
+          "Annual audit of GreenGrade methodology (KDE scoring, sigmoid normalisation, category weights)",
+          "Sign-off on any changes to scoring parameters or category definitions",
+          "Published audit summary (publicly available)",
+          "Conflict-of-interest register for all board members",
+        ],
+        members: [],
+        vacancies: [
+          {
+            seat: "Academic",
+            description:
+              "Sustainability or food-science researcher with lifecycle assessment expertise",
+            status: "Open",
+          },
+          {
+            seat: "Regulatory",
+            description:
+              "Civil servant from a food safety or environmental authority (e.g. Singapore Food Agency)",
+            status: "Open",
+          },
+          {
+            seat: "Industry",
+            description: "Industry professional who is not a paying Consciobite client",
+            status: "Open",
+          },
+        ],
+      },
+      regulatoryAlignment: [
+        "EU Green Claims Directive — methodology transparency and substantiation requirements",
+        "Singapore Green Plan 2030 — sustainable food supply chain goals",
+        "GHG Protocol Product Standard — lifecycle emission accounting conventions",
+      ],
+    },
   };
 }
 

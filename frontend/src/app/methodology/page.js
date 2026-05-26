@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchMethodology } from "@/services/api";
@@ -537,6 +538,130 @@ export default function Methodology() {
             ))}
           </div>
         </SectionCard>
+
+        {/* Governance & Independence */}
+        {data.governance && (
+          <SectionCard title="Governance &amp; Independence" isDark={isDark}>
+            <p
+              style={{
+                fontSize: "0.9rem",
+                color: textColor,
+                lineHeight: 1.7,
+                marginBottom: 16,
+                padding: "12px 16px",
+                borderRadius: 10,
+                background: isDark ? "#1a2e1e" : "#edf7f0",
+                borderLeft: "3px solid #52b788",
+              }}
+            >
+              {data.governance.independenceStatement}
+            </p>
+
+            <div
+              style={{
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                marginBottom: 8,
+                color: isDark ? "#e8f5e9" : "#1a3a2a",
+              }}
+            >
+              Scoring Integrity Measures
+            </div>
+            <ul style={{ paddingLeft: 20, margin: "0 0 16px" }}>
+              {data.governance.scoringIntegrity.map((item, i) => (
+                <li
+                  key={i}
+                  style={{
+                    fontSize: "0.85rem",
+                    color: textColor,
+                    lineHeight: 1.7,
+                    marginBottom: 4,
+                  }}
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <div
+              style={{
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                marginBottom: 8,
+                color: isDark ? "#e8f5e9" : "#1a3a2a",
+              }}
+            >
+              Independent Advisory Board
+            </div>
+            <p style={{ fontSize: "0.85rem", color: textColor, lineHeight: 1.6, marginBottom: 12 }}>
+              {data.governance.advisoryBoard.description}
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+              {data.governance.advisoryBoard.vacancies.map((v) => (
+                <div
+                  key={v.seat}
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 12,
+                    padding: "10px 14px",
+                    borderRadius: 10,
+                    background: isDark ? "#1c2e22" : "#f8faf8",
+                    border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+                  }}
+                >
+                  <span
+                    style={{
+                      padding: "2px 10px",
+                      borderRadius: 12,
+                      background: isDark ? "#2d4a35" : "#d8f3dc",
+                      color: isDark ? "#95d5b2" : "#2d6a4f",
+                      fontSize: "0.72rem",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {v.seat}
+                  </span>
+                  <div>
+                    <div style={{ fontSize: "0.83rem", color: textColor, lineHeight: 1.5 }}>
+                      {v.description}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "0.72rem",
+                        color: "#f39c12",
+                        fontWeight: 600,
+                        marginTop: 2,
+                      }}
+                    >
+                      Seat {v.status}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Link
+              href="/transparency"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 18px",
+                borderRadius: 10,
+                background: isDark ? "#1a3a28" : "#d8f3dc",
+                color: isDark ? "#95d5b2" : "#2d6a4f",
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              View full transparency report &rarr;
+            </Link>
+          </SectionCard>
+        )}
       </div>
     </div>
   );
