@@ -215,6 +215,39 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/transparency", () => {
+    test("should return transparency data without auth", async () => {
+      const res = await request(app).get("/api/transparency");
+      expect(res.status).toBe(200);
+      expect(res.body.algorithm).toBeDefined();
+      expect(res.body.algorithm.version).toBe("3.0");
+    });
+
+    test("should include advisory board with 3 seats", async () => {
+      const res = await request(app).get("/api/transparency");
+      expect(res.status).toBe(200);
+      const { advisoryBoard } = res.body;
+      expect(advisoryBoard).toBeDefined();
+      expect(advisoryBoard.seats).toHaveLength(3);
+      expect(advisoryBoard.mandate).toBeDefined();
+      expect(Array.isArray(advisoryBoard.mandate)).toBe(true);
+    });
+
+    test("should include score integrity stats", async () => {
+      const res = await request(app).get("/api/transparency");
+      expect(res.status).toBe(200);
+      const { scoreIntegrity } = res.body;
+      expect(scoreIntegrity).toBeDefined();
+      expect(scoreIntegrity.stats).toBeDefined();
+      expect(scoreIntegrity.stats).toHaveProperty("totalChanges");
+      expect(scoreIntegrity.stats).toHaveProperty("paying");
+      expect(scoreIntegrity.stats).toHaveProperty("nonPaying");
+      expect(typeof scoreIntegrity.biasFlag).toBe("boolean");
+      expect(typeof scoreIntegrity.biasMessage).toBe("string");
+      expect(Array.isArray(scoreIntegrity.recentChanges)).toBe(true);
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

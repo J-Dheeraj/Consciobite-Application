@@ -161,4 +161,75 @@ function getConflictStats() {
   };
 }
 
-module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats };
+const ADVISORY_BOARD = {
+  status: "pending_formation",
+  seats: [
+    {
+      role: "Academic",
+      description: "Sustainability or food-science researcher",
+      status: "vacant",
+    },
+    {
+      role: "Regulator",
+      description: "Civil servant (e.g. Singapore Food Agency)",
+      status: "vacant",
+    },
+    {
+      role: "Industry",
+      description: "Industry professional — not a paying client",
+      status: "vacant",
+    },
+  ],
+  mandate: [
+    "Annual methodology audit",
+    "Sign-off on scoring parameter changes",
+    "Published audit summary",
+    "Conflict-of-interest register",
+  ],
+};
+
+function getTransparencyData() {
+  const stats = getConflictStats();
+  const recentChanges = getConflictLog({ limit: 10 });
+
+  const payingDelta = stats.paying.avgDelta;
+  const nonPayingDelta = stats.nonPaying.avgDelta;
+  const biasDelta = Math.abs(payingDelta - nonPayingDelta);
+  const biasFlag = stats.paying.count + stats.nonPaying.count > 0 && biasDelta > 0.5;
+
+  return {
+    lastUpdated: new Date().toISOString(),
+    algorithm: {
+      version: "3.0",
+      description:
+        "GreenGrade v3 — Gaussian KDE + sigmoid normalization across 7 lifecycle emission dimensions.",
+    },
+    advisoryBoard: ADVISORY_BOARD,
+    scoreIntegrity: {
+      stats,
+      biasFlag,
+      biasDelta: parseFloat(biasDelta.toFixed(4)),
+      biasMessage: biasFlag
+        ? "Score delta difference between paying and non-paying clients exceeds 0.5 — review recommended."
+        : "No significant bias detected between paying and non-paying client score changes.",
+      recentChanges: recentChanges.map((row) => ({
+        productName: row.product_name,
+        oldScore: row.old_score,
+        newScore: row.new_score,
+        delta: row.score_delta,
+        isPayingClient: !!row.is_paying_client,
+        changedAt: row.changed_at,
+        changedBy: row.changed_by,
+        changeReason: row.change_reason,
+      })),
+    },
+  };
+}
+
+module.exports = {
+  logScoreChange,
+  snapshotScores,
+  getConflictLog,
+  getConflictStats,
+  getTransparencyData,
+};
