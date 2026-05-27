@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-27 — Session 3: Public Transparency Features
+
+**Operation:** Implement public transparency report (governance Session 3). Exposes aggregate conflict-of-interest statistics, score distribution, advisory board status, and governance commitments via a public API endpoint and frontend page.
+
+**Files created:** 2
+- `backend/src/routes/transparency.js` — `GET /api/transparency` public endpoint; returns score distribution, bias analysis (aggregate, anonymized), advisory board status, commitments
+- `frontend/src/app/transparency/page.js` — new public `/transparency` page showing live governance stats
+
+**Files modified:** 5
+- `backend/src/index.js` — mounted transparency route with 300s cache
+- `backend/__tests__/api.test.js` — 5 new tests for transparency endpoint
+- `frontend/src/app/methodology/page.js` — added advisory board / transparency report banner with link
+- `frontend/src/components/Footer.js` — added Methodology and Transparency to Resources section
+- `frontend/src/services/recipes.js` + `api.js` — added `fetchTransparency()` function
+
+**Verification:**
+- 122 backend tests passing (5 new transparency tests)
+- Frontend builds 567 static pages cleanly (new /transparency route)
+- Pushed to `claude/dreamy-dirac-ZUZm5`
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-21 — Session 1: Governance Database Layer
 
 **Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.
