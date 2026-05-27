@@ -103,6 +103,8 @@ export default function Footer() {
               {[
                 { to: "/about", label: "About Us" },
                 { to: "/favorites", label: "My Favorites" },
+                { to: "/methodology", label: "Methodology" },
+                { to: "/transparency", label: "Transparency" },
               ].map((link) => (
                 <Link
                   key={link.to}

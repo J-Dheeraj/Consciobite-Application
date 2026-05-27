@@ -215,6 +215,52 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/transparency", () => {
+    test("should return transparency report without auth", async () => {
+      const res = await request(app).get("/api/transparency");
+      expect(res.status).toBe(200);
+      expect(res.body.methodologyVersion).toBe("3.0");
+      expect(res.body.totalProductsScored).toBeGreaterThan(0);
+    });
+
+    test("should include score distribution", async () => {
+      const res = await request(app).get("/api/transparency");
+      expect(res.status).toBe(200);
+      const { scoreDistribution, totalProductsScored } = res.body;
+      expect(scoreDistribution).toHaveProperty("green");
+      expect(scoreDistribution).toHaveProperty("yellow");
+      expect(scoreDistribution).toHaveProperty("red");
+      expect(
+        scoreDistribution.green + scoreDistribution.yellow + scoreDistribution.red
+      ).toBe(totalProductsScored);
+    });
+
+    test("should include bias analysis with required fields", async () => {
+      const res = await request(app).get("/api/transparency");
+      const { biasAnalysis } = res.body;
+      expect(biasAnalysis).toHaveProperty("totalChanges");
+      expect(biasAnalysis).toHaveProperty("payingClients");
+      expect(biasAnalysis).toHaveProperty("nonPayingClients");
+      expect(biasAnalysis).toHaveProperty("biasIndicator");
+      expect(typeof biasAnalysis.biasIndicator).toBe("string");
+    });
+
+    test("should include advisory board with seats", async () => {
+      const res = await request(app).get("/api/transparency");
+      const { advisoryBoard } = res.body;
+      expect(advisoryBoard).toHaveProperty("status");
+      expect(Array.isArray(advisoryBoard.seats)).toBe(true);
+      expect(advisoryBoard.seats.length).toBe(3);
+      expect(Array.isArray(advisoryBoard.mandate)).toBe(true);
+    });
+
+    test("should include governance commitments", async () => {
+      const res = await request(app).get("/api/transparency");
+      expect(Array.isArray(res.body.commitments)).toBe(true);
+      expect(res.body.commitments.length).toBeGreaterThan(0);
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

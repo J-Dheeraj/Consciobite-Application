@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchMethodology } from "@/services/api";
@@ -507,6 +508,52 @@ export default function Methodology() {
             ))}
           </ul>
         </SectionCard>
+
+        {/* Governance link */}
+        <div
+          style={{
+            padding: "16px 20px",
+            borderRadius: 14,
+            background: isDark ? "#162419" : "#edf7f0",
+            border: "1px solid rgba(82,183,136,0.3)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: "0.9rem",
+                color: isDark ? "#e8f5e9" : "#1a3a2a",
+                marginBottom: 2,
+              }}
+            >
+              Grading Independence
+            </div>
+            <p style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#666", margin: 0 }}>
+              Live conflict-of-interest monitoring, bias statistics, and advisory board status.
+            </p>
+          </div>
+          <Link
+            href="/transparency"
+            style={{
+              padding: "8px 18px",
+              background: "#2d6a4f",
+              color: "#fff",
+              borderRadius: 10,
+              textDecoration: "none",
+              fontWeight: 600,
+              fontSize: "0.85rem",
+              whiteSpace: "nowrap",
+            }}
+          >
+            View Transparency Report
+          </Link>
+        </div>
 
         {/* References */}
         <SectionCard title="Academic References" isDark={isDark}>
