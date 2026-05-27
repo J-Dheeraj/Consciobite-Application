@@ -13,6 +13,34 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-27 — Session 3: Public Transparency Page
+
+**Operation:** Implement transparency features (Session 3 of governance brief). Public endpoint + frontend governance page.
+
+**Files created:** 1
+- `frontend/src/app/transparency/page.js` — Public governance & transparency page (advisory board, conflict stats, recent score changes)
+
+**Files modified:** 5
+- `backend/src/services/scoreAudit.js` — added `getTransparencyData()` function + `ADVISORY_BOARD` constant
+- `backend/src/index.js` — mounted `GET /api/transparency` (public, no auth)
+- `frontend/src/services/recipes.js` — added `fetchTransparency()`
+- `frontend/src/services/api.js` — re-exported `fetchTransparency`
+- `frontend/src/components/Footer.js` — added Methodology + Transparency links under Resources
+- `backend/__tests__/api.test.js` — added 3 tests for `GET /api/transparency`
+
+**Verification:**
+- 120 backend tests passing (up from 117)
+- ESLint: no warnings or errors
+- Prettier: clean
+- New page: hero with live bias indicator, advisory board seats (3 vacant), stats grid, recent score changes table
+
+**Branch:** `claude/nifty-goodall-sJEDf`
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-21 — Session 1: Governance Database Layer
 
 **Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.
