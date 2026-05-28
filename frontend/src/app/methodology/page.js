@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchMethodology } from "@/services/api";
@@ -536,6 +537,34 @@ export default function Methodology() {
               </div>
             ))}
           </div>
+        </SectionCard>
+
+        {/* Governance */}
+        <SectionCard title="Independent Governance" isDark={isDark}>
+          <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 14 }}>
+            GreenGrade scoring is overseen by an Independent Grading Advisory Board. The board
+            provides annual methodology audits, sign-off on parameter changes, and maintains a
+            published conflict-of-interest register.
+          </p>
+          <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 16 }}>
+            Every score change is logged with a timestamp and reason. Aggregate statistics on score
+            changes for paying vs. non-paying clients are published publicly.
+          </p>
+          <Link
+            href="/transparency"
+            style={{
+              display: "inline-block",
+              padding: "10px 20px",
+              borderRadius: 10,
+              background: "#2d6a4f",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: "0.88rem",
+              textDecoration: "none",
+            }}
+          >
+            View Governance &amp; Transparency →
+          </Link>
         </SectionCard>
       </div>
     </div>

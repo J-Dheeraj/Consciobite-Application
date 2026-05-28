@@ -161,4 +161,64 @@ function getConflictStats() {
   };
 }
 
-module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats };
+function getPublicStats(totalProducts) {
+  const db = getDb();
+
+  const total = db.prepare("SELECT COUNT(*) as count FROM score_change_logs").get();
+
+  const byPaying = db
+    .prepare(
+      `SELECT
+         is_paying_client,
+         COUNT(*) as count,
+         AVG(score_delta) as avg_delta,
+         SUM(CASE WHEN score_delta > 0 THEN 1 ELSE 0 END) as increases,
+         SUM(CASE WHEN score_delta < 0 THEN 1 ELSE 0 END) as decreases
+       FROM score_change_logs
+       GROUP BY is_paying_client`
+    )
+    .all();
+
+  const paying = byPaying.find((r) => r.is_paying_client === 1) || {
+    count: 0,
+    avg_delta: 0,
+    increases: 0,
+    decreases: 0,
+  };
+  const nonPaying = byPaying.find((r) => r.is_paying_client === 0) || {
+    count: 0,
+    avg_delta: 0,
+    increases: 0,
+    decreases: 0,
+  };
+
+  const manufacturerCount = db
+    .prepare("SELECT COUNT(*) as count FROM manufacturers WHERE is_paying = 1")
+    .get();
+
+  return {
+    totalProducts: totalProducts ?? 0,
+    listedManufacturers: manufacturerCount.count,
+    totalScoreChanges: total.count,
+    paying: {
+      changes: paying.count,
+      avgDelta: parseFloat((paying.avg_delta || 0).toFixed(4)),
+      increases: paying.increases,
+      decreases: paying.decreases,
+    },
+    nonPaying: {
+      changes: nonPaying.count,
+      avgDelta: parseFloat((nonPaying.avg_delta || 0).toFixed(4)),
+      increases: nonPaying.increases,
+      decreases: nonPaying.decreases,
+    },
+  };
+}
+
+module.exports = {
+  logScoreChange,
+  snapshotScores,
+  getConflictLog,
+  getConflictStats,
+  getPublicStats,
+};

@@ -20,7 +20,7 @@ const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
-const { snapshotScores } = require("./services/scoreAudit");
+const { snapshotScores, getPublicStats } = require("./services/scoreAudit");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -188,6 +188,53 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
+});
+
+const ADVISORY_BOARD = {
+  status: "formation",
+  expectedFormationDate: "Q3 2026",
+  mandate: [
+    "Annual methodology audit",
+    "Sign-off on scoring parameter changes",
+    "Publish annual audit summary",
+    "Maintain conflict-of-interest register",
+  ],
+  seats: [
+    {
+      role: "Academic",
+      description: "Sustainability or food-science researcher from an accredited institution",
+      status: "vacant",
+    },
+    {
+      role: "Regulator",
+      description: "Civil servant from a food or environmental standards body (e.g. SFA Singapore)",
+      status: "vacant",
+    },
+    {
+      role: "Industry",
+      description: "Food industry professional with no commercial relationship with Consciobite",
+      status: "vacant",
+    },
+  ],
+};
+
+const GOVERNANCE_COMMITMENTS = [
+  "GreenGrade scores are calculated by a deterministic algorithm — no manual overrides are permitted without board sign-off and an audit log entry.",
+  "Every scoring parameter change is logged with a timestamp, the identity of the person who made it, and the reason.",
+  "Aggregate statistics on score changes for paying vs. non-paying clients are published publicly on this page.",
+  "Advisory board members will disclose conflicts of interest before any methodology review.",
+  "The full scoring methodology and data sources are published at /methodology.",
+];
+
+app.get("/api/transparency", (req, res) => {
+  const stats = getPublicStats(products.length);
+  res.json({
+    lastAuditDate: "2026-05-21",
+    algorithmVersion: getMethodology().version,
+    advisoryBoard: ADVISORY_BOARD,
+    scoringStats: stats,
+    commitments: GOVERNANCE_COMMITMENTS,
+  });
 });
 
 app.use("/api/products", cacheMiddleware(120), productRoutes);
