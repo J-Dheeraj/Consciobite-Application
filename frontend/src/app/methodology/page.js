@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchMethodology } from "@/services/api";
@@ -536,6 +537,31 @@ export default function Methodology() {
               </div>
             ))}
           </div>
+        </SectionCard>
+
+        {/* Governance */}
+        <SectionCard title="Governance & Independence" isDark={isDark}>
+          <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 14 }}>
+            Consciobite charges manufacturers for product listing. To prevent any commercial
+            relationship from influencing scores, every recalculation is logged with a
+            paying/non-paying flag. An Independent Grading Advisory Board is being formed to provide
+            external oversight of this methodology.
+          </p>
+          <Link
+            href="/transparency"
+            style={{
+              display: "inline-block",
+              padding: "10px 22px",
+              borderRadius: 10,
+              background: "#2d6a4f",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: "0.85rem",
+              textDecoration: "none",
+            }}
+          >
+            View Transparency Report
+          </Link>
         </SectionCard>
       </div>
     </div>

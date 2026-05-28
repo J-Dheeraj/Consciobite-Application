@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-21 after governance Session 1 implementation.
+**Last updated:** 2026-05-28 after governance Session 3 (transparency features).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -38,6 +38,8 @@ tags: [hot-cache, meta]
 **Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
 
 **Governance layer (2026-05-21):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. Stack migration plan created for future Prisma/Supabase/Tailwind transition — see [[Stack Migration Plan]].
+
+**Transparency features (2026-05-28):** Session 3 complete. Public `GET /api/transparency` endpoint exposes aggregate governance stats (no auth, no product names). Frontend `/transparency` page shows: catalogue snapshot, score-change independence table (paying vs non-paying avg delta), advisory board status card, audit trail status. Methodology page now has "Governance & Independence" section linking to `/transparency`.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

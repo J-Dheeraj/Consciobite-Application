@@ -13,6 +13,35 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-28 — Session 3: Transparency Features
+
+**Operation:** Implement Phase 2 governance transparency features from [[Grading Independence Governance]] plan. Public-facing evidence of scoring independence.
+
+**Files created:** 1
+- `frontend/src/app/transparency/page.js` — public Transparency Report page (catalogue stats, score-change independence table, advisory board status, audit trail status)
+
+**Files modified:** 4
+- `backend/src/index.js` — added `GET /api/transparency` public endpoint; imports `getConflictStats`
+- `frontend/src/services/recipes.js` — added `fetchTransparency()` service call
+- `frontend/src/services/api.js` — exported `fetchTransparency`
+- `frontend/src/app/methodology/page.js` — added "Governance & Independence" section with link to `/transparency`
+
+**What the endpoint returns (public, no auth):**
+- `algorithm` — name, version, dimension count, total products
+- `governance` — advisory board status, mandate list, members (empty until board formed)
+- `independence` — last-12-months score change counts/avg-delta for paying vs non-paying products
+- `manufacturers` — total/paying/non-paying counts
+
+**Verification:**
+- 117 backend tests still passing
+- Backend ESLint clean (pre-existing DEFAULT_PORT warning unchanged)
+- Prettier applied to all changed files
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-21 — Session 1: Governance Database Layer
 
 **Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.

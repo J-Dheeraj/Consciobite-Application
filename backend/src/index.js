@@ -20,7 +20,7 @@ const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
-const { snapshotScores } = require("./services/scoreAudit");
+const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -188,6 +188,46 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
+});
+
+app.get("/api/transparency", (_req, res) => {
+  const db = getDb();
+  const stats = getConflictStats();
+  const mfrTotal = db.prepare("SELECT COUNT(*) as count FROM manufacturers").get();
+  const mfrPaying = db
+    .prepare("SELECT COUNT(*) as count FROM manufacturers WHERE is_paying = 1")
+    .get();
+
+  res.json({
+    algorithm: {
+      name: "GreenGrade KDE",
+      version: "2.0.0",
+      dimensions: 7,
+      totalProducts: products.length,
+    },
+    governance: {
+      auditTrailActive: true,
+      advisoryBoardStatus: "Formation pending",
+      advisoryBoardMembers: [],
+      mandate: [
+        "Annual methodology audit",
+        "Sign-off on scoring parameter changes",
+        "Published audit summary",
+        "Conflict-of-interest register",
+      ],
+    },
+    independence: {
+      period: "Last 12 months",
+      totalScoreChanges: stats.totalChanges,
+      paying: stats.paying,
+      nonPaying: stats.nonPaying,
+    },
+    manufacturers: {
+      total: mfrTotal.count,
+      paying: mfrPaying.count,
+      nonPaying: mfrTotal.count - mfrPaying.count,
+    },
+  });
 });
 
 app.use("/api/products", cacheMiddleware(120), productRoutes);
