@@ -25,6 +25,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 - [[Open Food Facts Integration]]
 - [[RequireAuth Guard]]
 - [[Score Audit Service]]
+- [[Transparency Page]]
 - [[validate() Middleware]]
 
 ## Concepts

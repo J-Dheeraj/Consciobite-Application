@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-28 — Session 3: Transparency Features
+
+**Operation:** Implement public transparency and governance features (Session 3 of governance brief).
+
+**Files created:** 3
+- `frontend/src/app/transparency/page.js` — public Governance & Transparency page
+- `frontend/src/services/governance.js` — `fetchTransparency()` service
+- `wiki/entities/Transparency Page.md` — entity page
+
+**Files modified:** 4
+- `backend/src/services/scoreAudit.js` — added `getPublicStats()` (aggregate stats, no PII)
+- `backend/src/index.js` — added `GET /api/transparency` public endpoint (advisory board, stats, commitments)
+- `frontend/src/app/methodology/page.js` — added "Independent Governance" section + link to `/transparency`
+- `frontend/src/services/api.js` — added `fetchTransparency` export
+
+**Verification:**
+- 117 backend tests still passing
+- Frontend Prettier clean, Next.js ESLint clean
+- Committed on `claude/dreamy-dirac-KqLi1`
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-21 — Session 1: Governance Database Layer
 
 **Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.
