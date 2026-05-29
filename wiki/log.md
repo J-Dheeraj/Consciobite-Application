@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-29 — Governance Charter Ingested
+
+**Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
+
+**Files created:** 2
+- `GreenGrade_Governance_Charter.md` (repo root) — full charter for founding member review
+- `wiki/sources/GreenGrade Governance Charter 2026-05-29` — wiki source page with summary and technical connections
+
+**Files updated:** 3
+- `wiki/domains/Grading Independence Governance` — Phase 1 updated from proposal to drafted charter with full details
+- `wiki/index.md` — added charter source page
+- `wiki/hot.md` — updated with charter status
+
+**Key points:**
+- Charter defines 3-seat Panel: academic, regulatory/civil society, non-client industry
+- Four powers: methodology audit, score challenge (14-day SLA), conflict flag (30-day response), annual public report
+- Conflict-of-interest firewall: no paid relationships, no client financial interests, 12-month cooling-off
+- Voluntary service (no fees to avoid dependency)
+- 2-year terms, staggered, renewable once
+- Precedents cited: Nutri-Score, Rainforest Alliance, Carbon Trust, Which?
+- Pitch scripts included for regulators, retailers, and media
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-21 — Session 1: Governance Database Layer
 
 **Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.

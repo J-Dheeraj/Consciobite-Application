@@ -16,6 +16,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 ## Sources
 - [[Graphify Audit 2026-04-25]]
 - [[GreenGrade Migration Brief 2026-04-25]]
+- [[GreenGrade Governance Charter 2026-05-29]]
 - [[Investor Feedback 2026-05-21]]
 
 ## Entities
