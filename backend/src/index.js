@@ -20,7 +20,7 @@ const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
-const { snapshotScores } = require("./services/scoreAudit");
+const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -188,6 +188,48 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
+});
+
+const ADVISORY_BOARD = [
+  {
+    seat: "Academic",
+    status: "open",
+    description: "Sustainability or food-science researcher from an accredited institution",
+  },
+  {
+    seat: "Regulatory",
+    status: "open",
+    description:
+      "Civil servant or representative from a national food/environment regulator (e.g. SFA Singapore)",
+  },
+  {
+    seat: "Industry",
+    status: "open",
+    description:
+      "Senior industry professional who is not and has never been a paying Consciobite client",
+  },
+];
+
+app.get("/api/transparency", (_req, res) => {
+  const stats = getConflictStats();
+  const methodology = getMethodology();
+
+  res.json({
+    lastUpdated: new Date().toISOString().slice(0, 10),
+    algorithmVersion: methodology.version,
+    boardStatus: "forming",
+    boardMembers: ADVISORY_BOARD,
+    integrityStats: {
+      windowDays: 365,
+      totalChanges: stats.totalChanges,
+      paying: stats.paying,
+      nonPaying: stats.nonPaying,
+    },
+    statement:
+      "GreenGrade scores are produced by a deterministic algorithm (KDE + sigmoid across 7 lifecycle emission dimensions). " +
+      "Commercial relationships with manufacturers do not influence scoring parameters. " +
+      "Every score change is logged with a paying/non-paying flag and reviewed by the Independent Grading Advisory Board.",
+  });
 });
 
 app.use("/api/products", cacheMiddleware(120), productRoutes);

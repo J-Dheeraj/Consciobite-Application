@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { to: "/recipes", label: "Recipes" },
   { to: "/carbon", label: "Carbon" },
   { to: "/tips", label: "Tips" },
+  { to: "/transparency", label: "Transparency" },
 ];
 
 const LeafIcon = () => (

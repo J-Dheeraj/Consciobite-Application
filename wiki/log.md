@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-29 — Session 3: Public Transparency Features
+
+**Operation:** Implement governance transparency page (Session 3 of governance brief) — public-facing scoring integrity stats, advisory board disclosure, and independence statement.
+
+**Files created:** 1
+- `frontend/src/app/transparency/page.js` — public governance disclosure page (independence statement, scoring integrity stats, advisory board, links to methodology)
+
+**Files modified:** 4
+- `backend/src/index.js` — added public `/api/transparency` endpoint + `ADVISORY_BOARD` constant; imported `getConflictStats`
+- `frontend/src/services/recipes.js` — added `fetchTransparency()` service function
+- `frontend/src/services/api.js` — re-exported `fetchTransparency`
+- `frontend/src/components/Navbar.js` — added Transparency link to desktop nav
+
+**Verification:**
+- 117 backend tests still passing
+- ESLint: no warnings or errors
+- Prettier: all files formatted
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-21 — Session 1: Governance Database Layer
 
 **Operation:** Implement conflict-of-interest audit trail (Session 1 of governance brief), adapted from Prisma/Supabase to existing SQLite/Express stack. Also created stack migration plan for future transition.
