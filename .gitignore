@@ -28,3 +28,4 @@ npm-debug.log*
 *.swo
 node_modules/
 .next/
+frontend/out/
