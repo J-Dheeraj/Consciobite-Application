@@ -20,7 +20,7 @@ const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
-const { snapshotScores } = require("./services/scoreAudit");
+const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -188,6 +188,19 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
+});
+
+app.get("/api/transparency/stats", cacheMiddleware(300), (_req, res) => {
+  const stats = getConflictStats();
+  const db = getDb();
+  const productCount = products.length;
+  const manufacturerCount = db
+    .prepare("SELECT COUNT(*) as c FROM manufacturers")
+    .get().c;
+  const payingCount = db
+    .prepare("SELECT COUNT(*) as c FROM manufacturers WHERE is_paying = 1")
+    .get().c;
+  res.json({ ...stats, productCount, manufacturerCount, payingCount });
 });
 
 app.use("/api/products", cacheMiddleware(120), productRoutes);
