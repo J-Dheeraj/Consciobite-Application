@@ -25,7 +25,9 @@ Consciobite charges manufacturers for listing and grading. GreenGrade scores cla
 - **Manufacturer tracking** — `manufacturers` + `product_manufacturers` tables in SQLite
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
 - Advisory board not yet formed (business initiative, not code)
-- No public disclosure page yet (Session 3 of governance brief)
+- **Public transparency page live** — `/transparency` shows score impartiality stats and advisory board governance (Session 2 done)
+- Advisory board not yet formed (business initiative, not code)
+- Full board member disclosure with names/affiliations pending board formation (Session 3)
 
 ## Action Plan
 
@@ -68,7 +70,8 @@ Set up an **Independent Grading Advisory Board** (3 members minimum):
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
 | `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | **Done (Session 2)** |
+| `backend/src/routes/transparency.js` | Public `/api/transparency` endpoint | **Done (Session 2)** |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links

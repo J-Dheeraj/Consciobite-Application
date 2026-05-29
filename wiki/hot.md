@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-05-29
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-21 after governance Session 1 implementation.
+**Last updated:** 2026-05-29 after governance Session 2 implementation.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -35,9 +35,11 @@ tags: [hot-cache, meta]
 
 **Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-NsLR9` — in progress.
 
 **Governance layer (2026-05-21):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. Stack migration plan created for future Prisma/Supabase/Tailwind transition — see [[Stack Migration Plan]].
+
+**Governance layer (2026-05-29):** Session 2 complete. Public `/api/transparency` route (no auth, no CSRF) returns aggregate score impartiality stats (paying vs non-paying), advisory board governance structure, and catalog stats. Frontend `/transparency` page shows governance commitments, score impartiality stats panel, board member cards (pending status), and links to methodology. `fetchTransparency()` added to `frontend/src/services/recipes.js` and re-exported from `api.js`. Methodology page unchanged.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
