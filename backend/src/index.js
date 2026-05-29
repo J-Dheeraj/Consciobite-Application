@@ -203,6 +203,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/reviews", csrfProtection, reviewRoutes);
 app.use("/api/v1/carbon", csrfProtection, carbonRoutes);
 app.use("/api/v1/recipes", cacheMiddleware(600), recipeRoutes);
+app.use("/api/v1/admin", csrfProtection, adminRoutes);
 
 // ---------- 404 handler ----------
 app.use((_req, res) => {
