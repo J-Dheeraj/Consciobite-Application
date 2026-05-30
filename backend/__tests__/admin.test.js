@@ -260,6 +260,51 @@ describe("Admin governance endpoints", () => {
     });
   });
 
+  describe("POST /api/admin/methodology-changelog", () => {
+    test("should add a changelog entry", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          version: "3.1",
+          summary: "Test changelog entry",
+          details: "Added test coverage for the methodology changelog endpoint.",
+        });
+      expect(res.status).toBe(201);
+      expect(res.body).toHaveProperty("id");
+      expect(res.body.version).toBe("3.1");
+      expect(res.body.summary).toBe("Test changelog entry");
+    });
+
+    test("should appear in the public changelog", async () => {
+      await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ version: "3.2", summary: "Visibility test entry" });
+
+      const res = await request(app).get("/api/transparency/changelog");
+      expect(res.status).toBe(200);
+      const found = res.body.find((e) => e.version === "3.2");
+      expect(found).toBeDefined();
+    });
+
+    test("should reject missing summary", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ version: "3.1" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ version: "3.1", summary: "Unauthorized attempt" });
+      expect(res.status).toBe(403);
+    });
+  });
+
   describe("v1 alias", () => {
     test("should work at /api/v1/admin/conflict-log", async () => {
       const res = await request(app)

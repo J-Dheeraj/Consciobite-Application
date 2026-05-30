@@ -161,4 +161,46 @@ function getConflictStats() {
   };
 }
 
-module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats };
+function addMethodologyChangelog({ version, changedBy = "system", summary, details }) {
+  const db = getDb();
+  const id = crypto.randomUUID();
+  db.prepare(
+    `INSERT INTO methodology_changelog (id, version, changed_by, summary, details)
+     VALUES (?, ?, ?, ?, ?)`
+  ).run(id, version, changedBy, summary, details ?? null);
+  return id;
+}
+
+function getMethodologyChangelog({ limit = 50, offset = 0 } = {}) {
+  const db = getDb();
+  return db
+    .prepare(
+      `SELECT * FROM methodology_changelog
+       ORDER BY changed_at DESC LIMIT ? OFFSET ?`
+    )
+    .all(limit, offset);
+}
+
+function seedInitialMethodologyChangelog() {
+  const db = getDb();
+  const exists = db.prepare("SELECT COUNT(*) as c FROM methodology_changelog").get();
+  if (exists.c > 0) return;
+
+  addMethodologyChangelog({
+    version: "3.0",
+    changedBy: "system",
+    summary: "Initial GreenGrade v3.0 release",
+    details:
+      "Introduced Gaussian KDE with variance-weighted feature importance across 7 lifecycle emission dimensions (Land Use Change, Animal Feed, Farm, Processing, Transport, Packaging, Retail). Added 60/40 category/global CDF blending and sigmoid normalization (k=5). Trained on 550-product catalog.",
+  });
+}
+
+module.exports = {
+  logScoreChange,
+  snapshotScores,
+  getConflictLog,
+  getConflictStats,
+  addMethodologyChangelog,
+  getMethodologyChangelog,
+  seedInitialMethodologyChangelog,
+};

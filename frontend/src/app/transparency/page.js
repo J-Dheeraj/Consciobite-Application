@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchTransparencyStats } from "@/services/admin";
+import { fetchTransparencyStats, fetchMethodologyChangelog } from "@/services/admin";
 import PageHero from "@/components/PageHero";
 import Spinner from "@/components/Spinner";
 import { pageContainer, card } from "@/utils/pageStyles";
@@ -136,6 +136,11 @@ export default function TransparencyPage() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["transparency-stats"],
     queryFn: fetchTransparencyStats,
+  });
+
+  const { data: changelog } = useQuery({
+    queryKey: ["methodology-changelog"],
+    queryFn: fetchMethodologyChangelog,
   });
 
   const textColor = isDark ? "#c8d6c8" : "#444";
@@ -304,6 +309,76 @@ export default function TransparencyPage() {
             statement.
           </p>
         </SectionCard>
+
+        {/* Methodology Changelog */}
+        {changelog && changelog.length > 0 && (
+          <SectionCard title="Methodology Changelog" isDark={isDark}>
+            <p style={{ color: textColor, lineHeight: 1.7, marginBottom: 14, fontSize: 14 }}>
+              A version-controlled record of changes to the GreenGrade scoring algorithm. Each entry
+              is logged by the team and visible to the Advisory Panel.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {changelog.map((entry) => (
+                <div
+                  key={entry.id}
+                  style={{
+                    padding: "12px 16px",
+                    borderRadius: 10,
+                    background: isDark ? "#1c2e22" : "#f8faf8",
+                    border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      marginBottom: 6,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <span
+                      style={{
+                        padding: "2px 10px",
+                        borderRadius: 8,
+                        background: isDark ? "#2d4a35" : "#ecfdf5",
+                        color: "#2d6a4f",
+                        fontSize: 11,
+                        fontWeight: 700,
+                      }}
+                    >
+                      v{entry.version}
+                    </span>
+                    <span style={{ fontSize: 12, color: isDark ? "#6b8a6e" : "#999" }}>
+                      {new Date(entry.changed_at).toLocaleDateString("en-GB", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 13,
+                      color: isDark ? "#e8f5e9" : "#1a3a2a",
+                      marginBottom: entry.details ? 4 : 0,
+                    }}
+                  >
+                    {entry.summary}
+                  </div>
+                  {entry.details && (
+                    <div
+                      style={{ fontSize: 12, color: isDark ? "#7a9a7e" : "#666", lineHeight: 1.6 }}
+                    >
+                      {entry.details}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
 
         {/* Contact */}
         <SectionCard title="Contact" isDark={isDark}>

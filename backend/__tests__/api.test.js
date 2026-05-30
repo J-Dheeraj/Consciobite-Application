@@ -215,6 +215,53 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/transparency/stats", () => {
+    test("should return stats without auth", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("totalChanges");
+      expect(res.body).toHaveProperty("paying");
+      expect(res.body).toHaveProperty("nonPaying");
+      expect(res.body).toHaveProperty("productCount");
+      expect(res.body.productCount).toBe(550);
+    });
+
+    test("should return manufacturer counts", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(typeof res.body.manufacturerCount).toBe("number");
+      expect(typeof res.body.payingCount).toBe("number");
+    });
+  });
+
+  describe("GET /api/transparency/changelog", () => {
+    test("should return changelog without auth", async () => {
+      const res = await request(app).get("/api/transparency/changelog");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+
+    test("should include seeded v3.0 entry", async () => {
+      const res = await request(app).get("/api/transparency/changelog");
+      expect(res.status).toBe(200);
+      expect(res.body.length).toBeGreaterThan(0);
+      const v3 = res.body.find((e) => e.version === "3.0");
+      expect(v3).toBeDefined();
+      expect(v3.summary).toContain("GreenGrade");
+      expect(v3).toHaveProperty("changed_at");
+    });
+
+    test("each entry should have required fields", async () => {
+      const res = await request(app).get("/api/transparency/changelog");
+      res.body.forEach((entry) => {
+        expect(entry).toHaveProperty("id");
+        expect(entry).toHaveProperty("version");
+        expect(entry).toHaveProperty("summary");
+        expect(entry).toHaveProperty("changed_at");
+      });
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

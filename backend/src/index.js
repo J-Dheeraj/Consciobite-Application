@@ -20,7 +20,12 @@ const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
-const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
+const {
+  snapshotScores,
+  getConflictStats,
+  getMethodologyChangelog,
+  seedInitialMethodologyChangelog,
+} = require("./services/scoreAudit");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -77,6 +82,9 @@ const scoreChanges = snapshotScores(products, (product) =>
 if (scoreChanges.length > 0) {
   logger.warn(`Score audit: ${scoreChanges.length} score change(s) detected on startup`);
 }
+
+// Seed initial methodology changelog entry if table is empty
+seedInitialMethodologyChangelog();
 
 // ---------- Structured logging ----------
 app.use(requestLogger);
@@ -188,6 +196,11 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
+});
+
+app.get("/api/transparency/changelog", cacheMiddleware(300), (_req, res) => {
+  const changelog = getMethodologyChangelog();
+  res.json(changelog);
 });
 
 app.get("/api/transparency/stats", cacheMiddleware(300), (_req, res) => {
