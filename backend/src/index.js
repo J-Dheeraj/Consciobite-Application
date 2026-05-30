@@ -194,9 +194,7 @@ app.get("/api/transparency/stats", cacheMiddleware(300), (_req, res) => {
   const stats = getConflictStats();
   const db = getDb();
   const productCount = products.length;
-  const manufacturerCount = db
-    .prepare("SELECT COUNT(*) as c FROM manufacturers")
-    .get().c;
+  const manufacturerCount = db.prepare("SELECT COUNT(*) as c FROM manufacturers").get().c;
   const payingCount = db
     .prepare("SELECT COUNT(*) as c FROM manufacturers WHERE is_paying = 1")
     .get().c;
