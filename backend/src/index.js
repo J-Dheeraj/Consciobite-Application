@@ -20,7 +20,7 @@ const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
-const { snapshotScores } = require("./services/scoreAudit");
+const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -190,6 +190,17 @@ app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
 });
 
+app.get("/api/transparency/stats", cacheMiddleware(300), (_req, res) => {
+  const stats = getConflictStats();
+  const db = getDb();
+  const productCount = products.length;
+  const manufacturerCount = db.prepare("SELECT COUNT(*) as c FROM manufacturers").get().c;
+  const payingCount = db
+    .prepare("SELECT COUNT(*) as c FROM manufacturers WHERE is_paying = 1")
+    .get().c;
+  res.json({ ...stats, productCount, manufacturerCount, payingCount });
+});
+
 app.use("/api/products", cacheMiddleware(120), productRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/reviews", csrfProtection, reviewRoutes);
@@ -203,6 +214,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/reviews", csrfProtection, reviewRoutes);
 app.use("/api/v1/carbon", csrfProtection, carbonRoutes);
 app.use("/api/v1/recipes", cacheMiddleware(600), recipeRoutes);
+app.use("/api/v1/admin", csrfProtection, adminRoutes);
 
 // ---------- 404 handler ----------
 app.use((_req, res) => {

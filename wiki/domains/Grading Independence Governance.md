@@ -16,7 +16,7 @@ Cross-cutting concern: ensuring GreenGrade scoring is (and is perceived as) inde
 
 Consciobite charges manufacturers for listing and grading. GreenGrade scores claim to be objective. These two facts create a conflict of interest that investors, regulators, and retail partners will flag.
 
-## Current State (updated 2026-05-21)
+## Current State (updated 2026-05-29)
 
 - GreenGrade algorithm is deterministic (KDE + sigmoid, 7 emission dimensions) — see [[GreenGrade KDE Scoring]]
 - Methodology page exists at `/methodology` in the frontend
@@ -24,26 +24,34 @@ Consciobite charges manufacturers for listing and grading. GreenGrade scores cla
 - **Admin conflict log** — [[Admin Routes]] at `/api/admin/conflict-log` with paying/non-paying filter and aggregate stats
 - **Manufacturer tracking** — `manufacturers` + `product_manufacturers` tables in SQLite
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
-- Advisory board not yet formed (business initiative, not code)
+- **Governance charter drafted** — [[GreenGrade Governance Charter 2026-05-29]] defines Panel composition, mandate, firewall, access rights, and cadence. Ready for founding member review.
+- **Landing page updated** — "Independent Scoring" copy replaces "No Pay-to-Win"; product count corrected to 550
+- Advisory board not yet formed (candidates to be identified)
 - No public disclosure page yet (Session 3 of governance brief)
 
 ## Action Plan
 
-### Phase 1 — Advisory Board (immediate, no code)
+### Phase 1 — Advisory Panel Charter (done)
 
-Set up an **Independent Grading Advisory Board** (3 members minimum):
+Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governance Charter 2026-05-29]] for full details.
 
-| Seat | Role | Purpose |
-|------|------|---------|
-| Academic | Sustainability/food-science researcher | Scientific credibility |
-| Regulator | Civil servant (e.g. SFA Singapore) | Regulatory legitimacy |
-| Industry | Industry professional (NOT a paying client) | Practical relevance |
+**Panel seats (3):**
 
-**Board mandate:**
-- Annual methodology audit
-- Sign-off on scoring parameter changes
-- Published audit summary
-- Conflict-of-interest register
+| Seat | Profile | Independence Guarantee |
+|------|---------|----------------------|
+| Academic | Food systems / LCA researcher | No consulting for Consciobite or clients |
+| Regulatory | FSAI / EPA / CCPC (or consumer advocacy) | Peer credibility with regulators |
+| Industry | Non-client retail/food professional | NOT a paying Consciobite client |
+
+**Four powers:** methodology audit (annual), score challenge (14-day SLA), conflict-of-interest flag (30-day public response), annual public report (500-800 words).
+
+**Firewall:** No paid/unpaid advisory relationships, no financial interest in clients, 12-month cooling-off. Voluntary service (no fees).
+
+**Activation steps remaining:**
+1. Identify 3 founding candidates (target: 2 weeks)
+2. Share charter for comments (1 week)
+3. Publish on website at `/transparency` (Session 3 code work)
+4. First Panel meeting within 90 days of acceptance
 
 ### Phase 2 — Transparency Features (code changes)
 
@@ -73,7 +81,8 @@ Set up an **Independent Grading Advisory Board** (3 members minimum):
 
 ## Links
 
-- [[Investor Feedback 2026-05-21]] — original feedback
+- [[Investor Feedback 2026-05-21]] — original feedback that prompted this
+- [[GreenGrade Governance Charter 2026-05-29]] — Panel charter (draft v1.0)
 - [[Score Audit Service]] — audit trail implementation
 - [[Admin Routes]] — admin API endpoints
 - [[Stack Migration Plan]] — future Prisma/Supabase migration
