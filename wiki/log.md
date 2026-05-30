@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-30 — Admin Section Completed
+
+**Operation:** Add `/admin` index page and shared admin layout to complete the admin section.
+
+**Files created:** 2
+- `frontend/src/app/admin/layout.js` — shared tab navigation (Overview / Score Audit / Manufacturers) with active-route underline and dark-mode support; wraps all admin sub-pages
+- `frontend/src/app/admin/page.js` — admin overview dashboard; shows live stats bar (product count, manufacturers, paying clients, 12-mo score changes) from the public `/api/transparency/stats` endpoint; clickable section cards linking to each admin tool; shows sign-in prompt when not authenticated
+
+**Problem fixed:** Navigating to `/admin` previously returned a 404 because the App Router had no `page.js` at that path. There was also no shared navigation between admin sub-pages.
+
+**Verification:**
+- `next lint` — no warnings or errors
+- `prettier --check` — clean after auto-format
+- 137 backend tests still passing
+- Branch: `claude/dreamy-dirac-rbxi4`, pushed to remote
+
+**Index updated:** no (no new wiki pages created)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

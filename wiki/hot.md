@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-05-30 after admin section completion.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -38,6 +38,8 @@ tags: [hot-cache, meta]
 **Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+
+**Admin section completed (2026-05-30):** Added `frontend/src/app/admin/layout.js` (shared tab navigation — Overview / Score Audit / Manufacturers, active-route underline, dark-mode aware) and `frontend/src/app/admin/page.js` (admin overview dashboard showing live stats: product count, manufacturers, paying clients, 12-mo score changes; clickable section cards; sign-in prompt for unauthenticated users). `/admin` route previously returned 404. Active branch: `claude/dreamy-dirac-rbxi4`.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
