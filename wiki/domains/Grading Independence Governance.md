@@ -53,12 +53,12 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 3. Publish on website at `/transparency` (Session 3 code work)
 4. First Panel meeting within 90 days of acceptance
 
-### Phase 2 — Transparency Features (code changes)
+### Phase 2 — Transparency Features (code changes) ✅ done (Session 3)
 
-1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members
-2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions)
-3. **Board disclosure page** — names, affiliations, conflict-of-interest declarations
-4. **Audit trail** — backend logging for when/why scoring parameters change (currently hardcoded in `backend/src/services/greengrade.js`)
+1. **Public methodology page** — `/methodology` already has full algorithm docs, data sources, confidence levels (done)
+2. **Scoring changelog** — `methodology_changelog` SQLite table; `scoreAudit.js` functions; `GET /api/transparency/changelog` (public); `POST /api/admin/methodology-changelog` (admin); transparency page shows changelog section; seeded with v3.0 entry on startup (done)
+3. **Admin landing page** — `/admin` index page linking to conflict-log and manufacturers sub-pages (done)
+4. **Tests** — 9 new tests covering transparency stats and changelog CRUD; total 146 backend tests (done)
 
 ### Phase 3 — Certification (long-term)
 

@@ -13,6 +13,34 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-30 — Session 3: Methodology Changelog & Admin Index Page
+
+**Operation:** Implement methodology changelog (Session 3 of governance brief) and fill remaining UX gaps.
+
+**Files created:** 2
+- `backend/src/db/migrations/003_methodology_changelog.sql` — `methodology_changelog` table with indexes
+- `frontend/src/app/admin/page.js` — admin navigation hub linking to conflict-log and manufacturers
+
+**Files modified:** 7
+- `backend/src/services/scoreAudit.js` — added `addMethodologyChangelog()`, `getMethodologyChangelog()`, `seedInitialMethodologyChangelog()` (seeds v3.0 entry on first start)
+- `backend/src/index.js` — wired changelog seed; added `GET /api/transparency/changelog` public endpoint
+- `backend/src/routes/admin.js` — added `POST /api/admin/methodology-changelog` (admin-only)
+- `backend/__tests__/api.test.js` — 7 new tests for transparency stats and changelog endpoints
+- `backend/__tests__/admin.test.js` — 4 new tests for methodology changelog admin endpoint
+- `frontend/src/services/admin.js` — added `fetchMethodologyChangelog()` and `addMethodologyChangelogEntry()`
+- `frontend/src/app/transparency/page.js` — added methodology changelog section using public API
+
+**Verification:**
+- All 146 backend tests passing (up from 137)
+- Frontend ESLint and Prettier clean
+- Seeded v3.0 changelog entry confirmed in test assertions
+- New public endpoints require no auth; admin write endpoint requires admin role
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

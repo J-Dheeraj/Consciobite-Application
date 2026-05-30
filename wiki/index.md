@@ -23,6 +23,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 - [[Admin Routes]]
 - [[CarbonTracker Component]]
 - [[GreenGrade Service]]
+- [[Methodology Changelog]]
 - [[Open Food Facts Integration]]
 - [[RequireAuth Guard]]
 - [[Score Audit Service]]
