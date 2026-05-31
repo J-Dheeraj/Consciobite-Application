@@ -17,6 +17,11 @@ const NAV_LINKS = [
   { to: "/transparency", label: "Transparency" },
 ];
 
+const ADMIN_LINKS = [
+  { to: "/admin/conflict-log", label: "Audit Log" },
+  { to: "/admin/manufacturers", label: "Manufacturers" },
+];
+
 const LeafIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style={{ marginRight: 8 }}>
     <path
@@ -71,6 +76,21 @@ export default function Navbar() {
             </Link>
           );
         })}
+        {user?.role === "admin" &&
+          ADMIN_LINKS.map((link) => {
+            const active = pathname === link.to;
+            return (
+              <Link
+                key={link.to}
+                href={link.to}
+                aria-current={active ? "page" : undefined}
+                className={`${styles.navLink} ${active ? styles.navLinkActive : ""}`}
+                style={{ opacity: 0.8, fontSize: "0.88rem" }}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
         {isAuthenticated ? (
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
             <span className={styles.userName}>{user?.name?.split(" ")[0]}</span>
@@ -126,6 +146,37 @@ export default function Navbar() {
               </Link>
             );
           })}
+          {user?.role === "admin" && (
+            <>
+              <div className={styles.divider} />
+              <div
+                style={{
+                  padding: "4px 16px",
+                  fontSize: "0.72rem",
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                  color: "rgba(255,255,255,0.4)",
+                }}
+              >
+                Admin
+              </div>
+              {ADMIN_LINKS.map((link) => {
+                const active = pathname === link.to;
+                return (
+                  <Link
+                    key={link.to}
+                    href={link.to}
+                    onClick={() => setMenuOpen(false)}
+                    aria-current={active ? "page" : undefined}
+                    className={`${styles.mobileLink} ${active ? styles.mobileLinkActive : ""}`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </>
+          )}
           <div className={styles.divider} />
           {isAuthenticated ? (
             <>

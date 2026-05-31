@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-05-31 — Admin Navigation + Role Exposure
+
+**Operation:** Fix admin page orphaning — auth routes now expose `role`, Navbar shows admin links for admin users. Also created CONTRIBUTING.md.
+
+**Problem found:** `/api/auth/login` and `/api/auth/me` returned user objects without the `role` field. The frontend had no way to know if a logged-in user was an admin, so the admin pages (`/admin/conflict-log`, `/admin/manufacturers`) were completely unreachable through the UI — users had to type URLs directly.
+
+**Files modified:** 4
+- `backend/src/routes/auth.js` — login query now selects `role`; login response includes `user.role`; `/me` query selects `role`; register response includes `role: 'user'`
+- `backend/__tests__/auth.test.js` — added assertions for `role` in login response; added `/me` role test (138 total)
+- `frontend/src/components/Navbar.js` — added `ADMIN_LINKS` constant; admin links render conditionally for `user?.role === 'admin'` in both desktop and mobile menus
+
+**Files created:** 1
+- `CONTRIBUTING.md` — setup guide, branch/commit conventions, code standards, PR checklist, architecture notes
+
+**Verification:**
+- 138 backend tests pass (1 new test)
+- Prettier clean on all modified files
+- Next.js lint clean on frontend
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

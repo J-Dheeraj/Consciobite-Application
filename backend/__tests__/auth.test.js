@@ -115,6 +115,7 @@ describe("Auth endpoints - validation", () => {
       expect(res.status).toBe(200);
       expect(res.body.token).toBeDefined();
       expect(res.body.user.email).toBe(email);
+      expect(res.body.user.role).toBe("user");
     });
   });
 
@@ -129,6 +130,19 @@ describe("Auth endpoints - validation", () => {
         .get("/api/auth/me")
         .set("Authorization", "Bearer invalid-token");
       expect(res.status).toBe(401);
+    });
+
+    test("should return user with role when authenticated", async () => {
+      const meEmail = `metest-${uid()}@example.com`;
+      const regRes = await request(app).post("/api/auth/register").send({
+        name: "Me Test",
+        email: meEmail,
+        password: "MeTestPass1",
+      });
+      const token = regRes.body.token;
+      const res = await request(app).get("/api/auth/me").set("Authorization", `Bearer ${token}`);
+      expect(res.status).toBe(200);
+      expect(res.body.user.role).toBe("user");
     });
   });
 });
