@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-01 after Session 3 (methodology changelog).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,14 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 142 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-1eUDg` — in progress.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Governance layer (updated 2026-06-01):** Sessions 1-3 complete.
+- Session 1: SQLite tables (`manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`), `scoreAudit.js`, admin routes at `/api/admin/*`.
+- Session 2: Frontend governance pages — transparency page, admin conflict-log page, manufacturer onboarding page. Charter at `/GreenGrade_Governance_Charter.md`.
+- Session 3: Public methodology changelog — `METHODOLOGY_CHANGELOG` static array in `dataProvenance.js` (v1.0→v3.0 history, auditable via git). New endpoint `GET /api/methodology/changelog` (cached 600s, public). Methodology page enhanced with version history timeline + "Independent Oversight" callout linking to /transparency. Footer now includes Methodology link. ESLint: 0 warnings (fixed 2 pre-existing unused-var issues).
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

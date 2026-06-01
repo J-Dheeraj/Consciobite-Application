@@ -13,6 +13,40 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-01 — Session 3: Public Methodology Changelog
+
+**Operation:** Implement public methodology version history (governance Phase 2 deliverable).
+
+**Files created:** 0
+
+**Files modified:** 8
+- `backend/src/services/dataProvenance.js` — added `METHODOLOGY_CHANGELOG` static array (v1.0, v2.0, v3.0 with dates, summaries, details, isBreaking, tags) + `getMethodologyChangelog()` export
+- `backend/src/index.js` — added `GET /api/methodology/changelog` (public, cached 600s); removed unused `DEFAULT_PORT` constant
+- `backend/src/services/greengrade.js` — removed unused `DIM` constant (pre-existing ESLint warning)
+- `backend/__tests__/api.test.js` — added 5 new integration tests (methodology, changelog, transparency/stats)
+- `frontend/src/services/recipes.js` — added `fetchMethodologyChangelog()`
+- `frontend/src/services/api.js` — re-exported `fetchMethodologyChangelog`
+- `frontend/src/app/methodology/page.js` — added "Version History" timeline section + "Independent Oversight" callout with link to /transparency
+- `frontend/src/components/Footer.js` — added "Methodology" to Resources links
+
+**Key decisions:**
+- Changelog stored as static code data (not DB), making it auditable via git history — this is stronger governance than a mutable DB table
+- Timeline UI shows breaking-change badges for algorithm changes that affect all scores (v2.0 variance weighting, v3.0 sigmoid transform)
+- ESLint now 0 warnings/errors (fixed 2 pre-existing unused-var warnings)
+
+**Test count:** 142 (was 137 before transparency/stats tests, +5 this session)
+
+**Verification:**
+- All 142 backend tests passing
+- ESLint: 0 warnings, 0 errors (backend + frontend)
+- Prettier: all files clean
+- Branch pushed: `claude/nifty-goodall-1eUDg`
+
+**Index updated:** no (no new wiki pages, entities, or concepts)
+**Hot cache updated:** yes (see wiki/hot.md)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
