@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchTransparencyStats } from "@/services/admin";
+import { fetchTransparencyStats, fetchMethodologyChangelog } from "@/services/admin";
 import PageHero from "@/components/PageHero";
 import Spinner from "@/components/Spinner";
 import { pageContainer, card } from "@/utils/pageStyles";
@@ -136,6 +136,11 @@ export default function TransparencyPage() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["transparency-stats"],
     queryFn: fetchTransparencyStats,
+  });
+
+  const { data: changelog, isLoading: changelogLoading } = useQuery({
+    queryKey: ["methodology-changelog"],
+    queryFn: fetchMethodologyChangelog,
   });
 
   const textColor = isDark ? "#c8d6c8" : "#444";
@@ -294,6 +299,82 @@ export default function TransparencyPage() {
               </p>
             </div>
           ) : null}
+        </SectionCard>
+
+        {/* Methodology Changelog */}
+        <SectionCard title="Methodology Version History" isDark={isDark}>
+          <p style={{ color: textColor, lineHeight: 1.7, marginBottom: 16, fontSize: 14 }}>
+            A version-controlled record of every change to GreenGrade algorithm parameters, weights,
+            and category definitions.
+          </p>
+          {changelogLoading ? (
+            <Spinner message="Loading changelog..." />
+          ) : changelog && changelog.length > 0 ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {changelog.map((entry) => (
+                <div
+                  key={entry.id}
+                  style={{
+                    padding: "16px 18px",
+                    borderRadius: 10,
+                    background: isDark ? "#1c2e22" : "#f8faf8",
+                    border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                    <span
+                      style={{
+                        padding: "2px 10px",
+                        borderRadius: 12,
+                        background: isDark ? "#2d4a35" : "#ecfdf5",
+                        color: "#2d6a4f",
+                        fontSize: 12,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {entry.version}
+                    </span>
+                    <span style={{ fontSize: 12, color: isDark ? "#6b8a6e" : "#999" }}>
+                      {entry.effective_date}
+                    </span>
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 14,
+                      color: isDark ? "#e8f5e9" : "#1a3a2a",
+                      marginBottom: 8,
+                    }}
+                  >
+                    {entry.summary}
+                  </div>
+                  {entry.changes.length > 0 && (
+                    <ul style={{ margin: 0, paddingLeft: 18 }}>
+                      {entry.changes.map((change, i) => (
+                        <li key={i} style={{ fontSize: 13, color: textColor, lineHeight: 1.7 }}>
+                          {change}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <div
+                    style={{
+                      marginTop: 8,
+                      fontSize: 11,
+                      color: isDark ? "#4a6a4e" : "#bbb",
+                      fontStyle: "italic",
+                    }}
+                  >
+                    Changed by: {entry.changed_by}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p style={{ color: isDark ? "#6b8a6e" : "#999", fontSize: 14 }}>
+              No changelog entries yet.
+            </p>
+          )}
         </SectionCard>
 
         {/* Annual Review Statement */}

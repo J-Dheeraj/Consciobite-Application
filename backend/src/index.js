@@ -190,6 +190,14 @@ app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
 });
 
+app.get("/api/methodology/changelog", cacheMiddleware(300), (_req, res) => {
+  const db = getDb();
+  const rows = db
+    .prepare("SELECT * FROM methodology_changelog ORDER BY effective_date DESC, changed_at DESC")
+    .all();
+  res.json(rows.map((r) => ({ ...r, changes: JSON.parse(r.changes) })));
+});
+
 app.get("/api/transparency/stats", cacheMiddleware(300), (_req, res) => {
   const stats = getConflictStats();
   const db = getDb();

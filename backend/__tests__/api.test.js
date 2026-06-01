@@ -215,6 +215,74 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/methodology", () => {
+    test("should return methodology data with version and algorithm", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+      expect(res.body.version).toBeDefined();
+      expect(res.body.algorithm).toBeDefined();
+      expect(Array.isArray(res.body.algorithm.dimensions)).toBe(true);
+      expect(res.body.algorithm.dimensions).toHaveLength(7);
+    });
+
+    test("should include data sources and limitations", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.dataSources)).toBe(true);
+      expect(Array.isArray(res.body.limitations)).toBe(true);
+    });
+  });
+
+  describe("GET /api/transparency/stats", () => {
+    test("should return public transparency statistics without auth", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("totalChanges");
+      expect(res.body).toHaveProperty("paying");
+      expect(res.body).toHaveProperty("nonPaying");
+      expect(res.body.paying).toHaveProperty("count");
+      expect(res.body.paying).toHaveProperty("avgDelta");
+      expect(res.body.nonPaying).toHaveProperty("count");
+    });
+
+    test("should include product and manufacturer counts", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(res.body.productCount).toBe(550);
+      expect(typeof res.body.manufacturerCount).toBe("number");
+    });
+  });
+
+  describe("GET /api/methodology/changelog", () => {
+    test("should return methodology version history without auth", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThan(0);
+    });
+
+    test("each entry should have required fields", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      const entry = res.body[0];
+      expect(entry).toHaveProperty("id");
+      expect(entry).toHaveProperty("version");
+      expect(entry).toHaveProperty("summary");
+      expect(entry).toHaveProperty("changes");
+      expect(Array.isArray(entry.changes)).toBe(true);
+      expect(entry).toHaveProperty("effective_date");
+      expect(entry).toHaveProperty("changed_by");
+    });
+
+    test("should include the seeded v3.0 entry", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      const v3 = res.body.find((e) => e.version === "v3.0");
+      expect(v3).toBeDefined();
+      expect(v3.changes.length).toBeGreaterThan(0);
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

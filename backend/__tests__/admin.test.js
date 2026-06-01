@@ -260,6 +260,75 @@ describe("Admin governance endpoints", () => {
     });
   });
 
+  describe("POST /api/admin/methodology-changelog", () => {
+    test("should create a changelog entry", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          version: "v3.1-test",
+          summary: "Test changelog entry for integration tests",
+          changes: ["Added test change A", "Adjusted weight for category B"],
+          effectiveDate: "2026-06-01",
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.version).toBe("v3.1-test");
+      expect(res.body.summary).toBe("Test changelog entry for integration tests");
+      expect(res.body).toHaveProperty("id");
+      expect(res.body.effectiveDate).toBe("2026-06-01");
+    });
+
+    test("should appear in the public methodology changelog", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      const entry = res.body.find((e) => e.version === "v3.1-test");
+      expect(entry).toBeDefined();
+      expect(Array.isArray(entry.changes)).toBe(true);
+      expect(entry.changes).toContain("Added test change A");
+    });
+
+    test("should reject missing version", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ summary: "Missing version", effectiveDate: "2026-06-01" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject missing effectiveDate", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ version: "v3.2", summary: "Missing date" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject non-array changes field", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          version: "v3.2",
+          summary: "Bad changes type",
+          changes: "not-an-array",
+          effectiveDate: "2026-06-01",
+        });
+      expect(res.status).toBe(400);
+    });
+
+    test("should require admin role", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          version: "v3.2",
+          summary: "Unauthorized attempt",
+          effectiveDate: "2026-06-01",
+        });
+      expect(res.status).toBe(403);
+    });
+  });
+
   describe("v1 alias", () => {
     test("should work at /api/v1/admin/conflict-log", async () => {
       const res = await request(app)

@@ -38,3 +38,14 @@ export async function acknowledgeFee(manufacturerId) {
 export async function fetchTransparencyStats() {
   return httpClient(`${API_BASE}/transparency/stats`);
 }
+
+export async function fetchMethodologyChangelog() {
+  return httpClient(`${API_BASE}/methodology/changelog`);
+}
+
+export async function addMethodologyChangelog({ version, summary, changes, effectiveDate }) {
+  return httpClient(`${API_BASE}/admin/methodology-changelog`, {
+    method: "POST",
+    body: JSON.stringify({ version, summary, changes, effectiveDate }),
+  });
+}

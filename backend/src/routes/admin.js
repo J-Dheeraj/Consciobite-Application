@@ -130,4 +130,31 @@ router.post("/manufacturers/:id/acknowledge-fee", validate(ACK_SCHEMA), (req, re
   res.json({ acknowledged: true });
 });
 
+// --- Methodology changelog ---
+
+const CHANGELOG_SCHEMA = {
+  body: {
+    version: { required: true, type: "string", minLength: 1, maxLength: 20 },
+    summary: { required: true, type: "string", minLength: 1, maxLength: 500 },
+    effectiveDate: { required: true, type: "string", minLength: 1, maxLength: 10 },
+  },
+};
+
+router.post("/methodology-changelog", validate(CHANGELOG_SCHEMA), (req, res) => {
+  const { version, summary, changes, effectiveDate } = req.body;
+
+  if (changes !== undefined && !Array.isArray(changes)) {
+    return res.status(400).json({ error: "changes must be an array" });
+  }
+
+  const db = getDb();
+  const id = crypto.randomUUID();
+  db.prepare(
+    `INSERT INTO methodology_changelog (id, version, summary, changes, changed_by, effective_date)
+     VALUES (?, ?, ?, ?, ?, ?)`
+  ).run(id, version, summary, JSON.stringify(changes || []), req.user.email, effectiveDate);
+
+  res.status(201).json({ id, version, summary, effectiveDate });
+});
+
 module.exports = router;
