@@ -13,3 +13,7 @@ export async function fetchRecipe(id) {
 export async function fetchMethodology() {
   return httpClient(`${API_BASE}/methodology`);
 }
+
+export async function fetchMethodologyChangelog() {
+  return httpClient(`${API_BASE}/methodology/changelog`);
+}

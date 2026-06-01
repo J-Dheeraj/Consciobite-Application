@@ -1,8 +1,9 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchMethodology } from "@/services/api";
+import { fetchMethodology, fetchMethodologyChangelog } from "@/services/api";
 import Spinner from "@/components/Spinner";
 
 const SectionCard = ({ title, children, isDark }) => (
@@ -87,6 +88,11 @@ export default function Methodology() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["methodology"],
     queryFn: fetchMethodology,
+  });
+
+  const { data: changelog } = useQuery({
+    queryKey: ["methodology-changelog"],
+    queryFn: fetchMethodologyChangelog,
   });
 
   if (isLoading) {
@@ -537,6 +543,169 @@ export default function Methodology() {
             ))}
           </div>
         </SectionCard>
+
+        {/* Version History */}
+        {changelog && changelog.length > 0 && (
+          <SectionCard title="Version History" isDark={isDark}>
+            <p
+              style={{
+                fontSize: "0.85rem",
+                color: textColor,
+                lineHeight: 1.6,
+                marginBottom: 16,
+              }}
+            >
+              Every change to the GreenGrade algorithm is recorded here and version-controlled in
+              our codebase. This log is available to the GreenGrade Advisory Panel for independent
+              review.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+              {changelog.map((entry, i) => (
+                <div
+                  key={entry.version}
+                  style={{
+                    display: "flex",
+                    gap: 16,
+                    paddingBottom: i < changelog.length - 1 ? 20 : 0,
+                  }}
+                >
+                  {/* Timeline line */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 10,
+                        height: 10,
+                        borderRadius: "50%",
+                        background: entry.isBreaking ? "#f39c12" : "#27ae60",
+                        marginTop: 4,
+                      }}
+                    />
+                    {i < changelog.length - 1 && (
+                      <div
+                        style={{
+                          width: 2,
+                          flex: 1,
+                          background: isDark ? "#2d4a35" : "#e8f0e8",
+                          marginTop: 4,
+                        }}
+                      />
+                    )}
+                  </div>
+                  {/* Content */}
+                  <div style={{ flex: 1 }}>
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}
+                    >
+                      <span
+                        style={{
+                          padding: "2px 10px",
+                          borderRadius: 12,
+                          background: isDark ? "#1c2e22" : "#ecfdf5",
+                          color: "#2d6a4f",
+                          fontSize: "0.72rem",
+                          fontWeight: 700,
+                        }}
+                      >
+                        v{entry.version}
+                      </span>
+                      <span style={{ fontSize: "0.75rem", color: isDark ? "#6b8a6e" : "#999" }}>
+                        {new Date(entry.date).toLocaleDateString("en-GB", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </span>
+                      {entry.isBreaking && (
+                        <span
+                          style={{
+                            padding: "1px 8px",
+                            borderRadius: 10,
+                            background: "rgba(243,156,18,0.15)",
+                            color: "#f39c12",
+                            fontSize: "0.68rem",
+                            fontWeight: 700,
+                          }}
+                        >
+                          Breaking change
+                        </span>
+                      )}
+                    </div>
+                    <p
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "0.88rem",
+                        color: isDark ? "#e8f5e9" : "#1a3a2a",
+                        margin: "6px 0 4px",
+                      }}
+                    >
+                      {entry.summary}
+                    </p>
+                    <p
+                      style={{ fontSize: "0.82rem", color: textColor, lineHeight: 1.5, margin: 0 }}
+                    >
+                      {entry.details}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Independent Oversight */}
+        <div
+          style={{
+            padding: "16px 20px",
+            borderRadius: 12,
+            background: isDark ? "#0d2010" : "#ecfdf5",
+            border: `1px solid ${isDark ? "#2d4a35" : "#d1fae5"}`,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 12,
+          }}
+        >
+          <div>
+            <div
+              style={{
+                fontWeight: 700,
+                fontSize: "0.88rem",
+                color: isDark ? "#95d5b2" : "#2d6a4f",
+                marginBottom: 4,
+              }}
+            >
+              Independent Oversight
+            </div>
+            <p style={{ fontSize: "0.82rem", color: textColor, margin: 0, lineHeight: 1.5 }}>
+              This methodology is reviewed annually by the GreenGrade Advisory Panel — three
+              independent experts with no commercial ties to Consciobite or its clients.
+            </p>
+          </div>
+          <Link
+            href="/transparency"
+            style={{
+              padding: "8px 16px",
+              borderRadius: 8,
+              background: "#2d6a4f",
+              color: "#fff",
+              fontWeight: 600,
+              fontSize: "0.82rem",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            View governance &rarr;
+          </Link>
+        </div>
       </div>
     </div>
   );

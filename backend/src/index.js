@@ -19,11 +19,10 @@ const { getDb, closeDb } = require("./db/schema");
 const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
-const { getMethodology } = require("./services/dataProvenance");
+const { getMethodology, getMethodologyChangelog } = require("./services/dataProvenance");
 const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
 const products = require("./data/products.json");
 
-const DEFAULT_PORT = 4000;
 const REQUIRED_EMISSION_KEYS = [
   "landUseChange",
   "animalFeed",
@@ -188,6 +187,10 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
+});
+
+app.get("/api/methodology/changelog", cacheMiddleware(600), (_req, res) => {
+  res.json(getMethodologyChangelog());
 });
 
 app.get("/api/transparency/stats", cacheMiddleware(300), (_req, res) => {

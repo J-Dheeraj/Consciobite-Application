@@ -215,6 +215,59 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/methodology", () => {
+    test("should return methodology data", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+      expect(res.body.version).toBeDefined();
+      expect(res.body.algorithm).toBeDefined();
+      expect(Array.isArray(res.body.algorithm.dimensions)).toBe(true);
+      expect(res.body.algorithm.dimensions).toHaveLength(7);
+    });
+  });
+
+  describe("GET /api/methodology/changelog", () => {
+    test("should return an array of changelog entries", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThan(0);
+    });
+
+    test("each changelog entry should have required fields", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      res.body.forEach((entry) => {
+        expect(entry.version).toBeDefined();
+        expect(entry.date).toBeDefined();
+        expect(entry.summary).toBeDefined();
+        expect(entry.details).toBeDefined();
+        expect(typeof entry.isBreaking).toBe("boolean");
+        expect(Array.isArray(entry.tags)).toBe(true);
+      });
+    });
+
+    test("changelog should include current methodology version", async () => {
+      const [methodologyRes, changelogRes] = await Promise.all([
+        request(app).get("/api/methodology"),
+        request(app).get("/api/methodology/changelog"),
+      ]);
+      const currentVersion = methodologyRes.body.version;
+      const versions = changelogRes.body.map((e) => e.version);
+      expect(versions).toContain(currentVersion);
+    });
+  });
+
+  describe("GET /api/transparency/stats", () => {
+    test("should return transparency stats", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(res.body.productCount).toBeDefined();
+      expect(res.body.totalChanges).toBeDefined();
+      expect(res.body.paying).toBeDefined();
+      expect(res.body.nonPaying).toBeDefined();
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

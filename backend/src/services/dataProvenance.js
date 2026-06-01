@@ -668,12 +668,54 @@ function getMethodology() {
   };
 }
 
+// ─── Methodology version changelog ───────────────────────────────────────────
+// Version-controlled history of GreenGrade algorithm changes.
+// Stored in code so every change is auditable via git history.
+
+const METHODOLOGY_CHANGELOG = [
+  {
+    version: "3.0",
+    date: "2025-03-01",
+    summary: "Sigmoid transform and category blending",
+    details:
+      "Added sigmoid normalization (k=5, midpoint=0.5) replacing linear normalization. Introduced 60/40 blending between category-relative and global CDFs. Improved scoring consistency across food categories with very different emission profiles.",
+    changedBy: "Consciobite Team",
+    isBreaking: true,
+    tags: ["algorithm", "normalization", "scoring"],
+  },
+  {
+    version: "2.0",
+    date: "2024-06-01",
+    summary: "Variance-weighted feature importance",
+    details:
+      "Introduced variance-based feature weighting so dimensions with higher cross-product variability contribute more to the final score. Added Mahalanobis distance anomaly detection (chi-squared threshold at 95th percentile, 7 DoF) to flag outlier emission profiles.",
+    changedBy: "Consciobite Team",
+    isBreaking: true,
+    tags: ["algorithm", "weighting", "anomaly-detection"],
+  },
+  {
+    version: "1.0",
+    date: "2024-01-15",
+    summary: "Initial GreenGrade release",
+    details:
+      "First production scoring algorithm using Gaussian Kernel Density Estimation across 7 lifecycle emission dimensions. Baseline emissions derived from Poore & Nemecek (2018), covering 38,700 farms across 119 countries. Score range 0-10, higher is more sustainable.",
+    changedBy: "Consciobite Team",
+    isBreaking: false,
+    tags: ["algorithm", "initial-release", "kde"],
+  },
+];
+
+function getMethodologyChangelog() {
+  return METHODOLOGY_CHANGELOG;
+}
+
 module.exports = {
   getProductProvenance,
   computeDataConfidence,
   findReference,
   computeAgreement,
   getMethodology,
+  getMethodologyChangelog,
   DATA_SOURCES,
   POORE_NEMECEK_REFERENCE,
 };
