@@ -13,6 +13,35 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-01 — Methodology Changelog Feature
+
+**Operation:** Implement methodology version-controlled changelog (governance Phase 2 completion).
+
+**Files created:** 1
+- `backend/src/db/migrations/003_methodology_changelog.sql` — `methodology_changelog` table + v3.0 seed entry
+
+**Files modified:** 6
+- `backend/src/routes/admin.js` — `POST /api/admin/methodology-changelog` (requireAdmin)
+- `backend/src/index.js` — `GET /api/methodology/changelog` public endpoint (cached 5 min)
+- `backend/__tests__/api.test.js` — 8 new tests: methodology, transparency/stats, changelog endpoints
+- `backend/__tests__/admin.test.js` — 5 new tests: methodology-changelog admin endpoint
+- `frontend/src/services/admin.js` — `fetchMethodologyChangelog()` + `addMethodologyChangelog()` functions
+- `frontend/src/app/transparency/page.js` — "Methodology Version History" section with versioned entries
+
+**Key points:**
+- Public endpoint `GET /api/methodology/changelog` returns version history, no auth required
+- Admin endpoint `POST /api/admin/methodology-changelog` adds entries; validates changes must be array
+- DB seeded with v3.0 entry (5 bullet changes describing KDE/sigmoid/7-dimension algorithm)
+- Transparency page renders changelog inline with version badge, effective date, change bullets, author
+- Test count: 137 → 150 (13 new tests)
+
+**Verification:** All 150 backend tests pass, ESLint clean, Prettier clean.
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

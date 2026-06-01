@@ -55,10 +55,10 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 
 ### Phase 2 — Transparency Features (code changes)
 
-1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members
-2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions)
-3. **Board disclosure page** — names, affiliations, conflict-of-interest declarations
-4. **Audit trail** — backend logging for when/why scoring parameters change (currently hardcoded in `backend/src/services/greengrade.js`)
+1. **Public methodology page enhancement** ✅ Done — full algorithm docs, data sources, confidence tiers, references on `/methodology`
+2. **Scoring changelog** ✅ Done — `methodology_changelog` SQLite table; admin POST endpoint to add entries; public GET endpoint; "Methodology Version History" section on `/transparency`; seeded with v3.0 initial entry
+3. **Board disclosure page** ✅ Done — `/transparency` page shows panel seats, commitments, and annual review cadence
+4. **Audit trail** ✅ Done — `scoreAudit.js` logs every product score change with paying-client flag; conflict log available to Panel via `/api/admin/conflict-log`
 
 ### Phase 3 — Certification (long-term)
 
@@ -75,8 +75,11 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Done (Session 3) |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page + methodology version history | Done (Session 3) |
+| `backend/src/db/migrations/003_methodology_changelog.sql` | Methodology changelog table | Done (Session 3) |
+| `backend/src/routes/admin.js` | POST /api/admin/methodology-changelog | Done (Session 3) |
+| `backend/src/index.js` | GET /api/methodology/changelog (public) | Done (Session 3) |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links
