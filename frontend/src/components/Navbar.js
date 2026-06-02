@@ -42,7 +42,7 @@ export default function Navbar() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -73,6 +73,15 @@ export default function Navbar() {
         })}
         {isAuthenticated ? (
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                aria-current={pathname.startsWith("/admin") ? "page" : undefined}
+                className={`${styles.navLink} ${pathname.startsWith("/admin") ? styles.navLinkActive : ""}`}
+              >
+                Admin
+              </Link>
+            )}
             <span className={styles.userName}>{user?.name?.split(" ")[0]}</span>
             <button onClick={handleLogout} className={styles.btn}>
               Logout
@@ -135,6 +144,15 @@ export default function Navbar() {
               >
                 {user?.name}
               </div>
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className={styles.mobileLink}
+                >
+                  Admin
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className={styles.mobileLink}

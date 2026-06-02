@@ -134,7 +134,7 @@ router.post("/login", async (req, res) => {
 
   const db = getDb();
   const user = db
-    .prepare("SELECT id, email, name, password_hash FROM users WHERE email = ?")
+    .prepare("SELECT id, email, name, role, password_hash FROM users WHERE email = ?")
     .get(normalizedEmail);
 
   // Always run bcrypt.compare to keep response time constant regardless of
@@ -152,7 +152,7 @@ router.post("/login", async (req, res) => {
   setAuthCookie(res, token);
 
   res.json({
-    user: { id: user.id, email: user.email, name: user.name },
+    user: { id: user.id, email: user.email, name: user.name, role: user.role },
     token,
   });
 });
@@ -167,7 +167,7 @@ router.post("/logout", (_req, res) => {
 router.get("/me", requireAuth, (req, res) => {
   const db = getDb();
   const user = db
-    .prepare("SELECT id, email, name, created_at FROM users WHERE id = ?")
+    .prepare("SELECT id, email, name, role, created_at FROM users WHERE id = ?")
     .get(req.user.id);
 
   if (!user) {
