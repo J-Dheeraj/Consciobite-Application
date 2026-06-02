@@ -115,6 +115,7 @@ describe("Auth endpoints - validation", () => {
       expect(res.status).toBe(200);
       expect(res.body.token).toBeDefined();
       expect(res.body.user.email).toBe(email);
+      expect(res.body.user.role).toBe("user");
     });
   });
 
