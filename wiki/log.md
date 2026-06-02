@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-02 — Admin Navigation Completed
+
+**Operation:** Complete admin UX — role returned from auth API, `isAdmin` in AuthContext, admin nav link in Navbar, admin index page created.
+
+**Files modified:** 3
+- `backend/src/routes/auth.js` — login and `/me` now include `role` field in user response
+- `frontend/src/context/AuthContext.js` — exposes `isAdmin: user?.role === 'admin'`
+- `frontend/src/components/Navbar.js` — shows "Admin" link (desktop + mobile) when `isAdmin`
+
+**Files created:** 1
+- `frontend/src/app/admin/page.js` — admin dashboard index: live stats tiles (products, manufacturers, paying clients, score changes), section cards linking to `/admin/conflict-log` and `/admin/manufacturers`, governance reminder banner
+
+**Verification:** 137 backend tests passing; frontend builds 569 static pages; Prettier + ESLint clean.
+
+**Context:** The admin backend (scoreAudit.js, admin routes, governance tables) was complete since Session 1 (2026-05-21). However the frontend had no nav entry point and `/admin` was a 404. This session completes the admin user journey.
+
+**Branch:** `claude/nifty-goodall-DA0bi`
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
