@@ -13,6 +13,34 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-02 — Admin UX + Role-Aware Navbar
+
+**Operation:** Add admin landing page, shared admin layout, and role-aware navbar.
+
+**Files created:** 2
+- `frontend/src/app/admin/layout.js` — shared sub-nav (Overview / Score Audit / Manufacturers) for all admin pages
+- `frontend/src/app/admin/page.js` — admin overview dashboard with stats cards, quick-link cards to sub-pages, and governance milestone checklist
+
+**Files modified:** 3
+- `backend/src/routes/auth.js` — include `role` field in login and `/me` responses (SELECT now includes `role` column from governance migration)
+- `backend/__tests__/auth.test.js` — assert `role: 'user'` in login response
+- `frontend/src/components/Navbar.js` — show "Admin" link only when `user.role === 'admin'` (desktop + mobile)
+
+**Key decisions:**
+- Role check is client-side (`user.role === 'admin'`), backed by the existing `requireAdmin` server middleware for all API calls — no security risk
+- Admin nav link only renders for admin users; non-admins visiting `/admin/*` get a gate from the page-level `isAuthenticated` check
+- Admin layout uses tab-style sub-nav instead of a sidebar to match the app's existing style (card-based, no sidebars)
+
+**Verification:**
+- 137 backend tests passing
+- `npx prettier --check` clean on both frontend and backend
+- `npx next lint` — no warnings or errors
+
+**Branch:** `claude/dreamy-dirac-uU2Rj`
+**Commit:** `3b44565`
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
