@@ -13,6 +13,37 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-03 — Session 3: Methodology Changelog + Admin Hub
+
+**Operation:** Governance Phase 2 implementation — methodology version history, public changelog API, admin dashboard landing page, methodology page governance section.
+
+**Files created:** 2
+- `backend/src/db/migrations/003_methodology_changelog.sql` — new `methodology_changelog` table, seeded with v1.0/v2.0/v3.0 history
+- `frontend/src/app/admin/page.js` — admin hub dashboard with nav cards (Conflict Log, Manufacturers) and live platform stats
+
+**Files modified:** 6
+- `backend/src/services/scoreAudit.js` — added `logMethodologyChange()` and `getMethodologyChangelog()`
+- `backend/src/routes/admin.js` — added `POST /api/admin/changelog` (admin-only, adds a methodology changelog entry)
+- `backend/src/index.js` — added `GET /api/changelog` (public, returns methodology version history)
+- `frontend/src/services/admin.js` — added `fetchChangelog()` and `addChangelogEntry()`
+- `frontend/src/app/methodology/page.js` — added "Algorithm Version History" section + governance link
+- `backend/__tests__/admin.test.js` — 8 new tests for changelog endpoints
+
+**Verification:**
+- 145 backend tests passing (up from 117+20=137 before, added 8 more)
+- Frontend ESLint: 0 errors, 0 warnings
+- Backend Prettier: clean
+- Changelog seeded with 3 entries; `GET /api/changelog` returns all 3
+- Admin `POST /api/admin/changelog` creates entries and returns 201
+- `/admin` page renders with nav cards and stats; no more 404 on `/admin`
+- Methodology page shows version history section when backend is connected
+
+**Branch:** `claude/nifty-goodall-nUc3t`
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
