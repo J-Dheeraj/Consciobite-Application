@@ -62,7 +62,7 @@ export default function Footer() {
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {[
-                { to: "/", label: "Products" },
+                { to: "/products", label: "Products" },
                 { to: "/scan", label: "Scan Barcode" },
                 { to: "/compare", label: "Compare" },
                 { to: "/dashboard", label: "Dashboard" },

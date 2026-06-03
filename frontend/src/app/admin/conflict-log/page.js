@@ -59,7 +59,7 @@ function deltaColor(delta) {
 
 export default function ConflictLogPage() {
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAdmin } = useAuth();
   const isDark = theme === "dark";
   const [filter, setFilter] = useState("all");
   const queryClient = useQueryClient();
@@ -67,7 +67,7 @@ export default function ConflictLogPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["conflict-log", filter],
     queryFn: () => fetchConflictLog(filter),
-    enabled: isAuthenticated,
+    enabled: isAdmin,
   });
 
   const rescore = useMutation({
@@ -75,29 +75,12 @@ export default function ConflictLogPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["conflict-log"] }),
   });
 
-  if (!isAuthenticated) {
-    return (
-      <div>
-        <PageHero
-          icon="🔒"
-          title="Admin Access Required"
-          subtitle="Sign in with an admin account to view this page."
-        />
-      </div>
-    );
-  }
-
   if (isLoading) return <Spinner message="Loading conflict log..." />;
 
   if (error) {
-    const isAdminError = error.message?.includes("Admin") || error.message?.includes("403");
     return (
       <div>
-        <PageHero
-          icon="🔒"
-          title="Access Denied"
-          subtitle={isAdminError ? "Admin role required to view this page." : error.message}
-        />
+        <PageHero icon="⚠️" title="Error" subtitle={error.message} />
       </div>
     );
   }

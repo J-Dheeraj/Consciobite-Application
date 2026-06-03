@@ -72,6 +72,18 @@ describe("Auth endpoints - validation", () => {
       expect(res.body.user).toBeDefined();
       expect(res.body.token).toBeDefined();
     });
+
+    test("should include role:user in register response", async () => {
+      const res = await request(app)
+        .post("/api/auth/register")
+        .send({
+          name: "Role Test User",
+          email: `roletest-${uid()}@example.com`,
+          password: "RolePass1",
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.user.role).toBe("user");
+    });
   });
 
   describe("POST /api/auth/login", () => {
@@ -116,6 +128,16 @@ describe("Auth endpoints - validation", () => {
       expect(res.body.token).toBeDefined();
       expect(res.body.user.email).toBe(email);
     });
+
+    test("should include role in login response", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        email,
+        password,
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.user.role).toBeDefined();
+      expect(["user", "admin"]).toContain(res.body.user.role);
+    });
   });
 
   describe("GET /api/auth/me", () => {
@@ -129,6 +151,21 @@ describe("Auth endpoints - validation", () => {
         .get("/api/auth/me")
         .set("Authorization", "Bearer invalid-token");
       expect(res.status).toBe(401);
+    });
+
+    test("should include role in /me response", async () => {
+      const regRes = await request(app)
+        .post("/api/auth/register")
+        .send({
+          name: "Me Role Test",
+          email: `merole-${uid()}@example.com`,
+          password: "MeRole1Pass",
+        });
+      const { token } = regRes.body;
+      const meRes = await request(app).get("/api/auth/me").set("Authorization", `Bearer ${token}`);
+      expect(meRes.status).toBe(200);
+      expect(meRes.body.user.role).toBeDefined();
+      expect(["user", "admin"]).toContain(meRes.body.user.role);
     });
   });
 });
