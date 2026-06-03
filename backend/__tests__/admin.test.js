@@ -268,4 +268,81 @@ describe("Admin governance endpoints", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("POST /api/admin/changelog", () => {
+    test("should reject unauthenticated requests", async () => {
+      const res = await request(app).post("/api/admin/changelog").send({
+        version: "v3.1",
+        description: "Test change",
+      });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .post("/api/admin/changelog")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ version: "v3.1", description: "Test change" });
+      expect(res.status).toBe(403);
+    });
+
+    test("should create a changelog entry", async () => {
+      const res = await request(app)
+        .post("/api/admin/changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          version: "v3.1",
+          description: "Added regional transport emissions weighting.",
+          changedBy: "test-admin",
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.version).toBe("v3.1");
+      expect(res.body.description).toContain("transport");
+      expect(res.body.id).toBeTruthy();
+    });
+
+    test("should reject missing required fields", async () => {
+      const res = await request(app)
+        .post("/api/admin/changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ version: "v3.1" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject description shorter than 5 chars", async () => {
+      const res = await request(app)
+        .post("/api/admin/changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ version: "v3.1", description: "Hi" });
+      expect(res.status).toBe(400);
+    });
+  });
+
+  describe("GET /api/changelog", () => {
+    test("should be publicly accessible", async () => {
+      const res = await request(app).get("/api/changelog");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+
+    test("should return seeded version history", async () => {
+      const res = await request(app).get("/api/changelog");
+      expect(res.status).toBe(200);
+      const versions = res.body.map((e) => e.version);
+      expect(versions).toContain("v3.0");
+      expect(versions).toContain("v2.0");
+      expect(versions).toContain("v1.0");
+    });
+
+    test("each entry should have required fields", async () => {
+      const res = await request(app).get("/api/changelog");
+      for (const entry of res.body) {
+        expect(entry).toHaveProperty("id");
+        expect(entry).toHaveProperty("version");
+        expect(entry).toHaveProperty("description");
+        expect(entry).toHaveProperty("changed_at");
+        expect(entry).toHaveProperty("changed_by");
+      }
+    });
+  });
 });

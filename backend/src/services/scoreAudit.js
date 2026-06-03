@@ -161,4 +161,26 @@ function getConflictStats() {
   };
 }
 
-module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats };
+function logMethodologyChange({ version, description, changedBy = "admin" }) {
+  const db = getDb();
+  const id = crypto.randomUUID();
+  db.prepare(
+    `INSERT INTO methodology_changelog (id, version, description, changed_by)
+     VALUES (?, ?, ?, ?)`
+  ).run(id, version, description, changedBy);
+  return { id, version, description, changedBy };
+}
+
+function getMethodologyChangelog() {
+  const db = getDb();
+  return db.prepare("SELECT * FROM methodology_changelog ORDER BY changed_at DESC").all();
+}
+
+module.exports = {
+  logScoreChange,
+  snapshotScores,
+  getConflictLog,
+  getConflictStats,
+  logMethodologyChange,
+  getMethodologyChangelog,
+};

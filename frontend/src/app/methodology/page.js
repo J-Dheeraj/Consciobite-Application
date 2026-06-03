@@ -1,8 +1,10 @@
 "use client";
 import React from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchMethodology } from "@/services/api";
+import { fetchChangelog } from "@/services/admin";
 import Spinner from "@/components/Spinner";
 
 const SectionCard = ({ title, children, isDark }) => (
@@ -87,6 +89,11 @@ export default function Methodology() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["methodology"],
     queryFn: fetchMethodology,
+  });
+
+  const { data: changelog } = useQuery({
+    queryKey: ["changelog"],
+    queryFn: fetchChangelog,
   });
 
   if (isLoading) {
@@ -537,6 +544,121 @@ export default function Methodology() {
             ))}
           </div>
         </SectionCard>
+
+        {/* Version History */}
+        {changelog && changelog.length > 0 && (
+          <SectionCard title="Algorithm Version History" isDark={isDark}>
+            <p
+              style={{
+                fontSize: "0.85rem",
+                color: textColor,
+                lineHeight: 1.6,
+                marginBottom: 16,
+              }}
+            >
+              Every change to the GreenGrade scoring algorithm is logged here. The full audit trail
+              of individual product score changes is available on the{" "}
+              <Link href="/transparency" style={{ color: "#52b788", fontWeight: 600 }}>
+                Transparency page
+              </Link>
+              .
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {changelog.map((entry) => (
+                <div
+                  key={entry.id}
+                  style={{
+                    padding: "14px 16px",
+                    borderRadius: 10,
+                    background: isDark ? "#1c2e22" : "#f6fdf7",
+                    border: `1px solid ${isDark ? "#2d4a35" : "#d1fae5"}`,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      marginBottom: 6,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <span
+                      style={{
+                        padding: "2px 10px",
+                        borderRadius: 12,
+                        background: isDark ? "#0d2818" : "#2d6a4f",
+                        color: "#fff",
+                        fontSize: "0.72rem",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {entry.version}
+                    </span>
+                    <span
+                      style={{
+                        fontSize: "0.75rem",
+                        color: isDark ? "#6b8a6e" : "#999",
+                      }}
+                    >
+                      {new Date(entry.changed_at).toLocaleDateString("en-GB", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </span>
+                  </div>
+                  <p
+                    style={{
+                      fontSize: "0.85rem",
+                      color: textColor,
+                      lineHeight: 1.65,
+                      margin: 0,
+                    }}
+                  >
+                    {entry.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Governance link */}
+        <div
+          style={{
+            padding: "16px 20px",
+            borderRadius: 12,
+            background: isDark ? "#0d2818" : "#ecfdf5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            flexWrap: "wrap",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "0.85rem",
+              color: isDark ? "#95d5b2" : "#2d6a4f",
+              margin: 0,
+            }}
+          >
+            This methodology is audited by the GreenGrade Independent Advisory Panel.
+          </p>
+          <Link
+            href="/transparency"
+            style={{
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              color: isDark ? "#95d5b2" : "#2d6a4f",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            View governance details &rarr;
+          </Link>
+        </div>
       </div>
     </div>
   );
