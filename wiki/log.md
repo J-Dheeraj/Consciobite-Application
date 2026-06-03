@@ -13,6 +13,34 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-03 — Admin Role Exposure + Navigation
+
+**Operation:** Expose `role` field in auth responses; add admin navigation and proper admin guards.
+
+**Files modified:** 7
+- `backend/src/routes/auth.js` — SELECT + return `role` in login, register, /me responses
+- `backend/__tests__/auth.test.js` — 3 new tests verifying role in responses
+- `frontend/src/context/AuthContext.js` — add `isAdmin: user?.role === 'admin'` to context value
+- `frontend/src/components/Navbar.js` — show amber Admin link when `isAdmin` (desktop + mobile)
+- `frontend/src/app/admin/conflict-log/page.js` — use `isAdmin` instead of `isAuthenticated` for query gate
+- `frontend/src/app/admin/manufacturers/page.js` — same
+- `frontend/src/components/Footer.js` — fix Products link: `/` → `/products`
+
+**Files created:** 1
+- `frontend/src/app/admin/layout.js` — Next.js layout that renders 403 UI if not admin; no individual page guards needed
+
+**Verification:**
+- 140 backend tests pass (137 existing + 3 new)
+- Prettier clean
+- Pushed to `claude/dreamy-dirac-ZaspM`
+
+**Key invariant added:** `isAdmin` from AuthContext is the canonical admin check — never use raw `user?.role === 'admin'` in components.
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

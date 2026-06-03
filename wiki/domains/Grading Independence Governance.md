@@ -26,8 +26,10 @@ Consciobite charges manufacturers for listing and grading. GreenGrade scores cla
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
 - **Governance charter drafted** — [[GreenGrade Governance Charter 2026-05-29]] defines Panel composition, mandate, firewall, access rights, and cadence. Ready for founding member review.
 - **Landing page updated** — "Independent Scoring" copy replaces "No Pay-to-Win"; product count corrected to 550
+- **Transparency page live** — `/transparency` shows panel seats (in formation), commitments, methodology summary, live score-change stats, annual review schedule
+- **Admin dashboard live** — `/admin/conflict-log` (score audit with paying/non-paying filter + rescore trigger), `/admin/manufacturers` (CRUD + fee acknowledgement)
+- **Admin navigation** — amber "Admin" link in Navbar when `isAdmin`; `/admin/layout.js` guards all admin routes
 - Advisory board not yet formed (candidates to be identified)
-- No public disclosure page yet (Session 3 of governance brief)
 
 ## Action Plan
 
@@ -75,8 +77,12 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/methodology/page.js` | Public methodology page — full algorithm docs | Done |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done |
+| `frontend/src/app/admin/conflict-log/page.js` | Admin score audit UI | Done |
+| `frontend/src/app/admin/manufacturers/page.js` | Admin manufacturer management UI | Done |
+| `frontend/src/app/admin/layout.js` | Admin route guard | Done |
+| `frontend/src/context/AuthContext.js` | `isAdmin` derived from `user.role` | Done |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links

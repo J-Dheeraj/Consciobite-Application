@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-03 after admin role + navigation session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,15 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 140 backend tests passing (3 added for auth role). Frontend: 17 pages + 550 product pages = 567 static pages (admin/layout.js added).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-ZaspM` — pushed to origin, governance frontend + admin role changes.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Governance layer (complete):** SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js`. Admin routes at `/api/admin/*`. Public `/api/transparency/stats` endpoint (no auth). Frontend pages: `/transparency`, `/admin/conflict-log`, `/admin/manufacturers`. Admin guard at `frontend/src/app/admin/layout.js`. Charter at `GreenGrade_Governance_Charter.md`.
+
+**Auth role (2026-06-03):** `role` field now included in login, register, and `/me` responses. `AuthContext` exposes `isAdmin: user?.role === 'admin'`. Navbar shows amber "Admin" link for admin users. Admin pages gate queries on `isAdmin`. Footer "Products" link fixed (was `/`, now `/products`). Set role via: `UPDATE users SET role = 'admin' WHERE email = '...'`.
+
+Stack migration plan at [[Stack Migration Plan]].
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

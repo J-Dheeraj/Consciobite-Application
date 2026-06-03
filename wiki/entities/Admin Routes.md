@@ -11,6 +11,7 @@ tags: [entity, admin, governance, routes]
 **File:** `backend/src/routes/admin.js`
 **Mounted at:** `/api/admin/*`
 **Protection:** `requireAdmin` middleware (all routes), `csrfProtection` (mutating routes via mount in index.js)
+**Public endpoint:** `GET /api/transparency/stats` — in `index.js`, no auth required, cached 5 min
 
 ---
 
