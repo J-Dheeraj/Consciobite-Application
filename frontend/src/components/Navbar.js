@@ -73,6 +73,11 @@ export default function Navbar() {
         })}
         {isAuthenticated ? (
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
+            {user?.role === "admin" && (
+              <Link href="/admin/conflict-log" className={styles.navLink}>
+                Admin
+              </Link>
+            )}
             <span className={styles.userName}>{user?.name?.split(" ")[0]}</span>
             <button onClick={handleLogout} className={styles.btn}>
               Logout
@@ -135,6 +140,15 @@ export default function Navbar() {
               >
                 {user?.name}
               </div>
+              {user?.role === "admin" && (
+                <Link
+                  href="/admin/conflict-log"
+                  onClick={() => setMenuOpen(false)}
+                  className={styles.mobileLink}
+                >
+                  Admin
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className={styles.mobileLink}

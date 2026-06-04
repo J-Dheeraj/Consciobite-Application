@@ -19,7 +19,7 @@ const COOKIE_OPTIONS = {
 };
 
 function generateToken(user) {
-  return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+  return jwt.sign({ id: user.id, email: user.email, role: user.role || "user" }, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
     algorithm: JWT_ALGORITHM,
   });
@@ -104,7 +104,7 @@ function refreshToken(req, res) {
       algorithms: [JWT_ALGORITHM],
       ignoreExpiration: false,
     });
-    const newToken = generateToken({ id: decoded.id, email: decoded.email });
+    const newToken = generateToken({ id: decoded.id, email: decoded.email, role: decoded.role });
     setAuthCookie(res, newToken);
     res.json({ token: newToken });
   } catch {

@@ -16,8 +16,11 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^14.2.0",
     "@testing-library/user-event": "^14.5.2",
+    "babel-jest": "^29.7.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.35",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.2.0"
   },
   "scripts": {
@@ -26,6 +29,19 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\""
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\"",
+    "test": "jest"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1",
+      "\\.(css|less|scss|sass)$": "<rootDir>/__mocks__/styleMock.js"
+    },
+    "testMatch": ["<rootDir>/src/__tests__/**/*.test.{js,jsx}"],
+    "transform": {
+      "^.+\\.(js|jsx)$": ["babel-jest", { "presets": ["next/babel"] }]
+    }
   }
 }

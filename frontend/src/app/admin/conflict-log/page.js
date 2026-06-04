@@ -59,7 +59,7 @@ function deltaColor(delta) {
 
 export default function ConflictLogPage() {
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const isDark = theme === "dark";
   const [filter, setFilter] = useState("all");
   const queryClient = useQueryClient();
@@ -75,7 +75,7 @@ export default function ConflictLogPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["conflict-log"] }),
   });
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || user?.role !== "admin") {
     return (
       <div>
         <PageHero

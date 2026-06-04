@@ -185,7 +185,7 @@ function LinkProductForm({ manufacturers, isDark }) {
 
 export default function ManufacturersPage() {
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const isDark = theme === "dark";
   const queryClient = useQueryClient();
 
@@ -202,7 +202,7 @@ export default function ManufacturersPage() {
   } = useQuery({
     queryKey: ["manufacturers"],
     queryFn: fetchManufacturers,
-    enabled: isAuthenticated,
+    enabled: isAuthenticated && user?.role === "admin",
   });
 
   const create = useMutation({
@@ -235,7 +235,7 @@ export default function ManufacturersPage() {
     create.mutate({ name: name.trim(), email: email.trim(), isPaying });
   };
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || user?.role !== "admin") {
     return (
       <div>
         <PageHero
