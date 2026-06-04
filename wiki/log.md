@@ -13,6 +13,39 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-04 — Auth Role, Admin Nav, Footer Fix, Frontend Tests
+
+**Operation:** Multi-fix session on branch `claude/nifty-goodall-DY7DC`.
+
+**Root causes addressed:**
+1. **Auth role gap** — Login and `/api/auth/me` responses didn't include `role`, so the frontend could not determine admin status.
+2. **Footer bug** — "Products" link pointed to `/` (home) instead of `/products`.
+3. **Admin nav missing** — Admin pages existed but were unreachable via navigation.
+4. **No frontend tests** — `@testing-library/react` was installed but no test script or test files existed.
+
+**Files changed:** 11
+- `backend/src/middleware/auth.js` — `generateToken()` and `refreshToken()` now include `role` in JWT payload
+- `backend/src/routes/auth.js` — login fetches `role` from DB, includes in response; `/api/auth/me` selects and returns `role`
+- `frontend/src/components/Navbar.js` — Admin link shown for `user.role === 'admin'` (desktop + mobile menus)
+- `frontend/src/components/Footer.js` — Fixed "Products" link from "/" to "/products"
+- `frontend/src/app/admin/conflict-log/page.js` — Auth gate uses `user.role !== 'admin'`, destructures `user` from `useAuth()`
+- `frontend/src/app/admin/manufacturers/page.js` — Auth gate uses `user.role !== 'admin'`, query enabled only for admins
+- `frontend/package.json` — Added `jest`, `babel-jest`, `jest-environment-jsdom` devDeps; added `test` script; configured jest with `setupFilesAfterEnv`, `moduleNameMapper`, `testMatch`, `transform`
+- `frontend/jest.setup.js` — Created: imports `@testing-library/jest-dom`
+- `frontend/__mocks__/styleMock.js` — Created: CSS module mock
+- `frontend/src/__tests__/components.test.js` — Created: 9 smoke tests for Spinner, PageHero, GradeBadge
+
+**Test results:**
+- Backend: 137 tests passing (unchanged)
+- Frontend: 9 new tests passing
+
+**Branch:** `claude/nifty-goodall-DY7DC` — pushed to remote.
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
