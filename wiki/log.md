@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-04 — Auth Role Fix & Admin Navigation
+
+**Operation:** Fix missing `role` field in auth responses and add admin navigation to Navbar.
+
+**Files modified:** 3
+- `backend/src/routes/auth.js` — `/register`, `/login`, `/me` now all return `role` in user object
+- `frontend/src/components/Navbar.js` — added `ADMIN_LINKS` constant; admin users (role === 'admin') see "Audit Log" and "Manufacturers" nav links in amber, in both desktop and mobile menus
+- `backend/__tests__/api.test.js` — added 7 new tests: transparency/stats shape/public/count/paying-stats, and role field on register/login/me
+
+**Bug fixed:** Admin users had no way to access `/admin/conflict-log` or `/admin/manufacturers` from the UI, and frontend had no way to know a user's role (it was missing from all auth responses).
+
+**Test count:** 137 → 144 (all passing)
+
+**Branch:** `claude/dreamy-dirac-LvGo0` — pushed.
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
