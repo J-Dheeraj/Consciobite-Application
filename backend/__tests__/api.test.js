@@ -152,6 +152,15 @@ describe("API Endpoints", () => {
       authToken = res.body.token;
     });
 
+    test("POST /api/auth/register should return role in user object", async () => {
+      const email = `role-reg-${randomUUID().slice(0, 8)}@example.com`;
+      const res = await request(app)
+        .post("/api/auth/register")
+        .send({ name: "Role Test", email, password: "TestPassword123" });
+      expect(res.status).toBe(201);
+      expect(res.body.user.role).toBe("user");
+    });
+
     test("POST /api/auth/register should reject duplicate email", async () => {
       const res = await request(app).post("/api/auth/register").send(testUser);
       expect(res.status).toBe(409);
@@ -164,6 +173,15 @@ describe("API Endpoints", () => {
       });
       expect(res.status).toBe(200);
       expect(res.body.token).toBeDefined();
+    });
+
+    test("POST /api/auth/login should return role in user object", async () => {
+      const res = await request(app).post("/api/auth/login").send({
+        email: testUser.email,
+        password: testUser.password,
+      });
+      expect(res.status).toBe(200);
+      expect(res.body.user.role).toBe("user");
     });
 
     test("POST /api/auth/login should reject wrong password", async () => {
@@ -182,9 +200,50 @@ describe("API Endpoints", () => {
       expect(res.body.user.email).toBe(testUser.email);
     });
 
+    test("GET /api/auth/me should return role in user object", async () => {
+      const res = await request(app)
+        .get("/api/auth/me")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.user.role).toBe("user");
+    });
+
     test("GET /api/auth/me should reject without token", async () => {
       const res = await request(app).get("/api/auth/me");
       expect(res.status).toBe(401);
+    });
+  });
+
+  describe("GET /api/transparency/stats", () => {
+    test("should return transparency statistics", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("totalChanges");
+      expect(res.body).toHaveProperty("paying");
+      expect(res.body).toHaveProperty("nonPaying");
+      expect(res.body).toHaveProperty("productCount");
+      expect(res.body).toHaveProperty("manufacturerCount");
+      expect(res.body).toHaveProperty("payingCount");
+    });
+
+    test("should return correct product count", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(res.body.productCount).toBe(550);
+    });
+
+    test("should be publicly accessible without auth", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+    });
+
+    test("should return paying stats with correct shape", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(res.body.paying).toHaveProperty("count");
+      expect(res.body.paying).toHaveProperty("avgDelta");
+      expect(res.body.paying).toHaveProperty("increases");
+      expect(res.body.paying).toHaveProperty("decreases");
     });
   });
 
