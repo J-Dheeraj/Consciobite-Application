@@ -112,6 +112,37 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/:id/recommendations", () => {
+    test("should return recommendations for a valid product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.recommendations)).toBe(true);
+      expect(res.body.recommendations.length).toBeGreaterThan(0);
+      expect(res.body.recommendations.length).toBeLessThanOrEqual(6);
+    });
+
+    test("each recommendation should have greenGrade", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      res.body.recommendations.forEach((p) => {
+        expect(p.greenGrade).toBeDefined();
+        expect(typeof p.greenGrade.score).toBe("number");
+      });
+    });
+
+    test("recommendations should not include the source product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const ids = res.body.recommendations.map((p) => p.id);
+      expect(ids).not.toContain("1");
+    });
+
+    test("should return 404 for non-existent product", async () => {
+      const res = await request(app).get("/api/products/zzzzzzzzz/recommendations");
+      expect(res.status).toBe(404);
+    });
+  });
+
   describe("GET /api/products/scan/:barcode", () => {
     test("should return 400 for invalid barcode format", async () => {
       const res = await request(app).get("/api/products/scan/abc");

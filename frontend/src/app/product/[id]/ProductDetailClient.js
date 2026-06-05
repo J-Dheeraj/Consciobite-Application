@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchRecommendations } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -97,6 +97,12 @@ export default function ProductDetail() {
 
   const error = queryError ? "Unable to load product details." : "";
   const [fav, setFav] = useState(false);
+
+  const { data: recsData } = useQuery({
+    queryKey: ["recommendations", id],
+    queryFn: () => fetchRecommendations(id),
+    enabled: !!id,
+  });
 
   useEffect(() => {
     if (product) setFav(isFavorited(product.id));
@@ -1086,6 +1092,90 @@ export default function ProductDetail() {
             {product.description}
           </p>
         </div>
+
+        {/* Recommendations */}
+        {recsData?.recommendations?.length > 0 && (
+          <div
+            style={{
+              width: "100%",
+              background: "#0e2a1e",
+              borderRadius: 18,
+              padding: "20px 20px 16px",
+              marginBottom: 16,
+            }}
+          >
+            <div
+              style={{
+                fontSize: "0.78rem",
+                fontWeight: 700,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                color: "#52b788",
+                marginBottom: 14,
+              }}
+            >
+              Similar Products
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+                gap: 10,
+              }}
+            >
+              {recsData.recommendations.slice(0, 6).map((rec) => (
+                <Link key={rec.id} href={`/product/${rec.id}`} style={{ textDecoration: "none" }}>
+                  <div
+                    style={{
+                      background: "rgba(255,255,255,0.05)",
+                      borderRadius: 12,
+                      padding: "12px 10px",
+                      border: "1px solid rgba(82,183,136,0.15)",
+                      cursor: "pointer",
+                      transition: "background 0.15s",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "0.8rem",
+                        fontWeight: 600,
+                        color: "#e8f5e9",
+                        marginBottom: 6,
+                        lineHeight: 1.3,
+                        display: "-webkit-box",
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {rec.name}
+                    </div>
+                    <div style={{ fontSize: "0.72rem", color: "#7a9a7e", marginBottom: 8 }}>
+                      {rec.brand}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                      <span
+                        style={{
+                          background: scoreColor(rec.greenGrade.score),
+                          color: "#fff",
+                          borderRadius: 6,
+                          padding: "2px 8px",
+                          fontSize: "0.72rem",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {rec.greenGrade.score.toFixed(1)}
+                      </span>
+                      <span style={{ fontSize: "0.68rem", color: "#6b8a6e" }}>
+                        {rec.greenGrade.grade}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Back button */}
         <div style={{ width: "100%", maxWidth: 380, padding: "0 16px" }}>

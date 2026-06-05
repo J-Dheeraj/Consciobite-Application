@@ -137,6 +137,37 @@ router.get("/stats", (req, res) => {
   res.json({ totalProducts: products.length, categories: stats });
 });
 
+// GET /api/products/:id/recommendations
+router.get("/:id/recommendations", (req, res) => {
+  const id = sanitize(req.params.id, 60);
+  const product = enrichedProducts.find((p) => p.id === id);
+  if (!product) return res.status(404).json({ error: "Product not found" });
+
+  const score = product.greenGrade.score;
+
+  const sameCat = enrichedProducts
+    .filter((p) => p.id !== id && p.category === product.category)
+    .map((p) => ({ ...p, _diff: Math.abs(p.greenGrade.score - score) }))
+    .sort((a, b) => a._diff - b._diff)
+    .slice(0, 6);
+
+  const recs = sameCat.map(({ _diff, ...p }) => p);
+
+  if (recs.length < 4) {
+    const seen = new Set(recs.map((p) => p.id));
+    seen.add(id);
+    const fill = enrichedProducts
+      .filter((p) => !seen.has(p.id))
+      .map((p) => ({ ...p, _diff: Math.abs(p.greenGrade.score - score) }))
+      .sort((a, b) => a._diff - b._diff)
+      .slice(0, 6 - recs.length)
+      .map(({ _diff, ...p }) => p);
+    recs.push(...fill);
+  }
+
+  res.json({ recommendations: recs });
+});
+
 // Lookup a product by barcode via Open Food Facts. Returns enriched product or null.
 // Skips external calls in NODE_ENV=test for deterministic results.
 async function lookupOpenFoodFacts(barcode) {
