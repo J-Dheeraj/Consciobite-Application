@@ -13,6 +13,37 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-05 — Methodology Changelog Feature
+
+**Operation:** Implement GreenGrade Algorithm Changelog (Phase 2 governance, Session 2 code work).
+
+**Files created:** 1
+- `backend/src/db/migrations/003_methodology_changelog.sql` — `methodology_versions` table + seeded v1.0, v2.0, v3.0 history
+
+**Files modified:** 5
+- `backend/src/services/scoreAudit.js` — added `getChangelog()` function
+- `backend/src/index.js` — wired `GET /api/methodology/changelog` endpoint (public, cached 1h)
+- `backend/__tests__/api.test.js` — 6 new integration tests (total: 143 passing)
+- `frontend/src/services/recipes.js` — added `fetchMethodologyChangelog()` service function
+- `frontend/src/services/api.js` — exported `fetchMethodologyChangelog`
+- `frontend/src/app/methodology/page.js` — added `ChangelogEntry` component + Algorithm Changelog section
+
+**Key design decisions:**
+- Changelog stored in SQLite (not a static JSON/file) so future entries can be added by admin
+- Change types: `added`, `changed`, `fixed`, `removed` with colour-coded badges
+- Breaking changes (e.g. v2.0 KDE rewrite) flagged with a red "Breaking" badge
+- Endpoint cached 1h (changelog changes rarely)
+- Changelog only renders if data is non-empty (graceful degradation)
+
+**Verification:**
+- 143 backend tests passing (up from 137)
+- Prettier clean on all modified files
+- Branch pushed: `claude/nifty-goodall-Ix77t`
+
+**Index updated:** yes (governance domain, hot cache)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
