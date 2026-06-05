@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-05 — Product Recommendations Feature
+
+**Operation:** Implement full-stack product recommendations — backend endpoint + frontend UI.
+
+**Files modified:** 3
+- `backend/src/routes/products.js` — added `GET /api/products/:id/recommendations`: finds up to 6 same-category products sorted by GreenGrade score proximity; cross-category fallback fills to 4 minimum
+- `backend/__tests__/api.test.js` — 4 new integration tests (happy path, greenGrade shape, excludes self, 404 on unknown)
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added `useQuery` for recommendations + "Similar Products" grid rendered above the Back button
+
+**Context:** `fetchRecommendations()` in `frontend/src/services/products.js` was already wired and exported from `api.js` but was never called anywhere in the UI, and no backend endpoint existed. This completes the feature.
+
+**Verification:**
+- 141 backend tests passing (was 137)
+- ESLint: no errors
+- Prettier: clean across backend and frontend
+- Committed to `claude/dreamy-dirac-QWOK7` and pushed
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
