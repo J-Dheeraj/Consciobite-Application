@@ -6,7 +6,7 @@ An application that enlightens users on the environmental footprint of edible pr
 
 ## Features
 
-- **GreenGrade Algorithm** — Scores food products 0-10 based on carbon emissions across 7 supply chain categories (Land Use Change, Animal Feed, Farm, Processing, Transport, Packaging, Retail)
+- **GreenGrade Algorithm** — Scores 550 food products 0-10 based on carbon emissions across 7 supply chain categories (Land Use Change, Animal Feed, Farm, Processing, Transport, Packaging, Retail) using Gaussian Kernel Density Estimation with a non-linear sigmoid transform
 - **Color-Coded Grades** — Green (7-10), Yellow (4-6.9), Red (0-3.9) for instant visual assessment
 - **Emissions Breakdown** — Detailed per-category emissions data for transparency
 - **Carbon Footprint Tracker** — Track and reduce your food-related carbon emissions with personalized insights and weekly goals
@@ -15,8 +15,9 @@ An application that enlightens users on the environmental footprint of edible pr
 - **Smart Comparisons** — Compare products side-by-side to find healthier, greener alternatives
 - **Eco-Friendly Recipes** — Discover recipes curated for sustainability, with green ingredient suggestions
 - **Reviews & Ratings** — Rate and review products to help the community
-- **User Authentication** — Secure JWT-based registration and login
+- **User Authentication** — Secure JWT-based registration and login with CSRF protection
 - **Dashboard & Analytics** — Visualize category scores, emissions data, and sustainability trends
+- **Governance & Transparency** — Independent Advisory Panel oversight, public score-change audit trail, and manufacturer onboarding with fee acknowledgement to address conflicts of interest
 - **Dark Mode** — Full light/dark theme support
 
 ## Tech Stack
@@ -25,15 +26,14 @@ An application that enlightens users on the environmental footprint of edible pr
 
 | Layer | Technology |
 |---|---|
-| Framework | React 18.2 (Create React App) |
-| Routing | React Router DOM 6.20 |
+| Framework | Next.js 14.2 (App Router, static export) |
+| UI | React 18.2 |
 | Server State | TanStack React Query 5.90 |
 | Charts | Recharts 3.7 |
 | Barcode Scanner | html5-qrcode 2.3 |
 | Error Tracking | Sentry |
-| Styling | Vanilla CSS with CSS custom properties |
-| Testing | React Testing Library + Jest |
-| Linting | ESLint 8.56 + Prettier 3.2 |
+| Styling | CSS Modules + inline styles with CSS custom properties |
+| Linting | ESLint (next/core-web-vitals) + Prettier |
 
 ### Backend
 
@@ -43,12 +43,12 @@ An application that enlightens users on the environmental footprint of edible pr
 | Framework | Express 4.18 |
 | Database | SQLite via better-sqlite3 (WAL mode) |
 | Auth | JWT (jsonwebtoken) + bcryptjs |
-| Security | Helmet, CORS, HPP, express-rate-limit, account lockout |
-| Validation | validator.js |
+| Security | Helmet, CORS, HPP, express-rate-limit, CSRF double-submit, account lockout |
+| Validation | Custom `validate()` middleware with declarative schemas |
 | Caching | node-cache (in-memory) |
-| Logging | Winston |
-| API Docs | Swagger UI + swagger-jsdoc |
-| Testing | Jest 30 + Supertest 7.2 |
+| Logging | Winston (structured) |
+| API Docs | Swagger UI + swagger-jsdoc (dev only) |
+| Testing | Jest 30 + Supertest 7.2 (137 tests) |
 
 ### DevOps
 
@@ -74,8 +74,8 @@ An application that enlightens users on the environmental footprint of edible pr
 ```bash
 cd backend
 npm install
-export JWT_SECRET=your-secret-here
-npm run dev        # runs on http://localhost:4000
+cp .env.example .env   # then edit JWT_SECRET
+npm run dev             # http://localhost:4000
 ```
 
 **Frontend:**
@@ -83,7 +83,7 @@ npm run dev        # runs on http://localhost:4000
 ```bash
 cd frontend
 npm install
-npm start          # runs on http://localhost:3000
+npm run dev             # http://localhost:3000
 ```
 
 ### Docker
@@ -109,6 +109,8 @@ docker compose up --build
 
 ## API Endpoints
 
+### Public
+
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/products` | List products (`?search=`, `?category=`, `?sort=grade_desc`, `?page=`, `?limit=`) |
@@ -116,21 +118,46 @@ docker compose up --build
 | GET | `/api/products/scan/:barcode` | Look up product by barcode |
 | GET | `/api/products/compare?ids=` | Compare multiple products side-by-side |
 | GET | `/api/products/stats` | Category statistics and aggregations |
-| GET | `/api/products/:id/recommendations` | Get similar product recommendations |
+| GET | `/api/products/:id/recommendations` | Similar product recommendations |
+| GET | `/api/recipes` | Recipe suggestions (`?tag=`) |
+| GET | `/api/recipes/:id` | Single recipe detail |
+| GET | `/api/methodology` | GreenGrade methodology and data provenance |
+| GET | `/api/transparency/stats` | Public governance statistics (aggregate only) |
+| GET | `/api/health` | Health check |
+
+### Auth
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
 | POST | `/api/auth/register` | Register a new account |
 | POST | `/api/auth/login` | Login and receive JWT |
-| GET | `/api/auth/me` | Get current user profile |
+| POST | `/api/auth/logout` | Logout |
+| GET | `/api/auth/me` | Current user profile |
+| POST | `/api/auth/refresh` | Refresh JWT token |
+| GET | `/api/auth/csrf` | Get CSRF token |
+
+### Authenticated
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
 | GET | `/api/reviews/:productId` | Get reviews for a product |
-| POST | `/api/reviews/:productId` | Submit a review (auth required) |
-| DELETE | `/api/reviews/:reviewId` | Delete own review (auth required) |
-| GET | `/api/carbon/summary` | Carbon footprint summary (auth required) |
-| GET | `/api/carbon/logs` | Carbon log history (auth required) |
-| POST | `/api/carbon/log` | Log a product purchase (auth required) |
-| DELETE | `/api/carbon/log/:id` | Delete a carbon log (auth required) |
-| GET | `/api/recipes` | Get recipe suggestions (`?tag=`) |
-| GET | `/api/recipes/:id` | Get single recipe detail |
-| GET | `/api/methodology` | GreenGrade methodology and data provenance |
-| GET | `/api/health` | Health check |
+| POST | `/api/reviews/:productId` | Submit a review |
+| DELETE | `/api/reviews/:id` | Delete own review |
+| GET | `/api/carbon/summary` | Carbon footprint summary |
+| GET | `/api/carbon/logs` | Carbon log history |
+| POST | `/api/carbon/log` | Log a product purchase |
+| DELETE | `/api/carbon/:id` | Delete a carbon log |
+
+### Admin (requires `role: 'admin'`)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/admin/conflict-log` | Score change audit trail with paying-client attribution |
+| POST | `/api/admin/rescore` | Rescore all 550 products and log changes |
+| POST | `/api/admin/manufacturers` | Register a manufacturer |
+| GET | `/api/admin/manufacturers` | List all manufacturers |
+| POST | `/api/admin/product-manufacturer` | Link a product to a manufacturer |
+| POST | `/api/admin/manufacturers/:id/acknowledge-fee` | Record listing fee acknowledgement |
 
 ## Project Structure
 
@@ -139,50 +166,75 @@ Consciobite-Application/
 ├── backend/
 │   ├── src/
 │   │   ├── index.js              # Express app entry point
-│   │   ├── db/schema.js          # SQLite schema and connection
-│   │   ├── routes/               # API route handlers
-│   │   ├── middleware/            # Auth, cache, validation, logging
-│   │   ├── services/             # GreenGrade algorithm, data provenance
-│   │   ├── data/products.json    # Product catalog
-│   │   └── swagger.js            # OpenAPI spec
-│   ├── __tests__/                # Backend tests
+│   │   ├── config.js             # Environment config
+│   │   ├── db/
+│   │   │   ├── schema.js         # SQLite schema and connection
+│   │   │   ├── migrate.js        # SQL migration runner
+│   │   │   └── migrations/       # Sequential .sql files
+│   │   ├── routes/
+│   │   │   ├── products.js
+│   │   │   ├── auth.js
+│   │   │   ├── reviews.js
+│   │   │   ├── carbon.js
+│   │   │   ├── recipes.js
+│   │   │   └── admin.js          # Governance admin routes
+│   │   ├── middleware/
+│   │   │   ├── auth.js           # JWT + requireAuth + requireAdmin
+│   │   │   ├── validate.js       # Declarative schema validation
+│   │   │   ├── cache.js          # In-memory GET caching
+│   │   │   └── logger.js         # Winston structured logging
+│   │   ├── services/
+│   │   │   ├── greengrade.js     # GreenGrade ML scoring (KDE + sigmoid)
+│   │   │   ├── scoreAudit.js     # Score change audit trail
+│   │   │   └── dataProvenance.js # Data source tracking
+│   │   ├── data/products.json    # 550 product catalog
+│   │   └── swagger.js
+│   ├── __tests__/                # 137 integration tests
 │   ├── Dockerfile
 │   └── package.json
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/                # Page components
-│   │   ├── components/           # Reusable UI components
-│   │   ├── context/              # Auth and Theme context providers
-│   │   ├── services/api.js       # API client
-│   │   └── utils/                # Constants and helpers
-│   ├── __tests__/                # Frontend tests
+│   │   ├── app/                  # Next.js App Router pages
+│   │   │   ├── admin/            # Admin pages (conflict-log, manufacturers)
+│   │   │   ├── transparency/     # Public governance page
+│   │   │   ├── carbon/           # Carbon tracker
+│   │   │   ├── product/[id]/     # Dynamic product pages
+│   │   │   └── ...               # 17 route directories
+│   │   ├── components/           # Reusable UI (Navbar, PageHero, GradeBadge, etc.)
+│   │   ├── context/              # AuthContext + ThemeContext
+│   │   ├── services/             # httpClient.js + domain API modules
+│   │   └── utils/                # Constants, pageStyles helpers
+│   ├── next.config.js            # output: 'export' (static site)
 │   ├── nginx.conf                # Production Nginx config
-│   ├── Dockerfile
+│   ├── Dockerfile                # Multi-stage: Node build -> nginx serve
 │   └── package.json
 │
+├── wiki/                         # Obsidian knowledge base
 ├── .github/workflows/ci.yml     # CI pipeline
 ├── docker-compose.yml            # Local Docker orchestration
 ├── render.yaml                   # Render.com deployment blueprint
-└── README.md
+└── CLAUDE.md                     # Claude Code instructions
 ```
 
 ## Security
 
 - JWT authentication with HS256 algorithm pinning
+- CSRF double-submit pattern on all mutating routes
 - bcrypt password hashing (cost factor 12)
 - Rate limiting (API-wide, auth, and scan endpoints)
 - Account lockout after 5 failed login attempts
-- Input sanitization with validator.js across all routes
+- Declarative input validation via `validate()` middleware on all routes
 - Helmet security headers (backend) + CSP/HSTS/X-Frame-Options (Nginx)
 - Docker containers run as non-root users
 - CORS restricted to exact deployment origins
 - Swagger docs disabled in production
+- Admin routes protected by `requireAdmin` middleware
 
 ## Running Tests
 
 ```bash
-# Backend
+# Backend (137 tests)
 cd backend && npm test
 
 # Frontend
