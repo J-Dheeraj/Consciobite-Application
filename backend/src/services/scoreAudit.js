@@ -161,4 +161,17 @@ function getConflictStats() {
   };
 }
 
-module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats };
+function getChangelog() {
+  const db = getDb();
+  const rows = db.prepare("SELECT * FROM methodology_versions ORDER BY released_at DESC").all();
+
+  return rows.map((row) => ({
+    version: row.version,
+    releasedAt: row.released_at,
+    summary: row.summary,
+    changes: JSON.parse(row.changes),
+    breakingChange: !!row.breaking_change,
+  }));
+}
+
+module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats, getChangelog };

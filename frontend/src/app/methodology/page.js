@@ -2,7 +2,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchMethodology } from "@/services/api";
+import { fetchMethodology, fetchMethodologyChangelog } from "@/services/api";
 import Spinner from "@/components/Spinner";
 
 const SectionCard = ({ title, children, isDark }) => (
@@ -80,6 +80,111 @@ const TierBadge = ({ tier, isDark }) => {
   );
 };
 
+const CHANGE_TYPE_CONFIG = {
+  added: { color: "#27ae60", label: "Added" },
+  changed: { color: "#f39c12", label: "Changed" },
+  fixed: { color: "#3498db", label: "Fixed" },
+  removed: { color: "#e74c3c", label: "Removed" },
+};
+
+const ChangelogEntry = ({ entry, isDark }) => (
+  <div
+    style={{
+      padding: "16px 18px",
+      borderRadius: 12,
+      background: isDark ? "#1c2e22" : "#f8faf8",
+      border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+      marginBottom: 12,
+    }}
+  >
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        marginBottom: 10,
+        flexWrap: "wrap",
+      }}
+    >
+      <span
+        style={{
+          fontFamily: "monospace",
+          fontWeight: 700,
+          fontSize: "0.9rem",
+          color: "#52b788",
+          background: isDark ? "#0d2818" : "#e8f5e9",
+          padding: "2px 10px",
+          borderRadius: 8,
+        }}
+      >
+        v{entry.version}
+      </span>
+      <span style={{ fontSize: "0.78rem", color: isDark ? "#7a9a7e" : "#888" }}>
+        {new Date(entry.releasedAt).toLocaleDateString("en-IE", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        })}
+      </span>
+      {entry.breakingChange && (
+        <span
+          style={{
+            fontSize: "0.7rem",
+            fontWeight: 700,
+            color: "#e74c3c",
+            background: "rgba(231,57,60,0.1)",
+            padding: "2px 8px",
+            borderRadius: 8,
+            border: "1px solid rgba(231,57,60,0.3)",
+          }}
+        >
+          Breaking
+        </span>
+      )}
+    </div>
+    <p
+      style={{
+        fontSize: "0.88rem",
+        color: isDark ? "#c8d6c8" : "#444",
+        lineHeight: 1.6,
+        marginBottom: 12,
+      }}
+    >
+      {entry.summary}
+    </p>
+    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+      {entry.changes.map((change, i) => {
+        const cfg = CHANGE_TYPE_CONFIG[change.type] || CHANGE_TYPE_CONFIG.added;
+        return (
+          <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+            <span
+              style={{
+                fontSize: "0.68rem",
+                fontWeight: 700,
+                color: cfg.color,
+                background: `${cfg.color}18`,
+                padding: "1px 7px",
+                borderRadius: 6,
+                marginTop: 2,
+                flexShrink: 0,
+                minWidth: 52,
+                textAlign: "center",
+              }}
+            >
+              {cfg.label}
+            </span>
+            <span
+              style={{ fontSize: "0.83rem", color: isDark ? "#b0c4b1" : "#555", lineHeight: 1.55 }}
+            >
+              {change.description}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+);
+
 export default function Methodology() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -87,6 +192,11 @@ export default function Methodology() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["methodology"],
     queryFn: fetchMethodology,
+  });
+
+  const { data: changelog } = useQuery({
+    queryKey: ["methodology-changelog"],
+    queryFn: fetchMethodologyChangelog,
   });
 
   if (isLoading) {
@@ -537,6 +647,27 @@ export default function Methodology() {
             ))}
           </div>
         </SectionCard>
+
+        {/* Algorithm Changelog */}
+        {changelog && changelog.length > 0 && (
+          <SectionCard title="Algorithm Changelog" isDark={isDark}>
+            <p
+              style={{
+                fontSize: "0.88rem",
+                color: textColor,
+                lineHeight: 1.6,
+                marginBottom: 16,
+              }}
+            >
+              A version-controlled history of changes to the GreenGrade scoring algorithm. Breaking
+              changes are those that alter product scores without any underlying emission data
+              changing.
+            </p>
+            {changelog.map((entry) => (
+              <ChangelogEntry key={entry.version} entry={entry} isDark={isDark} />
+            ))}
+          </SectionCard>
+        )}
       </div>
     </div>
   );

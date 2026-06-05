@@ -215,6 +215,57 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/methodology/changelog", () => {
+    test("should return an array of changelog entries", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+
+    test("should include seeded versions 1.0, 2.0 and 3.0", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      const versions = res.body.map((e) => e.version);
+      expect(versions).toContain("1.0");
+      expect(versions).toContain("2.0");
+      expect(versions).toContain("3.0");
+    });
+
+    test("each entry should have required fields", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      res.body.forEach((entry) => {
+        expect(typeof entry.version).toBe("string");
+        expect(typeof entry.releasedAt).toBe("string");
+        expect(typeof entry.summary).toBe("string");
+        expect(Array.isArray(entry.changes)).toBe(true);
+        expect(typeof entry.breakingChange).toBe("boolean");
+      });
+    });
+
+    test("each change item should have type and description", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      res.body.forEach((entry) => {
+        entry.changes.forEach((change) => {
+          expect(typeof change.type).toBe("string");
+          expect(typeof change.description).toBe("string");
+        });
+      });
+    });
+
+    test("v2.0 should be marked as a breaking change", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      const v2 = res.body.find((e) => e.version === "2.0");
+      expect(v2).toBeDefined();
+      expect(v2.breakingChange).toBe(true);
+    });
+
+    test("should return entries sorted by released_at descending", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      for (let i = 1; i < res.body.length; i++) {
+        expect(new Date(res.body[i].releasedAt) <= new Date(res.body[i - 1].releasedAt)).toBe(true);
+      }
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");
