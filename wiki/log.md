@@ -13,6 +13,34 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-06 — Code Quality & Coverage Improvements
+
+**Operation:** Migrate Products page to React Query, add search debounce, add transparency stats test coverage, create CONTRIBUTING.md.
+
+**Files created:** 3
+- `frontend/src/hooks/useDebounce.js` — reusable 300 ms debounce hook
+- `CONTRIBUTING.md` — contributor guide (was listed as planned but missing)
+- _(wiki updates only, no other new files)_
+
+**Files modified:** 2
+- `frontend/src/app/products/page.js` — replaced `useEffect + useCallback` data-fetching with `useQuery` (React Query); added `useDebounce` for search input (300 ms); added `placeholderData: keepPreviousData` for smooth pagination; grid dims to 70% opacity while background refetch is in progress
+- `backend/__tests__/api.test.js` — added 2 tests for `GET /api/transparency/stats` (shape + product count)
+
+**Test results:** 139 backend tests passing (up from 137). ESLint clean.
+
+**Key changes:**
+1. **Products page → React Query** — eliminates the `useEffect + fetch` antipattern flagged in CLAUDE.md; adds 60 s client-side cache so navigating back to the products list doesn't re-fetch
+2. **Search debounce** — API calls now fire 300 ms after the user stops typing, not on every keystroke
+3. **Transparency stats tests** — `/api/transparency/stats` endpoint now has coverage verifying shape and 550-product count
+4. **CONTRIBUTING.md** — documents dev setup, branch/commit conventions, code standards, security rules, and PR process
+
+**Branch:** `claude/dreamy-dirac-3Q4ky`
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

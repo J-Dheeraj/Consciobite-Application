@@ -1,9 +1,12 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
 import { fetchProducts } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import { useTheme } from "@/context/ThemeContext";
+import { useDebounce } from "@/hooks/useDebounce";
 
 const CATEGORIES = [
   "All",
@@ -30,40 +33,33 @@ export default function Products() {
   const router = useRouter();
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  const loadProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const params = { page, limit: 24 };
-      if (search.trim()) params.search = search.trim();
-      if (category !== "All") params.category = category;
-      if (sort) params.sort = sort;
-      const data = await fetchProducts(params);
-      setProducts(data.products || []);
-      setTotalPages(data.pagination?.totalPages || 1);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [search, category, sort, page]);
+  const debouncedSearch = useDebounce(search, 300);
 
-  useEffect(() => {
-    loadProducts();
-  }, [loadProducts]);
-
+  // Reset to page 1 whenever filters change
   useEffect(() => {
     setPage(1);
-  }, [search, category, sort]);
+  }, [debouncedSearch, category, sort]);
+
+  const { data, isLoading, error, isFetching } = useQuery({
+    queryKey: ["products", { search: debouncedSearch, category, sort, page }],
+    queryFn: () => {
+      const params = { page, limit: 24 };
+      if (debouncedSearch.trim()) params.search = debouncedSearch.trim();
+      if (category !== "All") params.category = category;
+      if (sort) params.sort = sort;
+      return fetchProducts(params);
+    },
+    staleTime: 60_000,
+    placeholderData: keepPreviousData,
+  });
+
+  const products = data?.products ?? [];
+  const totalPages = data?.pagination?.totalPages ?? 1;
 
   const bg = isDark ? "#0a0a0a" : "#f8f9fa";
   const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
@@ -177,12 +173,12 @@ export default function Products() {
               fontSize: "0.9rem",
             }}
           >
-            {error}
+            {error.message}
           </div>
         )}
 
         {/* Loading */}
-        {loading && (
+        {isLoading && (
           <div style={{ padding: 48, textAlign: "center", color: textMuted }}>
             <div
               style={{
@@ -200,19 +196,21 @@ export default function Products() {
         )}
 
         {/* No results */}
-        {!loading && !error && products.length === 0 && (
+        {!isLoading && !error && products.length === 0 && (
           <div style={{ padding: 48, textAlign: "center", color: textMuted, fontSize: "0.95rem" }}>
             No products found. Try adjusting your search or filters.
           </div>
         )}
 
         {/* Product Grid */}
-        {!loading && products.length > 0 && (
+        {products.length > 0 && (
           <div
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
               gap: 16,
+              opacity: isFetching && !isLoading ? 0.7 : 1,
+              transition: "opacity 0.15s ease",
             }}
           >
             {products.map((p) => (
@@ -315,7 +313,7 @@ export default function Products() {
         )}
 
         {/* Pagination */}
-        {!loading && totalPages > 1 && (
+        {!isLoading && totalPages > 1 && (
           <div
             style={{
               display: "flex",

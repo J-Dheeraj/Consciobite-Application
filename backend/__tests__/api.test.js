@@ -215,6 +215,27 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/transparency/stats", () => {
+    test("should return transparency statistics", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(typeof res.body.productCount).toBe("number");
+      expect(typeof res.body.totalChanges).toBe("number");
+      expect(res.body.paying).toBeDefined();
+      expect(typeof res.body.paying.count).toBe("number");
+      expect(res.body.nonPaying).toBeDefined();
+      expect(typeof res.body.nonPaying.count).toBe("number");
+      expect(typeof res.body.manufacturerCount).toBe("number");
+      expect(typeof res.body.payingCount).toBe("number");
+    });
+
+    test("should report 550 products", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(res.body.productCount).toBe(550);
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");
