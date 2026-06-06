@@ -26,8 +26,8 @@ Consciobite charges manufacturers for listing and grading. GreenGrade scores cla
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
 - **Governance charter drafted** — [[GreenGrade Governance Charter 2026-05-29]] defines Panel composition, mandate, firewall, access rights, and cadence. Ready for founding member review.
 - **Landing page updated** — "Independent Scoring" copy replaces "No Pay-to-Win"; product count corrected to 550
+- **Admin navigation (2026-06-06)** — Navbar shows Admin badge for `role = 'admin'` users; admin section has tab layout (Score Audit / Manufacturers); login and `/me` now return `user.role`
 - Advisory board not yet formed (candidates to be identified)
-- No public disclosure page yet (Session 3 of governance brief)
 
 ## Action Plan
 

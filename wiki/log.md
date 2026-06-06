@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-06 — Session 3: Admin Navigation & Auth Role
+
+**Operation:** Expose user role in auth API, add admin navigation UI, fix footer bugs.
+
+**Files modified:** 5
+- `backend/src/routes/auth.js` — login and /me now return `user.role` (selected from users table); fallback to "user" if null
+- `frontend/src/components/Footer.js` — fixed Products Explore link (was "/", now "/products"); added Methodology to Resources section
+- `frontend/src/components/Navbar.js` — Admin badge for admin users (desktop); Admin nav links in mobile menu
+- `frontend/src/components/Navbar.module.css` — added `.adminBadge` style (green tinted, uppercase, border)
+- `frontend/src/app/admin/layout.js` (new) — shared admin layout with Score Audit / Manufacturers tab navigation
+
+**Root cause of admin UX gap:** `generateToken` only embedded `{ id, email }` in JWT; login and `/me` routes never queried `users.role`, so the frontend had no way to detect admin status without hitting a 403.
+
+**Verification:** 137 backend tests pass. Frontend lint clean. Prettier clean.
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
