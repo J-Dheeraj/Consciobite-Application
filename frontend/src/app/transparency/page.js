@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchTransparencyStats } from "@/services/admin";
+import { fetchTransparencyStats, fetchMethodologyChangelog } from "@/services/admin";
 import PageHero from "@/components/PageHero";
 import Spinner from "@/components/Spinner";
 import { pageContainer, card } from "@/utils/pageStyles";
@@ -136,6 +136,11 @@ export default function TransparencyPage() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["transparency-stats"],
     queryFn: fetchTransparencyStats,
+  });
+
+  const { data: changelog = [] } = useQuery({
+    queryKey: ["methodology-changelog"],
+    queryFn: fetchMethodologyChangelog,
   });
 
   const textColor = isDark ? "#c8d6c8" : "#444";
@@ -294,6 +299,116 @@ export default function TransparencyPage() {
               </p>
             </div>
           ) : null}
+        </SectionCard>
+
+        {/* Methodology Changelog */}
+        <SectionCard title="Methodology Changelog" isDark={isDark}>
+          <p style={{ color: textColor, lineHeight: 1.7, marginBottom: 16, fontSize: 14 }}>
+            Every change to GreenGrade algorithm parameters is recorded here for public review.
+          </p>
+          {changelog.length === 0 ? (
+            <p style={{ color: isDark ? "#4a6a4e" : "#aaa", fontSize: 13, fontStyle: "italic" }}>
+              No changes recorded yet.
+            </p>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {changelog.map((entry) => {
+                const typeLabels = {
+                  weight_update: "Weight Update",
+                  threshold_change: "Threshold Change",
+                  dimension_config: "Dimension Config",
+                  model_version: "Model Version",
+                  data_source: "Data Source",
+                  other: "Other",
+                };
+                const typeColors = {
+                  model_version: "#2d6a4f",
+                  weight_update: "#1d4e89",
+                  threshold_change: "#b45309",
+                  dimension_config: "#7c3aed",
+                  data_source: "#0891b2",
+                  other: "#6b7280",
+                };
+                const color = typeColors[entry.change_type] || "#6b7280";
+                const label = typeLabels[entry.change_type] || entry.change_type;
+                const date = entry.logged_at
+                  ? new Date(entry.logged_at).toLocaleDateString("en-GB", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })
+                  : "Unknown date";
+                return (
+                  <div
+                    key={entry.id}
+                    style={{
+                      padding: "14px 16px",
+                      borderRadius: 10,
+                      background: isDark ? "#1c2e22" : "#f8faf8",
+                      border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+                      borderLeft: `3px solid ${color}`,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        flexWrap: "wrap",
+                        marginBottom: 6,
+                      }}
+                    >
+                      <span
+                        style={{
+                          padding: "2px 8px",
+                          borderRadius: 6,
+                          background: `${color}20`,
+                          color,
+                          fontSize: 11,
+                          fontWeight: 700,
+                        }}
+                      >
+                        {label}
+                      </span>
+                      {entry.version && (
+                        <span
+                          style={{
+                            padding: "2px 8px",
+                            borderRadius: 6,
+                            background: isDark ? "#2d4a35" : "#ecfdf5",
+                            color: isDark ? "#95d5b2" : "#2d6a4f",
+                            fontSize: 11,
+                            fontWeight: 600,
+                          }}
+                        >
+                          {entry.version}
+                        </span>
+                      )}
+                      <span
+                        style={{
+                          fontSize: 12,
+                          color: isDark ? "#4a6a4e" : "#999",
+                          marginLeft: "auto",
+                        }}
+                      >
+                        {date}
+                      </span>
+                    </div>
+                    <p
+                      style={{
+                        fontSize: 13,
+                        color: isDark ? "#c8d6c8" : "#444",
+                        margin: 0,
+                        lineHeight: 1.6,
+                      }}
+                    >
+                      {entry.summary}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </SectionCard>
 
         {/* Annual Review Statement */}

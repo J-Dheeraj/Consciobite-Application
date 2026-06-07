@@ -268,4 +268,101 @@ describe("Admin governance endpoints", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("POST /api/admin/methodology-change", () => {
+    test("should log a methodology change (admin)", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-change")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          changeType: "model_version",
+          version: "v3.1",
+          summary: "Test changelog entry for automated test suite",
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.message).toMatch(/logged/i);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-change")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          changeType: "other",
+          summary: "Should be rejected",
+        });
+      expect(res.status).toBe(403);
+    });
+
+    test("should reject unauthenticated requests", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-change")
+        .send({ changeType: "other", summary: "Should be rejected" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject invalid changeType", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-change")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ changeType: "invalid_type", summary: "Test" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject missing summary", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-change")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ changeType: "other" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject summary shorter than 5 chars", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-change")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ changeType: "other", summary: "Hi" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should accept optional version and detail fields", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-change")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          changeType: "weight_update",
+          version: "v3.2",
+          summary: "Updated variance weights for packaging dimension",
+          detail: "Packaging weight increased from 0.08 to 0.11 following peer review feedback.",
+        });
+      expect(res.status).toBe(201);
+    });
+  });
+
+  describe("GET /api/transparency/changelog", () => {
+    test("should be publicly accessible (no auth required)", async () => {
+      const res = await request(app).get("/api/transparency/changelog");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+
+    test("should include the seeded v3.0 entry", async () => {
+      const res = await request(app).get("/api/transparency/changelog");
+      const seed = res.body.find((e) => e.id === "seed-v3-init");
+      expect(seed).toBeDefined();
+      expect(seed.version).toBe("v3.0");
+      expect(seed.change_type).toBe("model_version");
+    });
+
+    test("each entry should have required fields", async () => {
+      const res = await request(app).get("/api/transparency/changelog");
+      expect(res.body.length).toBeGreaterThan(0);
+      const entry = res.body[0];
+      expect(entry).toHaveProperty("id");
+      expect(entry).toHaveProperty("logged_at");
+      expect(entry).toHaveProperty("change_type");
+      expect(entry).toHaveProperty("summary");
+      expect(entry).toHaveProperty("logged_by");
+    });
+  });
 });

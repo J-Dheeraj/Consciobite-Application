@@ -18,4 +18,5 @@ export {
   linkProductManufacturer,
   acknowledgeFee,
   fetchTransparencyStats,
+  fetchMethodologyChangelog,
 } from "./admin";

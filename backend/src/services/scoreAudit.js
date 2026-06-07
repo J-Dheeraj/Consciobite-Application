@@ -2,6 +2,18 @@ const crypto = require("crypto");
 const { getDb } = require("../db/schema");
 const { logger } = require("../middleware/logger");
 
+const INSERT_CHANGELOG = `
+  INSERT INTO methodology_changelog (id, logged_at, change_type, version, summary, detail, logged_by)
+  VALUES (?, datetime('now'), ?, ?, ?, ?, ?)
+`;
+
+const GET_CHANGELOG = `
+  SELECT id, logged_at, change_type, version, summary, detail, logged_by
+  FROM methodology_changelog
+  ORDER BY logged_at DESC
+  LIMIT ?
+`;
+
 const INSERT_LOG = `
   INSERT INTO score_change_logs
     (id, product_id, product_name, manufacturer_id, is_paying_client,
@@ -161,4 +173,28 @@ function getConflictStats() {
   };
 }
 
-module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats };
+function logMethodologyChange({ changeType, version, summary, detail, loggedBy = "admin" }) {
+  const db = getDb();
+  db.prepare(INSERT_CHANGELOG).run(
+    crypto.randomUUID(),
+    changeType,
+    version || null,
+    summary,
+    detail ? JSON.stringify(detail) : null,
+    loggedBy
+  );
+}
+
+function getMethodologyChangelog({ limit = 50 } = {}) {
+  const db = getDb();
+  return db.prepare(GET_CHANGELOG).all(Math.min(limit, 200));
+}
+
+module.exports = {
+  logScoreChange,
+  snapshotScores,
+  getConflictLog,
+  getConflictStats,
+  logMethodologyChange,
+  getMethodologyChangelog,
+};

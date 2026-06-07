@@ -3,7 +3,12 @@ const crypto = require("crypto");
 const { requireAdmin } = require("../middleware/auth");
 const { validate } = require("../middleware/validate");
 const { getDb } = require("../db/schema");
-const { getConflictLog, getConflictStats, snapshotScores } = require("../services/scoreAudit");
+const {
+  getConflictLog,
+  getConflictStats,
+  snapshotScores,
+  logMethodologyChange,
+} = require("../services/scoreAudit");
 const { calculateGreenGrade } = require("../services/greengrade");
 const products = require("../data/products.json");
 
@@ -128,6 +133,32 @@ router.post("/manufacturers/:id/acknowledge-fee", validate(ACK_SCHEMA), (req, re
   }
 
   res.json({ acknowledged: true });
+});
+
+// --- Methodology changelog ---
+
+const CHANGELOG_TYPES =
+  /^(weight_update|threshold_change|dimension_config|model_version|data_source|other)$/;
+
+const CHANGELOG_SCHEMA = {
+  body: {
+    changeType: { required: true, type: "string", pattern: CHANGELOG_TYPES },
+    version: { required: false, type: "string", maxLength: 20 },
+    summary: { required: true, type: "string", minLength: 5, maxLength: 500 },
+    detail: { required: false, type: "string", maxLength: 5000 },
+  },
+};
+
+router.post("/methodology-change", validate(CHANGELOG_SCHEMA), (req, res) => {
+  const { changeType, version, summary, detail } = req.body;
+  logMethodologyChange({
+    changeType,
+    version: version || null,
+    summary,
+    detail: detail || null,
+    loggedBy: req.user?.email || "admin",
+  });
+  res.status(201).json({ message: "Methodology change logged" });
 });
 
 module.exports = router;
