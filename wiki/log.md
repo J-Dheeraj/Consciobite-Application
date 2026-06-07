@@ -13,6 +13,32 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-07 — Bug Fixes, Test Coverage, and CONTRIBUTING.md
+
+**Operation:** Quality pass — fix discoverability bugs, close test coverage gaps, add contributor docs.
+
+**Branch:** `claude/nifty-goodall-TeYkV`
+
+**Files modified:** 2
+- `frontend/src/components/Footer.js` — fixed "Products" link from `/` to `/products`; added `/methodology` to Resources section (was unreachable from both navbar and footer)
+- `backend/__tests__/api.test.js` — added 5 tests for `GET /api/transparency/stats` (public governance endpoint) and `GET /api/methodology` — both were previously untested
+
+**Files created:** 1
+- `CONTRIBUTING.md` — setup guide, coding conventions, key invariants table, PR checklist, security rules. Listed as a known gap in CLAUDE.md.
+
+**Test count:** 137 → 142 (all passing)
+**Lint:** clean
+
+**Key findings:**
+- Footer "Products" was pointing to "/" (home) instead of "/products" — users clicking it from the footer would land on the search hero, not the full products list
+- `/methodology` page had no navigation entry point in either navbar or footer — users could only reach it via the transparency page
+- `/api/transparency/stats` and `/api/methodology` are the two public endpoints that underpin the governance narrative but had zero test coverage
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
