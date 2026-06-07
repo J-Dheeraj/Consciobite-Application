@@ -3,6 +3,7 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
+import ApiReadyGate from "@/components/ApiReadyGate";
 
 export default function Providers({ children }) {
   const [queryClient] = useState(
@@ -21,7 +22,9 @@ export default function Providers({ children }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>{children}</AuthProvider>
+        <ApiReadyGate>
+          <AuthProvider>{children}</AuthProvider>
+        </ApiReadyGate>
       </ThemeProvider>
     </QueryClientProvider>
   );
