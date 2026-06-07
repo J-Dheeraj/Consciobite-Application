@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-07 — Session 3: Methodology Changelog
+
+**Operation:** Implement scoring changelog — the final pending piece of Phase 2 governance transparency.
+
+**Files created:** 1
+- `backend/src/db/migrations/003_methodology_changelog.sql` — `methodology_changelog` table + index + seeded v3.0 entry
+
+**Files modified:** 7
+- `backend/src/services/scoreAudit.js` — added `logMethodologyChange()`, `getMethodologyChangelog()`, SQL constants
+- `backend/src/routes/admin.js` — added `POST /api/admin/methodology-change` (admin-only, validated with changeType enum + summary length)
+- `backend/src/index.js` — added `GET /api/transparency/changelog` (public, 5-min cache)
+- `frontend/src/services/admin.js` — added `fetchMethodologyChangelog()`
+- `frontend/src/services/api.js` — re-exported `fetchMethodologyChangelog`
+- `frontend/src/app/transparency/page.js` — added Methodology Changelog section with colour-coded type/version badges
+- `backend/__tests__/admin.test.js` — 10 new tests (POST admin + GET public endpoints)
+
+**Test result:** 147 tests passing (up from 137). Prettier clean. ESLint warnings unchanged (pre-existing).
+
+**Commit:** `28a7915` on `claude/dreamy-dirac-A8jRU`
+
+**Governance Phase 2 status:** ALL 4 features now complete.
+
+**Index updated:** no (no new wiki pages created)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

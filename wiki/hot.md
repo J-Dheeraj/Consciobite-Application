@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-07 after methodology changelog feature (Session 3 governance).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,27 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 147 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-A8jRU` — pushed to remote, ready for PR.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Governance layer (complete as of 2026-06-07):**
+- Session 1 (2026-05-21): SQLite tables `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin). 550 product scores snapshotted on startup.
+- Session 2 (2026-05-29): Charter drafted at `/GreenGrade_Governance_Charter.md`. Transparency page at `/transparency`. Admin conflict-log UI at `/admin/conflict-log`.
+- Session 3 (2026-06-07): **Methodology Changelog** — migration `003_methodology_changelog.sql`, `methodology_changelog` table seeded with v3.0 entry. `logMethodologyChange()` / `getMethodologyChangelog()` in `scoreAudit.js`. Admin route `POST /api/admin/methodology-change` (validated, admin-only). Public route `GET /api/transparency/changelog`. Transparency page now shows changelog section with colour-coded type badges. 10 new tests.
+
+**Phase 2 Governance Status:**
+| Feature | Status |
+|---------|--------|
+| Methodology page enhancement | ✅ Done |
+| Scoring changelog | ✅ Done (Session 3) |
+| Board disclosure page | ✅ Done (transparency page) |
+| Score change audit trail | ✅ Done (Session 1) |
+
+**Known remaining:**
+- Advisory Panel candidates not yet identified (governance/business task, not code)
+- No frontend tests (CLAUDE.md requirement — planned)
+- No CONTRIBUTING.md (planned)
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
