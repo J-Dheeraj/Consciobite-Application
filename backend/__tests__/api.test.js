@@ -215,6 +215,54 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/methodology", () => {
+    test("should return methodology data", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("version");
+      expect(res.body).toHaveProperty("algorithm");
+      expect(res.body.algorithm).toHaveProperty("dimensions");
+      expect(Array.isArray(res.body.algorithm.dimensions)).toBe(true);
+      expect(res.body.algorithm.dimensions).toHaveLength(7);
+    });
+
+    test("should include data sources and references", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.dataSources)).toBe(true);
+      expect(Array.isArray(res.body.references)).toBe(true);
+      expect(Array.isArray(res.body.limitations)).toBe(true);
+    });
+  });
+
+  describe("GET /api/transparency/stats", () => {
+    test("should return transparency statistics", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("productCount");
+      expect(res.body.productCount).toBe(550);
+      expect(res.body).toHaveProperty("totalChanges");
+      expect(res.body).toHaveProperty("paying");
+      expect(res.body).toHaveProperty("nonPaying");
+      expect(res.body).toHaveProperty("manufacturerCount");
+      expect(res.body).toHaveProperty("payingCount");
+    });
+
+    test("should return numeric stats", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(typeof res.body.productCount).toBe("number");
+      expect(typeof res.body.totalChanges).toBe("number");
+      expect(typeof res.body.paying.count).toBe("number");
+      expect(typeof res.body.nonPaying.count).toBe("number");
+    });
+
+    test("should not require authentication", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

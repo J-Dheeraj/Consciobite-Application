@@ -62,7 +62,7 @@ export default function Footer() {
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {[
-                { to: "/", label: "Products" },
+                { to: "/products", label: "Products" },
                 { to: "/scan", label: "Scan Barcode" },
                 { to: "/compare", label: "Compare" },
                 { to: "/dashboard", label: "Dashboard" },
@@ -103,6 +103,7 @@ export default function Footer() {
               {[
                 { to: "/about", label: "About Us" },
                 { to: "/transparency", label: "Transparency" },
+                { to: "/methodology", label: "Methodology" },
                 { to: "/favorites", label: "My Favorites" },
               ].map((link) => (
                 <Link
