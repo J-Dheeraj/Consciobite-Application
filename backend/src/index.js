@@ -11,6 +11,7 @@ const reviewRoutes = require("./routes/reviews");
 const carbonRoutes = require("./routes/carbon");
 const recipeRoutes = require("./routes/recipes");
 const adminRoutes = require("./routes/admin");
+const passportRoutes = require("./routes/passport");
 const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
 const { csrfProtection } = require("./middleware/auth");
@@ -207,6 +208,7 @@ app.use("/api/reviews", csrfProtection, reviewRoutes);
 app.use("/api/carbon", csrfProtection, carbonRoutes);
 app.use("/api/recipes", cacheMiddleware(600), recipeRoutes);
 app.use("/api/admin", csrfProtection, adminRoutes);
+app.use("/api/v1", cacheMiddleware(120), passportRoutes);
 
 // Versioned aliases (v1 = current)
 app.use("/api/v1/products", cacheMiddleware(120), productRoutes);

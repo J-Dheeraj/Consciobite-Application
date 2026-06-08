@@ -348,6 +348,93 @@ const options = {
           responses: { 200: { description: "Recipe list with green ingredients" } },
         },
       },
+      "/v1/passport/{productId}": {
+        get: {
+          tags: ["Digital Product Passport"],
+          summary: "Generate a Digital Product Passport for a single SKU",
+          description:
+            "Returns a structured JSON passport with GreenGrade score, percentile ranking, emission breakdown by supply chain stage, data confidence tier, and total carbon footprint. Designed for EU ESPR and SGX Scope 3 reporting.",
+          parameters: [
+            { name: "productId", in: "path", required: true, schema: { type: "string" } },
+          ],
+          responses: {
+            200: {
+              description: "Digital Product Passport",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      product_id: { type: "string" },
+                      product_name: { type: "string" },
+                      brand: { type: "string" },
+                      category: { type: "string" },
+                      greengrade_score: { type: "number" },
+                      score_percentile: { type: "integer" },
+                      emission_breakdown: { type: "object" },
+                      total_carbon_footprint_kg_co2e: { type: "number" },
+                      data_confidence_tier: { type: "integer", enum: [1, 2, 3] },
+                      data_confidence_label: { type: "string" },
+                      passport_generated_at: { type: "string", format: "date-time" },
+                      methodology_version: { type: "string" },
+                    },
+                  },
+                },
+              },
+            },
+            404: { description: "Product not found" },
+          },
+        },
+      },
+      "/v1/portfolio/score": {
+        post: {
+          tags: ["Digital Product Passport"],
+          summary: "Score a portfolio of up to 100 SKUs",
+          description:
+            "Accepts an array of product IDs and returns individual passports, portfolio summary (average score, highest/lowest performers), and category benchmarks.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["product_ids"],
+                  properties: {
+                    product_ids: {
+                      type: "array",
+                      items: { type: "string" },
+                      minItems: 1,
+                      maxItems: 100,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Scored portfolio with benchmarks" },
+            400: { description: "Invalid input" },
+            404: { description: "No valid products found" },
+          },
+        },
+      },
+      "/v1/audit/{productId}": {
+        get: {
+          tags: ["Digital Product Passport"],
+          summary: "Get immutable score audit trail for a product",
+          description:
+            "Returns every recorded GreenGrade score change for the specified product, including old/new scores, delta, reason, and timestamp. Demonstrates algorithmic independence.",
+          parameters: [
+            { name: "productId", in: "path", required: true, schema: { type: "string" } },
+            { name: "limit", in: "query", schema: { type: "integer", default: 50 } },
+            { name: "offset", in: "query", schema: { type: "integer", default: 0 } },
+          ],
+          responses: {
+            200: { description: "Audit trail entries" },
+            404: { description: "Product not found" },
+          },
+        },
+      },
     },
   },
   apis: [],
