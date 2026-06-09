@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-09 after Digital Product Passport test session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,18 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 159 backend tests passing (7 suites). Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-bny721` — development branch.
+
+**Previous work merged to main (PRs #29–#33):**
+- Governance layer: SQLite tables (`manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`), `scoreAudit.js`, admin routes at `/api/admin/*`, `requireAdmin` middleware, score snapshots on startup. Charter at `/GreenGrade_Governance_Charter.md`.
+- Governance frontend: admin audit dashboard, `/transparency` page, manufacturer onboarding UI.
+- Digital Product Passport API (mounted at `/api/v1`): `GET /passport/:id`, `POST /portfolio/score`, `GET /audit/:id` — see `backend/src/routes/passport.js`.
+- Cold-start UX: `ApiReadyGate` component polls `/health` and shows spinner until Render free-tier backend wakes up.
+- Methodology docs: `METHODOLOGY.md` at repo root, Swagger expanded, `trailingSlash: true` in `next.config.js`.
+
+**Session 2026-06-09:** Added 22 integration tests for the Digital Product Passport API (`backend/__tests__/passport.test.js`). Tests cover all 3 routes, all error cases (400/404), and portfolio skip-invalid-IDs behaviour. Pushed to `claude/dreamy-dirac-bny721`.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 

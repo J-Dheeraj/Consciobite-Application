@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-09 — Digital Product Passport API Tests
+
+**Operation:** Add integration test suite for the Digital Product Passport API routes (introduced in PR #33).
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 22 Supertest integration tests
+
+**Routes tested:**
+- `GET /api/v1/passport/:productId` — 5 tests (happy path, all 7 emission fields, 404, 400 invalid ID, parallel)
+- `POST /api/v1/portfolio/score` — 11 tests (happy path, field validation, 400/404 error cases, skip-invalid-IDs)
+- `GET /api/v1/audit/:productId` — 6 tests (happy path, limit/offset, invalid query params, 404, 400)
+
+**Test count:** 137 → 159 (22 new tests, 7 suites total)
+
+**Verification:** All 159 tests pass. Prettier clean.
+
+**Branch:** `claude/dreamy-dirac-bny721` — pushed to origin.
+
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
