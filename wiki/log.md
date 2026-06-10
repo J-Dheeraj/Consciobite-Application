@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-10 — Passport Tests Added
+
+**Operation:** Write integration tests for the Digital Product Passport API endpoints.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 24 tests covering all three DPP endpoints
+
+**Coverage:**
+- `GET /api/v1/passport/:productId` — happy path (full response shape), second product, 400 on non-alphanumeric ID, 404 on unknown ID, data confidence fields present
+- `POST /api/v1/portfolio/score` — happy path (summary + benchmarks), response shape validation, missing/non-array/empty/101-item/non-string-entry error cases, 404 when no matches, partial-match semantics, single-product edge case
+- `GET /api/v1/audit/:productId` — happy path (shape + types), 50-entry default, limit/offset respected, invalid limit/offset rejected, 400 on invalid ID, 404 on unknown ID
+
+**Test count:** 137 → 161 (all passing, 7 suites)
+
+**Branch:** `claude/dreamy-dirac-78atwx`
+**Commit:** `8e08473`
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
