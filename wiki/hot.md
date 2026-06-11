@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-11 after Digital Product Passport API test coverage session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,13 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 156 backend tests passing (up from 137). Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-x9cbou` — diverges from main with Digital Product Passport API, METHODOLOGY.md, cold-start UX, and passport test suite.
+
+**Digital Product Passport API (2026-06-11):** `GET /api/v1/passport/:productId` — structured JSON passport with GreenGrade score, percentile, 7-dimension emission breakdown, data confidence tier, and total kg CO₂e. `POST /api/v1/portfolio/score` — score up to 100 SKUs at once, returns per-product passports + portfolio summary (avg score, highest/lowest, category benchmarks). `GET /api/v1/audit/:productId` — paginated immutable score audit trail. All 3 routes tested with 19 Supertest cases in `backend/__tests__/passport.test.js`. Swagger docs in `backend/src/swagger.js`. Methodology version pinned to `"3.0"`.
+
+**Cold-start UX (2026-06-11):** `ApiReadyGate` component (`frontend/src/components/ApiReadyGate.js`) polls `GET /api/health` every 3s up to 60s; shows spinner with "Waking up the server..." while Render free tier cold-starts. Wraps entire app inside `Providers.js`.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 
