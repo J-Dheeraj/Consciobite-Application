@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-11 — Passport Frontend, Service Layer, and Tests
+
+**Operation:** Complete the Digital Product Passport feature added in PR #33 — add integration tests, a frontend service module, and a `/passport` UI page.
+
+**Files created:** 3
+- `backend/__tests__/passport.test.js` — 25 integration tests for GET /v1/passport/:id, POST /v1/portfolio/score, GET /v1/audit/:id
+- `frontend/src/services/passport.js` — fetchPassport(), scorePortfolio(), fetchAuditLog()
+- `frontend/src/app/passport/page.js` — passport lookup UI (product ID search, emission breakdown bars, GradeBadge, JSON export, collapsible audit log)
+
+**Files updated:** 2
+- `frontend/src/services/api.js` — re-exported passport service functions
+- `wiki/hot.md` — updated test count (162), active branch, passport session notes
+
+**Verification:**
+- 162 backend tests passing (up from 137)
+- `next lint` clean — no ESLint warnings
+- Prettier clean on all changed files
+- Branch `claude/dreamy-dirac-qlltsx` pushed to remote
+
+**Index updated:** no (no new index entries needed)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-11 after passport frontend + test session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,16 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 162 backend tests passing (up from 137). Frontend builds static pages including new `/passport` route.
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-qlltsx` — new work on top of merged PRs #31-#33.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Digital Product Passport (2026-06-11):** B2B API layer fully tested and wired to frontend.
+- **Backend tests** (`backend/__tests__/passport.test.js`): 25 tests for `GET /v1/passport/:id`, `POST /v1/portfolio/score`, `GET /v1/audit/:id` — passport structure, all 7 emission dimensions, score range bounds, portfolio aggregation/averaging, partial-failure skipping, validation errors, pagination.
+- **Frontend service** (`frontend/src/services/passport.js`): `fetchPassport()`, `scorePortfolio()`, `fetchAuditLog()` — exported through `api.js`.
+- **Frontend page** (`frontend/src/app/passport/page.js`): Product ID lookup, 7-dimension animated emission bars (color-coded by relative impact), GradeBadge, score percentile, data confidence, generated timestamp, JSON export (Blob download), collapsible score audit log with conflict-of-interest flags. Matches existing dark/light theme.
+
+**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Stack migration plan at [[Stack Migration Plan]].
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
