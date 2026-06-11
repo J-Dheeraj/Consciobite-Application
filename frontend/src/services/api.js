@@ -19,3 +19,4 @@ export {
   acknowledgeFee,
   fetchTransparencyStats,
 } from "./admin";
+export { fetchPassport, scorePortfolio, fetchAuditLog } from "./passport";
