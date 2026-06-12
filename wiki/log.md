@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-12 — Session: Passport Tests + Score History Feature
+
+**Operation:** Add integration tests for Digital Product Passport API and connect audit trail to product detail UI.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 21 integration tests covering all 3 passport endpoints (GET /passport/:id, POST /portfolio/score, GET /audit/:id) and the public /transparency/stats endpoint
+
+**Files modified:** 3
+- `frontend/src/services/products.js` — added `fetchProductAudit(id, opts)` and `fetchPassport(id)` service functions
+- `frontend/src/services/api.js` — exported both new service functions
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added "Score History" toggle button that lazily fetches audit trail via React Query; renders per-change delta rows (date, old→new score, paying-client badge, reason); gracefully shows "No score changes recorded" when empty
+
+**Test count:** 137 → 158 passing
+
+**Branch:** `claude/dreamy-dirac-tr8nr4`
+
+**Key decisions:**
+- Audit data is fetched lazily (`enabled: showHistory`) so the extra API call only fires when the user opens the panel
+- Score history is shown inline on the product detail page rather than a separate route — keeps the governance feature accessible without a nav change
+- fetchPassport added to service layer for future use (no frontend page yet)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
