@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-12 — React Query Migration + CONTRIBUTING.md
+
+**Operation:** Migrate products and compare pages to React Query; add CONTRIBUTING.md.
+
+**Files modified:** 2
+- `frontend/src/app/products/page.js` — replaced `useCallback+useEffect` fetch pattern with `useQuery` (staleTime 30s, `keepPreviousData`). Added local `useDebounce(300ms)` hook so search debounces instead of firing on every keystroke. Removed `useCallback`, `useEffect` for data fetching. Page-level reset of `page` to 1 still uses `useEffect` on filter changes.
+- `frontend/src/app/compare/page.js` — replaced `useEffect(fetchProducts({limit:100}))` with `useQuery({limit:550})` so all 550 catalog products are available in the comparison selector. Replaced manual `async/await` compare handler with `useMutation`.
+
+**Files created:** 1
+- `CONTRIBUTING.md` (repo root) — setup, branching, commit format, coding conventions, security rules. Closes the "No CONTRIBUTING.md yet" known issue.
+
+**Verification:**
+- `npm run lint` — no warnings
+- `npm run format:check` — clean on both frontend and backend
+- 137 backend tests still passing
+- Branch: `claude/nifty-goodall-u9tygj` — pushed, PR pending
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
