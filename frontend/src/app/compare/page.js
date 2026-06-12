@@ -1,5 +1,6 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchProducts, compareProducts } from "@/services/api";
 import GradeBadge from "@/components/GradeBadge";
 import GradeBreakdown from "@/components/GradeBreakdown";
@@ -9,18 +10,30 @@ import PageHero from "@/components/PageHero";
 export default function Compare() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [allProducts, setAllProducts] = useState([]);
   const [selected, setSelected] = useState([]);
-  const [compared, setCompared] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
 
-  useEffect(() => {
-    fetchProducts({ limit: 100 })
-      .then((data) => setAllProducts(data.products))
-      .catch((err) => setError(err.message || "Unable to load products."));
-  }, []);
+  const {
+    data,
+    isError,
+    error: loadError,
+  } = useQuery({
+    queryKey: ["products-all"],
+    queryFn: () => fetchProducts({ limit: 550 }),
+    staleTime: 5 * 60_000,
+  });
+
+  const allProducts = data?.products || [];
+
+  const {
+    data: compared,
+    mutate: runComparison,
+    isPending: comparing,
+    error: compareError,
+    reset: resetComparison,
+  } = useMutation({
+    mutationFn: (ids) => compareProducts(ids).then((d) => d.products),
+  });
 
   const toggleProduct = (id) => {
     setSelected((prev) => {
@@ -28,21 +41,7 @@ export default function Compare() {
       if (prev.length >= 5) return prev;
       return [...prev, id];
     });
-    setCompared(null);
-  };
-
-  const runComparison = async () => {
-    if (selected.length < 2) return;
-    setError("");
-    setLoading(true);
-    try {
-      const data = await compareProducts(selected);
-      setCompared(data.products);
-    } catch (err) {
-      setError(err.message || "Unable to compare products.");
-    } finally {
-      setLoading(false);
-    }
+    resetComparison();
   };
 
   const filtered = searchFilter
@@ -53,10 +52,14 @@ export default function Compare() {
       )
     : allProducts;
 
+  const errorMsg =
+    (isError && (loadError?.message || "Unable to load products.")) ||
+    (compareError && (compareError?.message || "Unable to compare products."));
+
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
       <PageHero
-        icon={"\u2696\uFE0F"}
+        icon={"⚖️"}
         title="Compare Products"
         subtitle="Select 2-5 products to compare their environmental impact."
       />
@@ -135,21 +138,24 @@ export default function Compare() {
                     {p.name}
                   </div>
                   <div style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#666" }}>
-                    {p.brand} {"\u00B7"} {p.greenGrade.totalEmissions} kg CO{"\u2082"}e
+                    {p.brand} {"·"} {p.greenGrade.totalEmissions} kg CO{"₂"}e
                   </div>
                 </div>
               </label>
             ))}
-            {filtered.length === 0 && (
+            {filtered.length === 0 && allProducts.length > 0 && (
               <p style={{ padding: 16, color: "#888", textAlign: "center" }}>No products found.</p>
+            )}
+            {allProducts.length === 0 && !isError && (
+              <p style={{ padding: 16, color: "#888", textAlign: "center" }}>Loading products...</p>
             )}
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
           <button
-            onClick={runComparison}
-            disabled={selected.length < 2 || loading}
+            onClick={() => runComparison(selected)}
+            disabled={selected.length < 2 || comparing}
             style={{
               padding: "12px 28px",
               background:
@@ -168,13 +174,13 @@ export default function Compare() {
               transition: "all 0.2s ease",
             }}
           >
-            {loading ? "Comparing..." : `Compare ${selected.length} Products`}
+            {comparing ? "Comparing..." : `Compare ${selected.length} Products`}
           </button>
           {selected.length > 0 && (
             <button
               onClick={() => {
                 setSelected([]);
-                setCompared(null);
+                resetComparison();
               }}
               style={{
                 padding: "10px 16px",
@@ -191,9 +197,9 @@ export default function Compare() {
           )}
         </div>
 
-        {error && (
+        {errorMsg && (
           <p role="alert" aria-live="assertive" style={{ color: "#e63946", marginBottom: 12 }}>
-            {error}
+            {errorMsg}
           </p>
         )}
 
@@ -247,7 +253,7 @@ export default function Compare() {
                       marginTop: 6,
                     }}
                   >
-                    {p.greenGrade.totalEmissions} kg CO{"\u2082"}e
+                    {p.greenGrade.totalEmissions} kg CO{"₂"}e
                   </div>
                 </div>
               ))}
