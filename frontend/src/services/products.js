@@ -29,3 +29,13 @@ export async function fetchStats() {
 export async function fetchRecommendations(id) {
   return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/recommendations`);
 }
+
+export async function fetchProductAudit(id, { limit = 20, offset = 0 } = {}) {
+  return httpClient(
+    `${API_BASE}/v1/audit/${encodeURIComponent(id)}?limit=${limit}&offset=${offset}`
+  );
+}
+
+export async function fetchPassport(id) {
+  return httpClient(`${API_BASE}/v1/passport/${encodeURIComponent(id)}`);
+}

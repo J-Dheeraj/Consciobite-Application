@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchProductAudit } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -85,6 +85,13 @@ export default function ProductDetail() {
   const [loggedPurchase, setLoggedPurchase] = useState(false);
   const [logError, setLogError] = useState("");
   const [showStats, setShowStats] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const { data: auditData } = useQuery({
+    queryKey: ["product-audit", id],
+    queryFn: () => fetchProductAudit(id),
+    enabled: showHistory,
+  });
 
   const {
     data: product,
@@ -528,23 +535,43 @@ export default function ProductDetail() {
             )
           )}
 
-          <button
-            onClick={() => setShowStats(!showStats)}
-            style={{
-              width: "100%",
-              padding: "13px 0",
-              borderRadius: 28,
-              border: "none",
-              background: "#1a5e3a",
-              color: "#fff",
-              fontSize: "0.95rem",
-              fontWeight: 700,
-              cursor: "pointer",
-              boxShadow: "0 4px 12px rgba(26,94,58,0.3)",
-            }}
-          >
-            Stats for Nerds
-          </button>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button
+              onClick={() => setShowStats(!showStats)}
+              style={{
+                flex: 1,
+                padding: "13px 0",
+                borderRadius: 28,
+                border: "none",
+                background: "#1a5e3a",
+                color: "#fff",
+                fontSize: "0.95rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(26,94,58,0.3)",
+              }}
+            >
+              Stats for Nerds
+            </button>
+            <button
+              onClick={() => setShowHistory(!showHistory)}
+              aria-label="View score history"
+              style={{
+                flex: 1,
+                padding: "13px 0",
+                borderRadius: 28,
+                border: "none",
+                background: "#0b2a1a",
+                color: "#fff",
+                fontSize: "0.95rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 12px rgba(11,42,26,0.3)",
+              }}
+            >
+              Score History
+            </button>
+          </div>
         </div>
 
         {/* Stats for Nerds */}
@@ -856,6 +883,124 @@ export default function ProductDetail() {
                 ))}
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Score History */}
+        {showHistory && (
+          <div
+            style={{
+              width: "100%",
+              background: "#0b2a1a",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+              animation: "fadeInUp 0.3s ease",
+            }}
+          >
+            <h4
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 12,
+                fontSize: "0.95rem",
+              }}
+            >
+              Score History
+            </h4>
+            {!auditData ? (
+              <p style={{ color: "#7a9a7e", fontSize: "0.85rem" }}>Loading&hellip;</p>
+            ) : auditData.audit_entries.length === 0 ? (
+              <p style={{ color: "#7a9a7e", fontSize: "0.85rem" }}>
+                No score changes recorded. This product&apos;s GreenGrade score has been stable
+                since the platform launched.
+              </p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {auditData.audit_entries.map((entry, i) => {
+                  const delta = entry.new_score - entry.old_score;
+                  const deltaColor = delta > 0 ? "#27ae60" : delta < 0 ? "#e74c3c" : "#888";
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        borderRadius: 10,
+                        padding: "10px 14px",
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginBottom: 4,
+                        }}
+                      >
+                        <span style={{ color: "#b8d4c0", fontSize: "0.78rem" }}>
+                          {new Date(entry.changed_at).toLocaleDateString()}
+                        </span>
+                        <span
+                          style={{
+                            fontWeight: 700,
+                            fontSize: "0.85rem",
+                            color: deltaColor,
+                          }}
+                        >
+                          {delta > 0 ? "+" : ""}
+                          {delta.toFixed(1)}
+                        </span>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          color: "#d4e8da",
+                          fontSize: "0.82rem",
+                        }}
+                      >
+                        <span>{entry.old_score?.toFixed(1)}</span>
+                        <span style={{ color: "#7a9a7e" }}>&rarr;</span>
+                        <span style={{ fontWeight: 600 }}>{entry.new_score?.toFixed(1)}</span>
+                        {entry.is_paying_client && (
+                          <span
+                            style={{
+                              marginLeft: "auto",
+                              padding: "1px 7px",
+                              borderRadius: 8,
+                              background: "rgba(243,156,18,0.15)",
+                              color: "#f39c12",
+                              fontSize: "0.7rem",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Paying client
+                          </span>
+                        )}
+                      </div>
+                      {entry.reason && (
+                        <div style={{ color: "#7a9a7e", fontSize: "0.75rem", marginTop: 4 }}>
+                          {entry.reason}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+                <p
+                  style={{
+                    fontSize: "0.75rem",
+                    color: "#4a6a4e",
+                    fontStyle: "italic",
+                    marginTop: 4,
+                  }}
+                >
+                  {auditData.total_entries} total change
+                  {auditData.total_entries !== 1 ? "s" : ""} on record.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
