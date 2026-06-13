@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-13
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,31 +13,34 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-13 after passport tests + admin nav link session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
-**Stack migration (2026-05):** Frontend migrated from CRA-style React SPA to Next.js 14 App Router with `output: 'export'`. Build produces static HTML in `build/` directory (Next.js outputs to `out/`, build script renames via `rm -rf build && mv out build`). Dynamic route `/product/[id]` uses `generateStaticParams()` reading 550 product IDs from `backend/src/data/products.json` at build time. Product page split into server wrapper (`page.js`) + client component (`ProductDetailClient.js`).
+**Stack migration (2026-05):** Frontend migrated from CRA-style React SPA to Next.js 14 App Router with `output: 'export'`. Build produces static HTML in `build/` directory. Dynamic route `/product/[id]` uses `generateStaticParams()` reading 550 product IDs from `backend/src/data/products.json` at build time.
 
-**API architecture:** Domain-decomposed modules in `frontend/src/services/` — `httpClient.js` + `products.js`, `auth.js`, `reviews.js`, `carbon.js`, `recipes.js`. `httpClient.js` has `getApiBase()` for Render hostname auto-detection (`-app` -> `-api` suffix swap). No `next.config.js` rewrites (incompatible with static export).
+**API architecture:** Domain-decomposed modules in `frontend/src/services/` — `httpClient.js` + `products.js`, `auth.js`, `reviews.js`, `carbon.js`, `recipes.js`, `admin.js`. `httpClient.js` has `getApiBase()` for Render hostname auto-detection. No `next.config.js` rewrites (incompatible with static export).
 
-**Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
+**Deployment:** Render Static Site serves `build/` directory. Docker uses repo-root build context so `generateStaticParams()` can access `backend/src/data/products.json` during build.
 
-**Recent fixes landed (2026-05-13):**
-- 7 merge conflicts resolved between feature branch and main
-- Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
-- `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
-- Frontend ESLint migrated from `react-app` to `next/core-web-vitals`
-- Unescaped JSX entities fixed (`"` -> `&ldquo;`/`&rdquo;`, `'` -> `&apos;`)
-- Docker build context changed from `./frontend` to `.` (repo root) so products.json is accessible
-- Dockerfile updated for repo-root-relative COPY paths
-- `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
+**Current test status:** 160 backend tests passing (7 test suites). Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Active branch:** `claude/nifty-goodall-go7acy` — feature work from 2026-06-13.
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Previous branch:** `claude/improve-application-S5njo` — all merged to main via PRs #29–#33.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Feature inventory (all merged to main):**
+- Core: products browse/search, barcode scan, product comparison, carbon tracker, recipes, dashboard, tips, favorites
+- Auth: JWT + httpOnly cookies, CSRF double-submit, account lockout (5 attempts), role column on users table
+- Governance: score audit trail (`scoreAudit.js`), admin routes (`/api/admin/*`), manufacturer tracking, conflict log, transparency page (`/transparency`), admin frontend (`/admin/conflict-log`, `/admin/manufacturers`)
+- B2B: Digital Product Passport API (`GET /api/v1/passport/:id`, `POST /api/v1/portfolio/score`, `GET /api/v1/audit/:id`)
+- UX: ApiReadyGate component for Render free-tier cold start, trailingSlash in next.config.js for static hosting
+- Docs: METHODOLOGY.md (full GreenGrade v3.0 spec), README.md rewritten with B2B framing
+
+**Session 2026-06-13 changes (on branch `claude/nifty-goodall-go7acy`):**
+- `backend/__tests__/passport.test.js` — 23 new tests covering all 3 passport endpoints + transparency stats (total: 160 tests, up from 137)
+- `backend/src/routes/auth.js` — login and `/me` now include `role` in user response
+- `frontend/src/components/Navbar.js` — Admin nav link shown conditionally for `user.role === 'admin'`
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
@@ -45,3 +48,4 @@ tags: [hot-cache, meta]
 - `/carbon` protected by `RequireAuth` — no in-page auth gates
 - httpOnly cookies for JWT; CSRF double-submit pattern
 - All Express routes use `validate()` middleware with `pattern:` not `type: "number"`
+- Admin routes use `requireAdmin` middleware — backend always re-checks role regardless of client-side UI

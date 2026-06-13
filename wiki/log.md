@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-13 — Passport Tests, Transparency Stats Tests, Admin Nav Link
+
+**Operation:** Fill test coverage gap for passport/transparency endpoints; surface admin role in frontend navigation.
+
+**Branch:** `claude/nifty-goodall-go7acy`
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 23 integration tests for `GET /api/v1/passport/:id`, `POST /api/v1/portfolio/score`, `GET /api/v1/audit/:id`, and `GET /api/transparency/stats`
+
+**Files modified:** 2
+- `backend/src/routes/auth.js` — `POST /api/auth/login` and `GET /api/auth/me` now include `role` field in user response
+- `frontend/src/components/Navbar.js` — Admin link added conditionally for `user.role === 'admin'` (desktop + mobile menus)
+
+**Verification:**
+- 160 backend tests passing (7 suites), up from 137
+- Prettier and ESLint clean
+- Backend never trusts client-side role; `requireAdmin` middleware re-checks SQLite on every admin request
+
+**Index updated:** no (no new wiki pages needed)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
