@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchProductAuditHistory } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -85,6 +85,7 @@ export default function ProductDetail() {
   const [loggedPurchase, setLoggedPurchase] = useState(false);
   const [logError, setLogError] = useState("");
   const [showStats, setShowStats] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   const {
     data: product,
@@ -98,11 +99,19 @@ export default function ProductDetail() {
   const error = queryError ? "Unable to load product details." : "";
   const [fav, setFav] = useState(false);
 
+  const { data: auditData } = useQuery({
+    queryKey: ["product-audit", id],
+    queryFn: () => fetchProductAuditHistory(id),
+    enabled: showHistory,
+    staleTime: 60_000,
+  });
+
   useEffect(() => {
     if (product) setFav(isFavorited(product.id));
     setLoggedPurchase(false);
     setLogError("");
     setShowStats(false);
+    setShowHistory(false);
   }, [product]);
 
   const handleLogPurchase = async () => {
@@ -1085,6 +1094,107 @@ export default function ProductDetail() {
           <p style={{ color: "#ffffff", fontSize: "0.88rem", lineHeight: 1.7 }}>
             {product.description}
           </p>
+        </div>
+
+        {/* Score History */}
+        <div
+          style={{
+            width: "100%",
+            background: "#14352a",
+            borderRadius: 18,
+            padding: "16px 20px",
+            marginBottom: 16,
+          }}
+        >
+          <button
+            onClick={() => setShowHistory((h) => !h)}
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              color: "#fff",
+              padding: 0,
+            }}
+          >
+            <h4
+              style={{
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                margin: 0,
+              }}
+            >
+              Score History
+            </h4>
+            <span style={{ fontSize: "1rem", color: "#b8d4c0" }}>{showHistory ? "▲" : "▼"}</span>
+          </button>
+
+          {showHistory && (
+            <div style={{ marginTop: 14 }}>
+              {!auditData ? (
+                <p style={{ color: "#7a9a7e", fontSize: "0.82rem" }}>Loading history...</p>
+              ) : auditData.audit_entries.length === 0 ? (
+                <p style={{ color: "#7a9a7e", fontSize: "0.82rem" }}>
+                  No score changes recorded yet. This product&apos;s score has been stable since
+                  tracking began.
+                </p>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {auditData.audit_entries.map((entry) => {
+                    const delta = entry.score_delta;
+                    const deltaColor = delta > 0 ? "#27ae60" : delta < 0 ? "#e74c3c" : "#888";
+                    return (
+                      <div
+                        key={entry.id}
+                        style={{
+                          background: "rgba(255,255,255,0.06)",
+                          borderRadius: 10,
+                          padding: "10px 14px",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 12,
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontWeight: 700,
+                            fontSize: "0.9rem",
+                            color: deltaColor,
+                            minWidth: 40,
+                            textAlign: "center",
+                          }}
+                        >
+                          {delta > 0 ? "+" : ""}
+                          {delta}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ color: "#fff", fontSize: "0.82rem" }}>
+                            {entry.old_score} → {entry.new_score}
+                          </div>
+                          {entry.change_reason && (
+                            <div style={{ color: "#7a9a7e", fontSize: "0.75rem", marginTop: 2 }}>
+                              {entry.change_reason}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ color: "#7a9a7e", fontSize: "0.75rem", flexShrink: 0 }}>
+                          {new Date(entry.changed_at).toLocaleDateString()}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  <p style={{ color: "#4a6a4e", fontSize: "0.72rem", marginTop: 4 }}>
+                    {auditData.total_entries} total change
+                    {auditData.total_entries !== 1 ? "s" : ""} recorded
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Back button */}

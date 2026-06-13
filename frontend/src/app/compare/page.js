@@ -1,26 +1,57 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { fetchProducts, compareProducts } from "@/services/api";
 import GradeBadge from "@/components/GradeBadge";
 import GradeBreakdown from "@/components/GradeBreakdown";
+import Spinner from "@/components/Spinner";
 import { useTheme } from "@/context/ThemeContext";
 import PageHero from "@/components/PageHero";
 
 export default function Compare() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [allProducts, setAllProducts] = useState([]);
   const [selected, setSelected] = useState([]);
   const [compared, setCompared] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [compareError, setCompareError] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const debounceRef = useRef(null);
 
-  useEffect(() => {
-    fetchProducts({ limit: 100 })
-      .then((data) => setAllProducts(data.products))
-      .catch((err) => setError(err.message || "Unable to load products."));
-  }, []);
+  const handleSearchChange = (e) => {
+    const val = e.target.value;
+    setSearchFilter(val);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedSearch(val), 300);
+  };
+
+  const {
+    data,
+    isLoading,
+    error: loadError,
+  } = useQuery({
+    queryKey: ["compare-product-list", debouncedSearch],
+    queryFn: () =>
+      fetchProducts(
+        debouncedSearch.trim().length >= 2
+          ? { search: debouncedSearch.trim(), limit: 50 }
+          : { limit: 50, sort: "grade_desc" }
+      ),
+    staleTime: 60_000,
+  });
+
+  const products = data?.products ?? [];
+
+  const compareMutation = useMutation({
+    mutationFn: () => compareProducts(selected),
+    onSuccess: (data) => {
+      setCompared(data.products);
+      setCompareError("");
+    },
+    onError: (err) => {
+      setCompareError(err.message || "Unable to compare products.");
+    },
+  });
 
   const toggleProduct = (id) => {
     setSelected((prev) => {
@@ -31,34 +62,12 @@ export default function Compare() {
     setCompared(null);
   };
 
-  const runComparison = async () => {
-    if (selected.length < 2) return;
-    setError("");
-    setLoading(true);
-    try {
-      const data = await compareProducts(selected);
-      setCompared(data.products);
-    } catch (err) {
-      setError(err.message || "Unable to compare products.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filtered = searchFilter
-    ? allProducts.filter(
-        (p) =>
-          p.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-          p.brand.toLowerCase().includes(searchFilter.toLowerCase())
-      )
-    : allProducts;
-
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
       <PageHero
-        icon={"\u2696\uFE0F"}
+        icon={"⚖️"}
         title="Compare Products"
-        subtitle="Select 2-5 products to compare their environmental impact."
+        subtitle="Select 2–5 products to compare their environmental impact."
       />
 
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 20px 40px" }}>
@@ -76,9 +85,9 @@ export default function Compare() {
         >
           <input
             type="text"
-            placeholder="Search to find products..."
+            placeholder="Search by name or brand..."
             value={searchFilter}
-            onChange={(e) => setSearchFilter(e.target.value)}
+            onChange={handleSearchChange}
             aria-label="Search products to compare"
             style={{
               width: "100%",
@@ -87,9 +96,27 @@ export default function Compare() {
               border: "2px solid " + (isDark ? "#2d4a35" : "#e8e8e8"),
               fontSize: "0.9rem",
               marginBottom: 12,
+              background: isDark ? "#1c2e22" : "#fff",
+              color: isDark ? "#e8f5e9" : "inherit",
               transition: "border-color 0.2s",
+              boxSizing: "border-box",
             }}
           />
+
+          {selected.length > 0 && (
+            <div
+              style={{
+                fontSize: "0.8rem",
+                color: isDark ? "#7a9a7e" : "#888",
+                marginBottom: 10,
+              }}
+            >
+              {selected.length} product{selected.length > 1 ? "s" : ""} selected
+              {selected.length < 2 && " — select at least 2 to compare"}
+              {selected.length >= 5 && " — maximum reached"}
+            </div>
+          )}
+
           <div
             style={{
               maxHeight: 240,
@@ -98,58 +125,72 @@ export default function Compare() {
               borderRadius: 10,
             }}
           >
-            {filtered.map((p) => (
-              <label
-                key={p.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "10px 14px",
-                  cursor: "pointer",
-                  borderBottom: "1px solid " + (isDark ? "#243a2b" : "#f5f5f5"),
-                  background: selected.includes(p.id)
-                    ? isDark
-                      ? "#1c2e22"
-                      : "#edf7f0"
-                    : "transparent",
-                  transition: "background 0.15s",
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={selected.includes(p.id)}
-                  onChange={() => toggleProduct(p.id)}
-                  disabled={!selected.includes(p.id) && selected.length >= 5}
-                  style={{ accentColor: "#2d6a4f" }}
-                />
-                <GradeBadge score={p.greenGrade.score} color={p.greenGrade.color} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      fontWeight: 600,
-                      fontSize: "0.9rem",
-                      color: isDark ? "#e8f5e9" : "inherit",
-                    }}
-                  >
-                    {p.name}
+            {isLoading ? (
+              <div style={{ padding: 20 }}>
+                <Spinner message="Loading products..." />
+              </div>
+            ) : loadError ? (
+              <p style={{ padding: 16, color: "#e63946", textAlign: "center" }}>
+                Unable to load products.
+              </p>
+            ) : products.length === 0 ? (
+              <p style={{ padding: 16, color: isDark ? "#7a9a7e" : "#888", textAlign: "center" }}>
+                {debouncedSearch.length >= 2 ? "No products found." : "Type to search products."}
+              </p>
+            ) : (
+              products.map((p) => (
+                <label
+                  key={p.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "10px 14px",
+                    cursor: "pointer",
+                    borderBottom: "1px solid " + (isDark ? "#243a2b" : "#f5f5f5"),
+                    background: selected.includes(p.id)
+                      ? isDark
+                        ? "#1c2e22"
+                        : "#edf7f0"
+                      : "transparent",
+                    transition: "background 0.15s",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(p.id)}
+                    onChange={() => toggleProduct(p.id)}
+                    disabled={!selected.includes(p.id) && selected.length >= 5}
+                    style={{ accentColor: "#2d6a4f" }}
+                  />
+                  <GradeBadge score={p.greenGrade.score} color={p.greenGrade.color} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "0.9rem",
+                        color: isDark ? "#e8f5e9" : "inherit",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      {p.name}
+                    </div>
+                    <div style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#666" }}>
+                      {p.brand} {"·"} {p.greenGrade.totalEmissions} kg CO{"₂"}e
+                    </div>
                   </div>
-                  <div style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#666" }}>
-                    {p.brand} {"\u00B7"} {p.greenGrade.totalEmissions} kg CO{"\u2082"}e
-                  </div>
-                </div>
-              </label>
-            ))}
-            {filtered.length === 0 && (
-              <p style={{ padding: 16, color: "#888", textAlign: "center" }}>No products found.</p>
+                </label>
+              ))
             )}
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20 }}>
           <button
-            onClick={runComparison}
-            disabled={selected.length < 2 || loading}
+            onClick={() => compareMutation.mutate()}
+            disabled={selected.length < 2 || compareMutation.isPending}
             style={{
               padding: "12px 28px",
               background:
@@ -168,7 +209,9 @@ export default function Compare() {
               transition: "all 0.2s ease",
             }}
           >
-            {loading ? "Comparing..." : `Compare ${selected.length} Products`}
+            {compareMutation.isPending
+              ? "Comparing..."
+              : `Compare ${selected.length < 2 ? "" : selected.length + " "}Products`}
           </button>
           {selected.length > 0 && (
             <button
@@ -191,9 +234,9 @@ export default function Compare() {
           )}
         </div>
 
-        {error && (
+        {compareError && (
           <p role="alert" aria-live="assertive" style={{ color: "#e63946", marginBottom: 12 }}>
-            {error}
+            {compareError}
           </p>
         )}
 
@@ -247,7 +290,7 @@ export default function Compare() {
                       marginTop: 6,
                     }}
                   >
-                    {p.greenGrade.totalEmissions} kg CO{"\u2082"}e
+                    {p.greenGrade.totalEmissions} kg CO{"₂"}e
                   </div>
                 </div>
               ))}

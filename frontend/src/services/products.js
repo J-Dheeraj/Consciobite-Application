@@ -29,3 +29,8 @@ export async function fetchStats() {
 export async function fetchRecommendations(id) {
   return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/recommendations`);
 }
+
+export async function fetchProductAuditHistory(id, { limit = 20, offset = 0 } = {}) {
+  const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  return httpClient(`${API_BASE}/v1/audit/${encodeURIComponent(id)}?${params}`);
+}

@@ -5,6 +5,7 @@ export {
   compareProducts,
   fetchStats,
   fetchRecommendations,
+  fetchProductAuditHistory,
 } from "./products";
 export { registerUser, loginUser, fetchCurrentUser } from "./auth";
 export { fetchReviews, submitReview, deleteReview } from "./reviews";

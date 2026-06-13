@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-13 — Compare Page + Per-Product Score History
+
+**Operation:** Fix compare page product loading (was limited to 100/550 products, used raw useEffect against convention) and add per-product score history UI to product detail page.
+
+**Files modified:** 4
+- `frontend/src/app/compare/page.js` — rewrote to use React Query + debounced server-side search; replaced raw `useEffect`/`useState` with `useQuery` + `useMutation`; shows top 50 by grade when no search, server-filtered results when user types ≥ 2 chars
+- `frontend/src/services/products.js` — added `fetchProductAuditHistory(id, {limit, offset})` calling `GET /api/v1/audit/:productId`
+- `frontend/src/services/api.js` — re-exported `fetchProductAuditHistory`
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added collapsible "Score History" section; uses `useQuery` with `enabled: showHistory` so audit fetch is lazy (only fires on expand); shows "no changes recorded" when audit trail is empty
+
+**Verification:**
+- 137 backend tests still passing (unchanged)
+- ESLint: no warnings or errors
+- Prettier: all 4 files clean
+
+**Key decisions:**
+- Compare page now queries the API per search rather than loading 100 products upfront; default state shows 50 products sorted by `grade_desc` so the list isn't empty
+- Score history is lazy-loaded (not fetched on page load) to avoid a cold API call on every product view
+- `enabled: showHistory` pattern keeps the query dormant until user expands the section
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
