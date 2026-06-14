@@ -545,6 +545,25 @@ export default function ProductDetail() {
           >
             Stats for Nerds
           </button>
+
+          <Link
+            href={`/passport/${product.id}`}
+            style={{
+              display: "block",
+              width: "100%",
+              padding: "13px 0",
+              borderRadius: 28,
+              background: "rgba(255,255,255,0.12)",
+              color: "#fff",
+              fontSize: "0.9rem",
+              fontWeight: 600,
+              textAlign: "center",
+              textDecoration: "none",
+              marginTop: 10,
+            }}
+          >
+            Digital Product Passport &rarr;
+          </Link>
         </div>
 
         {/* Stats for Nerds */}

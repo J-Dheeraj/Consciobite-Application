@@ -22,6 +22,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 ## Entities
 - [[Admin Routes]]
 - [[CarbonTracker Component]]
+- [[Digital Product Passport]]
 - [[GreenGrade Service]]
 - [[Open Food Facts Integration]]
 - [[RequireAuth Guard]]

@@ -13,6 +13,35 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-14 — Digital Product Passport Frontend + Tests
+
+**Operation:** Complete the Digital Product Passport feature end-to-end. The backend API (`passport.js`) existed but had no tests and no frontend UI.
+
+**Files created:** 4
+- `backend/__tests__/passport.test.js` — 19 integration tests for passport, portfolio, and audit endpoints
+- `frontend/src/services/passport.js` — `fetchPassport()`, `fetchPortfolioScore()`, `fetchProductAudit()` service functions
+- `frontend/src/app/passport/[id]/page.js` — server wrapper with `generateStaticParams()` (550 product passport pages)
+- `frontend/src/app/passport/[id]/PassportClient.js` — full client component: score card, emission breakdown bars, provenance table, print action
+
+**Files modified:** 2
+- `frontend/src/services/api.js` — added exports for passport service functions
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added "Digital Product Passport →" link in sustainability verdict card
+
+**Verification:**
+- 156 backend tests passing (was 137 before governance, 156 now — 19 new passport tests all pass)
+- ESLint clean, Prettier formatted
+- `generateStaticParams()` pattern matches existing `/product/[id]` — reads product IDs from `backend/src/data/products.json` at build time
+
+**Key decisions:**
+- Passport page URL is `/passport/:id` (separate from `/product/:id`) to support shareable, printable links for corporate procurement users
+- `V1_BASE = ${API_BASE}/v1` pattern in `passport.js` to access the versioned `/api/v1/` routes without changing `httpClient.js`
+- Emission bars use red/amber/green coloring relative to the product's own max emission category (not a global scale)
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
