@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-15 — Passport UI + Backend Tests
+
+**Operation:** Add Digital Product Passport viewer UI and integration tests.
+
+**Files created:** 4
+- `backend/__tests__/passport.test.js` — 24 Supertest tests for all 3 passport routes (GET /passport/:id, POST /portfolio/score, GET /audit/:id); validation, 404, pagination, field shape
+- `frontend/src/services/passport.js` — fetchPassport(), fetchPortfolioScore(), fetchAuditTrail() API helpers
+- `frontend/src/app/passport/[id]/page.js` — server wrapper with generateStaticParams() (reads 550 IDs from products.json)
+- `frontend/src/app/passport/[id]/PassportClient.js` — client component: score hero, 7-category emission breakdown bars, data-confidence tier badge, audit trail toggle, JSON download
+
+**Files modified:** 1
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added "Digital Product Passport" link button after "Stats for Nerds"
+
+**Verification:**
+- All 161 backend tests pass (117 original + 24 new passport tests)
+- Frontend ESLint: 0 errors, 0 warnings
+- Prettier: all files formatted
+
+**Branch:** `claude/dreamy-dirac-g1sy4j` (4 commits ahead of origin/main)
+
+**Index updated:** no (no new wiki pages; this is a code session)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
