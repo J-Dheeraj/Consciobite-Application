@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-15 — Passport API Tests + Dependency Audit Fix
+
+**Operation:** Scheduled routine session on branch `claude/nifty-goodall-mfpd7o`.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 26 integration tests for the Digital Product Passport API (`/api/v1`)
+
+**Files modified:** 1
+- `backend/package-lock.json` — bumped qs → 6.15.2, express → 4.22.2, body-parser → 1.20.5 via `npm audit fix` (0 vulnerabilities remaining)
+
+**Test results:** 163 backend tests passing (was 137 before passport.test.js; previous delta was admin.test.js adding 20 tests)
+
+**Endpoints covered by new tests:**
+- `GET /api/v1/passport/:productId` — valid product, 404, 400 invalid ID, 400 special chars, ISO timestamp, confidence fields
+- `POST /api/v1/portfolio/score` — happy path, not-array, missing, oversized (>100), empty, non-string entries, all-404, mixed valid/invalid, field shape, category_benchmarks, highest/lowest refs
+- `GET /api/v1/audit/:productId` — valid product, 404, 400 invalid, limit/offset params, invalid limit/offset, cap at 500
+
+**Branch pushed:** `claude/nifty-goodall-mfpd7o`
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
