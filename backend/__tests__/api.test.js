@@ -215,6 +215,52 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/methodology", () => {
+    test("should return methodology data", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+      expect(res.body.version).toBeDefined();
+      expect(res.body.algorithm).toBeDefined();
+      expect(res.body.dataSources).toBeDefined();
+      expect(res.body.confidenceScoring).toBeDefined();
+      expect(res.body.limitations).toBeDefined();
+      expect(res.body.references).toBeDefined();
+    });
+
+    test("should include scoring changelog", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.changelog)).toBe(true);
+      expect(res.body.changelog.length).toBeGreaterThan(0);
+      const latest = res.body.changelog[0];
+      expect(latest.version).toBe(res.body.version);
+      expect(latest.date).toBeDefined();
+      expect(latest.summary).toBeDefined();
+      expect(Array.isArray(latest.changes)).toBe(true);
+    });
+
+    test("should include 7 emission dimensions", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.body.algorithm.dimensions).toHaveLength(7);
+      const keys = res.body.algorithm.dimensions.map((d) => d.key);
+      expect(keys).toContain("landUseChange");
+      expect(keys).toContain("transport");
+      expect(keys).toContain("packaging");
+    });
+  });
+
+  describe("GET /api/transparency/stats", () => {
+    test("should return transparency statistics", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+      expect(typeof res.body.productCount).toBe("number");
+      expect(res.body.productCount).toBeGreaterThan(0);
+      expect(res.body).toHaveProperty("totalChanges");
+      expect(res.body).toHaveProperty("paying");
+      expect(res.body).toHaveProperty("nonPaying");
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

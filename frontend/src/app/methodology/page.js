@@ -508,6 +508,68 @@ export default function Methodology() {
           </ul>
         </SectionCard>
 
+        {/* Scoring Changelog */}
+        {data.changelog && data.changelog.length > 0 && (
+          <SectionCard title="Scoring Changelog" isDark={isDark}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {data.changelog.map((entry) => (
+                <div
+                  key={entry.version}
+                  style={{
+                    padding: "14px 16px",
+                    borderRadius: 10,
+                    background: isDark ? "#1c2e22" : "#f8faf8",
+                    border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                    <span
+                      style={{
+                        padding: "2px 10px",
+                        borderRadius: 12,
+                        background: "#2d6a4f",
+                        color: "#fff",
+                        fontSize: "0.72rem",
+                        fontWeight: 700,
+                      }}
+                    >
+                      v{entry.version}
+                    </span>
+                    <span style={{ fontSize: "0.78rem", color: isDark ? "#7a9a7e" : "#888" }}>
+                      {entry.date}
+                    </span>
+                  </div>
+                  <p
+                    style={{
+                      fontSize: "0.85rem",
+                      color: textColor,
+                      lineHeight: 1.6,
+                      marginBottom: 10,
+                    }}
+                  >
+                    {entry.summary}
+                  </p>
+                  <ul style={{ margin: 0, paddingLeft: 18 }}>
+                    {entry.changes.map((change, i) => (
+                      <li
+                        key={i}
+                        style={{
+                          fontSize: "0.82rem",
+                          color: isDark ? "#7a9a7e" : "#666",
+                          lineHeight: 1.6,
+                          marginBottom: 2,
+                        }}
+                      >
+                        {change}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
+
         {/* References */}
         <SectionCard title="Academic References" isDark={isDark}>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

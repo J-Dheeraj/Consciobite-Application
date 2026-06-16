@@ -665,6 +665,48 @@ function getMethodology() {
       "The scoring model is trained on the current product catalog and may shift as new products are added.",
     ],
     references: [DATA_SOURCES.poore_nemecek_2018, DATA_SOURCES.our_world_in_data],
+    changelog: [
+      {
+        version: "3.0",
+        date: "2026-01-15",
+        summary:
+          "Introduced Gaussian Kernel Density Estimation with variance-weighted feature importance. Added Mahalanobis anomaly detection (95th percentile, χ²=14.067). Blended category-relative CDF (60%) with global CDF (40%).",
+        breaking: false,
+        changes: [
+          "Replaced percentile rank scoring with KDE-based density estimation",
+          "Added variance-weighted feature importance across 7 dimensions",
+          "Added sigmoid normalisation (k=5, midpoint=0.5) for non-linear scale",
+          "Added Mahalanobis distance anomaly detection",
+          "Introduced 60/40 category-vs-global CDF blending",
+        ],
+      },
+      {
+        version: "2.0",
+        date: "2025-06-01",
+        summary:
+          "Added data confidence scoring and multi-source cross-validation. Introduced three data tiers (Verified LCA, Aggregated Database, Estimated). Confidence score weights: tier 35%, source count 20%, agreement 30%, recency 15%.",
+        breaking: false,
+        changes: [
+          "Introduced data confidence score (0–1) for each product",
+          "Added three data tiers: Verified LCA (1.0), Aggregated Database (0.7), Estimated (0.4)",
+          "Added cross-validation agreement score against Poore & Nemecek 2018 reference values",
+          "Score displayed alongside grade badge on product pages",
+        ],
+      },
+      {
+        version: "1.0",
+        date: "2025-01-10",
+        summary:
+          "Initial public release. Category-relative percentile scoring across 7 supply-chain emission dimensions (Land Use Change, Animal Feed, Farm, Processing, Transport, Packaging, Retail). Linear 0–10 scale based on Poore & Nemecek 2018 data.",
+        breaking: false,
+        changes: [
+          "First GreenGrade release — 7 emission dimension model",
+          "Category-relative percentile rank scoring (linear 0–10)",
+          "Primary source: Poore & Nemecek (2018) meta-analysis of 38,700 farms",
+          "550 products scored at launch",
+        ],
+      },
+    ],
   };
 }
 
