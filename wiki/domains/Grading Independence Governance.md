@@ -53,12 +53,12 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 3. Publish on website at `/transparency` (Session 3 code work)
 4. First Panel meeting within 90 days of acceptance
 
-### Phase 2 — Transparency Features (code changes)
+### Phase 2 — Transparency Features (code changes) — COMPLETE
 
-1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members
-2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions)
-3. **Board disclosure page** — names, affiliations, conflict-of-interest declarations
-4. **Audit trail** — backend logging for when/why scoring parameters change (currently hardcoded in `backend/src/services/greengrade.js`)
+1. **Public methodology page enhancement** — DONE. `/methodology` has full algorithm docs, data sources, confidence tiers, changelog
+2. **Scoring changelog** — DONE (Session 3). `getMethodology()` returns `changelog` array (v1.0, v2.0, v3.0 history). Rendered on `/methodology` page.
+3. **Board disclosure page** — DONE. `/transparency` shows panel seats (in-formation), commitments, conflict stats
+4. **Audit trail** — DONE. `/api/v1/audit/:productId` exposes public per-product score change history
 
 ### Phase 3 — Certification (long-term)
 
@@ -75,8 +75,9 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/methodology/page.js` | Public methodology page — Scoring Changelog section added | Done (Session 3) |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done (Session 2) |
+| `backend/__tests__/passport.test.js` | 17 integration tests for passport API | Done (Session 3) |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links

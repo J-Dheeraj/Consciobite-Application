@@ -13,6 +13,35 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-16 — Session 3: Passport Tests + Scoring Changelog
+
+**Operation:** Scheduled routine — added missing integration tests for Digital Product Passport API and completed the scoring changelog governance feature.
+
+**Branch:** `claude/dreamy-dirac-1wayiq`
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 17 Supertest tests for GET /api/v1/passport/:id, POST /api/v1/portfolio/score, GET /api/v1/audit/:id
+
+**Files modified:** 3
+- `backend/src/services/dataProvenance.js` — added `changelog` array to `getMethodology()` documenting v1.0, v2.0, v3.0 history
+- `backend/__tests__/api.test.js` — added tests for /api/methodology (changelog, dimensions) and /api/transparency/stats
+- `frontend/src/app/methodology/page.js` — added "Scoring Changelog" section rendering versioned cards from `data.changelog`
+
+**Verification:**
+- 137 → 158 tests passing (all green, 7 suites)
+- ESLint clean (backend + frontend)
+- Prettier clean (backend + frontend)
+- Pushed to `claude/dreamy-dirac-1wayiq`
+
+**Governance status:**
+- Session 3 scoring changelog: DONE — changelog field now in /api/methodology response and displayed on /methodology page
+- Advisory panel formation: still pending (non-code work)
+- Transparency page and board disclosure: already complete from prior sessions
+
+**Test count history:** 117 (original) → 137 (after PR #33) → 158 (this session)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
