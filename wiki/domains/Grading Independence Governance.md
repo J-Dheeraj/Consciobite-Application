@@ -16,18 +16,27 @@ Cross-cutting concern: ensuring GreenGrade scoring is (and is perceived as) inde
 
 Consciobite charges manufacturers for listing and grading. GreenGrade scores claim to be objective. These two facts create a conflict of interest that investors, regulators, and retail partners will flag.
 
-## Current State (updated 2026-05-29)
+## Current State (updated 2026-06-16)
 
 - GreenGrade algorithm is deterministic (KDE + sigmoid, 7 emission dimensions) — see [[GreenGrade KDE Scoring]]
-- Methodology page exists at `/methodology` in the frontend
+- Methodology page exists at `/methodology`; full technical spec also published as `METHODOLOGY.md` (repo root, GreenGrade v3.0)
 - **Audit trail implemented** — [[Score Audit Service]] logs every score change with paying-client flag
-- **Admin conflict log** — [[Admin Routes]] at `/api/admin/conflict-log` with paying/non-paying filter and aggregate stats
-- **Manufacturer tracking** — `manufacturers` + `product_manufacturers` tables in SQLite
+- **Admin conflict log** — [[Admin Routes]] at `/api/admin/conflict-log` with paying/non-paying filter and aggregate stats, plus an admin UI at `/admin/conflict-log` (summary stats, filters, rescore button, full audit table)
+- **Manufacturer tracking** — `manufacturers` + `product_manufacturers` tables in SQLite, with an admin onboarding UI at `/admin/manufacturers` (create form with fee-acknowledgement checkbox, product linking, registered manufacturers table)
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
 - **Governance charter drafted** — [[GreenGrade Governance Charter 2026-05-29]] defines Panel composition, mandate, firewall, access rights, and cadence. Ready for founding member review.
+- **Public transparency page shipped** — `/transparency` (frontend) renders governance config, advisory panel seats, commitments, methodology link, and live score-change stats from `GET /api/transparency/stats` (cached 300s)
 - **Landing page updated** — "Independent Scoring" copy replaces "No Pay-to-Win"; product count corrected to 550
+- **B2B Digital Product Passport API** — see [[Digital Product Passport API]]. Exposes per-product GreenGrade breakdowns and audit history for EU ESPR / SGX Scope 3 reporting, reusing the same audit trail this governance work built.
 - Advisory board not yet formed (candidates to be identified)
-- No public disclosure page yet (Session 3 of governance brief)
+
+## Phase 2 — Transparency Features: status (was "pending", now shipped)
+
+All four Phase 2 items from the original plan are now live:
+1. Public methodology page — `/methodology` plus standalone `METHODOLOGY.md`
+2. Scoring changelog — `score_change_logs` table, exposed via `/api/admin/conflict-log` and the per-product `/v1/audit/:productId` passport endpoint
+3. Board disclosure / governance page — `/transparency`
+4. Audit trail — [[Score Audit Service]], wired into `greengrade.js` score changes
 
 ## Action Plan
 
@@ -53,7 +62,7 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 3. Publish on website at `/transparency` (Session 3 code work)
 4. First Panel meeting within 90 days of acceptance
 
-### Phase 2 — Transparency Features (code changes)
+### Phase 2 — Transparency Features (done, see status note above)
 
 1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members
 2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions)
@@ -75,8 +84,12 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/methodology/page.js` | Public methodology page | Done |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done (Session 3) |
+| `frontend/src/app/admin/conflict-log/page.js` | Admin audit UI | Done (Session 2) |
+| `frontend/src/app/admin/manufacturers/page.js` | Manufacturer onboarding UI | Done (Session 4) |
+| `backend/src/routes/passport.js` | B2B Digital Product Passport API | Done |
+| `METHODOLOGY.md` | Standalone technical spec (GreenGrade v3.0) | Done |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links
@@ -85,6 +98,7 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 - [[GreenGrade Governance Charter 2026-05-29]] — Panel charter (draft v1.0)
 - [[Score Audit Service]] — audit trail implementation
 - [[Admin Routes]] — admin API endpoints
+- [[Digital Product Passport API]] — B2B reporting endpoints reusing this audit trail
 - [[Stack Migration Plan]] — future Prisma/Supabase migration
 - [[GreenGrade KDE Scoring]] — algorithm details
 - [[GreenGrade Service]] — implementation

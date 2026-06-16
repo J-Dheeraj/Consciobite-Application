@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-16 — Wiki Catch-Up (no code changes)
+
+**Operation:** Routine session found no open issues/PRs and a clean, green `main` (137/137 backend tests passing, last CI run on PR #33 successful). Checked the vault per `hot.md` and found it stale — four merged PRs (#30-#33, 2026-05-21 through 2026-06-08) had shipped real features that were never ingested. Did the documentation catch-up instead of inventing unrequested code work.
+
+**Gap found:** `domains/Grading Independence Governance.md` still listed the transparency page, admin conflict-log UI, and manufacturer onboarding UI as "Pending (Session 3)" — all three had already shipped in `b6063fd` (2026-05-29). The Digital Product Passport API (`8d7ead3`, 2026-06-07) wasn't documented anywhere in the vault.
+
+**Pages created:** 2
+- `entities/Digital Product Passport API` — B2B `/v1/passport`, `/v1/portfolio/score`, `/v1/audit/:productId`; flags that these routes have no auth middleware yet
+- `entities/ApiReadyGate Component` — Render cold-start gate, polls `/health` before rendering children
+
+**Pages updated:** 6
+- `domains/Grading Independence Governance` — Phase 2 marked done, Technical Touchpoints table corrected, links to new passport entity added
+- `architecture/Frontend Routes` — added `/transparency`, `/admin/conflict-log`, `/admin/manufacturers`
+- `architecture/API Endpoints` — added Governance/Admin and B2B Passport sections
+- `meta/Consciobite Architecture Overview` — directory structure updated for admin/passport/governance files
+- `hot.md` — refreshed with governance frontend completion, passport API, test count (117 → 137), active branch state
+- `index.md` — added the two new entity pages
+
+**Verification:**
+- `cd backend && npm test` — 137 tests passed, 6 suites
+- Confirmed via GitHub API: 0 open issues, 0 open PRs, latest CI run on `main` (`f0c40d4`) succeeded
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

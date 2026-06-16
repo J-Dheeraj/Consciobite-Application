@@ -2,7 +2,7 @@
 type: overview
 title: "Consciobite Architecture Overview"
 created: 2026-04-25
-updated: 2026-05-13
+updated: 2026-06-16
 status: developing
 tags: [architecture, overview, consciobite]
 related: ["[[GreenGrade Service]]", "[[GreenGrade KDE Scoring]]", "[[Product Catalog Schema]]", "[[Auth-Expired Event Bus]]", "[[RequireAuth Guard]]", "[[Static Export Pipeline]]", "[[Render Deployment]]", "[[Docker Build Context]]"]
@@ -33,17 +33,19 @@ Consciobite-Application/
 │   │   ├── product/[id]/ — generateStaticParams + ProductDetailClient
 │   │   ├── carbon/     — Carbon tracker (RequireAuth protected)
 │   │   ├── dashboard/  — User dashboard
+│   │   ├── transparency/ — Public governance page
+│   │   ├── admin/      — conflict-log, manufacturers (governance admin UI)
 │   │   └── ...         — about, compare, favorites, login, register, scan, tips
-│   ├── components/     — ReviewSection, GradeBadge, Navbar, Spinner ...
+│   ├── components/     — ReviewSection, GradeBadge, Navbar, Spinner, ApiReadyGate (Render cold-start gate) ...
 │   ├── context/        — AuthContext, ThemeContext
 │   ├── services/       — httpClient.js + domain modules (products, auth, reviews, carbon, recipes)
 │   └── utils/          — constants.js, favorites.js, pageStyles.js
 ├── backend/src/
-│   ├── routes/         — products, auth, reviews, carbon, recipes
-│   ├── middleware/     — auth, validate, cache, logger
-│   ├── services/       — greengrade.js, dataProvenance.js
+│   ├── routes/         — products, auth, reviews, carbon, recipes, admin (governance), passport (B2B /v1)
+│   ├── middleware/     — auth (incl. requireAdmin), validate, cache, logger
+│   ├── services/       — greengrade.js, dataProvenance.js, scoreAudit.js (governance audit trail)
 │   ├── data/           — products.json (550 products)
-│   └── db/             — schema.js (SQLite init)
+│   └── db/             — schema.js (SQLite init), migrations/ (002_governance_layer.sql adds manufacturers, score_change_logs, product_scores)
 ├── docker-compose.yml  — Multi-service Docker setup (repo-root build context)
 ├── render.yaml         — Render Blueprint (static frontend + node backend)
 └── wiki/               — this knowledge base

@@ -45,6 +45,25 @@ All endpoints served by Express.js backend on port 4000. Frontend accesses via N
 |--------|----------|-------------|
 | GET | `/api/methodology` | Scoring methodology docs |
 
+## Governance / Admin (see [[Admin Routes]])
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/admin/conflict-log` | Score change audit log, paying/non-paying filter + stats (admin only) |
+| POST | `/api/admin/rescore` | Rescore all products, log changes (admin only) |
+| GET/POST | `/api/admin/manufacturers` | Manufacturer CRUD (admin only) |
+| POST | `/api/admin/product-manufacturer` | Link product to manufacturer (admin only) |
+| POST | `/api/admin/manufacturers/:id/acknowledge-fee` | Record listing fee acknowledgement (admin only) |
+| GET | `/api/transparency/stats` | Public score-change stats for the `/transparency` page (cached 300s) |
+
+## B2B Digital Product Passport (see [[Digital Product Passport API]])
+Separate `/v1/*` prefix, not under `/api/*`.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/v1/passport/:productId` | Full GreenGrade passport for one product |
+| POST | `/v1/portfolio/score` | Batch passports + portfolio summary (1-100 IDs) |
+| GET | `/v1/audit/:productId` | Paginated score-change history for one product |
+
 ## Frontend API Client
 All endpoints accessed through [[safeFetch]] which handles:
 - Auth headers (JWT Bearer token)

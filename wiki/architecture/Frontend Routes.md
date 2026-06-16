@@ -20,11 +20,14 @@ All routes use Next.js App Router with file-based routing in `src/app/`.
 | `/methodology` | `methodology/page.js` | Scoring methodology explanation |
 | `/login` | `login/page.js` | User login |
 | `/register` | `register/page.js` | User registration |
+| `/transparency` | `transparency/page.js` | Public governance page — panel seats, commitments, live score-change stats |
+| `/admin/conflict-log` | `admin/conflict-log/page.js` | Admin-only audit table, filters, rescore button |
+| `/admin/manufacturers` | `admin/manufacturers/page.js` | Admin-only manufacturer onboarding + product linking |
 
 ## Shared Layout
 
 `layout.js` wraps all routes with:
-- [[Providers]] (QueryClient + ThemeProvider + AuthProvider)
+- [[Providers]] (QueryClient + ThemeProvider + AuthProvider + [[ApiReadyGate Component]] for Render cold-start UX)
 - [[Navbar]] (sticky top nav with desktop/mobile views)
 - [[Footer]] (site footer with links)
 - [[BottomNav]] (mobile bottom navigation, visible < 768px)
