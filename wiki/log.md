@@ -2,12 +2,33 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-17
 status: evergreen
 tags: [log, meta]
 ---
 
 # Operation Log
+
+## 2026-06-17 — Scheduled Routine: Vault Catch-Up
+
+**Operation:** Routine check (no specific task given) — checked vault, verified repo health, caught up wiki documentation against ~3 weeks of merged code the vault hadn't ingested yet.
+
+**Findings:**
+- No open PRs or issues. Latest CI run on `main` (2026-06-08) green.
+- Current branch `claude/nifty-goodall-ogigjj` is ahead of the vault's last-known state, containing PRs #31-#33 (already merged): governance frontend, README/methodology rewrite, trailingSlash fix, Digital Product Passport API, cold-start UX.
+- `graphify` CLI/module is not installed in this environment — could not run the code-graph rebuild command from CLAUDE.md; relied on existing `graphify-out/GRAPH_REPORT.md` (last generated 2026-05-10) plus direct source reading instead.
+
+**Pages created:** 2
+- `entities/Digital Product Passport API`
+- `entities/ApiReadyGate Component`
+
+**Pages updated:** 3
+- `domains/Grading Independence Governance` — marked Phase 2 (transparency features) done, added passport API + admin frontend rows to the technical touchpoints table
+- `hot.md` — refreshed active-branch line, added catch-up summary of PRs #31-#33
+- `index.md` — registered 2 new entity pages, bumped `updated` date
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 Append-only. Newest entries at top.
 
