@@ -13,7 +13,11 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-17 after branch sprawl audit.
+
+**⚠ Branch sprawl (2026-06-17):** 71 unmerged `claude/*` branches on origin from twice-daily scheduled routine runs, each starting fresh off `main` with no task. Only 3 PRs ever merged (#31/#32/#33, all from `claude/improve-application-S5njo`). 14+ branches independently re-wrote duplicate Digital Product Passport test suites that never landed in `main`. See log entry "2026-06-17 — Branch Sprawl Audit" for detail and recommendation. Flagged to owner; no branches deleted.
+
+**Stack note:** `main` already includes the Digital Product Passport API (`backend/src/routes/passport.js`: `/v1/passport/:productId`, `/v1/portfolio/score`, `/v1/audit/:productId`), `METHODOLOGY.md`, `ApiReadyGate` cold-start UX, and a B2B-framed `README.md` (landed via PR #33, 2026-06-07). The governance `/transparency` and `/methodology` pages from Phase 1/2 are also already live on `main`. This page was stale relative to `main` until this update — cross-check `git log main` before assuming wiki content is current.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 

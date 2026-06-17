@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-17 — Branch Sprawl Audit (no code changes)
+
+**Operation:** Scheduled routine session. Checked vault, reviewed repo state, found no open issues/PRs and no explicit task — audited remote branches instead of inventing unscoped feature work.
+
+**Finding:** 71 unmerged `claude/*` branches on `origin`, created roughly twice daily since late April 2026 by this same scheduled routine. Pattern:
+- Only 3 PRs (#31, #32, #33) from `claude/improve-application-S5njo` ever merged to `main`.
+- Every other branch (`dreamy-dirac-*`, `nifty-goodall-*`, `sweet-hamilton-*`) was created fresh off `main`, did some work, pushed, and was abandoned — no PR opened, no merge back.
+- At least 14 different branches independently re-implemented near-duplicate "Digital Product Passport API" integration test suites (19–26 tests each, same feature, different branch each time), because each run starts from `main` without the previous run's work and reinvents the same next step.
+- Real incremental work (e.g. `claude/dreamy-dirac-1wayiq`: "add passport route tests and scoring changelog") is stranded on these orphan branches rather than landing in `main`.
+- One outlier branch (`claude/sweet-hamilton-ON05N`) contains an unrelated `frontend-next/` (TypeScript) tree — looks like a one-off experiment, not part of the current Next.js JS stack.
+
+**Action taken:** None destructive. Documented finding here and in `hot.md`. Did not delete or merge any branches — that decision belongs to the repo owner.
+
+**Recommendation for owner:** Either (a) point future scheduled runs at a single persistent working branch instead of a fresh branch per run, (b) add a step that opens/updates a PR at the end of each run so work accumulates and is reviewed, or (c) prune the orphan branches after confirming nothing in them is wanted.
+
+**Index updated:** no (operational note, not a new concept)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
