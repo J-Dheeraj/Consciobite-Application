@@ -2,16 +2,22 @@
 type: overview
 title: "Consciobite Architecture Overview"
 created: 2026-04-25
-updated: 2026-05-13
+updated: 2026-06-18
 status: developing
 tags: [architecture, overview, consciobite]
-related: ["[[GreenGrade Service]]", "[[GreenGrade KDE Scoring]]", "[[Product Catalog Schema]]", "[[Auth-Expired Event Bus]]", "[[RequireAuth Guard]]", "[[Static Export Pipeline]]", "[[Render Deployment]]", "[[Docker Build Context]]"]
+related: ["[[GreenGrade Service]]", "[[GreenGrade KDE Scoring]]", "[[Product Catalog Schema]]", "[[Auth-Expired Event Bus]]", "[[RequireAuth Guard]]", "[[Static Export Pipeline]]", "[[Render Deployment]]", "[[Docker Build Context]]", "[[Digital Product Passport API]]"]
 sources: ["[[.raw/graphify-audit-2026-04-25.md]]"]
 ---
 
 # Consciobite Architecture Overview
 
 Food sustainability app. Rates grocery products using GreenGrade (A-F, 1-10 score) based on lifecycle carbon emissions.
+
+**Positioning shift (2026-06-07, PR #33):** README and public framing now lead with a B2B/compliance
+pitch — "Southeast Asia's first SKU-level carbon scoring and Digital Product Passport platform" for
+SGX Scope 3 reporting and EU ESPR — rather than the earlier consumer/student-project framing. The
+consumer app (scan/compare/track/recipes) is unchanged; a new `/api/v1/*` surface was added on top
+for B2B consumers. See [[Digital Product Passport API]].
 
 ## Stack
 
@@ -80,3 +86,4 @@ Frontend uses `httpClient.js` with `getApiBase()` for runtime API base detection
 - Cache covers only `/api/products` (120 s TTL) and `/api/recipes` (600 s TTL) — both public, no per-user scope needed.
 - Static export chosen over SSR to match Render Static Site deployment — no Node.js runtime needed for frontend.
 - Docker build context set to repo root (not `./frontend`) so `generateStaticParams()` can access `backend/src/data/products.json` at build time.
+- `next.config.js` sets `trailingSlash: true` (added 2026-06-05, commit `628903a`) — without it, static export produced flat files like `transparency.html` that neither Render's static hosting nor nginx resolve for bare-path requests (`/transparency`). With `trailingSlash`, every route emits `route/index.html`, which both serve correctly. Catch-all rewrite serves `404.html` for unknown routes.

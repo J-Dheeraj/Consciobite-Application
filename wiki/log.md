@@ -13,6 +13,45 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-18 — Wiki Sync (catch-up, no source ingest)
+
+**Operation:** Scheduled routine check. No new `.raw/` source documents to ingest, and the
+`claude/dreamy-dirac-1ux2ky` branch is identical to `main` (no in-progress code work to continue).
+Found the vault was ~3 weeks stale: PRs #32 and #33 had merged to `main` since the last wiki update
+(2026-05-29) without being recorded. Caught the vault up by reading the actual merged code rather
+than relying on commit messages alone.
+
+**What had landed and wasn't recorded:**
+- `628903a` (2026-06-05) — `trailingSlash: true` added to `next.config.js` to fix 404s on static
+  hosting (Render/nginx don't resolve `/transparency` to `transparency.html` without it)
+- PR #32 (`98e9abb`) — first README rewrite pass
+- `8d7ead3` / PR #33 (2026-06-07) — **Digital Product Passport API** (`backend/src/routes/passport.js`,
+  `/api/v1/passport/:productId`, `/api/v1/portfolio/score`, `/api/v1/audit/:productId`),
+  `METHODOLOGY.md`, `ApiReadyGate.js` cold-start UX component, and a second README rewrite that
+  repositions the project as a B2B/compliance platform (EU ESPR, SGX Scope 3) rather than a
+  consumer/student project. Consumer app itself is unchanged.
+
+**Also corrected:** the governance domain page still said the `/methodology` and `/transparency`
+pages were "Pending (Session 3)" — verified by reading the files that both are live and have been
+since PR #31. Updated Phase 1/Phase 2 status accordingly. Only genuinely open engineering item left
+in the governance plan is a version-controlled changelog for GreenGrade *algorithm parameter*
+changes (distinct from the existing per-product score audit trail) — flagged, not implemented,
+since it's a design decision (changelog file vs. DB table vs. something else) better made with the
+user than assumed.
+
+**Pages created:** 1
+- `entities/Digital Product Passport API`
+
+**Pages updated:** 3
+- `meta/Consciobite Architecture Overview` — B2B positioning note, `trailingSlash` decision
+- `domains/Grading Independence Governance` — Phase 1/2 status corrected against actual code
+- `index.md` — added new entity
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

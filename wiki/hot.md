@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-18
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,25 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-18 — wiki sync, no new code work (branch == main, nothing in `.raw/` to ingest).
+
+**Positioning shift (2026-06-07):** README and public framing now lead with B2B/compliance — "Southeast
+Asia's first SKU-level carbon scoring and Digital Product Passport platform" for SGX Scope 3 + EU ESPR
+— replacing earlier consumer/student-project language. The consumer app is unchanged; a new `/api/v1/*`
+surface was added: `GET /passport/:productId`, `POST /portfolio/score`, `GET /audit/:productId`. See
+[[Digital Product Passport API]]. `METHODOLOGY.md` (repo root) now documents the v3.0 algorithm for
+external/compliance readers.
+
+**Governance Phase 2 mostly done, not just planned:** verified by reading the live files — `/methodology`
+and `/transparency` pages are both real and rendering, and the score-change audit trail is now exposed
+externally too (`GET /api/v1/audit/:productId`), not just to admins. Only remaining open Phase 2 item:
+a version-controlled changelog for GreenGrade *algorithm parameter* changes (separate from the existing
+per-product score audit) — not implemented, flagged as a decision for the user rather than assumed.
+Advisory Panel seats on `/transparency` are still placeholder "In Formation" — sourcing real candidates
+is a business task, not an engineering one.
+
+**Also fixed (2026-06-05):** `next.config.js` `trailingSlash: true` — static export was producing flat
+files like `transparency.html` that neither Render nor nginx resolve for bare `/transparency` requests.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
