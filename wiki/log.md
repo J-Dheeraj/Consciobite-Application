@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-18
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,29 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-18 — Wiki Catch-Up + Passport Test Coverage
+
+**Operation:** Scheduled routine check. Vault was stale since 2026-05-29 while three more PRs merged to `main` undocumented: #30 (governance frontend, 2026-05-29), #32 (trailingSlash fix, 2026-06-05), #33 (Digital Product Passport API + METHODOLOGY.md + README B2B rewrite + cold-start UX, 2026-06-08). No open PRs and no failing CI at session start, so this session's "work" was closing the documentation gap, plus one real gap found along the way: `backend/src/routes/passport.js` had no test file, violating the project rule that every route needs a Supertest integration test.
+
+**Pages created:** 2
+- `entities/Digital Product Passport API` — `/api/v1/passport`, `/portfolio/score`, `/audit/:productId`
+- `concepts/Cold Start UX` — `ApiReadyGate.js` Render free-tier spinner
+
+**Pages updated:** 3
+- `domains/Grading Independence Governance` — Phase 2 (transparency frontend) reclassified from "pending" to "done"; admin UI and `/transparency` dashboard documented; remaining gap is unfilled panel seats (process, not code)
+- `index.md` — added the two new pages
+- `hot.md` — refreshed test count, active branch, governance/B2B timeline
+
+**Code changes:**
+- `backend/__tests__/passport.test.js` — 13 new Supertest cases covering all 3 passport endpoints (success, 404, 400, the 100-id portfolio cap, alphanumeric ID validation). Backend test count: 117 → 150. Verified with `npm test` (all green) and `prettier --check` / `eslint`.
+
+**Note:** `graphify-out/` is stale (audited 2026-05-10, 60 files) but the `graphify` Python package isn't installed in this environment, so the rebuild command from CLAUDE.md (`python3 -c "from graphify.watch import _rebuild_code..."`) could not be run here. Flagging for a future session with the package available.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
