@@ -260,6 +260,32 @@ describe("Admin governance endpoints", () => {
     });
   });
 
+  describe("GET /api/admin/parameter-log", () => {
+    test("should reject unauthenticated requests", async () => {
+      const res = await request(app).get("/api/admin/parameter-log");
+      expect(res.status).toBe(401);
+    });
+
+    test("should return the scoring parameter log", async () => {
+      const res = await request(app)
+        .get("/api/admin/parameter-log")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.logs)).toBe(true);
+      expect(res.body.logs.length).toBeGreaterThan(0);
+      expect(res.body.logs[0]).toHaveProperty("parameters_hash");
+      expect(res.body.logs[0]).toHaveProperty("parameters_json");
+      expect(res.body.logs[0].parameters_json).toHaveProperty("fallbackMax");
+    });
+
+    test("should reject invalid limit", async () => {
+      const res = await request(app)
+        .get("/api/admin/parameter-log?limit=abc")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(400);
+    });
+  });
+
   describe("v1 alias", () => {
     test("should work at /api/v1/admin/conflict-log", async () => {
       const res = await request(app)

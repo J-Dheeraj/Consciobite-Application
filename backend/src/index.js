@@ -19,9 +19,10 @@ const { swaggerSpec } = require("./swagger");
 const { getDb, closeDb } = require("./db/schema");
 const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
-const { trainModel, calculateGreenGrade } = require("./services/greengrade");
+const { trainModel, calculateGreenGrade, getModelParameters } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
 const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
+const { checkAndLogParameterChange } = require("./services/parameterAudit");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -78,6 +79,10 @@ const scoreChanges = snapshotScores(products, (product) =>
 if (scoreChanges.length > 0) {
   logger.warn(`Score audit: ${scoreChanges.length} score change(s) detected on startup`);
 }
+
+// Audit the hardcoded scoring parameters themselves (fallback maximums,
+// anomaly threshold, blend weights) so changes to greengrade.js are logged.
+checkAndLogParameterChange(getModelParameters());
 
 // ---------- Structured logging ----------
 app.use(requestLogger);

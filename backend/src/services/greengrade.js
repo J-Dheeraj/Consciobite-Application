@@ -72,6 +72,12 @@ const FALLBACK_MAX = {
 // Products with Mahalanobis distance² > this are flagged anomalous.
 const CHI2_95_7DF = 14.067;
 
+const MODEL_VERSION = "v3.0";
+
+// Blend ratio between category-relative and global KDE CDFs.
+const CATEGORY_BLEND_WEIGHT = 0.6;
+const GLOBAL_BLEND_WEIGHT = 0.4;
+
 // ─── Learned model state (populated by trainModel) ──────────────────────────
 
 let trained = false;
@@ -179,7 +185,9 @@ function calculateGreenGrade(emissions, productCategory, product) {
     const catCdf = cStats ? kdeCdf(cStats, value) : globalCdf;
 
     // Blend: 60 % category, 40 % global
-    const blendedCdf = cStats ? catCdf * 0.6 + globalCdf * 0.4 : globalCdf;
+    const blendedCdf = cStats
+      ? catCdf * CATEGORY_BLEND_WEIGHT + globalCdf * GLOBAL_BLEND_WEIGHT
+      : globalCdf;
 
     // Lower CDF (less emissions than peers) → higher score
     const dimScore = sigmoidScore(1 - blendedCdf);
@@ -511,6 +519,20 @@ function fallbackScore(emissions) {
 
 // ─── Color thresholds ───────────────────────────────────────────────────────
 
+// Snapshot of the hardcoded constants that govern scoring, for the
+// parameter audit trail (distinct from per-product score change logs).
+function getModelParameters() {
+  return {
+    version: MODEL_VERSION,
+    fallbackMax: FALLBACK_MAX,
+    chiSquared95_7df: CHI2_95_7DF,
+    blendWeights: {
+      category: CATEGORY_BLEND_WEIGHT,
+      global: GLOBAL_BLEND_WEIGHT,
+    },
+  };
+}
+
 function getColor(score) {
   if (score >= 7) return "green";
   if (score >= 4) return "yellow";
@@ -521,6 +543,7 @@ module.exports = {
   trainModel,
   calculateGreenGrade,
   getColor,
+  getModelParameters,
   CATEGORY_LABELS,
   // Exposed for testing
   sigmoidScore,

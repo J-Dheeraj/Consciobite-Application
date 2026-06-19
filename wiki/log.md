@@ -13,6 +13,38 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-19 — Scoring Parameter Audit Trail (Governance Phase 2)
+
+**Operation:** Scheduled routine session. Caught up wiki on PR #33 (Digital Product Passport API, methodology docs, cold start UX — merged 2026-06-07, predates this session and was never logged). Then implemented the last open code item in [[Grading Independence Governance]] Phase 2: an audit trail for changes to GreenGrade's hardcoded scoring parameters, distinct from the existing per-product score-change audit.
+
+**Context:** `score_change_logs` (Session 1, 2026-05-21) audits when a product's *score* changes. It does not audit when the *algorithm's constants* change (fallback maximums, anomaly chi-squared threshold, category/global blend weights) — those were inline magic numbers in `greengrade.js` with no record of when or why they changed, beyond git history.
+
+**Files created:** 3
+- `backend/src/db/migrations/003_parameter_audit.sql` — `model_parameter_logs` table (append-only)
+- `backend/src/services/parameterAudit.js` — `checkAndLogParameterChange()`, `getParameterLog()`; sha256-hashes the parameter snapshot and logs only on change (verified idempotent across repeated startups)
+- `wiki/entities/Parameter Audit Service.md`
+
+**Files modified:** 4
+- `backend/src/services/greengrade.js` — named `CATEGORY_BLEND_WEIGHT`/`GLOBAL_BLEND_WEIGHT` constants (replacing inline `0.6`/`0.4`), added `MODEL_VERSION`, added and exported `getModelParameters()`
+- `backend/src/index.js` — calls `checkAndLogParameterChange(getModelParameters())` on startup, alongside the existing score snapshot
+- `backend/src/routes/admin.js` — added `GET /api/admin/parameter-log` (requireAdmin, paginated)
+- `backend/__tests__/admin.test.js` — 3 new tests for the route (auth required, returns parsed log, rejects invalid limit)
+
+**Verification:**
+- 140/140 backend tests passing (was 117 before this session — 23 added across earlier untracked PRs + 3 added here)
+- Manual boot test: fresh DB gets one "Initial parameter snapshot" row; second startup with unchanged params produces zero new rows (confirmed via direct sqlite query)
+- ESLint clean (0 errors, pre-existing warnings only), Prettier clean
+
+**Wiki also updated:**
+- `wiki/domains/Grading Independence Governance.md` — Phase 2 items 1-4 all marked done/partially-done; only remaining work is non-technical (finding real Panel candidates)
+- `wiki/entities/Admin Routes.md` — added `/parameter-log` endpoint
+- `wiki/index.md` — added Parameter Audit Service entity
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-19
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-19 after scoring parameter audit trail session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,15 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 140 backend tests passing (was 117 as of 2026-05-29; +23 from PR #33's untracked work, +3 from this session). Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Branch note:** CLAUDE.md still lists `claude/improve-application-S5njo` as active, but PR #33 from that branch was merged 2026-06-07 (`f0c40d4`) and `main` has no other open PRs. This session ran on a fresh branch (`claude/dreamy-dirac-ipaap5`) off current `main`.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Governance layer — Session 1 (2026-05-29, still accurate):** SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. Charter drafted at `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel, 4 powers, conflict-of-interest firewall, voluntary service. Stack migration plan at [[Stack Migration Plan]].
+
+**Governance layer — PR #33 (merged 2026-06-07, previously unlogged):** Digital Product Passport API (`backend/src/routes/passport.js`): `GET /api/v1/passport/:productId`, `POST /api/v1/portfolio/score` (up to 100 SKUs), `GET /api/v1/audit/:productId` (public version of the score-change audit trail, for EU ESPR / SGX Scope 3 reporting). New `METHODOLOGY.md` at repo root (GreenGrade v3.0 spec). `ApiReadyGate` component + cold-start UX for Render free-tier backend wake-up. `trailingSlash` fix for static-host 404s.
+
+**Governance layer — Session 2 (this session, 2026-06-19):** Closed Phase 2's last open code item: [[Parameter Audit Service]] (`backend/src/services/parameterAudit.js`) audits changes to GreenGrade's *algorithm constants* (fallback maximums, anomaly chi-squared threshold, blend weights) — separate from `scoreAudit.js`, which audits per-*product* score changes. New migration `003_parameter_audit.sql` → `model_parameter_logs` table. New admin endpoint `GET /api/admin/parameter-log`. `greengrade.js` gained `getModelParameters()` and named `CATEGORY_BLEND_WEIGHT`/`GLOBAL_BLEND_WEIGHT` constants (previously inline `0.6`/`0.4`). Hash-based change detection verified idempotent across repeated server startups. Remaining governance work is non-technical: confirming 3 real Advisory Panel candidates (transparency page currently shows placeholder seats).
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

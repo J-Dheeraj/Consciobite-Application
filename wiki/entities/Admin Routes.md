@@ -19,6 +19,7 @@ tags: [entity, admin, governance, routes]
 | Method | Path | Purpose |
 |--------|------|---------|
 | `GET` | `/api/admin/conflict-log` | Score change audit log with paying/non-paying filter + aggregate stats |
+| `GET` | `/api/admin/parameter-log` | Audit log of changes to GreenGrade's hardcoded scoring parameters (see [[Parameter Audit Service]]) |
 | `POST` | `/api/admin/rescore` | Rescore all 550 products, log any changes |
 | `POST` | `/api/admin/manufacturers` | Create a manufacturer record |
 | `GET` | `/api/admin/manufacturers` | List all manufacturers |
@@ -68,5 +69,6 @@ UPDATE users SET role = 'admin' WHERE email = 'admin@example.com';
 ## Links
 
 - [[Score Audit Service]] — service layer these routes call
+- [[Parameter Audit Service]] — service layer for `/parameter-log`
 - [[validate() Middleware]] — input validation pattern used
 - [[Grading Independence Governance]] — business context

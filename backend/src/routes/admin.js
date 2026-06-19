@@ -4,6 +4,7 @@ const { requireAdmin } = require("../middleware/auth");
 const { validate } = require("../middleware/validate");
 const { getDb } = require("../db/schema");
 const { getConflictLog, getConflictStats, snapshotScores } = require("../services/scoreAudit");
+const { getParameterLog } = require("../services/parameterAudit");
 const { calculateGreenGrade } = require("../services/greengrade");
 const products = require("../data/products.json");
 
@@ -43,6 +44,22 @@ router.post("/rescore", (_req, res) => {
     message: `Rescore complete. ${changes.length} score change(s) logged.`,
     changes,
   });
+});
+
+// --- Scoring parameter audit log ---
+
+const PARAM_LOG_SCHEMA = {
+  query: {
+    limit: { required: false, type: "string", pattern: /^\d+$/ },
+    offset: { required: false, type: "string", pattern: /^\d+$/ },
+  },
+};
+
+router.get("/parameter-log", validate(PARAM_LOG_SCHEMA), (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit) || 50, 200);
+  const offset = parseInt(req.query.offset) || 0;
+
+  res.json({ logs: getParameterLog({ limit, offset }) });
 });
 
 // --- Manufacturer CRUD ---
