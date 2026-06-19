@@ -2,11 +2,11 @@
 type: concept
 title: "GreenGrade KDE Scoring"
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-06-08
 status: mature
 tags: [greengrade, ml, scoring, emissions]
-related: ["[[GreenGrade Service]]", "[[Product Catalog Schema]]", "[[Consciobite Architecture Overview]]"]
-sources: ["[[.raw/graphify-audit-2026-04-25.md]]"]
+related: ["[[GreenGrade Service]]", "[[Product Catalog Schema]]", "[[Consciobite Architecture Overview]]", "[[Digital Product Passport API]]"]
+sources: ["[[.raw/graphify-audit-2026-04-25.md]]", "[[Digital Product Passport API 2026-06-08]]"]
 ---
 
 # GreenGrade KDE Scoring
@@ -41,3 +41,7 @@ Products carry `dataConfidence` (0–1), `dataTier` (1=Verified LCA, 2=Aggregate
 ## Open Food Facts Products
 
 Products scanned by barcode and not found locally get emission estimates from `estimateEmissions(ecoGrade, category)` which maps Ecoscore grades (A–E) to multipliers (0.4–1.4) applied to category baselines. These carry lower data confidence.
+
+## Formal Specification (2026-06-08)
+
+The informal description above is now backed by a full written spec at repo-root `METHODOLOGY.md` ("GreenGrade v3.0"), including the exact Silverman bandwidth formula, the 60/40 category/global CDF blend, and the Abramowitz & Stegun normal-CDF approximation. Every response from the new [[Digital Product Passport API]] carries `methodology_version: "3.0"`, tying external-facing scores to this document.

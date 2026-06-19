@@ -2,11 +2,11 @@
 type: overview
 title: "Consciobite Architecture Overview"
 created: 2026-04-25
-updated: 2026-05-13
+updated: 2026-06-08
 status: developing
 tags: [architecture, overview, consciobite]
-related: ["[[GreenGrade Service]]", "[[GreenGrade KDE Scoring]]", "[[Product Catalog Schema]]", "[[Auth-Expired Event Bus]]", "[[RequireAuth Guard]]", "[[Static Export Pipeline]]", "[[Render Deployment]]", "[[Docker Build Context]]"]
-sources: ["[[.raw/graphify-audit-2026-04-25.md]]"]
+related: ["[[GreenGrade Service]]", "[[GreenGrade KDE Scoring]]", "[[Product Catalog Schema]]", "[[Auth-Expired Event Bus]]", "[[RequireAuth Guard]]", "[[Static Export Pipeline]]", "[[Render Deployment]]", "[[Docker Build Context]]", "[[Digital Product Passport API]]"]
+sources: ["[[.raw/graphify-audit-2026-04-25.md]]", "[[Digital Product Passport API 2026-06-08]]"]
 ---
 
 # Consciobite Architecture Overview
@@ -39,9 +39,9 @@ Consciobite-Application/
 │   ├── services/       — httpClient.js + domain modules (products, auth, reviews, carbon, recipes)
 │   └── utils/          — constants.js, favorites.js, pageStyles.js
 ├── backend/src/
-│   ├── routes/         — products, auth, reviews, carbon, recipes
+│   ├── routes/         — products, auth, reviews, carbon, recipes, admin, passport
 │   ├── middleware/     — auth, validate, cache, logger
-│   ├── services/       — greengrade.js, dataProvenance.js
+│   ├── services/       — greengrade.js, dataProvenance.js, scoreAudit.js
 │   ├── data/           — products.json (550 products)
 │   └── db/             — schema.js (SQLite init)
 ├── docker-compose.yml  — Multi-service Docker setup (repo-root build context)
@@ -72,6 +72,12 @@ Frontend uses `httpClient.js` with `getApiBase()` for runtime API base detection
 - **Local dev:** `/api` (proxied via next.config.js dev server)
 - **Render:** Auto-detects `consciobite-api.onrender.com` from hostname
 - **Docker:** Configured via `NEXT_PUBLIC_API_URL` build arg
+
+## B2B Surface (added 2026-06-08)
+
+`backend/src/routes/passport.js` exposes public, unauthenticated read-only endpoints for external ESG/auditing consumers: `GET /v1/passport/:productId`, `POST /v1/portfolio/score`, `GET /v1/audit/:productId`. See [[Digital Product Passport API]]. Full algorithm spec published at repo-root `METHODOLOGY.md`.
+
+`frontend/src/components/ApiReadyGate.js` wraps the app shell and polls `/health` for up to 60s before rendering — covers the Render free-tier backend's cold-start delay.
 
 ## Decisions of Note
 

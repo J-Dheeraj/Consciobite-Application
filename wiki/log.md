@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-19
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,29 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-19 — Routine Sync: Wiki Catch-Up on PR #32/#33
+
+**Operation:** Scheduled routine. Checked repo state (no open PRs, working tree clean, `main` at `f0c40d4`) and found the wiki ~3 weeks stale relative to git history: PR #32 (trailing-slash fix) and PR #33 (Digital Product Passport API, `METHODOLOGY.md`, `ApiReadyGate` cold-start UX) had merged on 2026-06-08 without a corresponding wiki ingest.
+
+**Pages created:** 2
+- `sources/Digital Product Passport API 2026-06-08`
+- `entities/Digital Product Passport API`
+
+**Pages updated:** 4
+- `concepts/GreenGrade KDE Scoring` — links the new `METHODOLOGY.md` v3.0 written spec
+- `meta/Consciobite Architecture Overview` — added passport routes, `scoreAudit.js`, `ApiReadyGate.js` to directory/decisions
+- `index.md` — added new source + entity links
+- `hot.md` — refreshed with current repo state and passport API summary
+
+**Graphify:** Attempted to rebuild the graph per CLAUDE.md instructions (`graphify-out/` was last built 2026-05-10, predates governance layer + passport API). The `graphify` module/CLI is not installed in this environment — no package, no binary, nothing under `site-packages`. Rebuild was not possible; flagged as stale in `hot.md` rather than silently skipped.
+
+**No code changes.** No open PRs, no CI failures, no pending tasks found — this was pure knowledge-base maintenance.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
