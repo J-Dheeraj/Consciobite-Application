@@ -2,6 +2,7 @@
 type: domain
 title: "Grading Independence & Governance"
 created: 2026-05-21
+updated: 2026-06-20
 status: developing
 tags: [governance, grading, independence, business-model, investor-feedback]
 ---
@@ -16,18 +17,19 @@ Cross-cutting concern: ensuring GreenGrade scoring is (and is perceived as) inde
 
 Consciobite charges manufacturers for listing and grading. GreenGrade scores claim to be objective. These two facts create a conflict of interest that investors, regulators, and retail partners will flag.
 
-## Current State (updated 2026-05-29)
+## Current State (updated 2026-06-20)
 
 - GreenGrade algorithm is deterministic (KDE + sigmoid, 7 emission dimensions) — see [[GreenGrade KDE Scoring]]
-- Methodology page exists at `/methodology` in the frontend
+- Methodology page exists at `/methodology`, backed by `METHODOLOGY.md` (full v3.0 spec, added 2026-06-07)
 - **Audit trail implemented** — [[Score Audit Service]] logs every score change with paying-client flag
-- **Admin conflict log** — [[Admin Routes]] at `/api/admin/conflict-log` with paying/non-paying filter and aggregate stats
-- **Manufacturer tracking** — `manufacturers` + `product_manufacturers` tables in SQLite
+- **Admin conflict log** — [[Admin Routes]] at `/api/admin/conflict-log`, plus a full admin frontend page (`frontend/src/app/admin/conflict-log/page.js`, Session 2) with filters, rescore button, and stats
+- **Manufacturer tracking** — `manufacturers` + `product_manufacturers` tables in SQLite, with admin onboarding UI (`frontend/src/app/admin/manufacturers/page.js`, Session 4)
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
 - **Governance charter drafted** — [[GreenGrade Governance Charter 2026-05-29]] defines Panel composition, mandate, firewall, access rights, and cadence. Ready for founding member review.
+- **Public transparency page live** — `/transparency` (Session 3, commit `b6063fd`): panel seats, 5 commitments, methodology summary, and live score-change stats from `GET /api/transparency/stats`. All 3 panel seats still show "In formation" — no confirmed members yet.
 - **Landing page updated** — "Independent Scoring" copy replaces "No Pay-to-Win"; product count corrected to 550
-- Advisory board not yet formed (candidates to be identified)
-- No public disclosure page yet (Session 3 of governance brief)
+- Advisory board **not yet formed** — this is the actual remaining blocker (identifying 3 founding candidates), not a code task
+- **Not yet built:** a dedicated changelog of *algorithm parameter* changes (weights/thresholds in `greengrade.js` itself) — distinct from the existing `score_change_logs` table, which logs per-product score deltas, not changes to the scoring function's constants
 
 ## Action Plan
 
@@ -55,10 +57,10 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 
 ### Phase 2 — Transparency Features (code changes)
 
-1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members
-2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions)
-3. **Board disclosure page** — names, affiliations, conflict-of-interest declarations
-4. **Audit trail** — backend logging for when/why scoring parameters change (currently hardcoded in `backend/src/services/greengrade.js`)
+1. **Public methodology page enhancement** — done. `/methodology` + `METHODOLOGY.md` (full v3.0 spec)
+2. **Scoring changelog** — still pending. Version-controlled log of changes to GreenGrade *parameters* (weights, thresholds, category definitions), not the same as the per-product `score_change_logs` table that already exists
+3. **Board disclosure page** — partially done. `/transparency` lists the 3 seats and their focus areas, but all are "In formation" — no real names/affiliations yet because no candidates are confirmed
+4. **Audit trail** — done for product scores ([[Score Audit Service]]). Parameter-level audit trail (item 2 above) still open
 
 ### Phase 3 — Certification (long-term)
 
@@ -75,8 +77,10 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/methodology/page.js` | Public methodology page | Done (Session 3) |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done (Session 3) |
+| `frontend/src/app/admin/conflict-log/page.js` | Admin audit log UI | Done (Session 2) |
+| `frontend/src/app/admin/manufacturers/page.js` | Admin manufacturer onboarding UI | Done (Session 4) |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links
