@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-20
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,33 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-20 — Routine Health Check + Vault Catch-Up
+
+**Operation:** Scheduled routine check. No open PRs, no open issues, CI green on `main` (last run 2026-06-08, commit `f0c40d4`). Working branch `claude/nifty-goodall-0h91z8` already matches `main` exactly — no code changes made. Caught the wiki vault up on work merged 2026-06-05 through 2026-06-08 that hadn't been ingested yet (PR #32, PR #33).
+
+**Pages created:** 2
+- `entities/Digital Product Passport API`
+- `entities/ApiReadyGate Component`
+
+**Pages updated:** 3
+- `hot.md` — added B2B passport API summary, refreshed timestamp
+- `index.md` — added the two new entity links, refreshed timestamp
+- `log.md` — this entry
+
+**Key points documented:**
+1. **Digital Product Passport API** (`backend/src/routes/passport.js`, PR #33, `8d7ead3`) — B2B endpoints `/v1/passport/:productId`, `/v1/portfolio/score`, `/v1/audit/:productId` for EU ESPR / SGX Scope 3 reporting. Reuses `calculateGreenGrade()`, no parallel scoring logic.
+2. **METHODOLOGY.md** added at repo root — full GreenGrade v3.0 spec, referenced by passport responses (`methodology_version: "3.0"`).
+3. **ApiReadyGate** component — cold-start UX for Render free-tier backend spin-down (polls `/health`, 60s timeout).
+4. **trailingSlash: true** added to `next.config.js` (PR #32, `628903a`) — fixes 404s on static hosting since Render/nginx need `route/index.html`, not flat `route.html`.
+5. README rewritten with B2B framing (was previously student-project framing).
+
+**No code changes. No action required from the user.**
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
