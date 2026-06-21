@@ -13,6 +13,23 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-21 — Scheduled Audit: Passport API Ingest + Test Gap Fix
+
+**Operation:** Routine check (no specific task given). Verified repo state: no open PRs/issues, `main` fully merged through PR #33. Found the wiki was stale relative to commit `8d7ead3` (2026-06-07), which added the Digital Product Passport API without being ingested.
+
+**Code change:** `backend/src/routes/passport.js` (3 endpoints: `/v1/passport/:productId`, `/v1/portfolio/score`, `/v1/audit/:productId`) shipped with **no tests**, violating the project's own convention ("every new route needs at least one Supertest integration test" — CLAUDE.md). Added `backend/__tests__/passport.test.js`, 13 tests. Full backend suite: 137 → 150 passing. Committed on `claude/nifty-goodall-gk78w0` and pushed.
+
+**Pages created:** 2
+- `entities/Digital Product Passport API`
+- `entities/ApiReadyGate Component`
+
+**Pages updated:** 3
+- `hot.md` — refreshed with passport API summary, test-gap fix, current branch/PR state
+- `index.md` — added missing entity/concept pages (some existed on disk but were never indexed: `Auth Security`, `Data Provenance`, `GreenGrade Algorithm`)
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
