@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-21 — wiki sync after two unsynced merges (governance frontend, Digital Product Passport API). No code changes this session; repo state is healthy (CI green on `main` at `f0c40d4`, no open PRs/issues).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -37,7 +37,11 @@ tags: [hot-cache, meta]
 
 **Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Governance layer (2026-05-29, all 4 sessions now landed):** SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. **Governance frontend shipped (PR #31):** admin conflict-log UI ([[Admin Routes]]), public [[Transparency Page]] at `/transparency` (live stats via `/api/transparency/stats`), [[Admin Manufacturer Onboarding]] at `/admin/manufacturers`. All 3 panel seats still show "In Formation" — no founding members confirmed yet. Stack migration plan at [[Stack Migration Plan]].
+
+**B2B API + docs (2026-06-07, PR #33):** [[Digital Product Passport API]] (`backend/src/routes/passport.js`) — `GET /v1/passport/:productId`, `POST /v1/portfolio/score`, `GET /v1/audit/:productId` for EU ESPR / SGX Scope 3 reporting. `METHODOLOGY.md` added at repo root (full GreenGrade v3.0 spec). README rewritten with B2B framing. `ApiReadyGate` component added for Render free-tier cold-start UX (polls `/api/health` up to 60s before rendering children). Swagger docs updated for the 3 new endpoints.
+
+**Open governance item:** the audit trail covers per-product *score* changes but not changes to GreenGrade *algorithm parameters* themselves (weights/thresholds in `greengrade.js`) — see [[Grading Independence Governance]] Phase 2, item 4.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
