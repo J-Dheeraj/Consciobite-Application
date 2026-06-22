@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-22
 status: evergreen
 tags: [log, meta]
 ---
@@ -12,6 +12,30 @@ tags: [log, meta]
 Append-only. Newest entries at top.
 
 ---
+
+## 2026-06-22 — Vault Catch-Up: Digital Product Passport / B2B Pivot
+
+**Operation:** SCHEDULED ROUTINE — checked vault freshness against `git log`, found `hot.md`/`log.md` stale by one full session (last entry 2026-05-29; codebase had since landed and merged commit `8d7ead3`, PR #33, on 2026-06-07/08). No open PRs or issues exist on the repo, so this run's "continue the work" was backfilling the missing wiki documentation for that session rather than new app code.
+
+**Pages created:** 2
+- `entities/Digital Product Passport API`
+- `entities/ApiReadyGate Component`
+
+**Pages updated:** 3
+- `hot.md` — added B2B pivot summary, corrected active-branch note (`claude/improve-application-S5njo` merged; now on `claude/nifty-goodall-kje7uk`)
+- `index.md` — added the two new entity links
+- `log.md` — this entry
+
+**Key points:**
+1. **Three new B2B endpoints** under `/api/v1` (`passport.js`): `GET /v1/passport/:productId`, `POST /v1/portfolio/score`, `GET /v1/audit/:productId` — built for EU ESPR Digital Product Passport and SGX Scope 3 reporting obligations. All three are unauthenticated by design (programmatic ESG-tooling access), gated only by the global API rate limiter — flagged in the entity page as worth revisiting if abuse becomes a concern.
+2. **Messaging pivot:** `README.md` rewritten — drops "student project" framing, repositions as "Southeast Asia's first SKU-level carbon scoring and Digital Product Passport platform for food FMCG brands." `METHODOLOGY.md` added as the public GreenGrade v3.0 spec (separate from this internal wiki).
+3. **Cold-start UX fix:** `ApiReadyGate` component polls `/health` every 3s for up to 60s before rendering the app, replacing a blank/broken first load on Render's free tier.
+4. **Process note:** graphify's knowledge graph (`graphify-out/`) is dated 2026-05-10 and predates both the governance layer and this passport session — it was consulted per the project's instructions but not rebuilt, since no code was changed this run (CLAUDE.md only calls for a rebuild after code-file edits).
+
+**Action required:** None — documentation-only catch-up. No code changes, no CI impact.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ## 2026-05-29 — Governance Charter Ingested
 

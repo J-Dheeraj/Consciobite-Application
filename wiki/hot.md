@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-22
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-22 after backfilling the Digital Product Passport B2B session into the vault.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -35,9 +35,11 @@ tags: [hot-cache, meta]
 
 **Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/improve-application-S5njo` has been merged to `main` (PR #33, 2026-06-08). Current working branch: `claude/nifty-goodall-kje7uk`.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+
+**B2B pivot — Digital Product Passport (2026-06-07, `8d7ead3`, merged via PR #33 2026-06-08):** Added three unauthenticated B2B endpoints under `/api/v1` via `backend/src/routes/passport.js`: `GET /v1/passport/:productId` (single-SKU passport), `POST /v1/portfolio/score` (batch score up to 100 IDs with category benchmarks), `GET /v1/audit/:productId` (paginated score-change history, the one route in this group that hits SQLite instead of just `products.json`). Built for EU ESPR and SGX Scope 3 reporting. `README.md` was rewritten to drop "student project" framing in favor of "Southeast Asia's first SKU-level carbon scoring and Digital Product Passport platform for food FMCG brands." `METHODOLOGY.md` added as the public GreenGrade v3.0 spec. `ApiReadyGate` component added (`frontend/src/components/ApiReadyGate.js`, wraps `AuthProvider` in `Providers.js`) to mask the Render free-tier 30–60s cold-start behind a spinner instead of a broken first load. See [[Digital Product Passport API]] and [[ApiReadyGate Component]]. **Note:** this session's wiki entry was overdue — `hot.md`/`log.md` had not been updated since the 2026-05-29 governance session despite this commit landing and merging two weeks earlier; backfilled now (2026-06-22).
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
