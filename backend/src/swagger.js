@@ -327,6 +327,10 @@ const options = {
                     type: "object",
                     properties: {
                       version: { type: "string" },
+                      changelog: {
+                        type: "array",
+                        description: "Version history of scoring algorithm changes",
+                      },
                       algorithm: { type: "object" },
                       dataSources: { type: "array" },
                       confidenceScoring: { type: "object" },

@@ -215,6 +215,20 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/methodology", () => {
+    test("should return methodology with version changelog", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+      expect(res.body.version).toBe("3.0");
+      expect(Array.isArray(res.body.changelog)).toBe(true);
+      expect(res.body.changelog.length).toBeGreaterThan(0);
+      res.body.changelog.forEach((entry) => {
+        expect(entry.version).toBeDefined();
+        expect(Array.isArray(entry.changes)).toBe(true);
+      });
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

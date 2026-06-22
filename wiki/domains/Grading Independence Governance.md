@@ -16,7 +16,7 @@ Cross-cutting concern: ensuring GreenGrade scoring is (and is perceived as) inde
 
 Consciobite charges manufacturers for listing and grading. GreenGrade scores claim to be objective. These two facts create a conflict of interest that investors, regulators, and retail partners will flag.
 
-## Current State (updated 2026-05-29)
+## Current State (updated 2026-06-22)
 
 - GreenGrade algorithm is deterministic (KDE + sigmoid, 7 emission dimensions) — see [[GreenGrade KDE Scoring]]
 - Methodology page exists at `/methodology` in the frontend
@@ -26,8 +26,9 @@ Consciobite charges manufacturers for listing and grading. GreenGrade scores cla
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
 - **Governance charter drafted** — [[GreenGrade Governance Charter 2026-05-29]] defines Panel composition, mandate, firewall, access rights, and cadence. Ready for founding member review.
 - **Landing page updated** — "Independent Scoring" copy replaces "No Pay-to-Win"; product count corrected to 550
+- **Scoring changelog implemented (2026-06-22)** — `GET /api/methodology` now returns a `changelog` array (`backend/src/services/dataProvenance.js`, `METHODOLOGY_CHANGELOG`) mirroring the version history table in `METHODOLOGY.md`. Rendered on `/methodology` under a new "Version History" section.
 - Advisory board not yet formed (candidates to be identified)
-- No public disclosure page yet (Session 3 of governance brief)
+- No public disclosure page yet (Session 3 of governance brief) — `panelSeats` on `/transparency` are still placeholders ("In formation")
 
 ## Action Plan
 
@@ -55,10 +56,10 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 
 ### Phase 2 — Transparency Features (code changes)
 
-1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members
-2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions)
-3. **Board disclosure page** — names, affiliations, conflict-of-interest declarations
-4. **Audit trail** — backend logging for when/why scoring parameters change (currently hardcoded in `backend/src/services/greengrade.js`)
+1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members (done)
+2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions) (done 2026-06-22)
+3. **Board disclosure page** — names, affiliations, conflict-of-interest declarations (pending — blocked on founding member identification, see Phase 1)
+4. **Audit trail** — backend logging for when/why scoring parameters change (currently hardcoded in `backend/src/services/greengrade.js`) — per-product score audit exists (`scoreAudit.js`); algorithm-level changelog now exists (#2), but there is still no automated diff/logging when `greengrade.js` weights/thresholds themselves change — that remains manual (edit `METHODOLOGY_CHANGELOG` + `METHODOLOGY.md` by hand)
 
 ### Phase 3 — Certification (long-term)
 
@@ -75,8 +76,8 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/methodology/page.js` | Public methodology page — now includes Version History section | Done |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done — panel seats still placeholders |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links

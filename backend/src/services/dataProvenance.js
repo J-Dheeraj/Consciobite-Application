@@ -544,12 +544,36 @@ function getProductProvenance(product, source) {
   };
 }
 
+// ─── Version changelog ─────────────────────────────────────────────────────
+// Mirrors the "Version history" table in METHODOLOGY.md. Update both when
+// the scoring algorithm's parameters, weights, or thresholds change.
+
+const METHODOLOGY_CHANGELOG = [
+  {
+    version: "1.0",
+    date: null,
+    changes: ["Linear scoring against fixed emission maximums"],
+  },
+  {
+    version: "3.0",
+    date: "2026-06-07",
+    changes: [
+      "Gaussian KDE scoring",
+      "Variance-weighted feature importance",
+      "Category/global blending",
+      "Mahalanobis anomaly detection",
+      "Data provenance and confidence tiers",
+    ],
+  },
+];
+
 /**
  * Return the full methodology description.
  */
 function getMethodology() {
   return {
     version: "3.0",
+    changelog: METHODOLOGY_CHANGELOG,
     algorithm: {
       name: "GreenGrade v3",
       description:
@@ -676,4 +700,5 @@ module.exports = {
   getMethodology,
   DATA_SOURCES,
   POORE_NEMECEK_REFERENCE,
+  METHODOLOGY_CHANGELOG,
 };

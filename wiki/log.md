@@ -13,6 +13,24 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-22 — Scoring Changelog (Governance Phase 2, item 2)
+
+**Operation:** Scheduled routine session. Checked wiki vault, reviewed `claude/improve-application-S5njo` history since last hot-cache update (Digital Product Passport API + METHODOLOGY.md landed 2026-06-07, not previously logged), then closed out the one concrete remaining code item from [[Grading Independence Governance]] Phase 2.
+
+**Code changes (branch `claude/dreamy-dirac-l0pwlg`):**
+1. `backend/src/services/dataProvenance.js` — added `METHODOLOGY_CHANGELOG` const (mirrors `METHODOLOGY.md` §11 version history) and exposed it as `changelog` in `getMethodology()`
+2. `backend/src/swagger.js` — documented the new `changelog` field on `GET /api/methodology`
+3. `backend/__tests__/api.test.js` — added test asserting `/api/methodology` returns a non-empty `changelog` array with `version`/`changes` shape
+4. `frontend/src/app/methodology/page.js` — new "Version History" `SectionCard` rendering `data.changelog`
+
+**Verification:** Backend full suite 138/138 passing. Frontend `next lint` clean, `prettier --check` clean (both repos), full static export build succeeds (569 pages).
+
+**Not done (out of scope / blocked):** Phase 2 item 3 (board disclosure page with real names/affiliations) is blocked on identifying founding Advisory Panel members — a business task, not code. `/transparency` panel seats remain "In formation" placeholders.
+
+**Pages updated:** `domains/Grading Independence Governance.md`, `hot.md`
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
