@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-23 — Scoring Changelog (Phase 2 governance)
+
+**Operation:** Scheduled session. Caught wiki up on two unrecorded merged PRs (#30 governance frontend, #33 Digital Product Passport), then closed Phase 2 item 2 of the governance plan: a version-controlled GreenGrade scoring changelog.
+
+**Files modified:** 4
+- `backend/src/services/dataProvenance.js` — added `METHODOLOGY_CHANGELOG` (5 entries, v1.0–v3.1) to `getMethodology()`, dated from real `git log` history on `greengrade.js`/`scoreAudit.js`
+- `backend/src/swagger.js` — documented the new `changelog` field on `/methodology`
+- `frontend/src/app/methodology/page.js` — new "Scoring Changelog" section
+- `backend/__tests__/api.test.js` — added `GET /api/methodology` test
+
+**Verification:**
+- 138/138 backend tests pass (was 117; +20 from PR #30 admin tests, +1 new)
+- ESLint and Prettier clean (backend + frontend)
+- Frontend build succeeds: 569 static pages
+- Pushed to `claude/nifty-goodall-lh9jvu`
+
+**Note:** the local git "origin" is a proxy that lags the real GitHub repo — confirmed via GitHub MCP `list_pull_requests` that PRs #30–#33 are actually merged to `main` even though the proxy's `origin/main` ref still pointed at the PR #31 commit. Use the GitHub MCP tools, not local `git log origin/main`, to check merge state.
+
+**Index updated:** no (no new pages, only domain page + hot cache + log)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

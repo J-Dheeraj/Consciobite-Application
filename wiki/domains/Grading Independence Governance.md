@@ -16,7 +16,7 @@ Cross-cutting concern: ensuring GreenGrade scoring is (and is perceived as) inde
 
 Consciobite charges manufacturers for listing and grading. GreenGrade scores claim to be objective. These two facts create a conflict of interest that investors, regulators, and retail partners will flag.
 
-## Current State (updated 2026-05-29)
+## Current State (updated 2026-06-23)
 
 - GreenGrade algorithm is deterministic (KDE + sigmoid, 7 emission dimensions) — see [[GreenGrade KDE Scoring]]
 - Methodology page exists at `/methodology` in the frontend
@@ -26,8 +26,10 @@ Consciobite charges manufacturers for listing and grading. GreenGrade scores cla
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
 - **Governance charter drafted** — [[GreenGrade Governance Charter 2026-05-29]] defines Panel composition, mandate, firewall, access rights, and cadence. Ready for founding member review.
 - **Landing page updated** — "Independent Scoring" copy replaces "No Pay-to-Win"; product count corrected to 550
+- **Transparency page shipped** (PR #30) — `/transparency` shows panel seats (currently "In formation"), commitments, methodology summary, live score-change statistics from the audit trail, and a contact address
+- **Scoring changelog shipped (2026-06-23)** — `getMethodology()` in `backend/src/services/dataProvenance.js` now returns a `changelog` array (5 entries, v1.0 → v3.1) built from real commit history; rendered on `/methodology`. Closes Phase 2 item 2.
 - Advisory board not yet formed (candidates to be identified)
-- No public disclosure page yet (Session 3 of governance brief)
+- Board disclosure page exists structurally (seat cards on `/transparency`) but has no confirmed members yet — names/affiliations still pending candidate identification
 
 ## Action Plan
 
@@ -55,10 +57,10 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 
 ### Phase 2 — Transparency Features (code changes)
 
-1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members
-2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions)
-3. **Board disclosure page** — names, affiliations, conflict-of-interest declarations
-4. **Audit trail** — backend logging for when/why scoring parameters change (currently hardcoded in `backend/src/services/greengrade.js`)
+1. **Public methodology page enhancement** — done. `/methodology` covers algorithm documentation, data sources, confidence scoring, limitations, references, and the changelog. Advisory board *members* still pending (seat cards live on `/transparency` instead).
+2. **Scoring changelog** — done (2026-06-23). `backend/src/services/dataProvenance.js` exports a static `METHODOLOGY_CHANGELOG` array via `getMethodology().changelog`; rendered on `/methodology`. Entries are derived from real `greengrade.js`/`scoreAudit.js` commit history, not invented. This documents *algorithm* version history — it is distinct from [[Score Audit Service]], which logs *per-product* score drift.
+3. **Board disclosure page** — partially done. `/transparency` has seat cards (academic/regulatory/industry) but all show "In formation" — no real names/affiliations until Phase 1 step 1 (identify founding candidates) completes.
+4. **Audit trail** — done (Session 1). See [[Score Audit Service]].
 
 ### Phase 3 — Certification (long-term)
 
@@ -75,8 +77,9 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 | `backend/src/db/migrations/002_governance_layer.sql` | Governance tables | Done (Session 1) |
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
-| `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `backend/src/services/dataProvenance.js` | `getMethodology()` + `METHODOLOGY_CHANGELOG` | Done (2026-06-23) |
+| `frontend/src/app/methodology/page.js` | Public methodology page — algorithm docs + changelog | Done |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done (PR #30) |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
 
 ## Links
