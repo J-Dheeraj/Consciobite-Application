@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-23 — Wiki Sync (scheduled routine, no code changes)
+
+**Operation:** Scheduled maintenance session. Checked vault, reviewed `graphify-out/GRAPH_REPORT.md`, confirmed repo health (CI green on `main` @ `f0c40d4`, 0 open PRs, 0 open issues), then synced the vault against two merges that had landed since the last ingest (2026-05-29) but were never documented: PR #31 (governance frontend) and PR #33 (Digital Product Passport API + methodology docs + cold-start UX).
+
+**Pages created:** 3
+- `entities/Transparency Page` — `/transparency` public governance page
+- `entities/Admin Manufacturer Onboarding` — `/admin/manufacturers` admin UI
+- `entities/Digital Product Passport API` — B2B passport/portfolio/audit endpoints
+
+**Pages updated:** 3
+- `domains/Grading Independence Governance` — Phase 2 marked done (was "Pending Session 3"); flagged the one real open item (GreenGrade *parameter* change tracking, as opposed to *score* change tracking which is done); added Phase 3 note about the passport API
+- `index.md` — added 3 new entity pages
+- `hot.md` — refreshed with governance frontend + passport API summary, noted no advisory panel seats are confirmed yet
+
+**No code changes.** Repo was already fully merged into `main` with passing CI and no outstanding PRs/issues — this session's work was bringing the wiki current, not new feature development.
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
