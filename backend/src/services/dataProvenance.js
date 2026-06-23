@@ -665,8 +665,46 @@ function getMethodology() {
       "The scoring model is trained on the current product catalog and may shift as new products are added.",
     ],
     references: [DATA_SOURCES.poore_nemecek_2018, DATA_SOURCES.our_world_in_data],
+    changelog: METHODOLOGY_CHANGELOG,
   };
 }
+
+/**
+ * Version history of the GreenGrade scoring algorithm, newest first.
+ * Published for governance transparency — see Grading Independence Governance.
+ */
+const METHODOLOGY_CHANGELOG = [
+  {
+    version: "3.1",
+    date: "2026-05-21",
+    summary:
+      "Added the governance audit trail: every score change is logged with a paying-client flag, viewable by the GreenGrade Advisory Panel via the admin conflict log.",
+  },
+  {
+    version: "3.0",
+    date: "2026-03-12",
+    summary:
+      "Added per-product data confidence scoring and source provenance tracking (tiered: verified LCA, aggregated database, estimated).",
+  },
+  {
+    version: "3.0",
+    date: "2026-03-04",
+    summary:
+      "Replaced percentile-rank scoring with Gaussian Kernel Density Estimation (KDE) and added Mahalanobis-distance anomaly detection for outlier products.",
+  },
+  {
+    version: "2.0",
+    date: "2026-02-27",
+    summary:
+      "Upgraded from fixed category maximums to a data-driven model trained on the live product catalog, with variance-weighted feature importance across the 7 emission dimensions.",
+  },
+  {
+    version: "1.0",
+    date: "2026-01-30",
+    summary:
+      "Initial GreenGrade launch: linear scoring against fixed per-category emission maximums.",
+  },
+];
 
 module.exports = {
   getProductProvenance,

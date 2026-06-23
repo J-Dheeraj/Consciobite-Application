@@ -508,6 +508,61 @@ export default function Methodology() {
           </ul>
         </SectionCard>
 
+        {/* Scoring changelog */}
+        {data.changelog && data.changelog.length > 0 && (
+          <SectionCard title="Scoring Changelog" isDark={isDark}>
+            <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 14 }}>
+              Version history of the GreenGrade algorithm. Published for governance transparency —
+              see the{" "}
+              <a href="/transparency" style={{ color: "#52b788" }}>
+                Transparency &amp; Governance
+              </a>{" "}
+              page.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {data.changelog.map((entry, i) => (
+                <div
+                  key={`${entry.version}-${entry.date}-${i}`}
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: 10,
+                    background: isDark ? "#1c2e22" : "#f8faf8",
+                    border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      marginBottom: 4,
+                    }}
+                  >
+                    <span
+                      style={{
+                        padding: "1px 8px",
+                        borderRadius: 10,
+                        background: isDark ? "#2d4a35" : "#e8f0e8",
+                        fontSize: "0.72rem",
+                        fontWeight: 700,
+                        color: isDark ? "#e8f5e9" : "#1a3a2a",
+                      }}
+                    >
+                      v{entry.version}
+                    </span>
+                    <span style={{ fontSize: "0.72rem", color: isDark ? "#7a9a7e" : "#888" }}>
+                      {entry.date}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: "0.85rem", color: textColor, lineHeight: 1.6 }}>
+                    {entry.summary}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
+
         {/* References */}
         <SectionCard title="Academic References" isDark={isDark}>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>

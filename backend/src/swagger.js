@@ -332,6 +332,18 @@ const options = {
                       confidenceScoring: { type: "object" },
                       limitations: { type: "array", items: { type: "string" } },
                       references: { type: "array" },
+                      changelog: {
+                        type: "array",
+                        description: "Version history of the GreenGrade algorithm, newest first",
+                        items: {
+                          type: "object",
+                          properties: {
+                            version: { type: "string" },
+                            date: { type: "string", format: "date" },
+                            summary: { type: "string" },
+                          },
+                        },
+                      },
                     },
                   },
                 },
