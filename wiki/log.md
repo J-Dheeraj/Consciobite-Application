@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-24 — Catch-up Audit: Two Unlogged Sessions
+
+**Operation:** Routine vault/codebase sync. `git log` showed `main` had advanced through two full sessions (`b6063fd`, `8d7ead3`) past the last wiki update (2026-05-29) with no corresponding wiki entries. Backed-filled the wiki to match merged code; no code changes made this session.
+
+**Health check first:** `cd backend && npm test` — 137/137 passing (up from the 117 last recorded; +20 from the admin governance test suite landed earlier). `cd frontend && npm run lint` clean, `npm run build` produces all 566 static pages including `/methodology` and `/transparency`. No regressions found.
+
+**Pages created:** 2
+- `entities/Governance Frontend` — admin conflict-log page, admin manufacturers page, public `/transparency` page, `GET /api/transparency/stats` (all from `b6063fd`, 2026-05-29 — landed the same day as the last wiki update but never logged)
+- `entities/Digital Product Passport API` — `/v1/passport/:productId`, `/v1/portfolio/score`, `/v1/audit/:productId` (from `8d7ead3`, 2026-06-07)
+- `concepts/API Cold Start Gate` — `ApiReadyGate` component, Render free-tier wake handling (also `8d7ead3`)
+
+**Pages updated:** 3
+- `domains/Grading Independence Governance` — Phase 1 activation step 3 (publish `/transparency`) marked done; Phase 2 item 1 (methodology page) marked done; technical touchpoints table updated with passport API and `METHODOLOGY.md`
+- `index.md` — added 2 new entity pages, 1 new concept page
+- `hot.md` — refreshed test count, current commit, and governance status
+
+**Key finding:** the public `/transparency` page and the B2B passport API are both already live in production-bound code, closing out more of the governance plan than the wiki previously reflected. Remaining governance gaps are now accurately just two: (1) no founding Advisory Panel candidates identified yet, and (2) no scoring changelog for GreenGrade *parameter* changes (separate from the existing per-product score-audit trail).
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
