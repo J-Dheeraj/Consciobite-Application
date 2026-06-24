@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-24 — Scheduled Check-in: Vault Catch-up
+
+**Operation:** Routine health check + vault sync (no user-specified task this run).
+
+**Findings:**
+- Repo healthy: CI green on `main` (run `27116579773`, commit `f0c40d4`), 137/137 backend tests pass locally, no open PRs or issues.
+- Vault was stale relative to codebase — last hot-cache update (2026-05-29) predated PR #33, which had already merged to `main`.
+
+**Pages created:** 2
+- `entities/Digital Product Passport API`
+- `entities/ApiReadyGate Component`
+
+**Pages updated:** 2
+- `hot.md` — refreshed test count (117 → 137), documented PR #33, corrected active-branch note (no feature branch ahead of `main`)
+- `index.md` — added the two new entity pages
+
+**No code changes made** — nothing broken to fix; governance Phase 2 items (board disclosure, scoring changelog) remain business-track items, not re-scoped this session.
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
