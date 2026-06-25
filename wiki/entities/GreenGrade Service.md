@@ -2,11 +2,11 @@
 type: entity
 title: "GreenGrade Service"
 created: 2026-04-25
-updated: 2026-04-25
+updated: 2026-06-25
 status: mature
 tags: [service, ml, backend, greengrade]
-related: ["[[GreenGrade KDE Scoring]]", "[[Product Catalog Schema]]", "[[Open Food Facts Integration]]"]
-sources: ["[[.raw/graphify-audit-2026-04-25.md]]"]
+related: ["[[GreenGrade KDE Scoring]]", "[[Product Catalog Schema]]", "[[Open Food Facts Integration]]", "[[Digital Product Passport API]]"]
+sources: ["[[.raw/graphify-audit-2026-04-25.md]]", "METHODOLOGY.md"]
 ---
 
 # GreenGrade Service
@@ -41,6 +41,11 @@ Scores a single product. Returns:
 |------|-----|
 | `routes/products.js` | `enrichProduct()` calls it for every product |
 | `routes/recipes.js` | `getGreenIngredients()` — sorts by score to recommend ingredients |
+| `routes/passport.js` | `buildPassport()` wraps it for B2B reporting — see [[Digital Product Passport API]] |
+
+## Algorithm version & spec
+
+As of 2026-06-07 this is **GreenGrade v3.0**, documented end-to-end in `METHODOLOGY.md` (root): Gaussian KDE per emission dimension (global + per-category), Silverman's-rule bandwidth selection, 60/40 category/global CDF blending, Abramowitz & Stegun normal-CDF approximation. `methodology_version: "3.0"` is exposed verbatim in passport API responses.
 
 ## Unknown Category Fallback
 

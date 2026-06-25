@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-25
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-25 after ingesting the Digital Product Passport API / B2B pivot (PR #32, #33, merged into `main` 2026-06-07/30).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -38,6 +38,10 @@ tags: [hot-cache, meta]
 **Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+
+**B2B pivot (2026-06-07):** Project repositioned from "student project" framing to B2B compliance-reporting framing. New `/api/v1/*` Digital Product Passport API (`backend/src/routes/passport.js`): `GET /v1/passport/:productId` (single passport), `POST /v1/portfolio/score` (batch score up to 100 IDs + category benchmarks), `GET /v1/audit/:productId` (paginated score-change history, reuses `score_change_logs`). Targets EU ESPR and SGX Scope 3 reporting use cases. `METHODOLOGY.md` added at repo root — full GreenGrade **v3.0** spec (KDE training, Silverman bandwidth, 60/40 category/global CDF blend, Abramowitz & Stegun normal-CDF approx). README rewritten with B2B framing. `ApiReadyGate` component (`frontend/src/components/Providers.js`) added to mask Render free-tier cold starts (polls `/health` every 3s, gives up after 60s and renders anyway). See [[Digital Product Passport API]] and [[Cold Start UX]].
+
+**Graphify note:** `graphify-out/GRAPH_REPORT.md` is stale (generated 2026-05-10, predates governance layer + passport API). The `graphify` Python module is not installed in this session's environment, so the graph could not be regenerated — only the wiki was updated by hand. Re-run the rebuild next time graphify tooling is available.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

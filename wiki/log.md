@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-25
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,26 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-25 — Scheduled Routine: Catch-Up Ingest (Digital Product Passport API)
+
+**Operation:** Routine check-in. No open PRs/issues and a clean working tree, so the actionable gap was a stale wiki: `hot.md` (2026-05-29) and the graphify graph (2026-05-10) both predated PR #32/#33, which shipped a B2B pivot — `/api/v1/passport`, `/api/v1/portfolio/score`, `/api/v1/audit/:productId` (`backend/src/routes/passport.js`), `METHODOLOGY.md` (GreenGrade v3.0 spec), a B2B-framed README rewrite, and `ApiReadyGate` (Render cold-start UX).
+
+**Pages created:** 2
+- `entities/Digital Product Passport API`
+- `concepts/Cold Start UX`
+
+**Pages updated:** 3
+- `entities/GreenGrade Service` — added v3.0/`METHODOLOGY.md` reference, `passport.js` caller
+- `index.md` — added new entity/concept entries
+- `hot.md` — refreshed with B2B pivot summary
+
+**Note:** `graphify` Python module is not installed in this session's container — could not regenerate `graphify-out/GRAPH_REPORT.md` per the CLAUDE.md rebuild instruction. Wiki was updated by direct code reading instead. Flagged in `hot.md` for next session with graphify available.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
