@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-25
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,26 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-25 — Routine Wiki Sync (PR #32 / #33 catch-up)
+
+**Operation:** Scheduled maintenance session. Checked vault, found no open PRs/issues and a clean, up-to-date working tree (`claude/dreamy-dirac-q6vxcm` == `main`), so no code changes were made. Vault was stale: last updated 2026-05-29, but two PRs had merged since (#32, #33) and were undocumented. Brought hot cache, index, and entities up to date.
+
+**Files created:** 2
+- `wiki/entities/Digital Product Passport API.md` — `/api/v1/passport`, `/api/v1/portfolio/score`, `/api/v1/audit/:productId` (PR #33)
+- `wiki/entities/ApiReadyGate Component.md` — cold-start gate for Render free tier (PR #33)
+
+**Files updated:** 3
+- `wiki/index.md` — added the two new entity pages
+- `wiki/hot.md` — added PR #33 (Digital Product Passport, METHODOLOGY.md, README rewrite, ApiReadyGate) and PR #32 (trailingSlash static-hosting fix) summaries; noted current branch/PR/issue state
+- `wiki/log.md` — this entry
+
+**Note:** `graphify-out/` (graph + report) is stale (dated 2026-05-10, predates the governance layer and the passport API). The `graphify` Python module referenced in `CLAUDE.md`'s rebuild command is not installed in this environment, so the graph could not be regenerated this session. Flagging for whoever next modifies code: re-run the rebuild (or regenerate graphify-out manually) once the tool is available, since the god-node/community analysis no longer reflects `passport.js`, `ApiReadyGate.js`, or the admin/governance routes.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 

@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-25
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-25 after PR #32/#33 sync (routine wiki maintenance, no code changes this session).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -38,6 +38,12 @@ tags: [hot-cache, meta]
 **Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+
+**B2B / Digital Product Passport (2026-06-07, PR #33, merged):** New `/api/v1/passport/:productId`, `/api/v1/portfolio/score`, `/api/v1/audit/:productId` endpoints (`backend/src/routes/passport.js`) for EU ESPR and SGX Scope 3 reporting — see [[Digital Product Passport API]]. `METHODOLOGY.md` added at repo root: full GreenGrade v3.0 spec (7 emission categories, KDE training phase, sigmoid scoring). README rewritten with B2B framing, student-project language removed. `ApiReadyGate` component added (`frontend/src/components/ApiReadyGate.js`, wired into `Providers.js`) — polls `/health` every 3s, fails open after 60s, masks Render free-tier cold starts. Swagger docs extended for the three new routes.
+
+**Static hosting fix (2026-06-ish, PR #32, merged):** `trailingSlash: true` added to `next.config.js` to fix 404s on Render's static file serving (route `/foo` without trailing slash wasn't resolving to `/foo/index.html`). `nginx.conf` and `render.yaml` touched in the same PR.
+
+**Branch state as of 2026-06-25:** `claude/dreamy-dirac-q6vxcm` (this session's branch) is even with `main` at `f0c40d4` — no open PRs, no open issues, working tree clean. No active feature work in flight; this session did wiki-sync maintenance only (entity pages for the passport API and ApiReadyGate, since hot cache/log hadn't been updated since the 2026-05-29 governance charter ingest despite two PRs landing since).
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
