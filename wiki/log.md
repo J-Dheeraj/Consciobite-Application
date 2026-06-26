@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-26
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,31 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-26 — Wiki Catch-Up Sync (PR #32, #33)
+
+**Operation:** SYNC — wiki vault was stale relative to `main` (last ingest 2026-05-29). Reviewed all commits landed since via PR #32 and #33, no open PRs/issues, CI green on `main` (`f0c40d4`). No code changes made — this session's only work was bringing the vault current.
+
+**Pages created:** 3
+- `entities/Digital Product Passport API`
+- `entities/ApiReadyGate Component`
+- `sources/METHODOLOGY.md Technical Spec 2026-06-07`
+
+**Pages updated:** 3
+- `concepts/Render Deployment` — added Cold Start and trailingSlash routing-fix sections
+- `index.md` — added 3 new pages to index
+- `hot.md` — refreshed with PR #32/#33 summary
+
+**Key changes captured (already in codebase, not made this session):**
+1. **PR #32** (`628903a`) — `trailingSlash: true` added to `next.config.js` to fix 404s on Render/nginx static hosting (flat `route.html` files weren't resolved for bare path requests); `nginx.conf` catch-all now serves `404.html` instead of `index.html`
+2. **PR #33** (`8d7ead3`) — Digital Product Passport API (`backend/src/routes/passport.js`, 3 new public B2B endpoints under `/api/v1`: `/passport/:productId`, `/portfolio/score`, `/audit/:productId`); `METHODOLOGY.md` published as canonical GreenGrade v3.0 spec; README rewritten with B2B framing; `ApiReadyGate` component added for Render free-tier cold-start UX
+
+**Notable for follow-up (not actioned, flagging only):** Passport API routes have no auth/API-key gate — same trust level as `/api/products`, just worth knowing before this is described as an authenticated B2B tier externally.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 

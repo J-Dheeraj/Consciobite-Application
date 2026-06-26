@@ -2,7 +2,7 @@
 type: meta
 title: "Consciobite Wiki — Index"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-26
 status: developing
 tags: [index, consciobite, codebase]
 ---
@@ -18,10 +18,13 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 - [[GreenGrade Migration Brief 2026-04-25]]
 - [[GreenGrade Governance Charter 2026-05-29]]
 - [[Investor Feedback 2026-05-21]]
+- [[METHODOLOGY.md Technical Spec 2026-06-07]]
 
 ## Entities
 - [[Admin Routes]]
+- [[ApiReadyGate Component]]
 - [[CarbonTracker Component]]
+- [[Digital Product Passport API]]
 - [[GreenGrade Service]]
 - [[Open Food Facts Integration]]
 - [[RequireAuth Guard]]
