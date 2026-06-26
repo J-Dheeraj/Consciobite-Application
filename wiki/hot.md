@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-26
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-26 after scheduled maintenance session (wiki catch-up + CONTRIBUTING.md).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,23 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status (2026-06-26):** 137 backend tests passing (`npm test` in `backend/`, was 117). Frontend builds clean — 569 static pages (19 routes + 550 product pages, up from 566/16 — `/transparency`, `/admin/conflict-log`, `/admin/manufacturers` added). Pre-existing, unfixed Next.js build warning: `themeColor` in `metadata` export should move to `generateViewport` (cosmetic, not breaking).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/improve-application-S5njo` was the long-running feature branch (PRs #29–#33, all merged into `main` as of commit `f0c40d4`, 2026-06-08). This session works on `claude/dreamy-dirac-r9n6lj`.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Governance layer — now substantially complete (as of 2026-06-26, work landed 2026-05-29 to 2026-06-08, just not previously logged in this vault):**
+- Session 1 (DB layer): SQLite tables `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (`requireAdmin` middleware checks `users.role`). Scores snapshotted on startup (550 products); drift auto-detected on restart.
+- Charter drafted: `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service.
+- Sessions 2–4 (frontend, PR #30-31): `/admin/conflict-log` (stats, filters, rescore button, audit table), `/admin/manufacturers` (onboarding form with fee-acknowledgement checkbox, product-manufacturer linking), public `/transparency` page (Panel seats, firewall commitments, methodology summary, live paying-vs-non-paying score-delta stats from `GET /api/transparency/stats`).
+- Landing page: "Independent Scoring" copy, 550 product count.
+- **Digital Product Passport API (PR #33, commit `8d7ead3`):** `backend/src/routes/passport.js` — `GET /api/passport/:productId`, `POST /api/portfolio/score` (batch, 1-100 products, category benchmarks), `GET /api/audit/:productId` (public paginated audit trail). See [[Digital Product Passport API]]. Same commit added `METHODOLOGY.md`, expanded Swagger docs, and `ApiReadyGate.js` (frontend cold-start spinner — polls `/health` up to 60s while Render's free-tier backend wakes up, wraps `AuthProvider` in `Providers.js`).
+- **Remaining:** only the 3 advisory-panel seats are unfilled (recruiting task, not code) and Phase 3 certification (long-term, not started).
+
+Stack migration plan at [[Stack Migration Plan]] — still not started (Prisma/Tailwind/Supabase), no urgency.
+
+**Tooling note:** `graphify-out/` is stale (last full build 2026-05-10, predates the Next.js migration — `manifest.json` still references the old CRA `frontend/src/App.js`). The `graphify` Python module referenced in `CLAUDE.md` for incremental rebuilds is not installed in this sandbox, so it could not be refreshed this session. Treat `graphify-out/GRAPH_REPORT.md` as historical only; use direct file reads / Explore agent for current-state questions until graphify is reinstalled and rebuilt.
+
+**2026-06-26 session:** Added `CONTRIBUTING.md` at repo root (explicitly listed as a planned-but-missing item in `CLAUDE.md`'s "Known issues" section) — covers branch naming, commit convention, local dev setup, test/lint requirements, and PR expectations already documented informally in `CLAUDE.md`. No application code changed; this was wiki catch-up + the one clearly-scoped open gap.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

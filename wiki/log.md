@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-26
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,30 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-26 — Scheduled Maintenance: Wiki Catch-Up + CONTRIBUTING.md
+
+**Operation:** Routine session. Vault was stale (hot.md/log.md/governance domain page all dated 2026-05-29) while `main` had moved 4 PRs further (governance frontend, Digital Product Passport API, methodology docs, cold-start UX — merged through 2026-06-08, commit `f0c40d4`). Verified health, backfilled the vault to match actual repo state, then picked up the one clearly-scoped open item from `CLAUDE.md`'s "Known issues" list.
+
+**Verification performed:**
+- `cd backend && npm install && npm test` — 137/137 passing (6 suites; was 117 at last wiki checkpoint, growth is governance + passport route tests)
+- `cd frontend && npm install && npm run build` — clean, 569 static pages generated (19 routes + 550 product pages)
+- Attempted `graphify` rebuild per `CLAUDE.md` instructions — the `graphify` Python module is not installed in this sandbox; `graphify-out/` is also stale (predates the Next.js migration, manifest references deleted `frontend/src/App.js`). Could not refresh; flagged in `hot.md` instead of blocking.
+
+**Files created:** 2
+- `CONTRIBUTING.md` (repo root) — branch naming, commit convention, local setup, test/lint requirements, PR checklist
+- `wiki/entities/Digital Product Passport API.md` — new entity page for `backend/src/routes/passport.js` (passport/portfolio/audit endpoints), not previously documented
+
+**Files updated:** 4
+- `wiki/domains/Grading Independence Governance.md` — Phase 2/3 status corrected from "pending" to "done" (transparency page, admin frontend, methodology expansion all shipped between the last wiki update and now); added passport API as a touchpoint
+- `wiki/hot.md` — full rewrite reflecting current test counts, merged PRs, governance completeness, and the graphify tooling gap
+- `wiki/log.md` — this entry
+- `wiki/index.md` — added Digital Product Passport API entity link, bumped date
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
