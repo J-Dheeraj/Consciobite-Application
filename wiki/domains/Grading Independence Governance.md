@@ -16,7 +16,7 @@ Cross-cutting concern: ensuring GreenGrade scoring is (and is perceived as) inde
 
 Consciobite charges manufacturers for listing and grading. GreenGrade scores claim to be objective. These two facts create a conflict of interest that investors, regulators, and retail partners will flag.
 
-## Current State (updated 2026-05-29)
+## Current State (updated 2026-06-27)
 
 - GreenGrade algorithm is deterministic (KDE + sigmoid, 7 emission dimensions) — see [[GreenGrade KDE Scoring]]
 - Methodology page exists at `/methodology` in the frontend
@@ -26,6 +26,7 @@ Consciobite charges manufacturers for listing and grading. GreenGrade scores cla
 - **Score snapshots** — 550 product scores captured on every server startup; drift auto-detected
 - **Governance charter drafted** — [[GreenGrade Governance Charter 2026-05-29]] defines Panel composition, mandate, firewall, access rights, and cadence. Ready for founding member review.
 - **Landing page updated** — "Independent Scoring" copy replaces "No Pay-to-Win"; product count corrected to 550
+- **Methodology changelog implemented** — [[Methodology Changelog Service]] tracks algorithm/weight/data-source changes to GreenGrade itself (distinct from per-product score drift). Public `GET /api/methodology/changelog`, admin-only `POST/GET /api/admin/methodology-changelog`. Rendered on `/transparency` page.
 - Advisory board not yet formed (candidates to be identified)
 - No public disclosure page yet (Session 3 of governance brief)
 
@@ -56,9 +57,9 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 ### Phase 2 — Transparency Features (code changes)
 
 1. **Public methodology page enhancement** — expand `/methodology` with full algorithm documentation, data sources, and advisory board members
-2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions)
+2. **Scoring changelog** — version-controlled log of any changes to GreenGrade parameters (weights, thresholds, category definitions) — **done (Session 4, 2026-06-27)**, see [[Methodology Changelog Service]]
 3. **Board disclosure page** — names, affiliations, conflict-of-interest declarations
-4. **Audit trail** — backend logging for when/why scoring parameters change (currently hardcoded in `backend/src/services/greengrade.js`)
+4. **Audit trail** — backend logging for when/why scoring parameters change — **done (Session 4, 2026-06-27)**, see [[Methodology Changelog Service]]
 
 ### Phase 3 — Certification (long-term)
 
@@ -76,14 +77,17 @@ Charter drafted at `/GreenGrade_Governance_Charter.md`. See [[GreenGrade Governa
 | `backend/src/middleware/auth.js` | `requireAdmin` middleware | Done (Session 1) |
 | `backend/src/services/greengrade.js` | Core scoring algorithm | Existing — wired to audit |
 | `frontend/src/app/methodology/page.js` | Public methodology page — expand for transparency | Pending (Session 3) |
-| `frontend/src/app/transparency/page.js` | Public governance & stats page | Pending (Session 3) |
+| `frontend/src/app/transparency/page.js` | Public governance & stats page | Done (Session 3) — now also renders changelog (Session 4) |
 | `backend/src/data/products.json` | Product catalog with emission data | Existing |
+| `backend/src/services/methodologyChangelog.js` | Algorithm-level changelog audit trail | Done (Session 4) |
+| `backend/src/db/migrations/003_methodology_changelog.sql` | `methodology_changelog` table | Done (Session 4) |
 
 ## Links
 
 - [[Investor Feedback 2026-05-21]] — original feedback that prompted this
 - [[GreenGrade Governance Charter 2026-05-29]] — Panel charter (draft v1.0)
 - [[Score Audit Service]] — audit trail implementation
+- [[Methodology Changelog Service]] — algorithm-level changelog audit trail
 - [[Admin Routes]] — admin API endpoints
 - [[Stack Migration Plan]] — future Prisma/Supabase migration
 - [[GreenGrade KDE Scoring]] — algorithm details

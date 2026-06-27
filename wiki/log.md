@@ -13,6 +13,40 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-27 — Session 4: Methodology Changelog Audit Trail
+
+**Operation:** Autonomous routine session. Reviewed wiki vault + graphify report, found Phase 2 item 4 of [[Grading Independence Governance]] still pending ("Audit trail — backend logging for when/why scoring parameters change"), implemented it end to end.
+
+**Files created:** 3
+- `backend/src/db/migrations/003_methodology_changelog.sql` — `methodology_changelog` table, seeded with 3 real historical entries (v1.0/v2.0/v3.0) grounded in actual git commits
+- `backend/src/services/methodologyChangelog.js` — `getMethodologyChangelog()`, `logMethodologyChange()`, `VALID_CATEGORIES`
+- `wiki/entities/Methodology Changelog Service.md` — new entity page
+
+**Files modified:** 7
+- `backend/src/index.js` — public `GET /api/methodology/changelog` (cached 300s)
+- `backend/src/routes/admin.js` — admin `GET`/`POST /api/admin/methodology-changelog`, calls `invalidateCache` after writes
+- `backend/src/swagger.js` — new schema + paths
+- `backend/__tests__/admin.test.js` — 27 new tests
+- `CLAUDE.md` — API surface reference updated
+- `frontend/src/services/recipes.js`, `frontend/src/services/api.js` — `fetchMethodologyChangelog()`
+- `frontend/src/app/transparency/page.js` — new "Methodology Changelog" section
+
+**Bug caught and fixed:** Public changelog GET is cached; admin POST didn't invalidate it, so newly-created entries were invisible on the public endpoint until the 300s TTL expired. Fixed with `invalidateCache("methodology/changelog")`, mirroring the existing pattern in `reviews.js`.
+
+**Verification:**
+- Backend: 144/144 Jest tests passing (was 117; +27, 0 regressions), ESLint clean, Prettier clean
+- Frontend: ESLint clean, Prettier clean, full production build succeeded (569/569 static pages)
+- Deliberately did not build frontend test infra (no `test` script, no test files exist) — out of scope for this session, noted as a known gap
+
+**Scope decisions:** Explicitly avoided the Stack Migration Plan (gated by CLAUDE.md "discuss first" rule) and the Board Disclosure Page (blocked on real Advisory Panel names that don't exist yet — a business task, not code).
+
+**Commit:** `f9dd743` — "feat: add GreenGrade methodology changelog audit trail", pushed to `claude/nifty-goodall-nm677g`.
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

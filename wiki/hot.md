@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-27 after Methodology Changelog feature (Session 4).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,13 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 144 backend tests passing (+27 from methodology changelog, 0 regressions). Frontend builds 569 static pages.
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-nm677g` — pushed, no PR opened yet.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+
+**Methodology changelog (2026-06-27, Session 4):** Closed Phase 2 governance gap — algorithm/weight/data-source changes to GreenGrade itself are now logged, separate from per-product score drift. New `methodology_changelog` SQLite table (migration `003`), `methodologyChangelog.js` service, public `GET /api/methodology/changelog` (cached 300s), admin `GET/POST /api/admin/methodology-changelog`. Seed data grounded in real git commits (`751fd77`, `e0e9f32`, `57e046e`) rather than fabricated. Rendered on `/transparency` page as a new "Methodology Changelog" section. Backend suite now 144/144 passing (+27 tests, 0 regressions). Caught and fixed a cache-staleness bug: admin POST must call `invalidateCache("methodology/changelog")` or new entries are invisible on the public endpoint for 300s. Pushed to `claude/nifty-goodall-nm677g`. See [[Methodology Changelog Service]]. **Known gap noted, not fixed:** frontend has no test script/files despite CLAUDE.md requiring them — flagged for a future session.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
