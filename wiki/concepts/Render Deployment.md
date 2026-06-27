@@ -2,7 +2,7 @@
 type: concept
 title: "Render Deployment"
 created: 2026-05-13
-updated: 2026-05-13
+updated: 2026-06-07
 status: developing
 tags: [render, deployment, infrastructure]
 related: ["[[Static Export Pipeline]]", "[[Docker Build Context]]", "[[System Overview]]"]
@@ -55,3 +55,7 @@ Render Blueprint sync (`render.yaml`) does NOT auto-migrate manually-created ser
 - `NEXT_PUBLIC_API_URL` — Set via `fromService` in render.yaml, resolves to the backend's hostname
 - `JWT_SECRET` — Auto-generated for backend
 - `ALLOWED_ORIGINS` — Set to frontend's URL for CORS
+
+## Cold Start UX (added 2026-06-07)
+
+Render's free tier spins down the backend web service after inactivity; the first request after spin-down takes up to ~50s to respond, during which any page making an immediate API call would show broken/empty state. `frontend/src/components/ApiReadyGate.js` wraps the app inside `Providers.js` (between `ThemeProvider` and `AuthProvider`) and polls `GET {API_BASE}/health` every 3s, rendering a loading state until the backend responds or 60s elapses (`MAX_WAIT`), whichever comes first — so the gate never blocks forever if health checks fail for an unrelated reason.

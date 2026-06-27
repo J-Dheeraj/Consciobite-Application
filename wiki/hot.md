@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-27
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-27 after wiki catch-up session — see [[log]] for the 2026-06-27 entry.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,17 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status (verified 2026-06-27):** 137 backend tests passing across 6 suites (was 117 as of 2026-05-13 — `admin.test.js` alone added 20). `CLAUDE.md` still says 117; not yet corrected there.
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-c3joby`. No open PRs against `main` as of 2026-06-27 — all prior governance/passport work already merged.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Governance layer — full status (updated 2026-06-27):** SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` + `/api/v1/admin/*` (requireAdmin middleware, checks `users.role`), now with 20 integration tests. Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. **Frontend shipped:** `/admin/conflict-log`, `/admin/manufacturers`, public `/transparency` page backed by `GET /api/transparency/stats`. **Only remaining gap:** advisory panel candidates not yet identified; board disclosure page blocked on that. Stack migration plan at [[Stack Migration Plan]].
+
+**Digital Product Passport API (2026-06-07):** B2B endpoints at `/api/v1/passport/:productId`, `/api/v1/portfolio/score` (batch, 1-100 products), `/api/v1/audit/:productId` (public score-change history) — for EU ESPR / SGX Scope 3 reporting. Full spec in `METHODOLOGY.md`. See [[Digital Product Passport API]].
+
+**Cold start UX (2026-06-07):** `ApiReadyGate.js` polls `/api/health` every 3s (60s max wait) before rendering the app, masking Render free-tier backend spin-down. Wrapped around `AuthProvider` in `Providers.js`.
+
+**Repo maintenance (2026-06-27):** Added `CONTRIBUTING.md` (was on the "Known issues / planned improvements" list in `CLAUDE.md` as missing).
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

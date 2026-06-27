@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-27
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,34 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-27 — Wiki Catch-Up + CONTRIBUTING.md
+
+**Operation:** Routine maintenance session. The vault (`hot.md`, `log.md`, governance/admin pages) was last updated 2026-05-29, but three more PRs had already merged to `main` in the meantime without a corresponding wiki update — this entry closes that gap. Also added the long-planned `CONTRIBUTING.md` (flagged as missing in `CLAUDE.md`'s "Known issues" list).
+
+**Code landed since 2026-05-29 (already merged, documented here for the first time):**
+- `e060f9d` — 20 integration tests for admin governance routes + `/api/v1/admin` alias fix
+- `b6063fd` — Governance frontend: admin conflict-log page, admin manufacturers page, public `/transparency` page, `GET /api/transparency/stats` endpoint
+- `8d7ead3` — Digital Product Passport API (`GET /v1/passport/:productId`, `POST /v1/portfolio/score`, `GET /v1/audit/:productId`), `METHODOLOGY.md`, README B2B rewrite, `ApiReadyGate` cold-start UX component
+- `628903a` — `trailingSlash` fix for static-hosting 404s
+
+**Files created (this session):**
+- `CONTRIBUTING.md` (repo root) — branching, commit, test, and pre-PR check conventions
+- `wiki/entities/Digital Product Passport API`
+
+**Files updated (this session):**
+- `wiki/entities/Admin Routes` — `/api/v1/admin` alias, `/api/transparency/stats` public endpoint, frontend consumers, 20-test note
+- `wiki/domains/Grading Independence Governance` — Phase 2 transparency items marked done; touchpoints table updated
+- `wiki/concepts/Render Deployment` — cold-start UX section (`ApiReadyGate`)
+- `wiki/index.md` — added Digital Product Passport API entity
+- `wiki/hot.md` — refreshed
+
+**Verification:** `cd backend && npm test` — 137/137 passing (6 suites). Note: `CLAUDE.md` and the old hot.md cite "117 tests"; actual current count is 137 (admin.test.js alone added 20). Not corrected in `CLAUDE.md` itself — out of scope for this session, flagged here for whoever next touches that file.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
