@@ -22,6 +22,7 @@ const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const { getMethodology } = require("./services/dataProvenance");
 const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
+const { getMethodologyChangelog } = require("./services/methodologyChangelog");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -189,6 +190,10 @@ app.get("/api/health", (_req, res) => {
 
 app.get("/api/methodology", (_req, res) => {
   res.json(getMethodology());
+});
+
+app.get("/api/methodology/changelog", cacheMiddleware(300), (_req, res) => {
+  res.json({ entries: getMethodologyChangelog() });
 });
 
 app.get("/api/transparency/stats", cacheMiddleware(300), (_req, res) => {

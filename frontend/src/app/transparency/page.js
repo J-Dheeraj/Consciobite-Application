@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchTransparencyStats } from "@/services/admin";
+import { fetchMethodologyChangelog } from "@/services/recipes";
 import PageHero from "@/components/PageHero";
 import Spinner from "@/components/Spinner";
 import { pageContainer, card } from "@/utils/pageStyles";
@@ -111,6 +112,55 @@ function SeatCard({ seat, isDark }) {
   );
 }
 
+function ChangelogEntry({ entry, isDark }) {
+  return (
+    <div
+      style={{
+        padding: "12px 0",
+        borderBottom: `1px solid ${isDark ? "#1c2e22" : "#f3f4f6"}`,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+        <span
+          style={{
+            padding: "2px 10px",
+            borderRadius: 8,
+            background: isDark ? "#1c2e22" : "#ecfdf5",
+            color: "#2d6a4f",
+            fontSize: 12,
+            fontWeight: 700,
+          }}
+        >
+          v{entry.version}
+        </span>
+        <span
+          style={{
+            padding: "2px 10px",
+            borderRadius: 8,
+            background: isDark ? "#2d4a35" : "#f3f4f6",
+            color: isDark ? "#b0c4b1" : "#555",
+            fontSize: 11,
+            fontWeight: 600,
+            textTransform: "capitalize",
+          }}
+        >
+          {entry.category}
+        </span>
+        <span style={{ fontSize: 12, color: isDark ? "#6b8a6e" : "#999" }}>
+          {new Date(entry.change_date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          })}
+        </span>
+      </div>
+      <p style={{ fontSize: 14, lineHeight: 1.6, margin: 0, color: isDark ? "#c8d6c8" : "#444" }}>
+        {entry.summary}
+      </p>
+    </div>
+  );
+}
+
 function StatRow({ label, value, isDark }) {
   return (
     <div
@@ -136,6 +186,11 @@ export default function TransparencyPage() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["transparency-stats"],
     queryFn: fetchTransparencyStats,
+  });
+
+  const { data: changelog, isLoading: isChangelogLoading } = useQuery({
+    queryKey: ["methodology-changelog"],
+    queryFn: fetchMethodologyChangelog,
   });
 
   const textColor = isDark ? "#c8d6c8" : "#444";
@@ -242,6 +297,26 @@ export default function TransparencyPage() {
           >
             View full methodology details &rarr;
           </Link>
+        </SectionCard>
+
+        {/* Methodology Changelog */}
+        <SectionCard title="Methodology Changelog" isDark={isDark}>
+          <p style={{ color: textColor, lineHeight: 1.7, marginBottom: 12 }}>
+            A version history of changes to the GreenGrade algorithm itself — weights, formula, and
+            data sources. This is separate from individual product score updates, which are covered
+            in the statistics below.
+          </p>
+          {isChangelogLoading ? (
+            <Spinner message="Loading changelog..." />
+          ) : changelog?.entries?.length ? (
+            <div>
+              {changelog.entries.map((entry) => (
+                <ChangelogEntry key={entry.id} entry={entry} isDark={isDark} />
+              ))}
+            </div>
+          ) : (
+            <p style={{ color: textColor, fontSize: 14, margin: 0 }}>No changelog entries yet.</p>
+          )}
         </SectionCard>
 
         {/* Score Change Statistics */}

@@ -268,4 +268,80 @@ describe("Admin governance endpoints", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("GET /api/methodology/changelog (public)", () => {
+    test("should return seeded version history without auth", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.entries)).toBe(true);
+      expect(res.body.entries.length).toBeGreaterThanOrEqual(3);
+      const versions = res.body.entries.map((e) => e.version);
+      expect(versions).toEqual(expect.arrayContaining(["1.0", "2.0", "3.0"]));
+    });
+  });
+
+  describe("POST /api/admin/methodology-changelog", () => {
+    test("should reject unauthenticated requests", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .send({ version: "3.1", category: "weights", summary: "Test" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ version: "3.1", category: "weights", summary: "Test" });
+      expect(res.status).toBe(403);
+    });
+
+    test("should reject invalid category", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ version: "3.1", category: "bogus", summary: "Test" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject malformed version", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ version: "v3", category: "weights", summary: "Test" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject missing summary", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ version: "3.1", category: "weights" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should create an entry and surface it on both the admin and public endpoints", async () => {
+      const createRes = await request(app)
+        .post("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          version: "3.1",
+          category: "weights",
+          summary: "Re-weighted Transport dimension after data source update.",
+          commitRef: "abc1234",
+        });
+      expect(createRes.status).toBe(201);
+      expect(createRes.body).toHaveProperty("id");
+      expect(createRes.body.version).toBe("3.1");
+
+      const adminListRes = await request(app)
+        .get("/api/admin/methodology-changelog")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(adminListRes.status).toBe(200);
+      expect(adminListRes.body.entries.some((e) => e.id === createRes.body.id)).toBe(true);
+
+      const publicListRes = await request(app).get("/api/methodology/changelog");
+      expect(publicListRes.body.entries.some((e) => e.id === createRes.body.id)).toBe(true);
+    });
+  });
 });

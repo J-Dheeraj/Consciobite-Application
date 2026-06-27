@@ -186,10 +186,11 @@ cd frontend && npm test
 - `GET /api/auth/me` / `POST /api/auth/refresh` / `GET /api/auth/csrf`
 - `GET /api/carbon/summary` / `POST /api/carbon/log` / `DELETE /api/carbon/:id` (auth required)
 - `GET /api/reviews/:productId` / `POST /api/reviews/:productId` / `DELETE /api/reviews/:id` (auth required)
-- `GET /api/recipes` / `GET /api/methodology` / `GET /api/health`
+- `GET /api/recipes` / `GET /api/methodology` / `GET /api/methodology/changelog` / `GET /api/health`
 - `GET /api/admin/conflict-log` / `POST /api/admin/rescore` (admin only)
 - `POST /api/admin/manufacturers` / `GET /api/admin/manufacturers` (admin only)
 - `POST /api/admin/product-manufacturer` / `POST /api/admin/manufacturers/:id/acknowledge-fee` (admin only)
+- `GET /api/admin/methodology-changelog` / `POST /api/admin/methodology-changelog` (admin only)
 
 Full spec available at `http://localhost:4000/api/docs` in development.
 

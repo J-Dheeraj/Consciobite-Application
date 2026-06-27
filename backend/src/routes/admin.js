@@ -2,8 +2,14 @@ const express = require("express");
 const crypto = require("crypto");
 const { requireAdmin } = require("../middleware/auth");
 const { validate } = require("../middleware/validate");
+const { invalidateCache } = require("../middleware/cache");
 const { getDb } = require("../db/schema");
 const { getConflictLog, getConflictStats, snapshotScores } = require("../services/scoreAudit");
+const {
+  logMethodologyChange,
+  getMethodologyChangelog,
+  VALID_CATEGORIES,
+} = require("../services/methodologyChangelog");
 const { calculateGreenGrade } = require("../services/greengrade");
 const products = require("../data/products.json");
 
@@ -107,6 +113,32 @@ router.post("/product-manufacturer", validate(LINK_SCHEMA), (req, res) => {
   ).run(productId, manufacturerId);
 
   res.json({ productId, manufacturerId });
+});
+
+// --- Methodology changelog ---
+
+const CHANGELOG_SCHEMA = {
+  body: {
+    version: { required: true, type: "string", pattern: /^\d+\.\d+$/ },
+    category: {
+      required: true,
+      type: "string",
+      pattern: new RegExp(`^(${VALID_CATEGORIES.join("|")})$`),
+    },
+    summary: { required: true, type: "string", minLength: 1, maxLength: 500 },
+    commitRef: { required: false, type: "string", maxLength: 40 },
+  },
+};
+
+router.post("/methodology-changelog", validate(CHANGELOG_SCHEMA), (req, res) => {
+  const { version, category, summary, commitRef } = req.body;
+  const entry = logMethodologyChange({ version, category, summary, commitRef });
+  invalidateCache("methodology/changelog");
+  res.status(201).json(entry);
+});
+
+router.get("/methodology-changelog", (_req, res) => {
+  res.json({ entries: getMethodologyChangelog() });
 });
 
 // --- Manufacturer fee acknowledgement ---

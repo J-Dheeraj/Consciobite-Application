@@ -85,6 +85,21 @@ const options = {
             created_at: { type: "string", format: "date-time" },
           },
         },
+        MethodologyChangelogEntry: {
+          type: "object",
+          properties: {
+            id: { type: "string" },
+            version: { type: "string", example: "3.0" },
+            category: {
+              type: "string",
+              enum: ["algorithm", "weights", "data-source", "other"],
+            },
+            summary: { type: "string" },
+            commit_ref: { type: "string", nullable: true },
+            changed_by: { type: "string" },
+            change_date: { type: "string", format: "date-time" },
+          },
+        },
         Review: {
           type: "object",
           properties: {
@@ -337,6 +352,77 @@ const options = {
                 },
               },
             },
+          },
+        },
+      },
+      "/methodology/changelog": {
+        get: {
+          tags: ["Methodology"],
+          summary: "Get the GreenGrade methodology version changelog",
+          description:
+            "Returns the public version history of changes to the GreenGrade scoring algorithm itself (weights, formula, data sources) — distinct from per-product score drift.",
+          responses: {
+            200: {
+              description: "Methodology changelog entries",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      entries: {
+                        type: "array",
+                        items: { $ref: "#/components/schemas/MethodologyChangelogEntry" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      "/admin/methodology-changelog": {
+        get: {
+          tags: ["Admin"],
+          summary: "List all methodology changelog entries (admin)",
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: "Methodology changelog entries" },
+            401: { description: "Not authenticated" },
+            403: { description: "Not an admin" },
+          },
+        },
+        post: {
+          tags: ["Admin"],
+          summary: "Record a methodology/algorithm change (admin)",
+          description:
+            "Logs a new entry to the methodology changelog, e.g. when GreenGrade weights, formula, or data sources change.",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["version", "category", "summary"],
+                  properties: {
+                    version: { type: "string", example: "3.1" },
+                    category: {
+                      type: "string",
+                      enum: ["algorithm", "weights", "data-source", "other"],
+                    },
+                    summary: { type: "string" },
+                    commitRef: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            201: { description: "Changelog entry created" },
+            400: { description: "Validation error" },
+            401: { description: "Not authenticated" },
+            403: { description: "Not an admin" },
           },
         },
       },
