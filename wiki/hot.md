@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-28
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-28 after wiki/code sync (PR #32, #33 backfilled).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,17 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status (2026-06-28):** 147 backend tests passing across 7 suites (the "117" figure above is stale — PR #32 added 20 admin governance tests, this session added 9 more). Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-nq0mq4` — created off `main` (f0c40d4) for this session's work. Prior feature branch `claude/improve-application-S5njo` has been merged (PRs #29-#33).
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Governance layer (2026-05-29, Session 1):** SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+
+**Governance frontend (PR #31/#32, 2026-05-29 to 2026-06-05):** `frontend/src/app/admin/conflict-log/page.js` — admin audit UI (stats, paying/non-paying filter, rescore trigger, delta table). `frontend/src/app/admin/manufacturers/page.js` — manufacturer onboarding form + product-manufacturer linker + fee-acknowledgement table. `frontend/src/app/transparency/page.js` — **public** page showing governance config (3 panel seats, currently "In formation"), 5 commitments, methodology version badge, and live stats from `GET /api/transparency/stats`. Service module `frontend/src/services/admin.js` wraps all admin + transparency calls. `628903a` added `trailingSlash: true` to `next.config.js` to fix 404s on static hosting (Render).
+
+**Digital Product Passport API (PR #33, 8d7ead3, 2026-06-07):** New `backend/src/routes/passport.js`, mounted under `/v1`. Three B2B endpoints for EU ESPR / SGX Scope 3 reporting: `GET /v1/passport/:productId` (single product passport with 7-dim emission breakdown + confidence tier), `POST /v1/portfolio/score` (bulk score up to 100 products + category benchmarks), `GET /v1/audit/:productId` (paginated score-change history per product). Also landed: `METHODOLOGY.md` (290-line full GreenGrade v3.0 spec — KDE bandwidth, 60/40 category/global blend, sigmoid k=5, Mahalanobis χ²₀.₉₅,₇=14.067), `frontend/src/app/methodology/page.js` rewritten to render `GET /api/methodology` live, and `frontend/src/components/ApiReadyGate.js` (cold-start UX — polls `/health` every 3s up to 60s with a "waking up the server" message for Render free-tier cold starts).
+
+**Methodology changelog shipped (2026-06-28):** Closed a gap found during this session's wiki sync — `methodology_version` had been a hardcoded `"3.0"` string duplicated in `dataProvenance.js` and `passport.js`, with nothing logging when/why the algorithm itself changed (`score_change_logs` only audits per-product score deltas). Added `methodology_versions` SQLite table (migration `003`), `backend/src/services/methodologyChangelog.js`, public `GET /api/methodology/changelog`, and admin-only `POST /api/admin/methodology-version`. Both `getMethodology()` and the passport API now read the version from this table. See [[Methodology Changelog Service]] and [[Grading Independence Governance]] Phase 2.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

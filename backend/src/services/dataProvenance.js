@@ -1,3 +1,5 @@
+const { getCurrentVersion } = require("./methodologyChangelog");
+
 /**
  * Data Provenance & Confidence Service
  *
@@ -548,8 +550,10 @@ function getProductProvenance(product, source) {
  * Return the full methodology description.
  */
 function getMethodology() {
+  const current = getCurrentVersion();
+
   return {
-    version: "3.0",
+    version: current?.version ?? "3.0",
     algorithm: {
       name: "GreenGrade v3",
       description:

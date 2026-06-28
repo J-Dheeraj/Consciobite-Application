@@ -4,6 +4,7 @@ const router = express.Router();
 const { validate } = require("../middleware/validate");
 const products = require("../data/products.json");
 const { calculateGreenGrade } = require("../services/greengrade");
+const { getCurrentVersion } = require("../services/methodologyChangelog");
 const { getDb } = require("../db/schema");
 
 function enrichProduct(product) {
@@ -40,7 +41,7 @@ function buildPassport(product) {
     data_confidence_tier: g.dataTier ?? null,
     data_confidence_label: g.dataTierLabel ?? null,
     passport_generated_at: new Date().toISOString(),
-    methodology_version: "3.0",
+    methodology_version: getCurrentVersion()?.version ?? "3.0",
   };
 }
 

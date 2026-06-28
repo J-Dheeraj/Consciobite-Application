@@ -4,6 +4,7 @@ const { requireAdmin } = require("../middleware/auth");
 const { validate } = require("../middleware/validate");
 const { getDb } = require("../db/schema");
 const { getConflictLog, getConflictStats, snapshotScores } = require("../services/scoreAudit");
+const { recordVersion } = require("../services/methodologyChangelog");
 const { calculateGreenGrade } = require("../services/greengrade");
 const products = require("../data/products.json");
 
@@ -128,6 +129,46 @@ router.post("/manufacturers/:id/acknowledge-fee", validate(ACK_SCHEMA), (req, re
   }
 
   res.json({ acknowledged: true });
+});
+
+// --- Methodology changelog ---
+
+const NEW_VERSION_SCHEMA = {
+  body: {
+    version: {
+      required: true,
+      type: "string",
+      pattern: /^\d+\.\d+(\.\d+)?$/,
+      message: "version must look like 3.1 or 3.1.0",
+    },
+    summary: { required: true, type: "string", minLength: 1, maxLength: 1000 },
+  },
+};
+
+router.post("/methodology-version", validate(NEW_VERSION_SCHEMA), (req, res) => {
+  const { version, summary, changedParams } = req.body;
+
+  if (
+    changedParams !== undefined &&
+    (typeof changedParams !== "object" || changedParams === null)
+  ) {
+    return res.status(400).json({ error: "changedParams must be an object" });
+  }
+
+  try {
+    const current = recordVersion({
+      version,
+      summary,
+      changedParams,
+      releasedBy: req.user?.id ?? "admin",
+    });
+    res.status(201).json(current);
+  } catch (err) {
+    if (err.message.includes("UNIQUE")) {
+      return res.status(409).json({ error: "Methodology version already exists" });
+    }
+    throw err;
+  }
 });
 
 module.exports = router;

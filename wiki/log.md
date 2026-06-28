@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-28
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,37 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-28 — Wiki/Code Sync + Methodology Changelog
+
+**Operation:** Scheduled routine session. Vault was stale relative to `main` (PR #31/#32 governance frontend, PR #33 Digital Product Passport API + methodology docs + cold-start UX had landed without wiki updates). Backfilled documentation, then closed a real governance gap found during the sync: GreenGrade's `methodology_version` was a hardcoded `"3.0"` string duplicated in two files with no audit trail for algorithm/parameter changes — Phase 2 item 2 ("scoring changelog") of [[Grading Independence Governance]].
+
+**Files created:** 4
+- `backend/src/db/migrations/003_methodology_changelog.sql` — `methodology_versions` table, backfilled with v3.0 baseline
+- `backend/src/services/methodologyChangelog.js` — `getCurrentVersion()`, `getChangelog()`, `recordVersion()`
+- `backend/__tests__/methodologyChangelog.test.js` — 9 tests (public changelog read, admin-only version recording, duplicate/validation rejection, passport + methodology endpoints reflect the latest version)
+- `wiki/entities/Methodology Changelog Service.md`
+
+**Files modified:** 6
+- `backend/src/routes/admin.js` — `POST /api/admin/methodology-version` (admin only)
+- `backend/src/index.js` — `GET /api/methodology/changelog` (public, paginated)
+- `backend/src/services/dataProvenance.js` — `getMethodology().version` now reads from the changelog table instead of a hardcoded string
+- `backend/src/routes/passport.js` — `methodology_version` in passport responses now reads from the changelog table
+- `wiki/domains/Grading Independence Governance.md` — Phase 2 status updated (items 2 and 4 done, item 1 done, item 3 still blocked on real board candidate names), Technical Touchpoints table updated, Current State backfilled with PR #31/#32/#33 details
+- `wiki/hot.md` — backfilled with governance frontend, Digital Product Passport API, and methodology changelog summaries
+
+**Verification:**
+- 147 backend tests passing across 7 suites (CLAUDE.md's "117 tests" figure is stale — PR #32 alone added 20 admin governance tests; +9 more from this session)
+- ESLint clean (only pre-existing unrelated warnings)
+- Prettier clean
+- Manually traced `methodology_version` through `/api/methodology`, `/api/v1/passport/:id`, and `/api/v1/portfolio/score` to confirm all three now derive from the same source of truth
+
+**Known gap left open:** Nothing in code enforces that a future `greengrade.js` parameter change is paired with a `POST /api/admin/methodology-version` call — documented in [[Methodology Changelog Service]] rather than built out, since there's no concrete need yet for automated drift detection.
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
