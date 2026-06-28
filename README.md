@@ -169,6 +169,10 @@ JWT authentication with HS256 pinning · CSRF double-submit on mutating routes �
 
 Uses the `render.yaml` blueprint to deploy both API and frontend services.
 
+## Contributing
+
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for setup, conventions, and what CI expects before a PR can merge.
+
 ## Contact
 
 Dheeraj — [rajdheeraj26@gmail.com](mailto:rajdheeraj26@gmail.com)

@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-28 — CONTRIBUTING.md Added
+
+**Operation:** Scheduled routine session. No open PRs to babysit and `wiki/hot.md` was stale relative to `git log` (last updated before PRs #32/#33 — Digital Product Passport API, methodology docs, cold-start UX, trailingSlash fix). Picked the next well-scoped, low-risk item off the `CLAUDE.md` "Known issues / planned improvements" backlog: `CONTRIBUTING.md` was explicitly flagged as missing and planned. Skipped the riskier backlog items (Redis migration, Prisma/Supabase/Tailwind stack migration, product-catalog admin panel) since `CLAUDE.md` calls for discussing those first.
+
+**Files created:** 1
+- `CONTRIBUTING.md` (repo root) — setup steps, branch/commit conventions, PR checklist matching `.github/workflows/ci.yml` (format check, lint, test, `npm audit`, Docker build), and a "needs discussion first" list pointing at the same guardrails as `CLAUDE.md`'s Security rules and Key constraints sections
+
+**Files updated:** 2
+- `README.md` — added a "Contributing" section linking to `CONTRIBUTING.md`
+- `CLAUDE.md` — removed the now-stale "No `CONTRIBUTING.md` yet" line from Known issues
+
+**Verification:**
+- No existing `CONTRIBUTING.md` to conflict with; only prior reference was the backlog line in `CLAUDE.md` itself
+- Root-level `.md` files aren't covered by backend/frontend Prettier configs, so this doesn't trip `npm run format:check` in CI
+- No code changes, so no test/lint impact
+
+**Index updated:** no (no new wiki page type — covered by this log entry)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

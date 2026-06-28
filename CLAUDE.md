@@ -210,7 +210,6 @@ Full spec available at `http://localhost:4000/api/docs` in development.
 
 - Product catalog is static JSON. A future admin panel for managing products is planned.
 - In-memory cache breaks in multi-instance deployments. Redis migration is planned but not yet scoped.
-- No `CONTRIBUTING.md` yet — one is planned.
 - A GreenGrade Independent Advisory Panel governance structure is being set up to address the conflict of interest between manufacturer listing fees and independent scoring. See `wiki/domains/Grading Independence Governance.md`.
 - Stack migration to Prisma/Supabase/Tailwind/shadcn is planned but not started. See `wiki/concepts/Stack Migration Plan.md`.
 
