@@ -2,7 +2,7 @@
 type: concept
 title: "Static Export Pipeline"
 created: 2026-05-13
-updated: 2026-05-13
+updated: 2026-06-29
 status: developing
 tags: [next.js, static-export, build, deployment]
 related: ["[[Render Deployment]]", "[[Docker Build Context]]", "[[System Overview]]"]
@@ -49,9 +49,13 @@ These features are NOT available with `output: 'export'`:
 - Server-side rendering / ISR — all pages are fully static
 - API routes (`app/api/`) — not generated in static export
 
+## trailingSlash (2026-06-05 fix)
+
+Without `trailingSlash: true`, Next.js static export emits flat files like `transparency.html`. Neither Render's static hosting nor nginx resolve a bare `/transparency` request to that file — they only match a directory containing `index.html`. Setting `trailingSlash: true` makes every route emit `route/index.html` (e.g. `transparency/index.html`), which both hosts serve correctly. The nginx catch-all rewrite was also changed to serve `404.html` instead of `index.html` for unknown routes, so unmatched paths return a real 404 instead of silently rendering the home page.
+
 ## Output
 
 The build produces ~566 static HTML files:
-- 16 top-level routes (/, /about, /carbon, /dashboard, etc.)
+- 16 top-level routes (/, /about, /carbon, /dashboard, etc.), each as `route/index.html`
 - 550 product detail pages (/product/1 through /product/550)
 - Served by nginx (Docker) or Render Static Site

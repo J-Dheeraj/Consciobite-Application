@@ -2,7 +2,7 @@
 type: concept
 title: "Render Deployment"
 created: 2026-05-13
-updated: 2026-05-13
+updated: 2026-06-29
 status: developing
 tags: [render, deployment, infrastructure]
 related: ["[[Static Export Pipeline]]", "[[Docker Build Context]]", "[[System Overview]]"]
@@ -25,7 +25,11 @@ Consciobite deploys to Render.com as two services defined in `render.yaml`.
 - **Type:** `static`
 - **Build:** `npm ci && npm run build`
 - **Publish path:** `build/`
-- **Routing:** All paths rewrite to `/index.html` (SPA fallback)
+- **Routing:** Per-route `index.html` via `trailingSlash: true` (see [[Static Export Pipeline]]); unknown paths serve `404.html`
+
+## Free-Tier Cold Start
+
+The backend's free-tier instance spins down when idle and takes 30-60s to wake on the next request. `ApiReadyGate` (`frontend/src/components/ApiReadyGate.js`) wraps the app in `Providers.js`: it polls `GET /api/health` every 3s (max 60s) before rendering children, showing a "Waking up the server..." spinner instead of letting the first real request fail or hang.
 
 ## API Base Detection
 

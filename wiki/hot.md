@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-29
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-29 — routine wiki catch-up (no open PRs/issues; synced two already-merged PRs the wiki had missed).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -45,3 +45,11 @@ tags: [hot-cache, meta]
 - `/carbon` protected by `RequireAuth` — no in-page auth gates
 - httpOnly cookies for JWT; CSRF double-submit pattern
 - All Express routes use `validate()` middleware with `pattern:` not `type: "number"`
+
+**B2B Digital Product Passport API (PR #33, merged 2026-06-07):** Three new endpoints under `/api/v1/*` in `backend/src/routes/passport.js` for EU ESPR / SGX Scope 3 reporting — `GET /v1/passport/:productId` (single product), `POST /v1/portfolio/score` (batch 1-100 IDs with portfolio benchmarks), `GET /v1/audit/:productId` (paginated score history from `score_change_logs`). Reuses `calculateGreenGrade()` directly, no separate B2B scoring path. `METHODOLOGY.md` (GreenGrade v3.0 spec) and README added/rewritten with B2B framing. See [[Digital Product Passport API]].
+
+**Static export trailingSlash fix (PR #32, merged 2026-06-05):** `next.config.js` now sets `trailingSlash: true` so every route emits `route/index.html` instead of a flat `route.html` — fixes 404s on Render static hosting and nginx, which only resolve bare paths to a directory's `index.html`. nginx catch-all now serves `404.html` for unmatched routes instead of falling back to `index.html`. See [[Static Export Pipeline]].
+
+**Cold start UX (PR #33):** `ApiReadyGate` component polls `GET /api/health` every 3s (60s max) before rendering the app, showing a spinner while Render's free-tier backend wakes from idle. Wraps the tree in `Providers.js`. See [[Render Deployment]].
+
+**As of 2026-06-29:** No open PRs, no open issues on GitHub. Working tree clean. This was a routine catch-up pass, not new feature work.

@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-29
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,26 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-06-29 — Wiki Catch-Up: PR #32 + PR #33
+
+**Operation:** Routine sync. No open PRs/issues and a clean working tree, so this run caught the wiki up to two merged PRs that landed after the last update (2026-05-29) but were never ingested: PR #32 (trailingSlash static-export fix + README rewrite, merged 2026-06-05) and PR #33 (Digital Product Passport API + `METHODOLOGY.md` + cold-start UX, merged 2026-06-07).
+
+**Files created:** 1
+- `wiki/entities/Digital Product Passport API.md` — new B2B endpoints: `GET /v1/passport/:productId`, `POST /v1/portfolio/score`, `GET /v1/audit/:productId`
+
+**Files updated:** 4
+- `wiki/concepts/Static Export Pipeline.md` — documented `trailingSlash: true` fix and the 404.html catch-all change
+- `wiki/concepts/Render Deployment.md` — corrected stale "SPA fallback to index.html" routing claim; added free-tier cold-start section (`ApiReadyGate`)
+- `wiki/index.md` — linked new entity
+- `wiki/hot.md` — refreshed
+
+**Not ingested (out of scope for this pass):** `METHODOLOGY.md` (GreenGrade v3.0 spec) and the README B2B rewrite are referenced but not deep-dived; revisit if the methodology doc diverges from [[GreenGrade KDE Scoring]].
+
+**Index updated:** yes
+**Hot cache updated:** yes
 
 ---
 
