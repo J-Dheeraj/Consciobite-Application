@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-06-29
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-06-29 after maintenance sweep (wiki catch-up + passport API test coverage).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,11 +33,15 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 150 backend tests passing (`npm test` in `backend/`). Frontend builds 566 static pages (16 routes + 550 product pages), `next lint` clean. Frontend has no test runner/script configured yet — no `*.test.js` files exist under `frontend/src/`, despite the CLAUDE.md convention requiring render smoke tests. Pre-existing gap, not yet addressed.
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `main` is current. PRs #30-#33 (governance frontend, charter docs, admin test suite, Digital Product Passport API) all merged. This session worked on `claude/dreamy-dirac-j06kch`.
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Governance layer — now feature-complete through Phase 2 (2026-06-29):** Backend audit trail (Session 1, 2026-05-21) + governance frontend (Sessions 2-4, PR #31, merged 2026-05-29): admin conflict-log page (`/admin/conflict-log`, stats + filters + rescore), public `/transparency` page (panel seats, commitments, live stats from `GET /api/transparency/stats`), manufacturer onboarding admin UI (`/admin/manufacturers`, fee acknowledgement, product linking). Charter at `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. **Only outstanding Phase 1 item: founding panel members not yet identified** — no code work blocks this, it's a business/recruiting task. Stack migration plan at [[Stack Migration Plan]].
+
+**Digital Product Passport API (PR #33, merged 2026-06-08):** B2B endpoints at `/api/v1/passport/:productId`, `/api/v1/portfolio/score`, `/api/v1/audit/:productId` for EU ESPR and SGX Scope 3 reporting — see [[Digital Product Passport API]]. Shipped with `METHODOLOGY.md` (full GreenGrade v3.0 spec), a B2B-framed `README.md` rewrite, and `ApiReadyGate` component for Render free-tier cold-start UX. **Shipped without tests** — closed this session by adding `backend/__tests__/passport.test.js` (13 tests covering all 3 routes, validation edge cases, and 404s).
+
+**Static hosting fix (PR #32, merged 2026-06-05):** `trailingSlash: true` added to `next.config.js` — without it, routes like `/transparency` 404'd on Render/nginx because static export produced flat `transparency.html` files instead of `transparency/index.html`.
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

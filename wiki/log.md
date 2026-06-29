@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-29 — Maintenance Sweep: Wiki Catch-Up + Passport API Test Gap
+
+**Operation:** Scheduled routine check. Vault (`hot.md`, `log.md`) was a month stale relative to `main` — 4 PRs (#30-#33) had merged without wiki updates: governance frontend, charter docs, admin test suite, and the Digital Product Passport API. No open GitHub issues/PRs existed to drive work, so this session (1) verified repo health, (2) found and closed a real gap against project convention, (3) caught the vault up to current `main`.
+
+**Findings:**
+- Backend: 137 tests passing pre-session (graphify graph and hot.md both said 117 — stale)
+- Frontend: `next lint` clean, but **no test runner configured and zero `*.test.js` files** — CLAUDE.md requires render smoke tests for new components; this has been a standing gap, not a regression. Not fixed this session (out of scope — would need Jest/RTL setup, a larger discretionary decision).
+- `backend/src/routes/passport.js` (3 routes: passport, portfolio/score, audit) shipped in PR #33 (`8d7ead3`) with **zero Supertest coverage**, violating the explicit CLAUDE.md rule that every route needs at least one integration test.
+- `graphify-out/GRAPH_REPORT.md` is dated 2026-05-10 — predates all governance frontend and passport API work. Not regenerated this session (no code-structure question required it); flagging for next session that touches the graph.
+
+**Action taken:**
+- Added `backend/__tests__/passport.test.js` — 13 tests across all 3 passport routes (happy path, validation, 404s, batch edge cases). 150/150 backend tests now pass.
+- Committed as `58c904e` on `claude/dreamy-dirac-j06kch`, pushed to origin.
+
+**Wiki updates:**
+- Created `entities/Digital Product Passport API.md`
+- Updated `domains/Grading Independence Governance.md` — Phase 1/2 status, technical touchpoints table, links
+- Updated `hot.md` — full refresh: test count, branch state, governance Phase 2 completion, passport API, trailingSlash fix
+- Updated `index.md` — added new entity
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
