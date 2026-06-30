@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-30 — Passport Tests + CONTRIBUTING.md
+
+**Operation:** Write missing integration tests for Digital Product Passport routes and create CONTRIBUTING.md.
+
+**Files created:** 2
+- `backend/__tests__/passport.test.js` — 22 Supertest integration tests for all three `/api/v1` DPP endpoints
+- `CONTRIBUTING.md` — branch naming, commit conventions, test requirements, security rules, PR checklist
+
+**Key points:**
+- All three passport routes were untested (`GET /passport/:id`, `POST /portfolio/score`, `GET /audit/:id`)
+- Tests verify happy-path shape, 400 validation, 404 not-found, edge cases (empty arrays, oversized arrays, non-string entries, non-numeric pagination params)
+- Path-traversal via `../../etc` is silently normalized by Express; tested with URL-encoded `%21` instead
+- Backend test count: 117 → 159 (all passing)
+- CONTRIBUTING.md was listed as planned in CLAUDE.md; now complete
+
+**Branch:** `claude/dreamy-dirac-uet56m`
+**Commit:** `9e743b6`
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
