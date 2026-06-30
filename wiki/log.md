@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-06-30 — Passport Route Tests Added
+
+**Operation:** Add 19 Supertest integration tests for the Digital Product Passport routes added in the prior session (commit 8d7ead3) — required by CLAUDE.md rule "every new route needs at least one Supertest integration test."
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 19 tests across 3 route groups
+
+**Coverage added:**
+- `GET /api/v1/passport/:productId` — happy path (fields, emission_breakdown shape), 404 unknown, 400 invalid id
+- `POST /api/v1/portfolio/score` — happy path (2-product batch, fields), per-product shape, 400 missing/non-array/empty/oversized/non-string, 404 all-unknown, mixed-batch skip of bad ids
+- `GET /api/v1/audit/:productId` — happy path (structure), pagination, 400 non-numeric limit/offset, 404 unknown, 400 invalid id
+
+**Verification:** Full suite ran clean — 156 tests, 7 suites, 0 failures.
+
+**Branch:** `claude/nifty-goodall-8hq7uv` — pushed to remote.
+
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
