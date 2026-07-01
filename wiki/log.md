@@ -13,6 +13,24 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-01 — Products test suite, admin index page, CONTRIBUTING.md
+
+**Operation:** Scheduled session. Surveyed codebase via Explore agent + direct file reads. No open GitHub issues. Identified 3 high-impact gaps and addressed all three.
+
+**Files created:** 3
+- `backend/__tests__/products.test.js` — 37 integration tests for products route (list, stats, :id, scan, compare). All 4 sort orders tested; barcode happy-path (known barcode → 200) added. Discovered that `enrichedProducts` is pre-computed before `trainModel()` so `greenGrade.percentile` is `undefined` on list/id endpoints.
+- `frontend/src/app/admin/page.js` — admin dashboard index page with card grid linking to /admin/conflict-log and /admin/manufacturers. Fixes the 404 that `/admin` previously returned. Uses same `isAuthenticated` auth guard pattern as the two sub-pages.
+- `CONTRIBUTING.md` — contributor guide at repo root (planned in CLAUDE.md). Covers prerequisites, local backend/frontend/Docker setup, test commands, commit convention, branch naming, backend/frontend coding rules, and security invariants.
+
+**Test count:** 117 → 174 (all passing). Prettier + ESLint clean.
+
+**Branch:** `claude/dreamy-dirac-t4tht2` — commit `ffb01d4` pushed.
+
+**Index updated:** no (no new wiki pages; only hot.md and log.md updated)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

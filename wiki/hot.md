@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-07-01 — products test suite, admin index page, CONTRIBUTING.md added.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,16 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 174 backend tests passing (was 117). Frontend builds 566 static pages (16 routes + 550 product pages). New `backend/__tests__/products.test.js` adds 37 integration tests covering list pagination, all 4 sort modes, search, category filter, barcode scan, compare (happy path + all error cases), and :id lookup.
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-t4tht2` — 1 commit ahead of main (previous branch `claude/improve-application-S5njo` fully merged as PR #33).
+
+**New files (2026-07-01):**
+- `backend/__tests__/products.test.js` — 37 integration tests for the products route (previously untested)
+- `frontend/src/app/admin/page.js` — admin dashboard index linking to /admin/conflict-log and /admin/manufacturers; fixes the 404 that /admin previously returned
+- `CONTRIBUTING.md` — contributor guide: local setup, test commands, commit conventions, branch naming, security rules
+
+**Known gap (discovered this session):** `enrichedProducts` in `backend/src/routes/products.js` is pre-computed at module load time, before `trainModel()` is called in `index.js`. This means `greenGrade.percentile` is `undefined` for products returned by `GET /api/products` and `GET /api/products/:id`. The scan endpoint (`GET /api/products/scan/:barcode`) enriches at request time so it does have percentile. Noted in test file comment; not fixed yet.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 
