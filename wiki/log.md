@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-01 — DPP Test Coverage + Lint Cleanup
+
+**Operation:** Add integration tests for Digital Product Passport API and remove dead constants.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 25 Supertest integration tests
+
+**Files modified:** 2
+- `backend/src/index.js` — removed unused `DEFAULT_PORT` constant
+- `backend/src/services/greengrade.js` — removed unused `DIM` constant
+
+**Key points:**
+- All 3 DPP endpoints now have test coverage: `GET /v1/passport/:id`, `POST /v1/portfolio/score`, `GET /v1/audit/:id`
+- Tests cover happy paths, validation errors (400), not-found (404), response shape, emission breakdown structure, ISO 8601 timestamps, portfolio summary fields, and category benchmarks
+- Backend test count: 137 → 162
+- ESLint warning count: 4 → 2 (remaining 2 are in pre-existing test files, unrelated to this session)
+- Branch: `claude/nifty-goodall-kdko3m`
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
