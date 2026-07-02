@@ -13,6 +13,24 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-02 — Passport Test Suite + CONTRIBUTING.md
+
+**Operation:** Scheduled routine run. Identified missing Supertest tests for Digital Product Passport API routes (merged 2026-06-07 with no tests — violating CLAUDE.md convention). Also added `CONTRIBUTING.md` (listed as planned-but-missing).
+
+**Files created:** 2
+- `backend/__tests__/passport.test.js` — 25 integration tests covering GET `/api/v1/passport/:id`, POST `/api/v1/portfolio/score`, GET `/api/v1/audit/:id`
+- `CONTRIBUTING.md` — contributor guide at repo root: branch naming, commit conventions, test requirements, code style, security rules, key invariants
+
+**Verification:**
+- All 25 new tests pass
+- Full suite: 162 tests passing (7 test files)
+- Branch: `claude/dreamy-dirac-ieicfr`
+
+**Hot cache updated:** yes
+**Index updated:** no (no new wiki pages)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
