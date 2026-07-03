@@ -215,6 +215,64 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/methodology", () => {
+    test("returns a 200 with methodology data", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+    });
+
+    test("methodology has version and algorithm fields", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.body.version).toBe("3.0");
+      expect(res.body.algorithm).toBeDefined();
+      expect(res.body.algorithm.name).toBeDefined();
+    });
+
+    test("methodology algorithm includes 7 dimensions", async () => {
+      const res = await request(app).get("/api/methodology");
+      const dims = res.body.algorithm.dimensions;
+      expect(Array.isArray(dims)).toBe(true);
+      expect(dims).toHaveLength(7);
+      dims.forEach((d) => {
+        expect(d.key).toBeDefined();
+        expect(d.label).toBeDefined();
+      });
+    });
+
+    test("methodology includes confidence scoring with tiers", async () => {
+      const res = await request(app).get("/api/methodology");
+      const cs = res.body.confidenceScoring;
+      expect(cs).toBeDefined();
+      expect(Array.isArray(cs.tiers)).toBe(true);
+      expect(cs.tiers.length).toBeGreaterThan(0);
+    });
+
+    test("methodology includes dataSources and limitations", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(Array.isArray(res.body.dataSources)).toBe(true);
+      expect(Array.isArray(res.body.limitations)).toBe(true);
+    });
+  });
+
+  describe("GET /api/transparency/stats", () => {
+    test("returns a 200 with stats data", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(res.status).toBe(200);
+    });
+
+    test("stats include productCount", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(typeof res.body.productCount).toBe("number");
+      expect(res.body.productCount).toBeGreaterThan(0);
+    });
+
+    test("stats include manufacturerCount and payingCount", async () => {
+      const res = await request(app).get("/api/transparency/stats");
+      expect(typeof res.body.manufacturerCount).toBe("number");
+      expect(typeof res.body.payingCount).toBe("number");
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");
