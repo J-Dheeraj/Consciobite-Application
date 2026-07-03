@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-03 — Passport Tests + Products Page React Query Migration
+
+**Operation:** Scheduled routine run. Identified two convention violations from PR #33 and fixed both.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 20 integration tests covering all 3 passport routes
+
+**Files modified:** 1
+- `frontend/src/app/products/page.js` — migrated from `useEffect`+`useCallback`+`useState` fetch pattern to `useQuery` (TanStack React Query v5) with `keepPreviousData` for smooth pagination
+
+**Why:** PR #33 added Digital Product Passport API (`/api/v1/passport`, `/api/v1/portfolio/score`, `/api/v1/audit`) without any Supertest tests, violating the CLAUDE.md rule "every new route needs at least one Supertest integration test." The products page also used a manual fetch pattern instead of React Query, violating the convention "no raw `useEffect` + `fetch`."
+
+**Test count:** 117 → 157 (20 new tests added).
+
+**Verification:** All 157 backend tests passing. ESLint and Prettier clean. Branch `claude/nifty-goodall-xp779m` pushed.
+
+**Index updated:** no (no new concepts/entities)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
