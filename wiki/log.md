@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-03 — DPP Route Test Coverage
+
+**Operation:** Added comprehensive integration tests for routes shipped in PR #33 (Digital Product Passport API) that had zero test coverage.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 22 tests for GET /api/v1/passport/:productId, POST /api/v1/portfolio/score, GET /api/v1/audit/:productId
+
+**Files modified:** 1
+- `backend/__tests__/api.test.js` — 7 new tests for GET /api/methodology and GET /api/transparency/stats
+
+**Verification:**
+- 172 tests now passing (was 117)
+- All 7 test suites green
+- Committed and pushed to `claude/dreamy-dirac-9tw19f`
+
+**Index updated:** no (no new pages created)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

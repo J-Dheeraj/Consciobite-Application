@@ -33,9 +33,9 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 172 backend tests passing (117 → 172 after 2026-07-03 session). Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-9tw19f` — new branch off merged main (PR #33 merged).
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 
