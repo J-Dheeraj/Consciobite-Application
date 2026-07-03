@@ -1,6 +1,7 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { fetchProducts } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import { useTheme } from "@/context/ThemeContext";
@@ -30,40 +31,32 @@ export default function Products() {
   const router = useRouter();
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  const loadProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const params = { page, limit: 24 };
-      if (search.trim()) params.search = search.trim();
-      if (category !== "All") params.category = category;
-      if (sort) params.sort = sort;
-      const data = await fetchProducts(params);
-      setProducts(data.products || []);
-      setTotalPages(data.pagination?.totalPages || 1);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [search, category, sort, page]);
+  const queryParams = {
+    page,
+    limit: 24,
+    ...(search.trim() ? { search: search.trim() } : {}),
+    ...(category !== "All" ? { category } : {}),
+    ...(sort ? { sort } : {}),
+  };
 
-  useEffect(() => {
-    loadProducts();
-  }, [loadProducts]);
+  const {
+    data,
+    isLoading: loading,
+    error: queryError,
+  } = useQuery({
+    queryKey: ["products", queryParams],
+    queryFn: () => fetchProducts(queryParams),
+    placeholderData: keepPreviousData,
+  });
 
-  useEffect(() => {
-    setPage(1);
-  }, [search, category, sort]);
+  const products = data?.products || [];
+  const totalPages = data?.pagination?.totalPages || 1;
+  const error = queryError?.message ?? null;
 
   const bg = isDark ? "#0a0a0a" : "#f8f9fa";
   const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
@@ -110,7 +103,10 @@ export default function Products() {
             type="text"
             placeholder="Search products..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             style={{
               flex: "1 1 240px",
               padding: "11px 16px",
@@ -125,7 +121,10 @@ export default function Products() {
           />
           <select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setPage(1);
+            }}
             style={{
               padding: "11px 16px",
               borderRadius: 10,
@@ -145,7 +144,10 @@ export default function Products() {
           </select>
           <select
             value={sort}
-            onChange={(e) => setSort(e.target.value)}
+            onChange={(e) => {
+              setSort(e.target.value);
+              setPage(1);
+            }}
             style={{
               padding: "11px 16px",
               borderRadius: 10,
