@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-04 — Scoring Changelog (Phase 2 Governance Complete)
+
+**Operation:** Implement the last pending Phase 2 transparency feature — scoring algorithm version changelog.
+
+**Files modified:** 6
+- `backend/src/services/dataProvenance.js` — added `METHODOLOGY_CHANGELOG` constant (v1/v2/v3 entries) and `getMethodologyChangelog()` function
+- `backend/src/index.js` — imported `getMethodologyChangelog`; added `GET /api/methodology/changelog` endpoint
+- `backend/__tests__/api.test.js` — added 5 tests for `/api/methodology` and `/api/methodology/changelog`
+- `frontend/src/app/methodology/page.js` — added `ChangelogEntry` component and "Scoring Algorithm Version History" section
+- `frontend/src/services/recipes.js` — added `fetchMethodologyChangelog()` function
+- `frontend/src/services/api.js` — re-exported `fetchMethodologyChangelog`
+
+**Verification:**
+- 142 backend tests passing (up from 137)
+- ESLint: no warnings
+- Prettier: all clean
+- Branch pushed: `claude/nifty-goodall-w12iez`
+
+**Phase 2 governance status:** All 4 transparency features now complete.
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
