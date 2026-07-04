@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-04 — Better Alternatives Feature
+
+**Operation:** Implement product recommendations endpoint and UI section.
+
+**Files modified:** 3
+- `backend/src/routes/products.js` — added `GET /:id/recommendations` (returns top 3 higher-scoring same-category products, sorted score desc; placed before `/:id`)
+- `backend/__tests__/api.test.js` — 5 new integration tests (200 path, score ordering, 400/404, empty-array case); suite now 142 tests
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — imports `fetchRecommendations`, adds `useQuery` for recommendations, renders "Better Alternatives" card list below description when alternatives exist
+
+**Key points:**
+- Route `/:id/recommendations` has 2 path segments; no conflict with `/:id` (1 segment)
+- `fetchRecommendations` was already declared in `frontend/src/services/products.js` — this PR wires it up
+- Section is conditionally rendered: hidden when `recommendations.length === 0`
+- All Prettier + ESLint checks passing; 142/142 tests green
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
