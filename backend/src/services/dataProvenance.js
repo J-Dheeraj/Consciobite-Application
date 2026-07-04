@@ -668,12 +668,75 @@ function getMethodology() {
   };
 }
 
+// ─── Methodology version changelog ───────────────────────────────────────────
+
+const METHODOLOGY_CHANGELOG = [
+  {
+    version: "3.0",
+    date: "2025-09-01",
+    status: "current",
+    summary:
+      "Gaussian KDE with variance-based feature importance and Mahalanobis anomaly detection.",
+    changes: [
+      "Replaced percentile rank lookup with Gaussian Kernel Density Estimation (Silverman bandwidth) for smoother, tail-aware scoring.",
+      "Added variance-based feature importance: dimensions with greater spread across the catalog carry proportionally higher weight.",
+      "Changed category/global blend from 70/30 to 60/40 to give category context more influence.",
+      "Improved sigmoid transform: steepness raised from k=3 to k=5 with explicit midpoint=0.5 for better resolution in the mid-range.",
+      "Added Mahalanobis anomaly detection using the full 7-dimensional covariance matrix; outliers flagged beyond the chi-squared 95th percentile (14.067).",
+      "Added per-product data confidence scoring (0–1) based on data tier, source count, cross-source agreement, and recency.",
+      "Added data provenance tracking: tier, sources, agreement with Poore & Nemecek reference data.",
+    ],
+    breaking: false,
+    affectedProducts: "all",
+    reviewedBy: "Internal engineering review",
+  },
+  {
+    version: "2.0",
+    date: "2025-03-15",
+    status: "deprecated",
+    summary: "Statistical scoring with category-aware blending and sigmoid normalization.",
+    changes: [
+      "Replaced rule-based grade lookup (A–F) with a continuous 0–10 numerical score.",
+      "Added category-aware scoring: 70% weight on category-relative rank, 30% on global rank.",
+      "Applied sigmoid transform (k=3) to compress tails and expand mid-range resolution.",
+      "Introduced 7 distinct emission dimensions, replacing the single total-emissions input.",
+      "Added Open Food Facts barcode lookup as a fallback data source.",
+    ],
+    breaking: true,
+    affectedProducts: "all",
+    reviewedBy: "Internal engineering review",
+  },
+  {
+    version: "1.0",
+    date: "2024-11-01",
+    status: "deprecated",
+    summary: "Initial rule-based grading using total lifecycle emissions.",
+    changes: [
+      "Initial release: letter grade (A–F) assigned via fixed emission thresholds.",
+      "Single input: total kg CO₂e per kg of product.",
+      "Static thresholds calibrated against Poore & Nemecek (2018) median values.",
+      "Category weighting not implemented; all categories treated equally.",
+    ],
+    breaking: false,
+    affectedProducts: "all",
+    reviewedBy: "Founding team",
+  },
+];
+
+function getMethodologyChangelog() {
+  return {
+    currentVersion: "3.0",
+    entries: METHODOLOGY_CHANGELOG,
+  };
+}
+
 module.exports = {
   getProductProvenance,
   computeDataConfidence,
   findReference,
   computeAgreement,
   getMethodology,
+  getMethodologyChangelog,
   DATA_SOURCES,
   POORE_NEMECEK_REFERENCE,
 };

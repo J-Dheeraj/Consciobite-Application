@@ -215,6 +215,60 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/methodology", () => {
+    test("should return methodology data with required fields", async () => {
+      const res = await request(app).get("/api/methodology");
+      expect(res.status).toBe(200);
+      expect(res.body.version).toBeDefined();
+      expect(res.body.algorithm).toBeDefined();
+      expect(Array.isArray(res.body.algorithm.dimensions)).toBe(true);
+      expect(res.body.algorithm.dimensions).toHaveLength(7);
+      expect(res.body.dataSources).toBeDefined();
+      expect(res.body.confidenceScoring).toBeDefined();
+    });
+  });
+
+  describe("GET /api/methodology/changelog", () => {
+    test("should return changelog with currentVersion and entries", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      expect(res.body.currentVersion).toBe("3.0");
+      expect(Array.isArray(res.body.entries)).toBe(true);
+      expect(res.body.entries.length).toBeGreaterThan(0);
+    });
+
+    test("first entry should be the current version", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      const first = res.body.entries[0];
+      expect(first.version).toBe("3.0");
+      expect(first.status).toBe("current");
+    });
+
+    test("each entry should have required fields", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      res.body.entries.forEach((entry) => {
+        expect(entry.version).toBeDefined();
+        expect(entry.date).toBeDefined();
+        expect(entry.status).toBeDefined();
+        expect(entry.summary).toBeDefined();
+        expect(Array.isArray(entry.changes)).toBe(true);
+        expect(entry.changes.length).toBeGreaterThan(0);
+        expect(typeof entry.breaking).toBe("boolean");
+      });
+    });
+
+    test("entries should be ordered newest-first", async () => {
+      const res = await request(app).get("/api/methodology/changelog");
+      expect(res.status).toBe(200);
+      const versions = res.body.entries.map((e) => parseFloat(e.version));
+      for (let i = 1; i < versions.length; i++) {
+        expect(versions[i]).toBeLessThan(versions[i - 1]);
+      }
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

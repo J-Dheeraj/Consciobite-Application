@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchMethodology } from "@/services/api";
+import { fetchMethodology, fetchMethodologyChangelog } from "@/services/api";
 import Spinner from "@/components/Spinner";
 
 const SectionCard = ({ title, children, isDark }) => (
@@ -80,6 +80,100 @@ const TierBadge = ({ tier, isDark }) => {
   );
 };
 
+function ChangelogEntry({ entry, isDark, defaultOpen }) {
+  const [open, setOpen] = useState(defaultOpen);
+  const statusColor = entry.status === "current" ? "#27ae60" : "#888";
+  const textColor = isDark ? "#b0c4b1" : "#555";
+
+  return (
+    <div
+      style={{
+        borderRadius: 12,
+        border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+        overflow: "hidden",
+        marginBottom: 10,
+      }}
+    >
+      <button
+        onClick={() => setOpen((v) => !v)}
+        style={{
+          width: "100%",
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          padding: "12px 16px",
+          background: isDark ? "#1c2e22" : "#f8faf8",
+          border: "none",
+          cursor: "pointer",
+          textAlign: "left",
+        }}
+      >
+        <span
+          style={{
+            padding: "2px 10px",
+            borderRadius: 12,
+            background: entry.status === "current" ? "#27ae60" : isDark ? "#2d2d2d" : "#e5e7eb",
+            color: entry.status === "current" ? "#fff" : isDark ? "#999" : "#555",
+            fontSize: 11,
+            fontWeight: 700,
+            flexShrink: 0,
+          }}
+        >
+          {entry.status === "current" ? "Current" : "Deprecated"}
+        </span>
+        <span
+          style={{
+            fontWeight: 700,
+            fontSize: "0.9rem",
+            color: isDark ? "#e8f5e9" : "#1a3a2a",
+            flex: 1,
+          }}
+        >
+          v{entry.version}
+        </span>
+        <span style={{ fontSize: "0.78rem", color: isDark ? "#6b8a6e" : "#999", flexShrink: 0 }}>
+          {entry.date}
+        </span>
+        <span style={{ color: statusColor, fontSize: "0.85rem", flexShrink: 0 }}>
+          {open ? "▲" : "▼"}
+        </span>
+      </button>
+      {open && (
+        <div style={{ padding: "12px 16px", background: isDark ? "#162419" : "#fff" }}>
+          <p style={{ fontSize: "0.85rem", color: textColor, marginBottom: 10, lineHeight: 1.6 }}>
+            {entry.summary}
+          </p>
+          <ul style={{ paddingLeft: 18, margin: 0 }}>
+            {entry.changes.map((c, i) => (
+              <li
+                key={i}
+                style={{ fontSize: "0.82rem", color: textColor, lineHeight: 1.7, marginBottom: 4 }}
+              >
+                {c}
+              </li>
+            ))}
+          </ul>
+          {entry.breaking && (
+            <div
+              style={{
+                marginTop: 10,
+                padding: "6px 12px",
+                borderRadius: 8,
+                background: "rgba(231,76,60,0.12)",
+                color: "#e74c3c",
+                fontSize: "0.78rem",
+                fontWeight: 600,
+              }}
+            >
+              Breaking change — affected all {entry.affectedProducts} products
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Methodology() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -87,6 +181,11 @@ export default function Methodology() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["methodology"],
     queryFn: fetchMethodology,
+  });
+
+  const { data: changelogData } = useQuery({
+    queryKey: ["methodology-changelog"],
+    queryFn: fetchMethodologyChangelog,
   });
 
   if (isLoading) {
@@ -537,6 +636,32 @@ export default function Methodology() {
             ))}
           </div>
         </SectionCard>
+
+        {/* Scoring changelog */}
+        {changelogData && (
+          <SectionCard title="Scoring Algorithm Version History" isDark={isDark}>
+            <p
+              style={{
+                fontSize: "0.85rem",
+                color: textColor,
+                marginBottom: 14,
+                lineHeight: 1.6,
+              }}
+            >
+              All changes to the GreenGrade scoring algorithm are recorded here. Breaking changes
+              (those that shift scores across the catalog) are flagged separately so the Independent
+              Advisory Panel can verify the before/after impact.
+            </p>
+            {changelogData.entries.map((entry, i) => (
+              <ChangelogEntry
+                key={entry.version}
+                entry={entry}
+                isDark={isDark}
+                defaultOpen={i === 0}
+              />
+            ))}
+          </SectionCard>
+        )}
       </div>
     </div>
   );
