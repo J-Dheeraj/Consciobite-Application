@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchRecommendations } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -94,6 +94,13 @@ export default function ProductDetail() {
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
   });
+
+  const { data: recData } = useQuery({
+    queryKey: ["recommendations", id],
+    queryFn: () => fetchRecommendations(id),
+    enabled: !!product,
+  });
+  const recommendations = recData?.recommendations ?? [];
 
   const error = queryError ? "Unable to load product details." : "";
   const [fav, setFav] = useState(false);
@@ -1086,6 +1093,83 @@ export default function ProductDetail() {
             {product.description}
           </p>
         </div>
+
+        {/* Better Alternatives */}
+        {recommendations.length > 0 && (
+          <div
+            style={{
+              width: "100%",
+              background: "#14352a",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+              animation: "fadeInUp 0.3s ease",
+            }}
+          >
+            <h4
+              style={{
+                color: "#52b788",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 14,
+                fontSize: "0.95rem",
+              }}
+            >
+              Better Alternatives
+            </h4>
+            <p
+              style={{
+                color: "#7a9a7e",
+                fontSize: "0.78rem",
+                marginBottom: 12,
+                marginTop: -8,
+              }}
+            >
+              Higher-scoring products in the same category
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {recommendations.map((alt) => (
+                <button
+                  key={alt.id}
+                  onClick={() => router.push(`/product/${alt.id}`)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "12px 14px",
+                    background: "#0b2a1a",
+                    border: "none",
+                    borderRadius: 12,
+                    cursor: "pointer",
+                    textAlign: "left",
+                    width: "100%",
+                    transition: "background 0.15s ease",
+                  }}
+                >
+                  <GradeBadge score={alt.greenGrade.score} color={alt.greenGrade.color} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        color: "#fff",
+                        fontSize: "0.88rem",
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {alt.name}
+                    </div>
+                    <div style={{ color: "#7a9a7e", fontSize: "0.78rem", marginTop: 2 }}>
+                      {alt.brand}
+                    </div>
+                  </div>
+                  <span style={{ color: "#52b788", fontSize: "1rem", flexShrink: 0 }}>{"→"}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Back button */}
         <div style={{ width: "100%", maxWidth: 380, padding: "0 16px" }}>

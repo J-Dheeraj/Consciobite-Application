@@ -112,6 +112,46 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/:id/recommendations", () => {
+    test("should return recommendations for a low-scoring product", async () => {
+      const res = await request(app).get("/api/products/2/recommendations");
+      expect(res.status).toBe(200);
+      expect(res.body.productId).toBe("2");
+      expect(res.body.category).toBeDefined();
+      expect(typeof res.body.currentScore).toBe("number");
+      expect(Array.isArray(res.body.recommendations)).toBe(true);
+      expect(res.body.recommendations.length).toBeGreaterThan(0);
+      expect(res.body.recommendations.length).toBeLessThanOrEqual(3);
+    });
+
+    test("each recommendation should have a higher score than the source product", async () => {
+      const res = await request(app).get("/api/products/2/recommendations");
+      expect(res.status).toBe(200);
+      res.body.recommendations.forEach((alt) => {
+        expect(alt.greenGrade.score).toBeGreaterThan(res.body.currentScore);
+        expect(alt.category).toBe(res.body.category);
+        expect(alt.id).not.toBe("2");
+      });
+    });
+
+    test("should return 400 for invalid product ID", async () => {
+      const res = await request(app).get("/api/products/inv@lid!/recommendations");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 404 for non-existent product", async () => {
+      const res = await request(app).get("/api/products/zzzzzzzzz/recommendations");
+      expect(res.status).toBe(404);
+    });
+
+    test("should return empty array when no better alternatives exist", async () => {
+      // Product 46 (Frozen Blueberries) has score 9.6 — very high, unlikely to have better
+      const res = await request(app).get("/api/products/46/recommendations");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.recommendations)).toBe(true);
+    });
+  });
+
   describe("GET /api/products/scan/:barcode", () => {
     test("should return 400 for invalid barcode format", async () => {
       const res = await request(app).get("/api/products/scan/abc");
