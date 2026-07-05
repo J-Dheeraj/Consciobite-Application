@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-05 — Passport B2B Test Suite
+
+**Operation:** Add integration tests for all three B2B passport API endpoints which previously had zero test coverage.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 22 tests across 3 describe blocks
+
+**Files modified:** 2
+- `backend/package.json` — better-sqlite3 bumped 12.6.2 → 12.11.1 (required for Node 22 native build)
+- `backend/package-lock.json` — updated to match
+
+**Test coverage added:**
+- `GET /api/v1/passport/:productId` — happy path, full response shape (7 emission fields, score, percentile, methodology_version), 400 invalid ID, 404 unknown ID, data_confidence_tier presence
+- `POST /api/v1/portfolio/score` — happy path, response structure (products/portfolio_summary/category_benchmarks), missing field, non-array, empty array, >100 items, non-string entries, all-unknown 404, mixed valid+invalid skipping, single-product edge case
+- `GET /api/v1/audit/:productId` — happy path, fresh-DB empty entries, 400 invalid ID, 404 unknown ID, invalid query params (limit/offset not numeric), pagination
+
+**Verification:** `npm test` → 159 passing, 0 failures, 7 suites (was 137 tests / 6 suites).
+
+**Branch:** `claude/nifty-goodall-o92wjo` — commit `d6314d6` pushed.
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
