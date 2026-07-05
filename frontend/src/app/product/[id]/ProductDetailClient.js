@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchPassport } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -97,6 +97,8 @@ export default function ProductDetail() {
 
   const error = queryError ? "Unable to load product details." : "";
   const [fav, setFav] = useState(false);
+  const [passportLoading, setPassportLoading] = useState(false);
+  const [passportError, setPassportError] = useState("");
 
   useEffect(() => {
     if (product) setFav(isFavorited(product.id));
@@ -104,6 +106,26 @@ export default function ProductDetail() {
     setLogError("");
     setShowStats(false);
   }, [product]);
+
+  const handleDownloadPassport = async () => {
+    if (!product || passportLoading) return;
+    setPassportLoading(true);
+    setPassportError("");
+    try {
+      const passport = await fetchPassport(product.id);
+      const blob = new Blob([JSON.stringify(passport, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `passport-${product.id}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setPassportError("Unable to download passport. Please try again.");
+    } finally {
+      setPassportLoading(false);
+    }
+  };
 
   const handleLogPurchase = async () => {
     if (!product) return;
@@ -1085,6 +1107,52 @@ export default function ProductDetail() {
           <p style={{ color: "#ffffff", fontSize: "0.88rem", lineHeight: 1.7 }}>
             {product.description}
           </p>
+        </div>
+
+        {/* Digital Product Passport download */}
+        <div style={{ width: "100%", maxWidth: 380, padding: "0 16px", marginBottom: 12 }}>
+          <button
+            onClick={handleDownloadPassport}
+            disabled={passportLoading}
+            style={{
+              width: "100%",
+              padding: "12px 24px",
+              borderRadius: 10,
+              border: "1.5px solid #52b788",
+              background: "transparent",
+              color: "#52b788",
+              fontSize: "0.9rem",
+              fontWeight: 700,
+              cursor: passportLoading ? "not-allowed" : "pointer",
+              opacity: passportLoading ? 0.7 : 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+            }}
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            {passportLoading ? "Preparing…" : "Download Digital Passport"}
+          </button>
+          {passportError && (
+            <p style={{ color: "#e74c3c", fontSize: "0.78rem", marginTop: 6, textAlign: "center" }}>
+              {passportError}
+            </p>
+          )}
         </div>
 
         {/* Back button */}
