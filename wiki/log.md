@@ -13,6 +13,35 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-05 — Passport Route Tests + DPP Download Button
+
+**Operation:** Add missing integration tests for Digital Product Passport API routes and a Download Digital Passport button on the product detail page.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 21 tests covering all 3 passport endpoints
+
+**Files modified:** 3
+- `frontend/src/services/products.js` — added `fetchPassport(id)` calling `/api/v1/passport/:id`
+- `frontend/src/services/api.js` — exported `fetchPassport`
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added "Download Digital Passport" button with loading/error states; triggers JSON file download
+
+**Key points:**
+- Passport routes (`/api/v1/passport/:id`, `/api/v1/portfolio/score`, `/api/v1/audit/:id`) had zero tests — violation of project invariant
+- Tests cover happy paths, 400 validation errors, 404 not-found, pagination, and edge cases (101 IDs, non-string IDs, empty arrays)
+- Backend test count: 137 → 158 (21 new)
+- ESLint, Prettier, and all 158 tests pass
+- Branch: `claude/dreamy-dirac-16jwpe` — pushed to remote
+
+**Verification:**
+- 158/158 tests pass (7 suites)
+- Frontend lint clean (no ESLint warnings or errors)
+- Prettier clean on all modified files
+
+**Index updated:** no (no new wiki pages added)
+**Hot cache updated:** yes (below)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
