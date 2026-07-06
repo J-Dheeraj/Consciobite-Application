@@ -66,6 +66,24 @@ describe("API Endpoints", () => {
         expect(p.greenGrade.breakdown).toHaveLength(7);
       });
     });
+
+    test("should filter by minScore", async () => {
+      const res = await request(app).get("/api/products?minScore=7&limit=100");
+      expect(res.status).toBe(200);
+      res.body.products.forEach((p) => {
+        expect(p.greenGrade.score).toBeGreaterThanOrEqual(7);
+      });
+    });
+
+    test("should ignore invalid minScore values", async () => {
+      const resNaN = await request(app).get("/api/products?minScore=abc&limit=5");
+      expect(resNaN.status).toBe(200);
+      expect(resNaN.body.products.length).toBeGreaterThan(0);
+
+      const resOut = await request(app).get("/api/products?minScore=15&limit=5");
+      expect(resOut.status).toBe(200);
+      expect(resOut.body.products.length).toBeGreaterThan(0);
+    });
   });
 
   describe("GET /api/products/stats", () => {

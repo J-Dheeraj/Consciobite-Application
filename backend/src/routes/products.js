@@ -36,6 +36,10 @@ router.get("/", (req, res) => {
   const category = req.query.category ? sanitize(req.query.category, 30) : "";
   const sort = VALID_SORTS.includes(req.query.sort) ? req.query.sort : "";
 
+  const rawMinScore = parseFloat(req.query.minScore);
+  const minScore =
+    !isNaN(rawMinScore) && rawMinScore >= 0 && rawMinScore <= 10 ? rawMinScore : null;
+
   const page = Math.max(1, parseInt(req.query.page, 10) || 1);
   const limit = Math.min(
     MAX_PAGE_SIZE,
@@ -56,6 +60,10 @@ router.get("/", (req, res) => {
 
   if (category) {
     results = results.filter((p) => p.category.toLowerCase() === category.toLowerCase());
+  }
+
+  if (minScore !== null) {
+    results = results.filter((p) => p.greenGrade.score >= minScore);
   }
 
   if (sort === "grade_asc") results.sort((a, b) => a.greenGrade.score - b.greenGrade.score);

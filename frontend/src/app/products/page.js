@@ -1,6 +1,7 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { fetchProducts } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import { useTheme } from "@/context/ThemeContext";
@@ -26,44 +27,53 @@ const SORT_OPTIONS = [
   { value: "emissions_desc", label: "Emissions: High to Low" },
 ];
 
+const SCORE_FILTERS = [
+  { label: "All Scores", value: null },
+  { label: "Green 7+", value: 7 },
+  { label: "Good 5+", value: 5 },
+  { label: "Fair 3+", value: 3 },
+];
+
 export default function Products() {
   const router = useRouter();
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [search, setSearch] = useState("");
+
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("");
+  const [minScore, setMinScore] = useState(null);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  const loadProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const params = { page, limit: 24 };
-      if (search.trim()) params.search = search.trim();
-      if (category !== "All") params.category = category;
-      if (sort) params.sort = sort;
-      const data = await fetchProducts(params);
-      setProducts(data.products || []);
-      setTotalPages(data.pagination?.totalPages || 1);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [search, category, sort, page]);
-
+  // Debounce search input 300ms
   useEffect(() => {
-    loadProducts();
-  }, [loadProducts]);
+    const t = setTimeout(() => setDebouncedSearch(searchInput.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchInput]);
 
+  // Reset to page 1 whenever filters change
   useEffect(() => {
     setPage(1);
-  }, [search, category, sort]);
+  }, [debouncedSearch, category, sort, minScore]);
+
+  const { data, isLoading, isFetching, error } = useQuery({
+    queryKey: ["products", { search: debouncedSearch, category, sort, minScore, page }],
+    queryFn: () =>
+      fetchProducts({
+        search: debouncedSearch || undefined,
+        category: category !== "All" ? category : undefined,
+        sort: sort || undefined,
+        minScore: minScore ?? undefined,
+        page,
+        limit: 24,
+      }),
+    placeholderData: (prev) => prev,
+  });
+
+  const products = data?.products || [];
+  const totalPages = data?.pagination?.totalPages || 1;
+  const totalCount = data?.pagination?.totalCount;
 
   const bg = isDark ? "#0a0a0a" : "#f8f9fa";
   const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
@@ -92,7 +102,9 @@ export default function Products() {
             Browse Products
           </h1>
           <p style={{ color: textSecondary, fontSize: "0.95rem" }}>
-            Explore GreenGrade scores across {products.length > 0 ? "500+" : "all"} food products
+            {totalCount != null
+              ? `${totalCount} product${totalCount !== 1 ? "s" : ""} match your filters`
+              : "Explore GreenGrade scores across 500+ food products"}
           </p>
         </div>
 
@@ -102,15 +114,16 @@ export default function Products() {
             display: "flex",
             gap: 12,
             flexWrap: "wrap",
-            marginBottom: 24,
+            marginBottom: 12,
             alignItems: "center",
           }}
         >
           <input
             type="text"
             placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            aria-label="Search products"
             style={{
               flex: "1 1 240px",
               padding: "11px 16px",
@@ -126,6 +139,7 @@ export default function Products() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            aria-label="Filter by category"
             style={{
               padding: "11px 16px",
               borderRadius: 10,
@@ -146,6 +160,7 @@ export default function Products() {
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
+            aria-label="Sort products"
             style={{
               padding: "11px 16px",
               borderRadius: 10,
@@ -165,6 +180,39 @@ export default function Products() {
           </select>
         </div>
 
+        {/* Score filter chips */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 24 }}>
+          {SCORE_FILTERS.map((sf) => {
+            const active = minScore === sf.value;
+            return (
+              <button
+                key={String(sf.value)}
+                onClick={() => setMinScore(sf.value)}
+                aria-pressed={active}
+                style={{
+                  padding: "6px 14px",
+                  borderRadius: 20,
+                  border: active
+                    ? "1.5px solid #2d6a4f"
+                    : `1.5px solid ${inputBorder}`,
+                  background: active
+                    ? isDark
+                      ? "#1c3a2a"
+                      : "#edf7f0"
+                    : inputBg,
+                  color: active ? (isDark ? "#95d5b2" : "#2d6a4f") : textSecondary,
+                  fontSize: "0.82rem",
+                  fontWeight: active ? 600 : 400,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+              >
+                {sf.label}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Error */}
         {error && (
           <div
@@ -177,12 +225,12 @@ export default function Products() {
               fontSize: "0.9rem",
             }}
           >
-            {error}
+            {error.message || "Failed to load products."}
           </div>
         )}
 
-        {/* Loading */}
-        {loading && (
+        {/* Loading (initial only — isFetching keeps stale content visible) */}
+        {isLoading && (
           <div style={{ padding: 48, textAlign: "center", color: textMuted }}>
             <div
               style={{
@@ -200,16 +248,18 @@ export default function Products() {
         )}
 
         {/* No results */}
-        {!loading && !error && products.length === 0 && (
+        {!isLoading && !error && products.length === 0 && (
           <div style={{ padding: 48, textAlign: "center", color: textMuted, fontSize: "0.95rem" }}>
             No products found. Try adjusting your search or filters.
           </div>
         )}
 
-        {/* Product Grid */}
-        {!loading && products.length > 0 && (
+        {/* Product Grid — keep visible while fetching next page */}
+        {!isLoading && products.length > 0 && (
           <div
             style={{
+              opacity: isFetching ? 0.6 : 1,
+              transition: "opacity 0.2s",
               display: "grid",
               gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
               gap: 16,
@@ -315,7 +365,7 @@ export default function Products() {
         )}
 
         {/* Pagination */}
-        {!loading && totalPages > 1 && (
+        {!isLoading && totalPages > 1 && (
           <div
             style={{
               display: "flex",
