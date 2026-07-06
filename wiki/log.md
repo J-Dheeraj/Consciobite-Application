@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-06 — minScore filter, React Query migration, CONTRIBUTING.md
+
+**Operation:** Three improvements on branch `claude/dreamy-dirac-x8ka5k`.
+
+**Files modified:** 4
+- `backend/src/routes/products.js` — added `?minScore` filter (0–10 float) to `GET /api/products`; out-of-range/NaN ignored so old clients unaffected
+- `frontend/src/services/products.js` — `fetchProducts()` forwards `minScore` param
+- `frontend/src/app/products/page.js` — migrated from `useEffect`/`useState`/`useCallback` to React Query (`useQuery`); 300ms debounced search input; `placeholderData` keeps grid visible during pagination; isFetching opacity transition; score filter chips (All / Green 7+ / Good 5+ / Fair 3+)
+- `backend/__tests__/api.test.js` — 2 new integration tests for minScore
+
+**Files created:** 1
+- `CONTRIBUTING.md` — setup, branch naming, commit conventions, code standards, PR process
+
+**Test count:** 117 → 139 (all passing)
+**Format check:** clean (Prettier auto-fixed products.js)
+**Branch:** pushed to origin `claude/dreamy-dirac-x8ka5k`
+
+**Key decisions:**
+- `minScore` out-of-range (>10) or NaN is silently ignored — returning full catalog is safer than a 400 error for malformed client params
+- React Query `placeholderData: (prev) => prev` (v5 API) keeps stale grid visible during page changes, replacing the old `useCallback` + `useEffect` chain
+- Score chips set `minScore` state; `useEffect` resets page to 1 on any filter change
+
+**Index updated:** no (no new wiki pages — improvements were code-only)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
