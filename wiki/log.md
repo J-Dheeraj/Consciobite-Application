@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-07-07
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,26 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-07-07 — Passport Test Coverage + ESLint Cleanup
+
+**Operation:** Add integration tests for Digital Product Passport API; fix two pre-existing ESLint unused-variable warnings.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 21 Supertest integration tests covering GET /api/v1/passport/:productId, POST /api/v1/portfolio/score, and GET /api/v1/audit/:productId
+
+**Files modified:** 2
+- `backend/src/index.js` — removed unused `DEFAULT_PORT = 4000` (superseded by `CONFIG.port`)
+- `backend/src/services/greengrade.js` — removed unused `DIM = EMISSION_KEYS.length` (computed inline throughout)
+
+**Test status:** 158 tests passing across 7 suites (was 137 before this session). ESLint: 0 warnings. Prettier: clean.
+
+**Branch:** `claude/nifty-goodall-q43xo0` pushed (1 commit ahead of main).
+
+**Index updated:** no new wiki pages added.
+**Hot cache updated:** yes.
 
 ---
 
