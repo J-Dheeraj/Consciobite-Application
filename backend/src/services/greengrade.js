@@ -45,8 +45,6 @@ const EMISSION_KEYS = [
   "retail",
 ];
 
-const DIM = EMISSION_KEYS.length; // 7
-
 const CATEGORY_LABELS = {
   landUseChange: "Land Use Change",
   animalFeed: "Animal Feed",
