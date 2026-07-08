@@ -13,7 +13,13 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-07-08 — passport API tests + frontend passport demo page.
+
+**Session 2026-07-08:** Added 29 integration tests for the Digital Product Passport API (`backend/__tests__/passport.test.js`) covering all three `/api/v1` endpoints: `GET /passport/:productId`, `POST /portfolio/score`, `GET /audit/:productId`. Tests cover happy paths, all 7 emission dimensions, pagination, 400/404 guards, type checks, and score bounds. Added frontend service `frontend/src/services/passport.js` (`fetchProductPassport`, `scorePortfolio`, `fetchAuditLog`) and a `/passport` demo page for B2B users to explore EU ESPR-compliant passports. Total backend tests: 166 (up from 137). Frontend builds 567 static pages (added `/passport`). Pushed to `claude/dreamy-dirac-whhn5d`.
+
+---
+
+**Last updated (previous):** 2026-05-29 after governance charter ingest.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +39,9 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 166 backend tests passing (7 suites). Frontend builds 567 static pages (17 routes + 550 product pages, new `/passport` page).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-whhn5d` — 1 commit ahead of main.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 

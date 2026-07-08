@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-08 — Passport API Tests + Frontend Demo Page
+
+**Operation:** Add test coverage for Digital Product Passport API (added in PR #33) and a B2B-facing frontend demo page.
+
+**Files created:** 3
+- `backend/__tests__/passport.test.js` — 29 Supertest integration tests across all 3 passport endpoints
+- `frontend/src/services/passport.js` — frontend service module (fetchProductPassport, scorePortfolio, fetchAuditLog)
+- `frontend/src/app/passport/page.js` — `/passport` demo page for EU ESPR passport lookup and portfolio scoring
+
+**Files modified:** 1
+- `frontend/src/services/api.js` — barrel export updated to re-export passport service functions
+
+**Verification:**
+- All 166 backend tests pass (29 new in passport.test.js)
+- Frontend builds cleanly: 567 static pages, `/passport` at 6.43 kB
+- No ESLint or Prettier violations
+
+**Branch:** `claude/dreamy-dirac-whhn5d` — pushed.
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
