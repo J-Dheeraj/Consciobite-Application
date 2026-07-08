@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-08 — Passport Tests, CONTRIBUTING.md, and Export UI
+
+**Operation:** Fill test gap for Digital Product Passport API, add contributor docs, and expose passport export in the frontend.
+
+**Files created:** 3
+- `backend/__tests__/passport.test.js` — 19 integration tests for GET /api/v1/passport/:id, POST /api/v1/portfolio/score, GET /api/v1/audit/:id; covers happy paths, 400/404 edge cases, and validation
+- `CONTRIBUTING.md` — branch naming, commit conventions, setup instructions, PR checklist, security rules (planned in known issues)
+- `frontend/src/services/passport.js` — `fetchProductPassport()` and `downloadPassportJson()` helpers
+
+**Files modified:** 2
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added "Export Digital Passport" button that fetches `/api/v1/passport/:id` and triggers a JSON download
+- `frontend/src/services/api.js` — re-exports passport service from the barrel
+
+**Verification:**
+- 156 backend tests passing (up from 137; +19 passport tests)
+- Frontend ESLint: no warnings or errors
+- Branch: `claude/nifty-goodall-19o7n6`
+
+**Key notes:**
+- Test count jumped from 137 → 156; all 7 test suites pass
+- Passport route was added in PR #33 but had no tests — now covered
+- CONTRIBUTING.md was listed as "planned" in CLAUDE.md known issues — now done
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
