@@ -4,6 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProductPassport, downloadPassportJson } from "@/services/passport";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -85,6 +86,8 @@ export default function ProductDetail() {
   const [loggedPurchase, setLoggedPurchase] = useState(false);
   const [logError, setLogError] = useState("");
   const [showStats, setShowStats] = useState(false);
+  const [passportLoading, setPassportLoading] = useState(false);
+  const [passportError, setPassportError] = useState("");
 
   const {
     data: product,
@@ -103,7 +106,22 @@ export default function ProductDetail() {
     setLoggedPurchase(false);
     setLogError("");
     setShowStats(false);
+    setPassportError("");
   }, [product]);
+
+  const handleExportPassport = async () => {
+    if (!product || passportLoading) return;
+    setPassportLoading(true);
+    setPassportError("");
+    try {
+      const passport = await fetchProductPassport(product.id);
+      downloadPassportJson(passport, product.name);
+    } catch (err) {
+      setPassportError(err.message || "Unable to export passport. Please try again.");
+    } finally {
+      setPassportLoading(false);
+    }
+  };
 
   const handleLogPurchase = async () => {
     if (!product) return;
@@ -541,10 +559,39 @@ export default function ProductDetail() {
               fontWeight: 700,
               cursor: "pointer",
               boxShadow: "0 4px 12px rgba(26,94,58,0.3)",
+              marginBottom: 10,
             }}
           >
             Stats for Nerds
           </button>
+
+          <button
+            onClick={handleExportPassport}
+            disabled={passportLoading}
+            style={{
+              width: "100%",
+              padding: "13px 0",
+              borderRadius: 28,
+              border: "none",
+              background: passportLoading ? "#1a5e3a" : "rgba(26,94,58,0.7)",
+              color: "#fff",
+              fontSize: "0.95rem",
+              fontWeight: 700,
+              cursor: passportLoading ? "default" : "pointer",
+              boxShadow: "0 4px 12px rgba(26,94,58,0.2)",
+            }}
+          >
+            {passportLoading ? "Generating…" : "↓ Export Digital Passport"}
+          </button>
+          {passportError && (
+            <p
+              role="alert"
+              aria-live="assertive"
+              style={{ color: "#e63946", fontSize: "0.82rem", marginTop: 8 }}
+            >
+              {passportError}
+            </p>
+          )}
         </div>
 
         {/* Stats for Nerds */}
