@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-09 — Passport Tests + Dashboard Null Fix
+
+**Operation:** Audit codebase for gaps; add missing integration tests for Digital Product Passport routes and fix a null-crash in the dashboard.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 17 Supertest tests for all three DPP routes
+
+**Files modified:** 1
+- `frontend/src/app/dashboard/page.js` — guarded `bestCategory.category` with optional chaining (`?.`) to prevent crash when stats API returns empty categories
+
+**Changes:**
+- 17 new tests covering `GET /api/v1/passport/:productId` (valid, invalid ID, 404, 7 breakdown fields), `POST /api/v1/portfolio/score` (happy path, missing body, non-array, empty, >100, non-string entries, no-match 404, skips-invalid), `GET /api/v1/audit/:productId` (valid, invalid, 404, pagination, non-numeric limit)
+- Dashboard `StatCard` for "Best Category" now uses `bestCategory?.category ?? "—"` to avoid ReferenceError when no categories exist
+
+**Test count:** 137 → 154 (7 test suites)
+**Branch:** `claude/nifty-goodall-9qt0r9`
+**Commit:** `2de06ca`
+
+**Index updated:** no (no new wiki pages created)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
