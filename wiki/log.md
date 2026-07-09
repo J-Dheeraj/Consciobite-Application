@@ -13,6 +13,43 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-09 — UX, Tests, Docs, and Transparency Session
+
+**Branch:** `claude/dreamy-dirac-gloifu`
+**Commit:** `a2765ca`
+
+**Operation:** Autonomous improvement run. 4 changes landed in one commit.
+
+**Files modified:** 3
+- `frontend/src/app/page.js` — keyboard navigation in home search dropdown
+- `frontend/src/app/transparency/page.js` — two new sections
+- `backend/__tests__/api.test.js` — 5 new barcode scan tests
+
+**Files created:** 1
+- `CONTRIBUTING.md` — dev setup, branch/commit/PR guide, governance scoring policy
+
+**Changes in detail:**
+
+1. **Home search keyboard navigation:** Added `activeIndex` state (-1 = none). ArrowDown/Up moves selection; Escape closes; Enter on highlighted item navigates to product page. `aria-selected` now reflects true active state; mouse hover syncs `activeIndex`; `aria-activedescendant` on combobox points to active option id.
+
+2. **Barcode scan tests (api.test.js):** Added 5 tests on top of the existing 2:
+   - `1234567` (7 digits) → 400 (too short)
+   - `123456789012345` (15 digits) → 400 (too long)
+   - `1234abcd` → 400 (alphanumeric)
+   - `8888001010101` → 200 (known barcode, Firm Tofu)
+   - `12345678` (valid format, unknown) → 404
+   Test count: 137 → 142 all passing.
+
+3. **CONTRIBUTING.md:** Dev setup, branch naming, commit conventions, PR checklist (validate middleware, Swagger docs, no console.log, tests required), key constraints (SQLite intentional, static export, no Tailwind), governance scoring policy.
+
+4. **Transparency page:** Added "How to Challenge a Score" section (5-step process, 14-day SLA from charter) and "Governance Charter" card with link to the full charter document on GitHub.
+
+**Test status:** 142 backend tests passing. Prettier clean.
+**Index updated:** no (no new wiki pages created)
+**Hot cache updated:** yes (below)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
