@@ -296,6 +296,52 @@ export default function TransparencyPage() {
           ) : null}
         </SectionCard>
 
+        {/* How to Challenge a Score */}
+        <SectionCard title="How to Challenge a Score" isDark={isDark}>
+          <p style={{ color: textColor, lineHeight: 1.7, marginBottom: 12 }}>
+            Any person or organisation may formally challenge a GreenGrade score. Challenges are
+            reviewed within 14 days and escalated to the Advisory Panel if unresolved.
+          </p>
+          <ol style={{ margin: 0, paddingLeft: 20 }}>
+            {[
+              "Email governance@consciobite.com with the product name and the specific score dimension(s) you believe are incorrect.",
+              "Include any supporting evidence — peer-reviewed research, published life-cycle assessment data, or publicly available supply-chain disclosures.",
+              "We will acknowledge receipt within 2 business days and issue a finding within 14 days.",
+              "If the challenge is upheld, the score is updated and the change is logged in the public audit trail above.",
+              "If you are unsatisfied with the outcome, you may escalate directly to the Advisory Panel via the same email address.",
+            ].map((step, i) => (
+              <li
+                key={i}
+                style={{ color: textColor, lineHeight: 1.8, marginBottom: 8, fontSize: 14 }}
+              >
+                {step}
+              </li>
+            ))}
+          </ol>
+        </SectionCard>
+
+        {/* Governance Charter */}
+        <SectionCard title="Governance Charter" isDark={isDark}>
+          <p style={{ color: textColor, lineHeight: 1.7, marginBottom: 12 }}>
+            The GreenGrade Independent Advisory Panel operates under a formal Terms of Reference
+            that defines panel composition, powers, conflict-of-interest rules, and the annual
+            review process.
+          </p>
+          <a
+            href="https://github.com/J-Dheeraj/Consciobite-Application/blob/main/GreenGrade_Governance_Charter.md"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: "#2d6a4f",
+              fontWeight: 600,
+              fontSize: 14,
+              textDecoration: "none",
+            }}
+          >
+            Read the full Governance Charter &rarr;
+          </a>
+        </SectionCard>
+
         {/* Annual Review Statement */}
         <SectionCard title="Annual Review Statement" isDark={isDark}>
           <p style={{ color: textColor, lineHeight: 1.7, margin: 0 }}>

@@ -11,6 +11,7 @@ export default function Home() {
   const [results, setResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
   const searchRef = useRef(null);
   const debounceRef = useRef(null);
 
@@ -20,6 +21,7 @@ export default function Home() {
       .then((data) => {
         setResults(data.products);
         setShowResults(true);
+        setActiveIndex(-1);
       })
       .catch(() => setResults([]))
       .finally(() => setLoading(false));
@@ -28,6 +30,7 @@ export default function Home() {
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setSearch(val);
+    setActiveIndex(-1);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (val.trim().length < 2) {
       setResults([]);
@@ -38,9 +41,33 @@ export default function Home() {
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter" && search.trim().length >= 2) {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-      doSearch(search);
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (showResults && results.length > 0) {
+        setActiveIndex((prev) => (prev < results.length - 1 ? prev + 1 : prev));
+      }
+      return;
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIndex((prev) => (prev > 0 ? prev - 1 : 0));
+      return;
+    }
+    if (e.key === "Escape") {
+      setShowResults(false);
+      setActiveIndex(-1);
+      return;
+    }
+    if (e.key === "Enter") {
+      if (activeIndex >= 0 && results[activeIndex]) {
+        setShowResults(false);
+        router.push(`/product/${results[activeIndex].id}`);
+        return;
+      }
+      if (search.trim().length >= 2) {
+        if (debounceRef.current) clearTimeout(debounceRef.current);
+        doSearch(search);
+      }
     }
   };
 
@@ -245,6 +272,7 @@ export default function Home() {
           aria-expanded={hasResults}
           aria-controls="search-results"
           aria-haspopup="listbox"
+          aria-activedescendant={activeIndex >= 0 ? `search-option-${activeIndex}` : undefined}
           style={{
             position: "relative",
             width: "100%",
@@ -309,20 +337,23 @@ export default function Home() {
                 zIndex: 10,
               }}
             >
-              {results.map((p) => (
+              {results.map((p, idx) => (
                 <button
                   key={p.id}
+                  id={`search-option-${idx}`}
                   role="option"
-                  aria-selected={false}
+                  aria-selected={activeIndex === idx}
                   onClick={() => {
                     setShowResults(false);
                     router.push(`/product/${p.id}`);
                   }}
+                  onMouseEnter={() => setActiveIndex(idx)}
+                  onMouseLeave={() => setActiveIndex(-1)}
                   style={{
                     width: "100%",
                     padding: "12px 18px",
                     border: "none",
-                    background: "transparent",
+                    background: activeIndex === idx ? "var(--lp-green-50)" : "transparent",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
@@ -331,12 +362,6 @@ export default function Home() {
                     transition: "background 0.12s",
                     gap: 12,
                     fontFamily: "var(--lp-sans)",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "var(--lp-green-50)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
                   }}
                 >
                   <span

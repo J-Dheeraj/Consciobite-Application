@@ -113,13 +113,44 @@ describe("API Endpoints", () => {
   });
 
   describe("GET /api/products/scan/:barcode", () => {
-    test("should return 400 for invalid barcode format", async () => {
+    test("should return 400 for non-numeric barcode", async () => {
       const res = await request(app).get("/api/products/scan/abc");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/invalid barcode/i);
+    });
+
+    test("should return 400 for barcode shorter than 8 digits", async () => {
+      const res = await request(app).get("/api/products/scan/1234567");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/invalid barcode/i);
+    });
+
+    test("should return 400 for barcode longer than 14 digits", async () => {
+      const res = await request(app).get("/api/products/scan/123456789012345");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/invalid barcode/i);
+    });
+
+    test("should return 400 for alphanumeric barcode", async () => {
+      const res = await request(app).get("/api/products/scan/1234abcd");
       expect(res.status).toBe(400);
     });
 
-    test("should return 404 for unknown barcode", async () => {
+    test("should return 404 for unknown 11-digit barcode", async () => {
       const res = await request(app).get("/api/products/scan/99999999999");
+      expect(res.status).toBe(404);
+      expect(res.body.error).toMatch(/not found/i);
+    });
+
+    test("should return product for known barcode", async () => {
+      const res = await request(app).get("/api/products/scan/8888001010101");
+      expect(res.status).toBe(200);
+      expect(res.body.name).toBeDefined();
+      expect(res.body.greenGrade).toBeDefined();
+    });
+
+    test("should return 404 for valid-format but unlisted barcode", async () => {
+      const res = await request(app).get("/api/products/scan/12345678");
       expect(res.status).toBe(404);
     });
   });
