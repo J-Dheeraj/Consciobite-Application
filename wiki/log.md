@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-10 — Product Reviews & Carbon Tracker UX
+
+**Operation:** Wire completed ReviewSection component into product pages; fix carbon tracker error display; add pagination to carbon logs.
+
+**Files modified:** 2
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — imported ReviewSection, rendered it before the Back button
+- `frontend/src/app/carbon/page.js` — split single combined query into separate summary/logs queries; fixed `{error}` → `{error?.message}`; removed `.slice(0,10)` cap; added Prev/Next pagination controls
+
+**Key changes:**
+1. **ReviewSection wired** — backend routes (`/api/reviews/:productId`), `ReviewSection.js` component, and `reviews.js` service were 100% implemented but `ProductDetailClient.js` never imported or rendered the component. Now visible on all 550 product pages.
+2. **Error bug fixed** — `{error}` in JSX rendered the React Query error object as `[object Object]`. Now renders `error?.message` with safe fallback.
+3. **Query split** — `Promise.all([fetchCarbonSummary(), fetchCarbonLogs()])` bundled into one key `["carbon"]`; split into `["carbon","summary"]` and `["carbon","logs",page]` so log page changes don't re-fetch summary.
+4. **Pagination** — `logs.slice(0,10)` removed; backend already returns `totalPages` and `totalCount`; Prev/Next buttons render when `totalPages > 1`.
+
+**Verification:**
+- 137 backend tests still passing
+- ESLint clean, Prettier formatted
+- Committed to `claude/nifty-goodall-5fgesy` and pushed
+
+**Index updated:** no (no new entities/concepts)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
