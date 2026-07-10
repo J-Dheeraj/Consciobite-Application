@@ -13,6 +13,34 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-10 — Recommendations Endpoint + Reviews Integration
+
+**Operation:** Implement `GET /api/products/:id/recommendations` backend endpoint and wire up both product recommendations and reviews on the product detail page.
+
+**Files modified:** 3
+- `backend/src/routes/products.js` — added `GET /:id/recommendations` route before `/:id`; returns top 4 same-category products by GreenGrade score with cross-category fallback
+- `backend/__tests__/api.test.js` — 5 new integration tests (valid product, field shape, self-exclusion, 404, 400); total tests 142
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — imports `fetchRecommendations` + `ReviewSection`; adds React Query for recommendations; renders "Similar Products" horizontal scroll card and `ReviewSection` above the Back button
+
+**Key decisions:**
+- Recommendations algorithm: same-category first (sorted score desc, top 4), cross-category fallback sorted by score proximity to queried product
+- Returns minimal shape (id, name, brand, category, greenGrade.{score,color,grade}) — avoids sending full breakdown/provenance over the wire
+- ReviewSection was already built but never rendered anywhere; now wired in here
+- `fetchRecommendations` was already exported from `frontend/src/services/products.js` and `api.js` — no service changes needed
+
+**Verification:**
+- 142 backend tests passing (was 117 pre-governance, now +25)
+- Backend Prettier clean
+- Frontend ESLint clean (next/core-web-vitals)
+- Frontend Prettier clean
+
+**Branch:** `claude/dreamy-dirac-xcy6m0`
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
