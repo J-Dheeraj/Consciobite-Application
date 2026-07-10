@@ -3,7 +3,8 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchRecommendations } from "@/services/api";
+import ReviewSection from "@/components/ReviewSection";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -94,6 +95,14 @@ export default function ProductDetail() {
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
   });
+
+  const { data: recsData } = useQuery({
+    queryKey: ["recommendations", id],
+    queryFn: () => fetchRecommendations(id),
+    staleTime: 300_000,
+    enabled: !!id,
+  });
+  const recommendations = recsData?.recommendations || [];
 
   const error = queryError ? "Unable to load product details." : "";
   const [fav, setFav] = useState(false);
@@ -1085,6 +1094,103 @@ export default function ProductDetail() {
           <p style={{ color: "#ffffff", fontSize: "0.88rem", lineHeight: 1.7 }}>
             {product.description}
           </p>
+        </div>
+
+        {/* Similar Products */}
+        {recommendations.length > 0 && (
+          <div
+            style={{
+              width: "100%",
+              background: "#0b2a1a",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+            }}
+          >
+            <h4
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 16,
+                fontSize: "0.95rem",
+              }}
+            >
+              Similar Products
+            </h4>
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                overflowX: "auto",
+                paddingBottom: 4,
+                scrollbarWidth: "thin",
+              }}
+            >
+              {recommendations.map((rec) => (
+                <Link
+                  key={rec.id}
+                  href={`/product/${rec.id}`}
+                  style={{
+                    textDecoration: "none",
+                    flexShrink: 0,
+                    width: 120,
+                    background: "#14352a",
+                    borderRadius: 12,
+                    padding: "12px 10px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 8,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: "50%",
+                      background: scoreColor(rec.greenGrade.score),
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: "0.82rem",
+                      flexShrink: 0,
+                      boxShadow: `0 2px 8px ${scoreColor(rec.greenGrade.score)}80`,
+                    }}
+                  >
+                    {rec.greenGrade.score}
+                  </div>
+                  <div
+                    style={{
+                      color: "#fff",
+                      fontSize: "0.7rem",
+                      fontWeight: 600,
+                      textAlign: "center",
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {rec.brand} {rec.name}
+                  </div>
+                  <div
+                    style={{
+                      color: "#7a9a7e",
+                      fontSize: "0.63rem",
+                      textAlign: "center",
+                    }}
+                  >
+                    {rec.category}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Reviews */}
+        <div style={{ width: "100%", marginBottom: 16 }}>
+          <ReviewSection productId={id} />
         </div>
 
         {/* Back button */}

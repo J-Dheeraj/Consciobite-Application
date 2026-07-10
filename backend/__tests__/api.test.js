@@ -112,6 +112,48 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/:id/recommendations", () => {
+    test("should return recommendations for a valid product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.recommendations)).toBe(true);
+      expect(res.body.recommendations.length).toBeGreaterThan(0);
+      expect(res.body.recommendations.length).toBeLessThanOrEqual(4);
+    });
+
+    test("each recommendation should have required fields", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      res.body.recommendations.forEach((rec) => {
+        expect(rec).toHaveProperty("id");
+        expect(rec).toHaveProperty("name");
+        expect(rec).toHaveProperty("brand");
+        expect(rec).toHaveProperty("category");
+        expect(rec.greenGrade).toHaveProperty("score");
+        expect(rec.greenGrade).toHaveProperty("color");
+        expect(rec.greenGrade.score).toBeGreaterThanOrEqual(0);
+        expect(rec.greenGrade.score).toBeLessThanOrEqual(10);
+      });
+    });
+
+    test("should not include the queried product in recommendations", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const ids = res.body.recommendations.map((r) => r.id);
+      expect(ids).not.toContain("1");
+    });
+
+    test("should return 404 for non-existent product", async () => {
+      const res = await request(app).get("/api/products/zzzzzzz/recommendations");
+      expect(res.status).toBe(404);
+    });
+
+    test("should return 400 for invalid product ID", async () => {
+      const res = await request(app).get("/api/products/inv@lid/recommendations");
+      expect(res.status).toBe(400);
+    });
+  });
+
   describe("GET /api/products/scan/:barcode", () => {
     test("should return 400 for invalid barcode format", async () => {
       const res = await request(app).get("/api/products/scan/abc");
