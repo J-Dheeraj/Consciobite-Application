@@ -10,6 +10,7 @@ import ProductImage from "@/components/ProductImage";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/AuthContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
+import ReviewSection from "@/components/ReviewSection";
 
 const LEGEND_ITEMS = [
   { color: "#27ae60", label: "Best" },
@@ -1085,6 +1086,11 @@ export default function ProductDetail() {
           <p style={{ color: "#ffffff", fontSize: "0.88rem", lineHeight: 1.7 }}>
             {product.description}
           </p>
+        </div>
+
+        {/* Reviews */}
+        <div style={{ width: "100%" }}>
+          <ReviewSection productId={product.id} />
         </div>
 
         {/* Back button */}

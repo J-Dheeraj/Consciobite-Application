@@ -16,29 +16,33 @@ export default function CarbonTracker() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [deleteError, setDeleteError] = useState("");
+  const [logsPage, setLogsPage] = useState(1);
 
-  const {
-    data: carbonData,
-    isLoading: loading,
-    error,
-  } = useQuery({
-    queryKey: ["carbon"],
-    queryFn: () =>
-      Promise.all([fetchCarbonSummary(), fetchCarbonLogs()]).then(([summaryData, logsData]) => ({
-        summary: summaryData,
-        logs: logsData.logs,
-      })),
+  const { data: summary, isLoading: summaryLoading } = useQuery({
+    queryKey: ["carbon", "summary"],
+    queryFn: fetchCarbonSummary,
   });
 
-  const summary = carbonData?.summary || null;
-  const logs = carbonData?.logs || [];
+  const {
+    data: logsData,
+    isLoading: logsLoading,
+    error,
+  } = useQuery({
+    queryKey: ["carbon", "logs", logsPage],
+    queryFn: () => fetchCarbonLogs(logsPage),
+  });
+
+  const loading = summaryLoading || logsLoading;
+  const logs = logsData?.logs || [];
+  const totalPages = logsData?.totalPages || 1;
 
   const handleDelete = useCallback(
     async (id) => {
       setDeleteError("");
       try {
         await deleteCarbonLog(id);
-        queryClient.invalidateQueries({ queryKey: ["carbon"] });
+        queryClient.invalidateQueries({ queryKey: ["carbon", "summary"] });
+        queryClient.invalidateQueries({ queryKey: ["carbon", "logs"] });
       } catch (err) {
         setDeleteError(err.message || "Failed to delete log. Please try again.");
       }
@@ -119,7 +123,7 @@ export default function CarbonTracker() {
               color: "#e63946",
             }}
           >
-            {error}
+            {error?.message || "Unable to load carbon data."}
           </div>
         )}
 
@@ -442,7 +446,7 @@ export default function CarbonTracker() {
               No logs yet. Browse products and log your purchases to start tracking!
             </p>
           ) : (
-            logs.slice(0, 10).map((log) => (
+            logs.map((log) => (
               <div
                 key={log.id}
                 style={{
@@ -490,6 +494,61 @@ export default function CarbonTracker() {
                 </div>
               </div>
             ))
+          )}
+          {totalPages > 1 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: 12,
+                marginTop: 16,
+              }}
+            >
+              <button
+                onClick={() => setLogsPage((p) => Math.max(1, p - 1))}
+                disabled={logsPage === 1}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: 8,
+                  border: "1px solid " + (isDark ? "#2d4a35" : "#d1e8d9"),
+                  background: "none",
+                  color:
+                    logsPage === 1 ? (isDark ? "#3d5a45" : "#ccc") : isDark ? "#95d5b2" : "#2d6a4f",
+                  cursor: logsPage === 1 ? "default" : "pointer",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                }}
+              >
+                Prev
+              </button>
+              <span style={{ fontSize: "0.82rem", color: isDark ? "#7a9a7e" : "#888" }}>
+                Page {logsPage} of {totalPages}
+              </span>
+              <button
+                onClick={() => setLogsPage((p) => Math.min(totalPages, p + 1))}
+                disabled={logsPage === totalPages}
+                style={{
+                  padding: "6px 16px",
+                  borderRadius: 8,
+                  border: "1px solid " + (isDark ? "#2d4a35" : "#d1e8d9"),
+                  background: "none",
+                  color:
+                    logsPage === totalPages
+                      ? isDark
+                        ? "#3d5a45"
+                        : "#ccc"
+                      : isDark
+                        ? "#95d5b2"
+                        : "#2d6a4f",
+                  cursor: logsPage === totalPages ? "default" : "pointer",
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                }}
+              >
+                Next
+              </button>
+            </div>
           )}
         </div>
 
