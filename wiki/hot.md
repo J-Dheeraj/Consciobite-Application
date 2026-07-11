@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-07-11 after methodology changelog + admin landing page.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,14 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 141 backend tests passing (+4 changelog tests). Frontend builds 567 static pages (17 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-rjxo06` — pushed, PR not yet open.
+
+**Session 2026-07-11 (this session):**
+- **Methodology changelog** — `003_methodology_changelog.sql` migration, seeds v1.0/v2.0/v3.0 history. Public `GET /api/methodology/changelog` endpoint. Admin `POST /api/admin/methodology/changelog`. Methodology page now shows changelog section fetched from API.
+- **Admin landing page** — `/admin/page.js` created. Shows summary stats (manufacturer count, score change counts, paying/non-paying breakdown). Integrity check panel (avg delta gap, increase ratio). Nav cards to conflict-log, manufacturers, transparency, methodology. Fixes 404 at `/admin/`.
+- Governance domain Phase 2 "scoring changelog" item marked complete.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 

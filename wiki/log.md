@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-11 — Methodology Changelog + Admin Landing Page
+
+**Operation:** Implement methodology changelog feature (governance Phase 2) and fix missing admin landing page.
+
+**Files created:** 2
+- `backend/src/db/migrations/003_methodology_changelog.sql` — `methodology_changelog` table seeded with v1.0, v2.0, v3.0 history
+- `frontend/src/app/admin/page.js` — Admin dashboard landing page with stats and nav cards
+
+**Files modified:** 6
+- `backend/src/index.js` — Added `GET /api/methodology/changelog` public endpoint (cached)
+- `backend/src/routes/admin.js` — Added `POST /api/admin/methodology/changelog` and `GET /api/admin/methodology/changelog`
+- `frontend/src/app/methodology/page.js` — Added changelog section that fetches from API
+- `frontend/src/services/api.js` — Exported `fetchMethodologyChangelog`
+- `frontend/src/services/recipes.js` — Added `fetchMethodologyChangelog()` function
+- `backend/__tests__/admin.test.js` — Added 4 integration tests for changelog endpoints
+
+**Verification:**
+- 141 backend tests passing (+4 new)
+- ESLint: no errors or warnings in changed files
+- Prettier: all files pass format check
+- Frontend: no ESLint warnings
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
