@@ -268,4 +268,65 @@ describe("Admin governance endpoints", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("Methodology changelog admin endpoints", () => {
+    const testVersion = `3.1-test-${randomUUID().slice(0, 6)}`;
+
+    test("POST /api/admin/methodology/changelog should create an entry", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology/changelog")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({
+          version: testVersion,
+          releasedAt: "2026-07-11",
+          summary: "Test changelog entry",
+          changes: ["Added test feature", "Fixed test bug"],
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.version).toBe(testVersion);
+      expect(Array.isArray(res.body.changes)).toBe(true);
+    });
+
+    test("POST /api/admin/methodology/changelog should reject non-admin", async () => {
+      const res = await request(app)
+        .post("/api/admin/methodology/changelog")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          version: "3.2-test",
+          releasedAt: "2026-07-11",
+          summary: "Should fail",
+          changes: ["nope"],
+        });
+      expect(res.status).toBe(403);
+    });
+
+    test("GET /api/admin/methodology/changelog should return entries", async () => {
+      const res = await request(app)
+        .get("/api/admin/methodology/changelog")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThan(0);
+      const first = res.body[0];
+      expect(first).toHaveProperty("version");
+      expect(first).toHaveProperty("summary");
+      expect(Array.isArray(first.changes)).toBe(true);
+    });
+  });
+});
+
+describe("GET /api/methodology/changelog (public)", () => {
+  test("should return changelog entries without auth", async () => {
+    process.env.NODE_ENV = "test";
+    const app = require("../src/index");
+    const res = await request(app).get("/api/methodology/changelog");
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThanOrEqual(3);
+    const entry = res.body[0];
+    expect(entry).toHaveProperty("version");
+    expect(entry).toHaveProperty("released_at");
+    expect(entry).toHaveProperty("summary");
+    expect(Array.isArray(entry.changes)).toBe(true);
+  });
 });

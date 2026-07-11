@@ -2,7 +2,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchMethodology } from "@/services/api";
+import { fetchMethodology, fetchMethodologyChangelog } from "@/services/api";
 import Spinner from "@/components/Spinner";
 
 const SectionCard = ({ title, children, isDark }) => (
@@ -87,6 +87,11 @@ export default function Methodology() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["methodology"],
     queryFn: fetchMethodology,
+  });
+
+  const { data: changelog } = useQuery({
+    queryKey: ["methodology-changelog"],
+    queryFn: fetchMethodologyChangelog,
   });
 
   if (isLoading) {
@@ -507,6 +512,83 @@ export default function Methodology() {
             ))}
           </ul>
         </SectionCard>
+
+        {/* Changelog */}
+        {changelog && changelog.length > 0 && (
+          <SectionCard title="Methodology Changelog" isDark={isDark}>
+            <p
+              style={{
+                fontSize: "0.85rem",
+                color: textColor,
+                lineHeight: 1.6,
+                marginBottom: 14,
+              }}
+            >
+              A version-controlled record of every change to the GreenGrade algorithm and scoring
+              parameters.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              {changelog.map((entry) => (
+                <div
+                  key={entry.id}
+                  style={{
+                    padding: "14px 16px",
+                    borderRadius: 10,
+                    background: isDark ? "#1c2e22" : "#f8faf8",
+                    border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+                  }}
+                >
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}
+                  >
+                    <span
+                      style={{
+                        padding: "2px 10px",
+                        borderRadius: 12,
+                        background: isDark ? "#2d4a35" : "#dcfce7",
+                        color: isDark ? "#95d5b2" : "#166534",
+                        fontSize: "0.75rem",
+                        fontWeight: 700,
+                      }}
+                    >
+                      v{entry.version}
+                    </span>
+                    <span
+                      style={{ fontSize: "0.8rem", color: isDark ? "#7a9a7e" : "#888" }}
+                    >
+                      {entry.released_at}
+                    </span>
+                  </div>
+                  <p
+                    style={{
+                      fontSize: "0.85rem",
+                      fontWeight: 600,
+                      color: isDark ? "#e8f5e9" : "#1a3a2a",
+                      marginBottom: 8,
+                    }}
+                  >
+                    {entry.summary}
+                  </p>
+                  <ul style={{ margin: 0, paddingLeft: 18 }}>
+                    {entry.changes.map((change, i) => (
+                      <li
+                        key={i}
+                        style={{
+                          fontSize: "0.82rem",
+                          color: textColor,
+                          lineHeight: 1.6,
+                          marginBottom: 2,
+                        }}
+                      >
+                        {change}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
 
         {/* References */}
         <SectionCard title="Academic References" isDark={isDark}>

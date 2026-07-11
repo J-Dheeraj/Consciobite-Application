@@ -109,6 +109,48 @@ router.post("/product-manufacturer", validate(LINK_SCHEMA), (req, res) => {
   res.json({ productId, manufacturerId });
 });
 
+// --- Methodology changelog ---
+
+const CHANGELOG_SCHEMA = {
+  body: {
+    version: { required: true, type: "string", minLength: 1, maxLength: 20 },
+    releasedAt: { required: true, type: "string", minLength: 8, maxLength: 20 },
+    summary: { required: true, type: "string", minLength: 10, maxLength: 500 },
+    changes: { required: true, type: "array" },
+  },
+};
+
+router.post("/methodology/changelog", validate(CHANGELOG_SCHEMA), (req, res) => {
+  const db = getDb();
+  const { version, releasedAt, summary, changes } = req.body;
+
+  if (!Array.isArray(changes) || changes.length === 0) {
+    return res.status(400).json({ error: "changes must be a non-empty array" });
+  }
+
+  const id = `changelog-v${version.replace(/\./g, "-")}`;
+
+  try {
+    db.prepare(
+      `INSERT INTO methodology_changelog (id, version, released_at, summary, changes, changed_by)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    ).run(id, version, releasedAt, summary, JSON.stringify(changes), req.user.email);
+  } catch (err) {
+    if (err.message.includes("UNIQUE")) {
+      return res.status(409).json({ error: "Changelog entry for this version already exists" });
+    }
+    throw err;
+  }
+
+  res.status(201).json({ id, version, releasedAt, summary, changes });
+});
+
+router.get("/methodology/changelog", (_req, res) => {
+  const db = getDb();
+  const rows = db.prepare("SELECT * FROM methodology_changelog ORDER BY released_at DESC").all();
+  res.json(rows.map((r) => ({ ...r, changes: JSON.parse(r.changes) })));
+});
+
 // --- Manufacturer fee acknowledgement ---
 
 const ACK_SCHEMA = {
