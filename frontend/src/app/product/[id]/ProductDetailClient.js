@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchPassport } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -85,6 +85,7 @@ export default function ProductDetail() {
   const [loggedPurchase, setLoggedPurchase] = useState(false);
   const [logError, setLogError] = useState("");
   const [showStats, setShowStats] = useState(false);
+  const [downloadingPassport, setDownloadingPassport] = useState(false);
 
   const {
     data: product,
@@ -104,6 +105,25 @@ export default function ProductDetail() {
     setLogError("");
     setShowStats(false);
   }, [product]);
+
+  const handleDownloadPassport = async () => {
+    if (!product || downloadingPassport) return;
+    setDownloadingPassport(true);
+    try {
+      const data = await fetchPassport(product.id);
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `passport-${product.name.replace(/\s+/g, "-").toLowerCase()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // silent — user can retry
+    } finally {
+      setDownloadingPassport(false);
+    }
+  };
 
   const handleLogPurchase = async () => {
     if (!product) return;
@@ -819,6 +839,36 @@ export default function ProductDetail() {
                   </Link>
                 </div>
               )}
+
+              <div
+                style={{
+                  marginTop: 8,
+                  paddingTop: 12,
+                  borderTop: "1px solid rgba(255,255,255,0.15)",
+                }}
+              >
+                <button
+                  onClick={handleDownloadPassport}
+                  disabled={downloadingPassport}
+                  style={{
+                    width: "100%",
+                    padding: "10px 0",
+                    borderRadius: 10,
+                    border: "1px solid rgba(82,183,136,0.4)",
+                    background: "transparent",
+                    color: "#52b788",
+                    fontSize: "0.82rem",
+                    fontWeight: 600,
+                    cursor: downloadingPassport ? "default" : "pointer",
+                    opacity: downloadingPassport ? 0.6 : 1,
+                    transition: "opacity 0.2s",
+                  }}
+                >
+                  {downloadingPassport
+                    ? "Preparing..."
+                    : "⬇ Download Digital Product Passport (JSON)"}
+                </button>
+              </div>
 
               <div
                 style={{

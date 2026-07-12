@@ -170,7 +170,7 @@ docker compose up --build
 ## Running tests
 
 ```bash
-cd backend && npm test     # 117 tests
+cd backend && npm test     # 162 tests
 cd frontend && npm test
 ```
 
