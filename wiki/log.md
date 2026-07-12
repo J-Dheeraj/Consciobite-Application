@@ -13,6 +13,38 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-12 — User Account Settings Feature
+
+**Operation:** Add user profile management endpoints and frontend profile page.
+
+**Files modified:** 6
+- `backend/src/routes/auth.js` — added `PUT /profile`, `PUT /password`, `DELETE /account` endpoints (all CSRF + requireAuth protected)
+- `backend/src/index.js` — auth rate limiter now skips in test mode (NODE_ENV=test)
+- `backend/__tests__/auth.test.js` — 16 new integration tests for the 3 new endpoints
+- `frontend/src/context/AuthContext.js` — added `updateUser()` to sync profile changes to state + localStorage
+- `frontend/src/services/auth.js` — added `updateProfile()`, `changePassword()`, `deleteAccount()` service functions
+- `frontend/src/components/Navbar.js` — user's first name now links to `/profile` (desktop + mobile)
+
+**Files created:** 1
+- `frontend/src/app/profile/page.js` — Account Settings page with: account info display, name update form, password change form, danger zone with two-step account deletion
+
+**Verification:**
+- 153 backend tests passing (up from 137)
+- Frontend builds cleanly: 567 static pages (17 routes + 550 product pages)
+- ESLint: no warnings
+- Prettier: clean (backend + frontend)
+- Branch `claude/dreamy-dirac-2hy99p` pushed
+
+**Key decisions:**
+- `DELETE /account` relies on `ON DELETE CASCADE` in schema — no manual deletes of reviews/carbon_logs needed
+- Auth rate limiter skip in test mode mirrors existing `csrfProtection` pattern
+- Name update also calls `updateUser()` in AuthContext so Navbar immediately reflects the new first name
+
+**Index updated:** no (no new wiki pages needed)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
