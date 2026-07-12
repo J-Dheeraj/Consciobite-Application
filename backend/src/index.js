@@ -146,6 +146,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many auth attempts, please try again later." },
+  skip: () => process.env.NODE_ENV === "test",
 });
 app.use("/api/auth", authLimiter);
 

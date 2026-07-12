@@ -73,7 +73,9 @@ export default function Navbar() {
         })}
         {isAuthenticated ? (
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
-            <span className={styles.userName}>{user?.name?.split(" ")[0]}</span>
+            <Link href="/profile" className={styles.userName}>
+              {user?.name?.split(" ")[0]}
+            </Link>
             <button onClick={handleLogout} className={styles.btn}>
               Logout
             </button>
@@ -129,12 +131,14 @@ export default function Navbar() {
           <div className={styles.divider} />
           {isAuthenticated ? (
             <>
-              <div
+              <Link
+                href="/profile"
+                onClick={() => setMenuOpen(false)}
                 className={styles.mobileLink}
                 style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem" }}
               >
                 {user?.name}
-              </div>
+              </Link>
               <button
                 onClick={handleLogout}
                 className={styles.mobileLink}

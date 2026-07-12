@@ -10,6 +10,7 @@ const {
   requireAuth,
   refreshToken,
   generateCsrfToken,
+  csrfProtection,
 } = require("../middleware/auth");
 
 const router = express.Router();
@@ -182,5 +183,95 @@ router.post("/refresh", refreshToken);
 
 // GET /api/auth/csrf - get a CSRF token
 router.get("/csrf", generateCsrfToken);
+
+// PUT /api/auth/profile - update display name
+router.put("/profile", csrfProtection, requireAuth, (req, res) => {
+  const { name } = req.body;
+
+  if (!name || typeof name !== "string") {
+    return res.status(400).json({ error: "Name is required" });
+  }
+
+  const sanitizedName = validator.escape(validator.trim(name)).slice(0, 50);
+  if (sanitizedName.length < 1) {
+    return res.status(400).json({ error: "Name must not be empty" });
+  }
+
+  const db = getDb();
+  const existing = db.prepare("SELECT id FROM users WHERE id = ?").get(req.user.id);
+  if (!existing) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  db.prepare("UPDATE users SET name = ? WHERE id = ?").run(sanitizedName, req.user.id);
+  const updated = db.prepare("SELECT id, email, name FROM users WHERE id = ?").get(req.user.id);
+
+  res.json({ user: updated });
+});
+
+// PUT /api/auth/password - change password
+router.put("/password", csrfProtection, requireAuth, async (req, res) => {
+  const { currentPassword, newPassword } = req.body;
+
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ error: "Current and new passwords are required" });
+  }
+
+  if (newPassword.length > 128) {
+    return res.status(400).json({ error: "Password must not exceed 128 characters" });
+  }
+
+  if (
+    newPassword.length < 8 ||
+    !/[A-Z]/.test(newPassword) ||
+    !/[a-z]/.test(newPassword) ||
+    !/[0-9]/.test(newPassword)
+  ) {
+    return res.status(400).json({
+      error: "Password must be at least 8 characters with uppercase, lowercase, and a number",
+    });
+  }
+
+  const db = getDb();
+  const user = db.prepare("SELECT id, password_hash FROM users WHERE id = ?").get(req.user.id);
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const passwordOk = await bcrypt.compare(currentPassword, user.password_hash);
+  if (!passwordOk) {
+    return res.status(401).json({ error: "Current password is incorrect" });
+  }
+
+  const newHash = await bcrypt.hash(newPassword, 12);
+  db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(newHash, req.user.id);
+
+  res.json({ message: "Password updated successfully" });
+});
+
+// DELETE /api/auth/account - delete account (requires password confirmation)
+router.delete("/account", csrfProtection, requireAuth, async (req, res) => {
+  const { password } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ error: "Password is required to delete account" });
+  }
+
+  const db = getDb();
+  const user = db.prepare("SELECT id, password_hash FROM users WHERE id = ?").get(req.user.id);
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const passwordOk = await bcrypt.compare(password, user.password_hash);
+  if (!passwordOk) {
+    return res.status(401).json({ error: "Incorrect password" });
+  }
+
+  db.prepare("DELETE FROM users WHERE id = ?").run(req.user.id);
+
+  clearAuthCookie(res);
+  res.json({ message: "Account deleted successfully" });
+});
 
 module.exports = router;

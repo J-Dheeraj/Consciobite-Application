@@ -41,6 +41,11 @@ export function AuthProvider({ children }) {
     localStorage.setItem(TOKEN_KEY, authToken);
   }, []);
 
+  const updateUser = useCallback((updatedUser) => {
+    setUser(updatedUser);
+    localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+  }, []);
+
   const logout = useCallback(async () => {
     setUser(null);
     setToken(null);
@@ -95,7 +100,9 @@ export function AuthProvider({ children }) {
   }, [logout]);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token }}>
+    <AuthContext.Provider
+      value={{ user, token, login, logout, updateUser, isAuthenticated: !!token }}
+    >
       {children}
     </AuthContext.Provider>
   );

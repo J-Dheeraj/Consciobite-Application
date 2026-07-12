@@ -131,4 +131,166 @@ describe("Auth endpoints - validation", () => {
       expect(res.status).toBe(401);
     });
   });
+
+  describe("PUT /api/auth/profile", () => {
+    const email = `profile-${uid()}@example.com`;
+    const password = "ProfilePass1";
+    let token;
+
+    beforeAll(async () => {
+      const res = await request(app)
+        .post("/api/auth/register")
+        .send({ name: "Profile User", email, password });
+      token = res.body.token;
+    });
+
+    test("should return 401 without token", async () => {
+      const res = await request(app).put("/api/auth/profile").send({ name: "New Name" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject empty name", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject missing name", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
+      expect(res.status).toBe(400);
+    });
+
+    test("should update name successfully", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Updated Name" });
+      expect(res.status).toBe(200);
+      expect(res.body.user.name).toBe("Updated Name");
+    });
+
+    test("should truncate name at 50 chars", async () => {
+      const longName = "A".repeat(60);
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: longName });
+      expect(res.status).toBe(200);
+      expect(res.body.user.name.length).toBeLessThanOrEqual(50);
+    });
+  });
+
+  describe("PUT /api/auth/password", () => {
+    const email = `pwdchange-${uid()}@example.com`;
+    const password = "OldPass1";
+    let token;
+
+    beforeAll(async () => {
+      const res = await request(app)
+        .post("/api/auth/register")
+        .send({ name: "Pwd User", email, password });
+      token = res.body.token;
+    });
+
+    test("should return 401 without token", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .send({ currentPassword: password, newPassword: "NewPass1" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject missing fields", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject wrong current password", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ currentPassword: "WrongOld1", newPassword: "NewPass1" });
+      expect(res.status).toBe(401);
+      expect(res.body.error).toContain("incorrect");
+    });
+
+    test("should reject weak new password", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ currentPassword: password, newPassword: "weak" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should change password successfully", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ currentPassword: password, newPassword: "NewPass1" });
+      expect(res.status).toBe(200);
+      expect(res.body.message).toContain("updated");
+    });
+
+    test("should allow login with new password", async () => {
+      const res = await request(app).post("/api/auth/login").send({ email, password: "NewPass1" });
+      expect(res.status).toBe(200);
+      expect(res.body.token).toBeDefined();
+    });
+  });
+
+  describe("DELETE /api/auth/account", () => {
+    const email = `delete-${uid()}@example.com`;
+    const password = "DeletePass1";
+    let token;
+
+    beforeAll(async () => {
+      const res = await request(app)
+        .post("/api/auth/register")
+        .send({ name: "Delete User", email, password });
+      token = res.body.token;
+    });
+
+    test("should return 401 without token", async () => {
+      const res = await request(app).delete("/api/auth/account").send({ password });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject missing password", async () => {
+      const res = await request(app)
+        .delete("/api/auth/account")
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject wrong password", async () => {
+      const res = await request(app)
+        .delete("/api/auth/account")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ password: "WrongPass1" });
+      expect(res.status).toBe(401);
+      expect(res.body.error).toContain("Incorrect");
+    });
+
+    test("should delete account with correct password", async () => {
+      const res = await request(app)
+        .delete("/api/auth/account")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ password });
+      expect(res.status).toBe(200);
+      expect(res.body.message).toContain("deleted");
+    });
+
+    test("should reject login after account deletion", async () => {
+      const res = await request(app).post("/api/auth/login").send({ email, password });
+      expect(res.status).toBe(401);
+    });
+  });
 });
