@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-12 — Passport API Test Coverage + Frontend Integration
+
+**Operation:** Add missing tests for Digital Product Passport routes; expose passport API in frontend with a download button.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 25 integration tests for GET /api/v1/passport/:id, POST /api/v1/portfolio/score, and GET /api/v1/audit/:id
+
+**Files modified:** 4
+- `frontend/src/services/products.js` — added `fetchPassport(id)` calling `/api/v1/passport/:id`
+- `frontend/src/services/api.js` — re-exported `fetchPassport`
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added "Download Digital Product Passport (JSON)" button in Stats for Nerds section; triggers JSON file download via Blob/URL API
+- `CLAUDE.md` — updated test count from 117 to 162
+
+**Verification:** 162 backend tests passing across 7 suites. ESLint and Prettier clean.
+
+**Branch:** `claude/nifty-goodall-i8sgrw` — pushed to remote.
+
+**Index updated:** no (no new wiki pages created)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
