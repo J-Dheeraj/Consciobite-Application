@@ -58,6 +58,12 @@
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
   padding: 0 6px;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.userName:hover {
+  color: #fff;
 }
 
 .btn {
