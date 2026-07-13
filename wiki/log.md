@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-13 — User Profile Page
+
+**Operation:** Add `/profile` page and link the Navbar username to it.
+
+**Files created:** 1
+- `frontend/src/app/profile/page.js` — Profile page: account card (name, email, join date), carbon activity tiles (total logs, total/weekly emissions), quick-access nav links, Sign Out button. Auth-gated (shows lock + Sign In CTA for unauthenticated visitors).
+
+**Files modified:** 2
+- `frontend/src/components/Navbar.js` — Username in desktop header is now a `<Link href="/profile">`; mobile menu shows `👤 {name}` link to `/profile`
+- `frontend/src/components/Navbar.module.css` — Added `text-decoration: none` + hover state to `.userName`
+
+**Verification:**
+- 137 backend tests still passing
+- ESLint clean (`next/core-web-vitals`)
+- Prettier formatted
+- Pushed to `claude/dreamy-dirac-2rzf1z`
+
+**Key decisions:**
+- Carbon stats shown only when `fetchCarbonSummary` resolves (conditional render — no empty zeros for users with no logs)
+- Uses React Query with `enabled: isAuthenticated` — no request fires for unauthenticated users
+- Falls back to `authUser` from context if `/auth/me` is still loading (avoids flicker)
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
