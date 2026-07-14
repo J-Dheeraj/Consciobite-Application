@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-14 — Passport Tests, DPP Frontend Service, Audit Fix
+
+**Operation:** Automated background session. Surveyed codebase from wiki + graphify, then implemented the three most impactful missing pieces after the DPP API was shipped in PR #33.
+
+**Files created:** 2
+- `backend/__tests__/passport.test.js` — 21 integration tests covering GET /api/v1/passport/:productId, POST /api/v1/portfolio/score, and GET /api/v1/audit/:productId
+- `frontend/src/services/passport.js` — fetchProductPassport(), scorePortfolio(), fetchProductAudit() wrappers
+
+**Files modified:** 3
+- `backend/package-lock.json` — npm audit fix applied; 6 vulnerabilities (1 low, 4 moderate, 1 high) → 0
+- `frontend/src/services/api.js` — export passport service functions from central barrel
+- `frontend/src/components/Footer.js` — added Methodology link in Resources column
+
+**Test status:** 158 backend tests passing (up from 137). Format and lint clean. Production audit: 0 vulnerabilities.
+
+**Branch:** `claude/dreamy-dirac-g85bft` pushed to origin.
+
+**Index updated:** no (no new wiki pages created)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
