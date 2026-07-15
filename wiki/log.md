@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-15 — Passport Test Coverage + CONTRIBUTING.md
+
+**Operation:** Add integration tests for Digital Product Passport API (no tests existed); create CONTRIBUTING.md; update wiki.
+
+**Files created:** 2
+- `backend/__tests__/passport.test.js` — 23 tests covering GET /api/v1/passport/:productId, POST /api/v1/portfolio/score, GET /api/v1/audit/:productId
+- `CONTRIBUTING.md` — setup, branch/commit conventions, testing checklist, security rules, "done" criteria
+
+**Files updated:** 2
+- `wiki/hot.md` — refreshed with new test count, branch, and PR history
+- `wiki/log.md` — this entry
+
+**Verification:**
+- All 160 backend tests pass (7 suites)
+- 23 new passport tests: happy-path, 404, 400 validation, pagination, portfolio edge cases
+- No existing tests broken
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

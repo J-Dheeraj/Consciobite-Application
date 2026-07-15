@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-07-15 after passport test coverage + CONTRIBUTING.md.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -23,7 +23,17 @@ tags: [hot-cache, meta]
 
 **Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
 
-**Recent fixes landed (2026-05-13):**
+**Recent additions (2026-07-15):**
+- `backend/__tests__/passport.test.js` — 23 integration tests for Digital Product Passport endpoints
+- `CONTRIBUTING.md` — branch, commit, test, and coding conventions for contributors
+
+**Recent PRs merged to main (2026-05-13 → 2026-07-15):**
+- PR #33: Digital Product Passport API (`/api/v1/passport`, `/api/v1/portfolio/score`, `/api/v1/audit`), methodology docs, cold start UX
+- PR #32: Static hosting 404 fix (`trailingSlash` in next.config.js), README update
+- PR #31: Governance frontend — admin audit UI, transparency page, manufacturer onboarding
+- Tests increased from 117 → 137 → 160
+
+**Older fixes (2026-05-13):**
 - 7 merge conflicts resolved between feature branch and main
 - Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
 - `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
@@ -33,9 +43,9 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 160 backend tests passing (7 suites). Frontend builds 566 static pages (16 routes + 550 product pages). New: `passport.test.js` adds 23 tests covering the Digital Product Passport API (`GET /api/v1/passport/:productId`, `POST /api/v1/portfolio/score`, `GET /api/v1/audit/:productId`).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-3w14jt` — building on merged `claude/improve-application-S5njo`.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 
