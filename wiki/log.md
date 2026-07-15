@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-15 — Passport Tests, Footer Bug Fix, Methodology Link
+
+**Operation:** Automated session on branch `claude/dreamy-dirac-h51bda`.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 20 integration tests for Digital Product Passport routes
+
+**Files modified:** 1
+- `frontend/src/components/Footer.js` — fixed broken Products link (`"/"` → `"/products"`); added Methodology to Resources section
+
+**Verification:**
+- All 157 backend tests passing (20 new, up from 137)
+- Frontend ESLint clean
+- Prettier format check clean
+
+**Key changes:**
+1. **passport.test.js** — covers `GET /api/v1/passport/:id`, `POST /api/v1/portfolio/score`, and `GET /api/v1/audit/:id`. Tests happy paths, 400 validation errors (missing field, wrong type, empty array, >100 items, non-string entries), 404 not-found, and partial-valid-set graceful skip.
+2. **Footer Products link** — was pointing to `/` (home/landing page) instead of `/products` — classic broken link.
+3. **Methodology footer link** — the `/methodology` page had no entry point except direct URL; added to Resources column in footer.
+
+**Active branch:** `claude/dreamy-dirac-h51bda`
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
