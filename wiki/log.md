@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-16 — Bug Fixes, Search Debounce, Passport Tests
+
+**Operation:** Fix three production bugs and add missing test coverage.
+
+**Files modified:** 2
+- `frontend/src/app/dashboard/page.js` — guard `bestCategory` null access (crash when no category data), fix division-by-zero in green percentage stat, make top-10 product table rows clickable (navigate to `/product/:id`), add `useRouter` import
+- `frontend/src/app/products/page.js` — add 250ms search debounce via `useRef` + `debouncedSearch` state to avoid an API call on every keystroke
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 23 integration tests covering GET `/api/v1/passport/:productId`, POST `/api/v1/portfolio/score`, GET `/api/v1/audit/:productId`
+
+**Verification:**
+- Full backend test suite: 160 tests passing (up from 117 / 137 with previous sessions)
+- Frontend ESLint: no warnings or errors
+- Prettier: all changed files formatted correctly
+
+**Branch:** `claude/nifty-goodall-l18ha4`
+**Commit:** `ea1c4b5`
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
