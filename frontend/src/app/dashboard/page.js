@@ -1,5 +1,6 @@
 "use client";
 import React, { useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { fetchStats, fetchProducts } from "@/services/api";
 import { useTheme } from "@/context/ThemeContext";
@@ -129,6 +130,7 @@ function StatCard({ icon, label, value, subtext, color, isDark }) {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
   const { theme } = useTheme();
   const isDark = theme === "dark";
 
@@ -283,8 +285,8 @@ export default function Dashboard() {
           <StatCard
             icon={"\uD83C\uDFC6"}
             label="Best Category"
-            value={bestCategory.category}
-            subtext={`Score: ${bestCategory.avgScore}`}
+            value={bestCategory?.category ?? "\u2014"}
+            subtext={bestCategory ? `Score: ${bestCategory.avgScore}` : undefined}
             isDark={isDark}
           />
         </div>
@@ -457,9 +459,19 @@ export default function Dashboard() {
                 {topProducts.map((p, i) => (
                   <tr
                     key={p.id}
+                    onClick={() => router.push(`/product/${p.id}`)}
                     style={{
                       borderBottom: "1px solid " + (isDark ? "#2d4a35" : "#f5f5f5"),
                       transition: "background 0.15s",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = isDark
+                        ? "rgba(255,255,255,0.03)"
+                        : "#f8fff9";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "";
                     }}
                   >
                     <td
@@ -548,7 +560,7 @@ export default function Dashboard() {
               color: "#fff",
             }}
           >
-            {Math.round((greenCount / totalProducts) * 100)}%
+            {totalProducts > 0 ? Math.round((greenCount / totalProducts) * 100) : 0}%
           </div>
           <p style={{ color: "rgba(255,255,255,0.9)", fontSize: "0.9rem" }}>
             of tracked products fall in categories with green-rated average scores (7+)
