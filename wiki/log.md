@@ -23,11 +23,34 @@ Append-only. Newest entries at top.
 - `backend/Dockerfile` — added `RUN apk add --no-cache python3 make g++` before `npm ci --production`
 - `CONTRIBUTING.md` — new file (was listed as a planned improvement in CLAUDE.md)
 
-**Branch:** `claude/nifty-goodall-s4f427`
-
-**PR #34 status:** Still open on `claude/dreamy-dirac-fzmsdt`. Its CI Docker Build Check will pass once this fix merges to main and it rebases.
+**Branch:** `claude/nifty-goodall-s4f427` — merged to main as PR #35.
 
 **Index updated:** no
+**Hot cache updated:** yes
+
+---
+
+## 2026-07-16 — Digital Product Passport Frontend + Tests
+
+**Operation:** Add frontend page and service layer for the Digital Product Passport API (added in previous session), plus integration test coverage for all three passport routes.
+
+**Files created:** 4
+- `backend/__tests__/passport.test.js` — 36 Supertest integration tests for GET /passport/:id, POST /portfolio/score, GET /audit/:id
+- `frontend/src/app/passport/[id]/page.js` — static server wrapper with generateStaticParams (550 pages)
+- `frontend/src/app/passport/[id]/PassportClient.js` — PassportCard UI: SVG score ring, 7-dimension emission bars, confidence badge, summary grid, methodology link
+- (inferred: `frontend/src/app/passport/` directory)
+
+**Files updated:** 3
+- `frontend/src/services/products.js` — added fetchPassport, fetchPortfolioScore, fetchAuditLog
+- `frontend/src/services/api.js` — re-exported new passport service functions
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added "Eco Passport" button alongside "Back" button
+
+**Verification:**
+- 153 backend tests passing (117 → 153, all 36 new tests green)
+- ESLint and Prettier clean (no warnings or errors)
+- Branch: `claude/dreamy-dirac-fzmsdt` pushed to remote
+
+**Index updated:** yes
 **Hot cache updated:** yes
 
 ---

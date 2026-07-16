@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-17 after Docker fix + CONTRIBUTING.md session.
+**Last updated:** 2026-07-17 after Docker fix + CONTRIBUTING.md merged; PR #34 rebased.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -23,7 +23,7 @@ tags: [hot-cache, meta]
 
 **Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
 
-**Docker fix (2026-07-17):** Backend `Dockerfile` lacked `python3 make g++` needed by `better-sqlite3` to compile on Alpine (musl — no prebuilt binary). Added `RUN apk add --no-cache python3 make g++` before `npm ci --production`. This was blocking PR #34's Docker Build Check CI job.
+**Docker fix (2026-07-17, merged PR #35):** Backend `Dockerfile` lacked `python3 make g++` needed by `better-sqlite3` to compile on Alpine (musl — no prebuilt binary). Added `RUN apk add --no-cache python3 make g++` before `npm ci --production`. Also added `CONTRIBUTING.md` (was listed as a planned improvement).
 
 **Recent fixes landed (2026-05-13):**
 - 7 merge conflicts resolved between feature branch and main
@@ -35,11 +35,17 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 153 backend tests passing (incl. 36 passport tests). Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 153 backend tests passing (36 new passport/portfolio/audit tests added). Frontend builds 1117 static pages (17 routes + 550 product pages + 550 passport pages).
 
-**DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`) — currently failing CI.
+**Active branch:** `claude/dreamy-dirac-4ua0hn` — current session branch.
 
-**Active branch:** `claude/nifty-goodall-s4f427` — PR open against `main`.
+**Passport feature (PR #34, branch `claude/dreamy-dirac-fzmsdt`, rebased 2026-07-21):**
+- Backend: `/api/v1/passport/:id`, `/api/v1/portfolio/score`, `/api/v1/audit/:id` routes (merged in PR #33)
+- Frontend service layer: `fetchPassport(id)`, `fetchPortfolioScore(ids)`, `fetchAuditLog(id)` in `products.js`; re-exported from `api.js`
+- Frontend page: `/passport/[id]` — `PassportCard` with SVG score ring, 7-dimension emission bars (bar width proportional to max, color green/amber/red), confidence tier badge, summary grid (score, percentile, total CO₂e, methodology version), generated date footer
+- `generateStaticParams()` generates 550 passport pages from `backend/src/data/products.json`
+- "Eco Passport" button added to product detail page (`/product/[id]`)
+- better-sqlite3 bumped to ^12.11.1 for prebuilt binary availability in CI
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 
