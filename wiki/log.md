@@ -13,6 +13,25 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
+
+**Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
+
+**Root cause:** `better-sqlite3` is a native addon. On `node:20-alpine` (musl libc) there are no prebuilt binaries, so npm falls back to compiling from source via node-gyp — which requires Python, make, and g++. The backend Dockerfile had none of these.
+
+**Files changed:** 2
+- `backend/Dockerfile` — added `RUN apk add --no-cache python3 make g++` before `npm ci --production`
+- `CONTRIBUTING.md` — new file (was listed as a planned improvement in CLAUDE.md)
+
+**Branch:** `claude/nifty-goodall-s4f427`
+
+**PR #34 status:** Still open on `claude/dreamy-dirac-fzmsdt`. Its CI Docker Build Check will pass once this fix merges to main and it rebases.
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
