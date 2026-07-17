@@ -13,6 +13,34 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-17 — UX Polish and API Consistency
+
+**Operation:** Implement three improvements on branch `claude/dreamy-dirac-93jpkj` (fresh off merged main).
+
+**Files modified:** 6
+- `backend/src/services/scoreAudit.js` — `getConflictLog()` now returns `{ rows, total }` with a COUNT query for pagination support
+- `backend/src/routes/admin.js` — route returns `total`, `limit`, `offset` alongside `logs`; default page size changed from 200 to 50
+- `backend/src/index.js` — passport routes now also mounted at `/api/` (was only `/api/v1/`)
+- `frontend/src/services/admin.js` — `fetchConflictLog(filter, page, limit)` now sends `limit` and `offset` params
+- `frontend/src/app/admin/conflict-log/page.js` — added pagination state + Prev/Next controls; filter change resets page
+- `frontend/src/app/carbon/page.js` — added onboarding card for zero-state (authenticated user with no logs); tip text conditioned on `summary` existing
+
+**Verification:**
+- 137 backend tests passing (no regressions from scoreAudit return-shape change)
+- ESLint: 0 errors, 2 pre-existing warnings (unused vars in non-modified files)
+- Prettier: all clean after auto-format
+- Pushed to `origin/claude/dreamy-dirac-93jpkj`
+
+**Key decisions:**
+- `getConflictLog` returns `{ rows, total }` not just the array — only one call site in admin.js, so change is safe and keeps the service self-contained
+- Passport alias uses `app.use("/api", ...)` — no path conflicts with existing `/api/products`, `/api/auth`, etc. (passport uses `/passport`, `/portfolio`, `/audit` prefixes)
+- Zero-state card shown when `!summary && !loading` — `summary` is null when the API returns empty data for a new user
+
+**Index updated:** no (no new pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
