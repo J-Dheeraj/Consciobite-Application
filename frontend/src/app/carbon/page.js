@@ -139,6 +139,80 @@ export default function CarbonTracker() {
           </div>
         )}
 
+        {!summary && !loading && (
+          <div
+            style={{
+              marginTop: -20,
+              background: isDark ? "#162419" : "#fff",
+              borderRadius: 14,
+              padding: 32,
+              marginBottom: 20,
+              textAlign: "center",
+              boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 4px 12px rgba(27,67,50,0.08)",
+              animation: "fadeInUp 0.4s ease",
+            }}
+          >
+            <div style={{ fontSize: "2.5rem", marginBottom: 12 }}>{"🌱"}</div>
+            <h2
+              style={{
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                fontSize: "1.15rem",
+                color: isDark ? "#e8f5e9" : "#1a3a2a",
+                marginBottom: 8,
+              }}
+            >
+              Start tracking your food footprint
+            </h2>
+            <p
+              style={{
+                color: isDark ? "#7a9a7e" : "#666",
+                fontSize: "0.9rem",
+                maxWidth: 380,
+                margin: "0 auto 20px",
+                lineHeight: 1.5,
+              }}
+            >
+              Browse or scan any product, then click{" "}
+              <strong style={{ color: isDark ? "#95d5b2" : "#2d6a4f" }}>Log Purchase</strong> on its
+              page. Your weekly CO{"₂"}e total and trend chart will appear here.
+            </p>
+            <div style={{ display: "flex", justifyContent: "center", gap: 10, flexWrap: "wrap" }}>
+              <Link
+                href="/products"
+                style={{
+                  display: "inline-block",
+                  padding: "11px 24px",
+                  background: "linear-gradient(135deg, #2d6a4f, #40916c)",
+                  color: "#fff",
+                  borderRadius: 10,
+                  fontWeight: 600,
+                  fontSize: "0.88rem",
+                  textDecoration: "none",
+                }}
+              >
+                Browse Products
+              </Link>
+              <Link
+                href="/scan"
+                style={{
+                  display: "inline-block",
+                  padding: "11px 24px",
+                  background: isDark ? "#1c2e22" : "#edf7f0",
+                  color: isDark ? "#95d5b2" : "#2d6a4f",
+                  borderRadius: 10,
+                  fontWeight: 600,
+                  fontSize: "0.88rem",
+                  textDecoration: "none",
+                  border: `1px solid ${isDark ? "#2d4a35" : "#b7e4c7"}`,
+                }}
+              >
+                Scan Barcode
+              </Link>
+            </div>
+          </div>
+        )}
+
         {summary && (
           <>
             {/* Summary Cards */}
@@ -493,17 +567,19 @@ export default function CarbonTracker() {
           )}
         </div>
 
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: 20,
-            fontSize: "0.82rem",
-            color: isDark ? "#7a9a7e" : "#aaa",
-          }}
-        >
-          Tip: Visit any product page and click &ldquo;Log Purchase&rdquo; to add it to your carbon
-          tracker.
-        </p>
+        {summary && (
+          <p
+            style={{
+              textAlign: "center",
+              marginTop: 20,
+              fontSize: "0.82rem",
+              color: isDark ? "#7a9a7e" : "#aaa",
+            }}
+          >
+            Tip: Visit any product page and click &ldquo;Log Purchase&rdquo; to add it to your
+            carbon tracker.
+          </p>
+        )}
       </div>
     </div>
   );

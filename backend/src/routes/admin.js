@@ -23,13 +23,13 @@ const LOG_SCHEMA = {
 
 router.get("/conflict-log", validate(LOG_SCHEMA), (req, res) => {
   const filter = req.query.filter === "all" ? undefined : req.query.filter;
-  const limit = Math.min(parseInt(req.query.limit) || 200, 500);
+  const limit = Math.min(parseInt(req.query.limit) || 50, 500);
   const offset = parseInt(req.query.offset) || 0;
 
-  const logs = getConflictLog({ filter, limit, offset });
+  const { rows, total } = getConflictLog({ filter, limit, offset });
   const stats = getConflictStats();
 
-  res.json({ logs, stats });
+  res.json({ logs: rows, stats, total, limit, offset });
 });
 
 // --- Rescore all products and log changes ---

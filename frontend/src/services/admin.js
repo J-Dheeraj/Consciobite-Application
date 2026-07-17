@@ -1,10 +1,11 @@
 import { httpClient, API_BASE } from "./httpClient";
 
-export async function fetchConflictLog(filter) {
+export async function fetchConflictLog(filter, page = 0, limit = 50) {
   const params = new URLSearchParams();
   if (filter && filter !== "all") params.set("filter", filter);
-  const query = params.toString();
-  return httpClient(`${API_BASE}/admin/conflict-log${query ? `?${query}` : ""}`);
+  params.set("limit", String(limit));
+  params.set("offset", String(page * limit));
+  return httpClient(`${API_BASE}/admin/conflict-log?${params.toString()}`);
 }
 
 export async function triggerRescore() {

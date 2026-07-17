@@ -209,6 +209,7 @@ app.use("/api/carbon", csrfProtection, carbonRoutes);
 app.use("/api/recipes", cacheMiddleware(600), recipeRoutes);
 app.use("/api/admin", csrfProtection, adminRoutes);
 app.use("/api/v1", cacheMiddleware(120), passportRoutes);
+app.use("/api", cacheMiddleware(120), passportRoutes);
 
 // Versioned aliases (v1 = current)
 app.use("/api/v1/products", cacheMiddleware(120), productRoutes);

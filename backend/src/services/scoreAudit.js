@@ -99,6 +99,10 @@ function getConflictLog({ filter, limit = 200, offset = 0 } = {}) {
     where = "WHERE is_paying_client = 0";
   }
 
+  const total = db
+    .prepare(`SELECT COUNT(*) as count FROM score_change_logs ${where}`)
+    .get(...params).count;
+
   const rows = db
     .prepare(
       `SELECT * FROM score_change_logs ${where}
@@ -106,7 +110,7 @@ function getConflictLog({ filter, limit = 200, offset = 0 } = {}) {
     )
     .all(...params, limit, offset);
 
-  return rows;
+  return { rows, total };
 }
 
 function getConflictStats() {

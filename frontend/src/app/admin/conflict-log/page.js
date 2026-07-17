@@ -57,16 +57,19 @@ function deltaColor(delta) {
   return "#999";
 }
 
+const PAGE_SIZE = 50;
+
 export default function ConflictLogPage() {
   const { theme } = useTheme();
   const { isAuthenticated } = useAuth();
   const isDark = theme === "dark";
   const [filter, setFilter] = useState("all");
+  const [page, setPage] = useState(0);
   const queryClient = useQueryClient();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["conflict-log", filter],
-    queryFn: () => fetchConflictLog(filter),
+    queryKey: ["conflict-log", filter, page],
+    queryFn: () => fetchConflictLog(filter, page, PAGE_SIZE),
     enabled: isAuthenticated,
   });
 
@@ -102,7 +105,8 @@ export default function ConflictLogPage() {
     );
   }
 
-  const { logs, stats } = data;
+  const { logs, stats, total } = data;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
@@ -156,7 +160,10 @@ export default function ConflictLogPage() {
             {FILTERS.map((f) => (
               <button
                 key={f.key}
-                onClick={() => setFilter(f.key)}
+                onClick={() => {
+                  setFilter(f.key);
+                  setPage(0);
+                }}
                 style={{
                   padding: "8px 16px",
                   borderRadius: 8,
@@ -200,6 +207,57 @@ export default function ConflictLogPage() {
 
         {/* Log Table */}
         <div style={{ ...card(isDark, { radius: 14 }), overflow: "auto" }}>
+          {totalPages > 1 && (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "12px 16px",
+                borderBottom: `1px solid ${isDark ? "#2d4a35" : "#e5e7eb"}`,
+                fontSize: 13,
+              }}
+            >
+              <span style={{ color: isDark ? "#b0c4b1" : "#555" }}>
+                Page {page + 1} of {totalPages} &mdash; {total} total entries
+              </span>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: 7,
+                    border: "none",
+                    cursor: page === 0 ? "default" : "pointer",
+                    fontWeight: 600,
+                    fontSize: 12,
+                    background: page === 0 ? (isDark ? "#1c2e22" : "#f0f0f0") : "#2d6a4f",
+                    color: page === 0 ? (isDark ? "#4a6a4e" : "#bbb") : "#fff",
+                  }}
+                >
+                  ← Prev
+                </button>
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                  style={{
+                    padding: "6px 14px",
+                    borderRadius: 7,
+                    border: "none",
+                    cursor: page >= totalPages - 1 ? "default" : "pointer",
+                    fontWeight: 600,
+                    fontSize: 12,
+                    background:
+                      page >= totalPages - 1 ? (isDark ? "#1c2e22" : "#f0f0f0") : "#2d6a4f",
+                    color: page >= totalPages - 1 ? (isDark ? "#4a6a4e" : "#bbb") : "#fff",
+                  }}
+                >
+                  Next →
+                </button>
+              </div>
+            </div>
+          )}
           <table
             style={{
               width: "100%",
