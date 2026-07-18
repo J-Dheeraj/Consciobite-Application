@@ -110,6 +110,62 @@ describe("Carbon tracking endpoints", () => {
     });
   });
 
+  describe("PATCH /api/carbon/log/:id", () => {
+    let patchLogId;
+
+    beforeAll(async () => {
+      const res = await request(app)
+        .post("/api/carbon/log")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+          productId: "patch-test",
+          productName: "Patch Target",
+          quantity: 1,
+          emissions: 1.0,
+        });
+      patchLogId = res.body.log.id;
+    });
+
+    test("should require authentication", async () => {
+      const res = await request(app).patch("/api/carbon/log/someid").send({ quantity: 2 });
+      expect(res.status).toBe(401);
+    });
+
+    test("should return 404 for non-existent log", async () => {
+      const res = await request(app)
+        .patch("/api/carbon/log/nonexistent")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ quantity: 2 });
+      expect(res.status).toBe(404);
+    });
+
+    test("should update quantity of own log", async () => {
+      const res = await request(app)
+        .patch(`/api/carbon/log/${patchLogId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ quantity: 5 });
+      expect(res.status).toBe(200);
+      expect(res.body.log.quantity).toBe(5);
+    });
+
+    test("should clamp quantity to valid range", async () => {
+      const res = await request(app)
+        .patch(`/api/carbon/log/${patchLogId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ quantity: 9999 });
+      expect(res.status).toBe(200);
+      expect(res.body.log.quantity).toBeLessThanOrEqual(100);
+    });
+
+    test("should reject missing quantity", async () => {
+      const res = await request(app)
+        .patch(`/api/carbon/log/${patchLogId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({});
+      expect(res.status).toBe(400);
+    });
+  });
+
   describe("DELETE /api/carbon/log/:id", () => {
     test("should require authentication", async () => {
       const res = await request(app).delete("/api/carbon/log/someid");

@@ -177,6 +177,78 @@ router.get("/me", requireAuth, (req, res) => {
   res.json({ user });
 });
 
+// PATCH /api/auth/me - update name and/or password
+router.patch("/me", requireAuth, async (req, res) => {
+  const { name, currentPassword, newPassword } = req.body;
+
+  if (!name && !newPassword) {
+    return res.status(400).json({ error: "Provide name or newPassword to update" });
+  }
+
+  const db = getDb();
+  const user = db
+    .prepare("SELECT id, email, name, password_hash FROM users WHERE id = ?")
+    .get(req.user.id);
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const updates = {};
+
+  if (name !== undefined) {
+    const sanitizedName = validator.escape(validator.trim(name)).slice(0, 50);
+    if (!sanitizedName) {
+      return res.status(400).json({ error: "Name must not be empty" });
+    }
+    updates.name = sanitizedName;
+  }
+
+  if (newPassword !== undefined) {
+    if (!currentPassword) {
+      return res.status(400).json({ error: "currentPassword is required to change password" });
+    }
+
+    const passwordOk = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!passwordOk) {
+      return res.status(401).json({ error: "Current password is incorrect" });
+    }
+
+    if (newPassword.length > 128) {
+      return res.status(400).json({ error: "Password must not exceed 128 characters" });
+    }
+
+    if (
+      newPassword.length < 8 ||
+      !/[A-Z]/.test(newPassword) ||
+      !/[a-z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword)
+    ) {
+      return res.status(400).json({
+        error: "Password must be at least 8 characters with uppercase, lowercase, and a number",
+      });
+    }
+
+    updates.passwordHash = await bcrypt.hash(newPassword, 12);
+  }
+
+  if (updates.name) {
+    db.prepare("UPDATE users SET name = ? WHERE id = ?").run(updates.name, user.id);
+  }
+
+  if (updates.passwordHash) {
+    db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(
+      updates.passwordHash,
+      user.id
+    );
+  }
+
+  const updated = db
+    .prepare("SELECT id, email, name, created_at FROM users WHERE id = ?")
+    .get(user.id);
+  res.json({ user: updated });
+});
+
 // POST /api/auth/refresh - refresh an unexpired token
 router.post("/refresh", refreshToken);
 

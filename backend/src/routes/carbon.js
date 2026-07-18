@@ -189,6 +189,34 @@ router.post("/log", requireAuth, validate(POST_LOG_SCHEMA), (req, res) => {
   res.status(201).json({ log });
 });
 
+// PATCH /api/carbon/log/:id - update quantity of a carbon log
+const PATCH_LOG_SCHEMA = {
+  params: {
+    id: { required: true, type: "string", maxLength: 40, message: "Invalid log ID" },
+  },
+  body: {
+    quantity: { required: true, type: "number", min: 0.1, message: "quantity must be >= 0.1" },
+  },
+};
+
+router.patch("/log/:id", requireAuth, validate(PATCH_LOG_SCHEMA), (req, res) => {
+  const logId = req.params.id;
+  const db = getDb();
+
+  const log = db
+    .prepare("SELECT * FROM carbon_logs WHERE id = ? AND user_id = ?")
+    .get(logId, req.user.id);
+  if (!log) {
+    return res.status(404).json({ error: "Log not found" });
+  }
+
+  const qty = Math.max(0.1, Math.min(100, req.body.quantity));
+  db.prepare("UPDATE carbon_logs SET quantity = ? WHERE id = ?").run(qty, logId);
+
+  const updated = db.prepare("SELECT * FROM carbon_logs WHERE id = ?").get(logId);
+  res.json({ log: updated });
+});
+
 // DELETE /api/carbon/log/:id - delete a carbon log
 router.delete("/log/:id", requireAuth, validate(DELETE_LOG_SCHEMA), (req, res) => {
   const logId = req.params.id;
