@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-18 — Passport API Test Coverage
+
+**Operation:** Write integration tests for the Digital Product Passport B2B endpoints that were shipped in the previous session but had no tests.
+
+**Files created:** 1
+- `backend/__tests__/passport.test.js` — 26 Supertest tests across 3 describe blocks
+
+**Coverage:**
+- `GET /api/v1/passport/:productId` — happy path, 404 for unknown ID, 400 for non-alphanumeric ID, full response shape including all 7 emission categories, greengrade_score bounds, methodology_version
+- `POST /api/v1/portfolio/score` — valid 1 and 2-product batches, portfolio_summary shape, highest/lowest correctness, category_benchmarks shape, skipped unknown IDs, missing/non-array/empty/oversized/non-string product_ids (400), all-unknown IDs (404)
+- `GET /api/v1/audit/:productId` — happy path, 404, 400 for bad ID, limit/offset params, non-numeric param validation
+
+**Verification:**
+- 26 new tests pass
+- Full suite: 163 tests across 7 suites, all passing
+- Prettier + ESLint clean
+
+**Branch:** `claude/nifty-goodall-fcberl` — pushed to origin
+
+**Index updated:** no (no new wiki pages)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
