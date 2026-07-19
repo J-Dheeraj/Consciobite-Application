@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchRecommendations } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -97,6 +97,12 @@ export default function ProductDetail() {
 
   const error = queryError ? "Unable to load product details." : "";
   const [fav, setFav] = useState(false);
+
+  const { data: recommendationsData } = useQuery({
+    queryKey: ["recommendations", id],
+    queryFn: () => fetchRecommendations(id),
+    enabled: !!product,
+  });
 
   useEffect(() => {
     if (product) setFav(isFavorited(product.id));
@@ -1086,6 +1092,108 @@ export default function ProductDetail() {
             {product.description}
           </p>
         </div>
+
+        {/* Greener Alternatives */}
+        {recommendationsData && (
+          <div
+            style={{
+              width: "100%",
+              background: "#0b2a1a",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+            }}
+          >
+            <h4
+              style={{
+                color: "#52b788",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                marginBottom: 4,
+              }}
+            >
+              Greener Alternatives
+            </h4>
+            <p style={{ color: "#b8d4c0", fontSize: "0.75rem", marginBottom: 14 }}>
+              Same category &middot; higher GreenGrade score
+            </p>
+
+            {recommendationsData.recommendations.length === 0 ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "16px 0",
+                  color: "#52b788",
+                  fontSize: "0.88rem",
+                  fontWeight: 600,
+                }}
+              >
+                You&apos;ve picked a top choice in this category!
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {recommendationsData.recommendations.map((rec) => (
+                  <Link
+                    key={rec.id}
+                    href={`/product/${rec.id}`}
+                    style={{ textDecoration: "none" }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        background: "rgba(82,183,136,0.08)",
+                        border: "1px solid rgba(82,183,136,0.2)",
+                        borderRadius: 12,
+                        padding: "10px 14px",
+                        transition: "background 0.15s",
+                      }}
+                    >
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div
+                          style={{
+                            color: "#fff",
+                            fontSize: "0.88rem",
+                            fontWeight: 600,
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {rec.brand} {rec.name}
+                        </div>
+                        <div style={{ color: "#7a9a7e", fontSize: "0.72rem", marginTop: 2 }}>
+                          {rec.greenGrade.totalEmissions} kg CO&#8322;e/kg
+                        </div>
+                      </div>
+                      <div
+                        style={{
+                          flexShrink: 0,
+                          marginLeft: 12,
+                          width: 36,
+                          height: 36,
+                          borderRadius: "50%",
+                          background: scoreColor(rec.greenGrade.score),
+                          color: "#fff",
+                          fontWeight: 700,
+                          fontSize: "0.78rem",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          boxShadow: `0 2px 6px ${scoreColor(rec.greenGrade.score)}60`,
+                        }}
+                      >
+                        {rec.greenGrade.score}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Back button */}
         <div style={{ width: "100%", maxWidth: 380, padding: "0 16px" }}>

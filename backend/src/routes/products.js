@@ -175,6 +175,61 @@ async function lookupOpenFoodFacts(barcode) {
   }
 }
 
+const RECOMMENDATIONS_SCHEMA = {
+  query: {
+    limit: {
+      required: false,
+      type: "string",
+      pattern: /^\d+$/,
+      message: "limit must be a positive integer",
+    },
+  },
+};
+
+// GET /api/products/:id/recommendations — greener alternatives in the same category
+router.get("/:id/recommendations", validate(RECOMMENDATIONS_SCHEMA), (req, res) => {
+  const id = sanitize(req.params.id, 20);
+
+  if (!validator.isAlphanumeric(id)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+
+  const product = enrichedProducts.find((p) => p.id === id);
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  const limit = Math.min(10, Math.max(1, parseInt(req.query.limit, 10) || 5));
+
+  const recommendations = enrichedProducts
+    .filter(
+      (p) =>
+        p.id !== id &&
+        p.category === product.category &&
+        p.greenGrade.score > product.greenGrade.score
+    )
+    .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
+    .slice(0, limit)
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      brand: p.brand,
+      category: p.category,
+      greenGrade: {
+        score: p.greenGrade.score,
+        color: p.greenGrade.color,
+        totalEmissions: p.greenGrade.totalEmissions,
+      },
+    }));
+
+  res.json({
+    product_id: id,
+    category: product.category,
+    current_score: product.greenGrade.score,
+    recommendations,
+  });
+});
+
 // GET /api/products/:id
 router.get("/:id", async (req, res, next) => {
   try {

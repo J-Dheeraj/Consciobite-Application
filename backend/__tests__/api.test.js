@@ -124,6 +124,90 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/:id/recommendations", () => {
+    test("should return 400 for invalid product ID", async () => {
+      const res = await request(app).get("/api/products/inv@lid!/recommendations");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 404 for non-existent product", async () => {
+      const res = await request(app).get("/api/products/zzzzzzzzz/recommendations");
+      expect(res.status).toBe(404);
+    });
+
+    test("should return recommendations for a valid product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(res.body.product_id).toBe("1");
+      expect(res.body.category).toBeDefined();
+      expect(typeof res.body.current_score).toBe("number");
+      expect(Array.isArray(res.body.recommendations)).toBe(true);
+    });
+
+    test("recommendations should have required fields", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      for (const rec of res.body.recommendations) {
+        expect(rec).toHaveProperty("id");
+        expect(rec).toHaveProperty("name");
+        expect(rec).toHaveProperty("brand");
+        expect(rec).toHaveProperty("category");
+        expect(rec.greenGrade).toHaveProperty("score");
+        expect(rec.greenGrade).toHaveProperty("color");
+        expect(rec.greenGrade).toHaveProperty("totalEmissions");
+      }
+    });
+
+    test("recommendations should all have higher score than current product", async () => {
+      const productRes = await request(app).get("/api/products/1");
+      const currentScore = productRes.body.greenGrade.score;
+
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      for (const rec of res.body.recommendations) {
+        expect(rec.greenGrade.score).toBeGreaterThan(currentScore);
+      }
+    });
+
+    test("recommendations should all share the same category as current product", async () => {
+      const productRes = await request(app).get("/api/products/1");
+      const currentCategory = productRes.body.category;
+
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      for (const rec of res.body.recommendations) {
+        expect(rec.category).toBe(currentCategory);
+      }
+    });
+
+    test("should respect limit query parameter", async () => {
+      const res = await request(app).get("/api/products/1/recommendations?limit=2");
+      expect(res.status).toBe(200);
+      expect(res.body.recommendations.length).toBeLessThanOrEqual(2);
+    });
+
+    test("should return 400 for non-numeric limit", async () => {
+      const res = await request(app).get("/api/products/1/recommendations?limit=abc");
+      expect(res.status).toBe(400);
+    });
+
+    test("recommendations should not include the current product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const ids = res.body.recommendations.map((r) => r.id);
+      expect(ids).not.toContain("1");
+    });
+
+    test("recommendations should be sorted by score descending", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const scores = res.body.recommendations.map((r) => r.greenGrade.score);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+      }
+    });
+  });
+
   describe("GET /api/products/compare", () => {
     test("should return 400 without ids parameter", async () => {
       const res = await request(app).get("/api/products/compare");
