@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-07-19 after user-configurable carbon goal feature.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,15 +33,20 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 143 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/nifty-goodall-4xzjug` — pushed, no PR yet.
+
+**Open PRs:** #34 (Digital Product Passport frontend — Docker check failing, needs #35 merged first), #35 (Alpine Docker fix for better-sqlite3 — all CI green).
+
+**Latest feature (2026-07-19):** User-configurable weekly carbon goal. Migration 003 adds `weekly_carbon_goal` to users; `PUT /api/auth/goal` lets users update it; `GET /api/carbon/summary` returns `goal` field; carbon page has inline ✎ Edit UI. `WEEKLY_CARBON_GOAL_KG` constant is now a fallback only.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 
 **Key invariants (unchanged):**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
-- `WEEKLY_CARBON_GOAL_KG` in `frontend/src/utils/constants.js`
+- `WEEKLY_CARBON_GOAL_KG` in `frontend/src/utils/constants.js` — fallback only; live goal from `summary.goal`
 - `/carbon` protected by `RequireAuth` — no in-page auth gates
-- httpOnly cookies for JWT; CSRF double-submit pattern
+- httpOnly cookies for JWT; CSRF double-submit pattern (PUT /api/auth/goal uses csrfProtection)
 - All Express routes use `validate()` middleware with `pattern:` not `type: "number"`
+- Auth rate limiter: 20 req/15min in prod, 1000 in test (NODE_ENV=test)

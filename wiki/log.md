@@ -13,6 +13,35 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-19 — User-Configurable Weekly Carbon Goal
+
+**Operation:** Add user-specific weekly carbon goal, replacing the hardcoded 10 kg constant.
+
+**Branch:** `claude/nifty-goodall-4xzjug`
+
+**Files created:** 1
+- `backend/src/db/migrations/003_user_carbon_goal.sql` — adds `weekly_carbon_goal REAL NOT NULL DEFAULT 10` to users table
+
+**Files modified:** 8
+- `backend/src/routes/auth.js` — GET /api/auth/me now returns `weeklyGoal`; new PUT /api/auth/goal endpoint (CSRF + requireAuth, validate 0.1–10000)
+- `backend/src/routes/carbon.js` — GET /api/carbon/summary includes `goal` field from user record
+- `backend/src/index.js` — auth rate limiter raised to 1000 req/window in test mode (prevents false 429s in jest)
+- `backend/__tests__/auth.test.js` — 7 new tests for GET /me weeklyGoal and PUT /goal
+- `backend/__tests__/carbon.test.js` — verifies summary includes goal field
+- `frontend/src/services/auth.js` — added updateCarbonGoal() → PUT /api/auth/goal
+- `frontend/src/services/api.js` — re-exports updateCarbonGoal
+- `frontend/src/app/carbon/page.js` — reads goal from summary.goal (not hardcoded constant); inline ✎ Edit button reveals number input + Save/Cancel
+
+**Verification:**
+- 143 backend tests passing (26 new)
+- Prettier and ESLint clean (frontend + backend)
+- Pushed to branch, PR link shown in push output
+
+**Key invariants updated:**
+- `WEEKLY_CARBON_GOAL_KG` in constants.js is now fallback-only; live goal comes from `summary.goal`
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
