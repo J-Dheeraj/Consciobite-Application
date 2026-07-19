@@ -17,3 +17,10 @@ export async function loginUser(email, password) {
 export async function fetchCurrentUser() {
   return httpClient(`${API_BASE}/auth/me`);
 }
+
+export async function updateCarbonGoal(goal) {
+  return httpClient(`${API_BASE}/auth/goal`, {
+    method: "PUT",
+    body: JSON.stringify({ goal }),
+  });
+}

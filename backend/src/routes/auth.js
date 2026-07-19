@@ -10,7 +10,9 @@ const {
   requireAuth,
   refreshToken,
   generateCsrfToken,
+  csrfProtection,
 } = require("../middleware/auth");
+const { validate } = require("../middleware/validate");
 
 const router = express.Router();
 
@@ -167,14 +169,42 @@ router.post("/logout", (_req, res) => {
 router.get("/me", requireAuth, (req, res) => {
   const db = getDb();
   const user = db
-    .prepare("SELECT id, email, name, created_at FROM users WHERE id = ?")
+    .prepare("SELECT id, email, name, created_at, weekly_carbon_goal FROM users WHERE id = ?")
     .get(req.user.id);
 
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  res.json({ user });
+  res.json({ user: { ...user, weeklyGoal: user.weekly_carbon_goal } });
+});
+
+const PUT_GOAL_SCHEMA = {
+  body: {
+    goal: {
+      required: true,
+      type: "number",
+      min: 0.1,
+      max: 10000,
+      message: "goal must be a number between 0.1 and 10000",
+    },
+  },
+};
+
+// PUT /api/auth/goal - update user's weekly carbon goal
+router.put("/goal", requireAuth, csrfProtection, validate(PUT_GOAL_SCHEMA), (req, res) => {
+  const { goal } = req.body;
+  const db = getDb();
+
+  const result = db
+    .prepare("UPDATE users SET weekly_carbon_goal = ? WHERE id = ?")
+    .run(goal, req.user.id);
+
+  if (result.changes === 0) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json({ weeklyGoal: goal });
 });
 
 // POST /api/auth/refresh - refresh an unexpired token

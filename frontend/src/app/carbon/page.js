@@ -4,8 +4,12 @@ import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchCarbonSummary, fetchCarbonLogs, deleteCarbonLog } from "@/services/api";
-import { WEEKLY_CARBON_GOAL_KG } from "@/utils/constants";
+import {
+  fetchCarbonSummary,
+  fetchCarbonLogs,
+  deleteCarbonLog,
+  updateCarbonGoal,
+} from "@/services/api";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
@@ -16,6 +20,9 @@ export default function CarbonTracker() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [deleteError, setDeleteError] = useState("");
+  const [editingGoal, setEditingGoal] = useState(false);
+  const [goalInput, setGoalInput] = useState("");
+  const [goalError, setGoalError] = useState("");
 
   const {
     data: carbonData,
@@ -45,6 +52,22 @@ export default function CarbonTracker() {
     },
     [queryClient]
   );
+
+  const handleGoalSave = useCallback(async () => {
+    setGoalError("");
+    const parsed = parseFloat(goalInput);
+    if (!goalInput || isNaN(parsed) || parsed < 0.1 || parsed > 10000) {
+      setGoalError("Please enter a number between 0.1 and 10000.");
+      return;
+    }
+    try {
+      await updateCarbonGoal(parsed);
+      queryClient.invalidateQueries({ queryKey: ["carbon"] });
+      setEditingGoal(false);
+    } catch (err) {
+      setGoalError(err.message || "Failed to update goal.");
+    }
+  }, [goalInput, queryClient]);
 
   if (!isAuthenticated) {
     return (
@@ -93,9 +116,8 @@ export default function CarbonTracker() {
     return <Spinner message="Loading carbon data..." />;
   }
 
-  const weeklyProgress = summary
-    ? Math.min((summary.weekly.emissions / WEEKLY_CARBON_GOAL_KG) * 100, 100)
-    : 0;
+  const weeklyGoal = summary?.goal ?? 10;
+  const weeklyProgress = summary ? Math.min((summary.weekly.emissions / weeklyGoal) * 100, 100) : 0;
   const trendData = summary?.trend || [];
 
   return (
@@ -177,7 +199,7 @@ export default function CarbonTracker() {
                     fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: "1.5rem",
-                    color: summary.weekly.emissions > WEEKLY_CARBON_GOAL_KG ? "#e63946" : "#2d6a4f",
+                    color: summary.weekly.emissions > weeklyGoal ? "#e63946" : "#2d6a4f",
                   }}
                 >
                   {summary.weekly.emissions}
@@ -272,17 +294,112 @@ export default function CarbonTracker() {
                   justifyContent: "space-between",
                   alignItems: "center",
                   marginBottom: 8,
+                  flexWrap: "wrap",
+                  gap: 8,
                 }}
               >
-                <span
-                  style={{
-                    fontWeight: 600,
-                    fontSize: "0.9rem",
-                    color: isDark ? "#e8f5e9" : "#333",
-                  }}
-                >
-                  Weekly Goal: {WEEKLY_CARBON_GOAL_KG} kg CO{"\u2082"}e
-                </span>
+                {editingGoal ? (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "0.9rem",
+                        color: isDark ? "#e8f5e9" : "#333",
+                      }}
+                    >
+                      Weekly Goal:
+                    </span>
+                    <input
+                      type="number"
+                      min="0.1"
+                      max="10000"
+                      step="0.5"
+                      value={goalInput}
+                      onChange={(e) => setGoalInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleGoalSave();
+                        if (e.key === "Escape") setEditingGoal(false);
+                      }}
+                      autoFocus
+                      style={{
+                        width: 80,
+                        padding: "4px 8px",
+                        borderRadius: 6,
+                        border: "1px solid " + (isDark ? "#2d6a4f" : "#b7e4c7"),
+                        background: isDark ? "#1c2e22" : "#f0faf4",
+                        color: isDark ? "#e8f5e9" : "#333",
+                        fontSize: "0.9rem",
+                      }}
+                    />
+                    <span style={{ fontSize: "0.85rem", color: isDark ? "#7a9a7e" : "#888" }}>
+                      kg CO{"\u2082"}e/week
+                    </span>
+                    <button
+                      onClick={handleGoalSave}
+                      style={{
+                        padding: "4px 12px",
+                        background: "#2d6a4f",
+                        color: "#fff",
+                        border: "none",
+                        borderRadius: 6,
+                        cursor: "pointer",
+                        fontSize: "0.82rem",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Save
+                    </button>
+                    <button
+                      onClick={() => {
+                        setEditingGoal(false);
+                        setGoalError("");
+                      }}
+                      style={{
+                        padding: "4px 10px",
+                        background: "none",
+                        color: isDark ? "#7a9a7e" : "#888",
+                        border: "1px solid " + (isDark ? "#2d4a35" : "#ddd"),
+                        borderRadius: 6,
+                        cursor: "pointer",
+                        fontSize: "0.82rem",
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "0.9rem",
+                        color: isDark ? "#e8f5e9" : "#333",
+                      }}
+                    >
+                      Weekly Goal: {weeklyGoal} kg CO{"\u2082"}e
+                    </span>
+                    <button
+                      onClick={() => {
+                        setGoalInput(String(weeklyGoal));
+                        setEditingGoal(true);
+                        setGoalError("");
+                      }}
+                      title="Edit goal"
+                      aria-label="Edit weekly carbon goal"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "0.8rem",
+                        color: isDark ? "#52b788" : "#40916c",
+                        padding: "2px 6px",
+                        borderRadius: 4,
+                      }}
+                    >
+                      \u270e Edit
+                    </button>
+                  </div>
+                )}
                 <span
                   style={{
                     fontSize: "0.82rem",
@@ -293,6 +410,11 @@ export default function CarbonTracker() {
                   {Math.round(weeklyProgress)}%
                 </span>
               </div>
+              {goalError && (
+                <div role="alert" style={{ fontSize: "0.8rem", color: "#e63946", marginBottom: 6 }}>
+                  {goalError}
+                </div>
+              )}
               <div
                 style={{
                   height: 10,

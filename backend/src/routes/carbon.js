@@ -54,6 +54,9 @@ router.get("/summary", requireAuth, (req, res) => {
   const db = getDb();
   const userId = req.user.id;
 
+  const userGoalRow = db.prepare("SELECT weekly_carbon_goal FROM users WHERE id = ?").get(userId);
+  const weeklyGoal = userGoalRow ? userGoalRow.weekly_carbon_goal : 10;
+
   const total = db
     .prepare(
       `
@@ -113,6 +116,7 @@ router.get("/summary", requireAuth, (req, res) => {
     .all(userId);
 
   res.json({
+    goal: weeklyGoal,
     total: {
       emissions: Math.round(total.totalEmissions * 100) / 100,
       logs: total.totalLogs,

@@ -142,7 +142,7 @@ app.use("/api/products/scan", scanLimiter);
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: process.env.NODE_ENV === "test" ? 1000 : 20,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many auth attempts, please try again later." },

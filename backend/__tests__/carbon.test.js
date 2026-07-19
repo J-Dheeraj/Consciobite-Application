@@ -81,6 +81,7 @@ describe("Carbon tracking endpoints", () => {
       expect(res.body.trend).toBeDefined();
       expect(res.body.topProducts).toBeDefined();
       expect(res.body.total.emissions).toBeGreaterThan(0);
+      expect(res.body.goal).toBe(10);
     });
   });
 

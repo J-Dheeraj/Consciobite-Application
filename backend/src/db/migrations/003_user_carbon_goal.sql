@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN weekly_carbon_goal REAL NOT NULL DEFAULT 10;

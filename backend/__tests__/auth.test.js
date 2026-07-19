@@ -119,6 +119,18 @@ describe("Auth endpoints - validation", () => {
   });
 
   describe("GET /api/auth/me", () => {
+    let meToken;
+    beforeAll(async () => {
+      const res = await request(app)
+        .post("/api/auth/register")
+        .send({
+          name: "Me Tester",
+          email: `me-${uid()}@example.com`,
+          password: "MePass1234",
+        });
+      meToken = res.body.token;
+    });
+
     test("should return 401 without token", async () => {
       const res = await request(app).get("/api/auth/me");
       expect(res.status).toBe(401);
@@ -129,6 +141,70 @@ describe("Auth endpoints - validation", () => {
         .get("/api/auth/me")
         .set("Authorization", "Bearer invalid-token");
       expect(res.status).toBe(401);
+    });
+
+    test("should return user with default weeklyGoal", async () => {
+      const res = await request(app).get("/api/auth/me").set("Authorization", `Bearer ${meToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.user.weeklyGoal).toBe(10);
+    });
+  });
+
+  describe("PUT /api/auth/goal", () => {
+    let goalToken;
+    beforeAll(async () => {
+      const res = await request(app)
+        .post("/api/auth/register")
+        .send({
+          name: "Goal Tester",
+          email: `goal-${uid()}@example.com`,
+          password: "GoalPass1234",
+        });
+      goalToken = res.body.token;
+    });
+
+    test("should return 401 without token", async () => {
+      const res = await request(app).put("/api/auth/goal").send({ goal: 5 });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject missing goal", async () => {
+      const res = await request(app)
+        .put("/api/auth/goal")
+        .set("Authorization", `Bearer ${goalToken}`)
+        .send({});
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject goal below minimum", async () => {
+      const res = await request(app)
+        .put("/api/auth/goal")
+        .set("Authorization", `Bearer ${goalToken}`)
+        .send({ goal: 0 });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject goal above maximum", async () => {
+      const res = await request(app)
+        .put("/api/auth/goal")
+        .set("Authorization", `Bearer ${goalToken}`)
+        .send({ goal: 99999 });
+      expect(res.status).toBe(400);
+    });
+
+    test("should update goal and reflect in me endpoint", async () => {
+      const putRes = await request(app)
+        .put("/api/auth/goal")
+        .set("Authorization", `Bearer ${goalToken}`)
+        .send({ goal: 7.5 });
+      expect(putRes.status).toBe(200);
+      expect(putRes.body.weeklyGoal).toBe(7.5);
+
+      const meRes = await request(app)
+        .get("/api/auth/me")
+        .set("Authorization", `Bearer ${goalToken}`);
+      expect(meRes.status).toBe(200);
+      expect(meRes.body.user.weeklyGoal).toBe(7.5);
     });
   });
 });
