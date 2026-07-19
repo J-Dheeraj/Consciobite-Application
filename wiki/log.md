@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-19 — Greener Alternatives Feature
+
+**Operation:** Add product recommendations endpoint and frontend section.
+
+**Files modified:** 3
+- `backend/src/routes/products.js` — new `GET /api/products/:id/recommendations` handler with `validate()` schema for `limit` param; returns same-category products with higher GreenGrade score, sorted desc, max 10
+- `backend/__tests__/api.test.js` — 9 new Supertest tests (400/404 errors, response shape, score ordering, category match, limit, deduplication, sort)
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — import `fetchRecommendations`; new React Query call; "Greener Alternatives" card section with score badge, emissions, deep link, empty-state message
+
+**Key points:**
+- `fetchRecommendations(id)` was already defined and exported in `services/products.js` + `services/api.js` — the backend was the only missing piece
+- Route `/:id/recommendations` (two segments) does not conflict with `/:id` (one segment) — Express distinguishes by segment count
+- Empty-state: if the product is already top in its category, shows "You've picked a top choice!"
+- 147 backend tests passing; frontend ESLint clean; Prettier clean
+
+**Branch:** `claude/dreamy-dirac-08efr1`
+**Commit:** `7e2f0a3`
+
+**Index updated:** no (no new wiki pages created)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.

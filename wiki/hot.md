@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-07-19 — greener alternatives feature shipped.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -33,9 +33,18 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 147 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-08efr1` — pushed 2026-07-19, PR pending.
+
+**Open PRs (as of 2026-07-19):**
+- PR #34 `claude/dreamy-dirac-fzmsdt` — Digital Product Passport frontend (`/passport/[id]`); Docker build failing (needs PR #35 fix)
+- PR #35 `claude/nifty-goodall-s4f427` — Docker Dockerfile fix for better-sqlite3 on Alpine + CONTRIBUTING.md; all CI green
+
+**Greener Alternatives feature (2026-07-19):**
+- Backend: `GET /api/products/:id/recommendations` — same-category products with higher GreenGrade scores, sorted desc, limit 1–10 (default 5). Mounted at `/api/products` (with cache). Validates `limit` via `validate()` middleware.
+- Frontend: `ProductDetailClient.js` now calls `fetchRecommendations` (was already stubbed in `services/products.js`) via React Query; renders "Greener Alternatives" card below description with score badge, emissions, and links. Empty state: "You've picked a top choice in this category!"
+- Tests: 9 new Supertest tests in `api.test.js` — 147 total pass.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 
