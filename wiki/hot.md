@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-05-29 after governance charter ingest.
+**Last updated:** 2026-07-20 after leaderboard feature.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -35,7 +35,14 @@ tags: [hot-cache, meta]
 
 **Current test status:** 117 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**Active branch:** `claude/improve-application-S5njo` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-o8i9et` — pushed 2026-07-20.
+
+**Open PRs (2026-07-20):**
+- PR #35 (`claude/nifty-goodall-s4f427`): Docker Alpine build fix (adds python3/make/g++ to backend Dockerfile), CI **green**, ready to merge.
+- PR #34 (`claude/dreamy-dirac-fzmsdt`): Digital Product Passport frontend (/passport/[id] page, PassportCard, 153 backend tests), CI fails only on Docker Build Check — blocked on PR #35 merging first.
+- New: `claude/dreamy-dirac-o8i9et` — GreenGrade Leaderboard feature (see log 2026-07-20).
+
+**Leaderboard feature (2026-07-20):** Backend `GET /api/products/leaders?limit=N` returns top N products per category sorted by score. Frontend `/leaderboard` page with React Query + category cards. Added to Navbar. 5 new backend tests.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 

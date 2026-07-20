@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-20 — GreenGrade Leaderboard Feature
+
+**Operation:** Add per-category product leaderboard to surface top-scoring eco-friendly products.
+
+**Branch:** `claude/dreamy-dirac-o8i9et`
+
+**Files created:** 1
+- `frontend/src/app/leaderboard/page.js` — React Query page, category cards with top-N products, theme-aware
+
+**Files modified:** 5
+- `backend/src/routes/products.js` — new `GET /api/products/leaders` endpoint (validate + cache), top N per category sorted by GreenGrade score
+- `backend/__tests__/api.test.js` — 5 new integration tests (total 158 backend tests expected after merge)
+- `frontend/src/services/products.js` — `fetchLeaders(limit)` function
+- `frontend/src/services/api.js` — re-export `fetchLeaders`
+- `frontend/src/components/Navbar.js` — "Leaderboard" link added between Products and Scan
+
+**Context:** 2 open PRs at session start — PR #35 (Docker Alpine build fix, CI green) and PR #34 (Passport frontend, CI failing on Docker Build Check only). PR #35 is the prerequisite fix for PR #34. This session adds new leaderboard feature on fresh designated branch.
+
+**Verification:** ESLint clean, Prettier clean, frontend builds 567 static pages (added /leaderboard), backend route placed before /:id wildcard.
+
+**Index updated:** no (no new concepts, minor update only)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
