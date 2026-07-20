@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-20 — User Profile Page + Personal Carbon Goal
+
+**Operation:** Add `/profile` page with editable display name and personal weekly carbon goal (replaces hardcoded constant).
+
+**Files created:** 2
+- `backend/src/db/migrations/003_user_profile.sql` — adds `carbon_goal_kg REAL NOT NULL DEFAULT 10` to users, with CHECK constraint (0 < goal ≤ 1000)
+- `frontend/src/app/profile/page.js` — profile page: account info display, inline editing form with range slider for goal, favorites count chip, links to Carbon Tracker / Favorites
+
+**Files modified:** 7
+- `backend/src/routes/auth.js` — extended GET /me to include carbon_goal_kg; added PUT /profile (requireAuth) endpoint
+- `backend/src/index.js` — added `skip: () => isTest` to all rate limiters so test suites don't exhaust auth limit
+- `backend/__tests__/auth.test.js` — 10 new tests for PUT /api/auth/profile (401, 400 validation x4, update name, update goal, update both, /me round-trip)
+- `frontend/src/services/auth.js` — added `updateProfile(data)` function
+- `frontend/src/services/api.js` — re-export updateProfile
+- `frontend/src/app/carbon/page.js` — reads `weeklyGoalKg` from profile query instead of constant; falls back to WEEKLY_CARBON_GOAL_KG; adds "Adjust goal →" link to /profile
+- `frontend/src/components/Navbar.js` — authenticated username links to /profile; mobile menu shows "Name — Profile" link
+
+**Verification:**
+- 147 backend tests pass (was 117; +10 new profile tests, +20 from rate-limiter skip exposing previously-suppressed tests)
+- ESLint clean (next/core-web-vitals), Prettier clean throughout
+- Branch: `claude/nifty-goodall-r6obfw`, pushed to origin
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
