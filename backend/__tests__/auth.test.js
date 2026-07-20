@@ -131,4 +131,106 @@ describe("Auth endpoints - validation", () => {
       expect(res.status).toBe(401);
     });
   });
+
+  describe("PUT /api/auth/profile", () => {
+    const email = `profile-${uid()}@example.com`;
+    const password = "ProfilePass1";
+    let token;
+
+    beforeAll(async () => {
+      const reg = await request(app).post("/api/auth/register").send({
+        name: "Profile User",
+        email,
+        password,
+      });
+      token = reg.body.token;
+    });
+
+    test("should return 401 without auth", async () => {
+      const res = await request(app).put("/api/auth/profile").send({ name: "New Name" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should return 400 when no fields provided", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
+      expect(res.status).toBe(400);
+      expect(res.body.error).toContain("name or carbon_goal_kg");
+    });
+
+    test("should return 400 for empty name", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "   " });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/non-empty/i);
+    });
+
+    test("should return 400 for name exceeding 50 characters", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "A".repeat(51) });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/50 characters/);
+    });
+
+    test("should return 400 for invalid carbon_goal_kg", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ carbon_goal_kg: -5 });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toContain("carbon_goal_kg");
+    });
+
+    test("should return 400 for carbon_goal_kg exceeding 1000", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ carbon_goal_kg: 1001 });
+      expect(res.status).toBe(400);
+    });
+
+    test("should update display name", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Updated Name" });
+      expect(res.status).toBe(200);
+      expect(res.body.user.name).toBe("Updated Name");
+    });
+
+    test("should update carbon goal", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ carbon_goal_kg: 7.5 });
+      expect(res.status).toBe(200);
+      expect(res.body.user.carbon_goal_kg).toBe(7.5);
+    });
+
+    test("should update both name and carbon goal together", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Final Name", carbon_goal_kg: 15 });
+      expect(res.status).toBe(200);
+      expect(res.body.user.name).toBe("Final Name");
+      expect(res.body.user.carbon_goal_kg).toBe(15);
+    });
+
+    test("GET /api/auth/me returns carbon_goal_kg after update", async () => {
+      await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ carbon_goal_kg: 12 });
+      const me = await request(app).get("/api/auth/me").set("Authorization", `Bearer ${token}`);
+      expect(me.status).toBe(200);
+      expect(me.body.user.carbon_goal_kg).toBe(12);
+    });
+  });
 });

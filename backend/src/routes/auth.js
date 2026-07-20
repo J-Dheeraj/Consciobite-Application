@@ -167,7 +167,7 @@ router.post("/logout", (_req, res) => {
 router.get("/me", requireAuth, (req, res) => {
   const db = getDb();
   const user = db
-    .prepare("SELECT id, email, name, created_at FROM users WHERE id = ?")
+    .prepare("SELECT id, email, name, created_at, carbon_goal_kg FROM users WHERE id = ?")
     .get(req.user.id);
 
   if (!user) {
@@ -175,6 +175,55 @@ router.get("/me", requireAuth, (req, res) => {
   }
 
   res.json({ user });
+});
+
+// PUT /api/auth/profile - update display name and/or personal carbon goal
+router.put("/profile", requireAuth, (req, res) => {
+  const { name, carbon_goal_kg } = req.body;
+
+  if (name === undefined && carbon_goal_kg === undefined) {
+    return res.status(400).json({ error: "Provide name or carbon_goal_kg to update" });
+  }
+
+  if (name !== undefined) {
+    if (typeof name !== "string" || !name.trim()) {
+      return res.status(400).json({ error: "Name must be a non-empty string" });
+    }
+    if (name.length > 50) {
+      return res.status(400).json({ error: "Name must not exceed 50 characters" });
+    }
+  }
+
+  if (carbon_goal_kg !== undefined) {
+    const goal = Number(carbon_goal_kg);
+    if (!Number.isFinite(goal) || goal <= 0 || goal > 1000) {
+      return res.status(400).json({ error: "carbon_goal_kg must be a number between 0 and 1000" });
+    }
+  }
+
+  const db = getDb();
+  const existing = db
+    .prepare("SELECT id, name, carbon_goal_kg FROM users WHERE id = ?")
+    .get(req.user.id);
+
+  if (!existing) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const newName = name !== undefined ? validator.escape(validator.trim(name)) : existing.name;
+  const newGoal = carbon_goal_kg !== undefined ? Number(carbon_goal_kg) : existing.carbon_goal_kg;
+
+  db.prepare("UPDATE users SET name = ?, carbon_goal_kg = ? WHERE id = ?").run(
+    newName,
+    newGoal,
+    req.user.id
+  );
+
+  const updated = db
+    .prepare("SELECT id, email, name, created_at, carbon_goal_kg FROM users WHERE id = ?")
+    .get(req.user.id);
+
+  res.json({ user: updated });
 });
 
 // POST /api/auth/refresh - refresh an unexpired token

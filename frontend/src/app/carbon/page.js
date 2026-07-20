@@ -4,7 +4,12 @@ import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchCarbonSummary, fetchCarbonLogs, deleteCarbonLog } from "@/services/api";
+import {
+  fetchCarbonSummary,
+  fetchCarbonLogs,
+  deleteCarbonLog,
+  fetchCurrentUser,
+} from "@/services/api";
 import { WEEKLY_CARBON_GOAL_KG } from "@/utils/constants";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
@@ -30,8 +35,15 @@ export default function CarbonTracker() {
       })),
   });
 
+  const { data: profileData } = useQuery({
+    queryKey: ["profile"],
+    queryFn: fetchCurrentUser,
+    enabled: isAuthenticated,
+  });
+
   const summary = carbonData?.summary || null;
   const logs = carbonData?.logs || [];
+  const weeklyGoalKg = profileData?.user?.carbon_goal_kg ?? WEEKLY_CARBON_GOAL_KG;
 
   const handleDelete = useCallback(
     async (id) => {
@@ -94,7 +106,7 @@ export default function CarbonTracker() {
   }
 
   const weeklyProgress = summary
-    ? Math.min((summary.weekly.emissions / WEEKLY_CARBON_GOAL_KG) * 100, 100)
+    ? Math.min((summary.weekly.emissions / weeklyGoalKg) * 100, 100)
     : 0;
   const trendData = summary?.trend || [];
 
@@ -177,7 +189,7 @@ export default function CarbonTracker() {
                     fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: "1.5rem",
-                    color: summary.weekly.emissions > WEEKLY_CARBON_GOAL_KG ? "#e63946" : "#2d6a4f",
+                    color: summary.weekly.emissions > weeklyGoalKg ? "#e63946" : "#2d6a4f",
                   }}
                 >
                   {summary.weekly.emissions}
@@ -281,7 +293,7 @@ export default function CarbonTracker() {
                     color: isDark ? "#e8f5e9" : "#333",
                   }}
                 >
-                  Weekly Goal: {WEEKLY_CARBON_GOAL_KG} kg CO{"\u2082"}e
+                  Weekly Goal: {weeklyGoalKg} kg CO{"\u2082"}e
                 </span>
                 <span
                   style={{
@@ -313,6 +325,14 @@ export default function CarbonTracker() {
                         : "linear-gradient(90deg, #e9c46a, #e63946)",
                   }}
                 />
+              </div>
+              <div style={{ textAlign: "right", marginTop: 6 }}>
+                <Link
+                  href="/profile"
+                  style={{ fontSize: "0.75rem", color: isDark ? "#74c69d" : "#40916c" }}
+                >
+                  Adjust goal →
+                </Link>
               </div>
             </div>
 

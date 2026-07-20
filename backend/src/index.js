@@ -122,12 +122,15 @@ app.use(
 );
 
 // ---------- Rate limiting ----------
+const isTest = process.env.NODE_ENV === "test";
+
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests, please try again later." },
+  skip: () => isTest,
 });
 app.use("/api/", apiLimiter);
 
@@ -137,6 +140,7 @@ const scanLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many scan requests, please try again later." },
+  skip: () => isTest,
 });
 app.use("/api/products/scan", scanLimiter);
 
@@ -146,6 +150,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many auth attempts, please try again later." },
+  skip: () => isTest,
 });
 app.use("/api/auth", authLimiter);
 

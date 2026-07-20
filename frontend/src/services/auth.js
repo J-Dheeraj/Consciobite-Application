@@ -17,3 +17,10 @@ export async function loginUser(email, password) {
 export async function fetchCurrentUser() {
   return httpClient(`${API_BASE}/auth/me`);
 }
+
+export async function updateProfile(data) {
+  return httpClient(`${API_BASE}/auth/profile`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
