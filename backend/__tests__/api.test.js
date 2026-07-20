@@ -83,6 +83,56 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/leaders", () => {
+    test("should return leaders for all categories", async () => {
+      const res = await request(app).get("/api/products/leaders");
+      expect(res.status).toBe(200);
+      expect(res.body.leaders).toBeDefined();
+      expect(res.body.limit).toBe(5);
+      const cats = Object.keys(res.body.leaders);
+      expect(cats.length).toBeGreaterThan(0);
+    });
+
+    test("each category should return up to limit products sorted by score desc", async () => {
+      const res = await request(app).get("/api/products/leaders?limit=3");
+      expect(res.status).toBe(200);
+      expect(res.body.limit).toBe(3);
+      for (const prods of Object.values(res.body.leaders)) {
+        expect(prods.length).toBeLessThanOrEqual(3);
+        for (let i = 1; i < prods.length; i++) {
+          expect(prods[i].score).toBeLessThanOrEqual(prods[i - 1].score);
+        }
+      }
+    });
+
+    test("each product entry should have required fields", async () => {
+      const res = await request(app).get("/api/products/leaders?limit=2");
+      expect(res.status).toBe(200);
+      for (const prods of Object.values(res.body.leaders)) {
+        prods.forEach((p) => {
+          expect(p).toHaveProperty("id");
+          expect(p).toHaveProperty("name");
+          expect(p).toHaveProperty("brand");
+          expect(p).toHaveProperty("score");
+          expect(p).toHaveProperty("emissions");
+          expect(p).toHaveProperty("color");
+          expect(["green", "yellow", "red"]).toContain(p.color);
+        });
+      }
+    });
+
+    test("should clamp limit to valid range", async () => {
+      const res = await request(app).get("/api/products/leaders?limit=50");
+      expect(res.status).toBe(200);
+      expect(res.body.limit).toBe(10);
+    });
+
+    test("should return 400 for non-numeric limit", async () => {
+      const res = await request(app).get("/api/products/leaders?limit=abc");
+      expect(res.status).toBe(400);
+    });
+  });
+
   describe("GET /api/products/:id", () => {
     test("should return 400 for invalid ID", async () => {
       const res = await request(app).get("/api/products/inv@lid!");

@@ -29,3 +29,7 @@ export async function fetchStats() {
 export async function fetchRecommendations(id) {
   return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/recommendations`);
 }
+
+export async function fetchLeaders(limit = 5) {
+  return httpClient(`${API_BASE}/products/leaders?limit=${encodeURIComponent(limit)}`);
+}

@@ -2,10 +2,17 @@ const express = require("express");
 const validator = require("validator");
 const router = express.Router();
 const { validate } = require("../middleware/validate");
+const { cacheMiddleware } = require("../middleware/cache");
 
 const COMPARE_SCHEMA = {
   query: {
     ids: { required: true, type: "string", message: "Provide product IDs as ?ids=id1,id2,id3" },
+  },
+};
+
+const LEADERS_SCHEMA = {
+  query: {
+    limit: { required: false, pattern: /^\d+$/, message: "limit must be a positive integer" },
   },
 };
 const products = require("../data/products.json");
@@ -135,6 +142,35 @@ router.get("/stats", (req, res) => {
   stats.sort((a, b) => b.avgScore - a.avgScore);
 
   res.json({ totalProducts: products.length, categories: stats });
+});
+
+// GET /api/products/leaders
+router.get("/leaders", validate(LEADERS_SCHEMA), cacheMiddleware(300), (req, res) => {
+  const limit = Math.min(10, Math.max(1, parseInt(req.query.limit, 10) || 5));
+
+  const byCategory = {};
+  for (const p of enrichedProducts) {
+    if (!byCategory[p.category]) byCategory[p.category] = [];
+    byCategory[p.category].push(p);
+  }
+
+  const leaders = {};
+  for (const [cat, prods] of Object.entries(byCategory)) {
+    leaders[cat] = prods
+      .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
+      .slice(0, limit)
+      .map((p) => ({
+        id: p.id,
+        name: p.name,
+        brand: p.brand,
+        category: p.category,
+        score: p.greenGrade.score,
+        emissions: p.greenGrade.totalEmissions,
+        color: p.greenGrade.color,
+      }));
+  }
+
+  res.json({ leaders, limit });
 });
 
 // Lookup a product by barcode via Open Food Facts. Returns enriched product or null.
