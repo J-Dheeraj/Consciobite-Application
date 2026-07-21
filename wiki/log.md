@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-21 — Product UX & Feature Completeness Pass
+
+**Operation:** Scheduled maintenance session. Fixed 6 high-impact product gaps identified via codebase exploration.
+
+**Branch:** `claude/nifty-goodall-nbeoa8`
+
+**Changes:**
+
+1. **Backend `products.js`** — Added `GET /api/products/:id/recommendations` returning top 3 same-category products sorted by GreenGrade score descending, excluding the current product.
+2. **Backend `api.test.js`** — 5 new integration tests for recommendations endpoint. Test count: 137 → 142.
+3. **`ProductDetailClient.js`** — 4 changes: wired ReviewSection (was built, never rendered), added Greener Alternatives section using recommendations API, added quantity stepper (1–10) for Log Purchase (was hardcoded to 1), fixed Back button to use `router.back()` instead of `router.push("/")`.
+4. **`compare/page.js`** — Replaced one-time `fetchProducts({ limit: 100 })` with debounced search calling the API on each keystroke. Now searches all 550+ products.
+5. **`products/page.js`** — Changed product cards from `<button onClick>` to `<Link href>` for right-click, middle-click, and keyboard accessibility.
+
+**Verification:** 142 backend tests pass. Prettier and ESLint clean.
+
+**Open PRs (unchanged):**
+- PR #35 (`claude/nifty-goodall-s4f427`): Docker fix — all CI green, ready to merge
+- PR #34 (`claude/dreamy-dirac-fzmsdt`): DPP frontend — Docker CI will pass once #35 merges
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
