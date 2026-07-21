@@ -215,6 +215,56 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/:id/recommendations", () => {
+    test("should return recommendations for a valid product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.recommendations)).toBe(true);
+      expect(typeof res.body.category).toBe("string");
+    });
+
+    test("recommendations should be from the same category", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const { category, recommendations } = res.body;
+      recommendations.forEach((r) => {
+        expect(r.category).toBe(category);
+      });
+    });
+
+    test("recommendations should not include the queried product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const ids = res.body.recommendations.map((r) => r.id);
+      expect(ids).not.toContain("1");
+    });
+
+    test("recommendations should be sorted by score descending", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const scores = res.body.recommendations.map((r) => r.greenGrade.score);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+      }
+    });
+
+    test("should return at most 6 recommendations", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(res.body.recommendations.length).toBeLessThanOrEqual(6);
+    });
+
+    test("should return 400 for invalid product ID", async () => {
+      const res = await request(app).get("/api/products/inv@lid/recommendations");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 404 for non-existent product", async () => {
+      const res = await request(app).get("/api/products/99999/recommendations");
+      expect(res.status).toBe(404);
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");
