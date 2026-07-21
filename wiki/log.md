@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-21 — Recommendations Endpoint + Similar Products UI
+
+**Operation:** Add missing `GET /api/products/:id/recommendations` backend endpoint, wire it into the product detail page, and write 7 integration tests. Also merged PR #35 (Dockerfile fix) and rebased PR #34 (Passport frontend) to unblock its CI.
+
+**Files changed:** 3
+- `backend/src/routes/products.js` — added `GET /:id/recommendations` route (placed before `/:id` to avoid shadowing); returns up to 6 same-category products sorted by score desc, excludes self; 400/404 on invalid or missing product
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added `useQuery(["recommendations", id])` call; added Similar Products card section above Back button
+- `backend/__tests__/api.test.js` — 7 new Supertest tests: happy path, same-category, self-exclusion, score ordering, max-6, bad ID, missing product
+
+**PR actions:**
+- PR #35 merged to main (Dockerfile fix + CONTRIBUTING.md, all CI green)
+- PR #34 rebased onto new main (wiki conflict resolved by merging both sides)
+- PR #36 opened for this session's work: `claude/dreamy-dirac-4ua0hn` → `main`
+
+**Verification:**
+- 144 backend tests passing (137 → 144, all 7 new tests green)
+- ESLint and Prettier clean (backend + frontend)
+- `GET /api/products/1/recommendations` returns 200 with ≤6 same-category products
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-05-29 — Governance Charter Ingested
 
 **Operation:** Ingest GreenGrade Independent Advisory Panel Terms of Reference v1.0 into wiki vault and repo.
