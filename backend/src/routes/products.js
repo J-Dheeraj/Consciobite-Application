@@ -175,6 +175,23 @@ async function lookupOpenFoodFacts(barcode) {
   }
 }
 
+// GET /api/products/:id/recommendations — top 3 same-category products by GreenGrade score
+router.get("/:id/recommendations", (req, res) => {
+  const id = sanitize(req.params.id, 20);
+  if (!validator.isAlphanumeric(id)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+  const product = enrichedProducts.find((p) => p.id === id);
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+  const recommendations = enrichedProducts
+    .filter((p) => p.category === product.category && p.id !== id)
+    .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
+    .slice(0, 3);
+  res.json({ recommendations });
+});
+
 // GET /api/products/:id
 router.get("/:id", async (req, res, next) => {
   try {

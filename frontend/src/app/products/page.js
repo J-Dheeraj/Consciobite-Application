@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { fetchProducts } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import { useTheme } from "@/context/ThemeContext";
@@ -27,7 +27,6 @@ const SORT_OPTIONS = [
 ];
 
 export default function Products() {
-  const router = useRouter();
   const { theme } = useTheme();
   const isDark = theme === "dark";
   const [products, setProducts] = useState([]);
@@ -216,9 +215,9 @@ export default function Products() {
             }}
           >
             {products.map((p) => (
-              <button
+              <Link
                 key={p.id}
-                onClick={() => router.push(`/product/${p.id}`)}
+                href={`/product/${p.id}`}
                 style={{
                   background: cardBg,
                   border: `1px solid ${cardBorder}`,
@@ -230,6 +229,7 @@ export default function Products() {
                   display: "flex",
                   flexDirection: "column",
                   gap: 12,
+                  textDecoration: "none",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.boxShadow = "0 4px 20px rgba(0,0,0,0.08)";
@@ -309,7 +309,7 @@ export default function Products() {
                     )}
                   </div>
                 )}
-              </button>
+              </Link>
             ))}
           </div>
         )}

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { fetchProducts, compareProducts } from "@/services/api";
 import GradeBadge from "@/components/GradeBadge";
 import GradeBreakdown from "@/components/GradeBreakdown";
@@ -9,18 +9,23 @@ import PageHero from "@/components/PageHero";
 export default function Compare() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [allProducts, setAllProducts] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [selected, setSelected] = useState([]);
   const [compared, setCompared] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+  const debounceRef = useRef(null);
 
   useEffect(() => {
-    fetchProducts({ limit: 100 })
-      .then((data) => setAllProducts(data.products))
-      .catch((err) => setError(err.message || "Unable to load products."));
-  }, []);
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      fetchProducts({ search: searchFilter || undefined, limit: 20 })
+        .then((data) => setSearchResults(data.products))
+        .catch((err) => setError(err.message || "Unable to load products."));
+    }, 300);
+    return () => clearTimeout(debounceRef.current);
+  }, [searchFilter]);
 
   const toggleProduct = (id) => {
     setSelected((prev) => {
@@ -45,13 +50,7 @@ export default function Compare() {
     }
   };
 
-  const filtered = searchFilter
-    ? allProducts.filter(
-        (p) =>
-          p.name.toLowerCase().includes(searchFilter.toLowerCase()) ||
-          p.brand.toLowerCase().includes(searchFilter.toLowerCase())
-      )
-    : allProducts;
+  const filtered = searchResults;
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>

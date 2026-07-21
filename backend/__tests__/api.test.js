@@ -112,6 +112,43 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/:id/recommendations", () => {
+    test("should return up to 3 recommendations for a valid product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.recommendations)).toBe(true);
+      expect(res.body.recommendations.length).toBeLessThanOrEqual(3);
+    });
+
+    test("recommendations should be in the same category as the source product", async () => {
+      const productRes = await request(app).get("/api/products/1");
+      const category = productRes.body.category;
+      const res = await request(app).get("/api/products/1/recommendations");
+      res.body.recommendations.forEach((r) => {
+        expect(r.category).toBe(category);
+        expect(r.id).not.toBe("1");
+      });
+    });
+
+    test("recommendations should be sorted by greenGrade score descending", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      const scores = res.body.recommendations.map((r) => r.greenGrade.score);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+      }
+    });
+
+    test("should return 404 for non-existent product", async () => {
+      const res = await request(app).get("/api/products/zzzzzzzzz/recommendations");
+      expect(res.status).toBe(404);
+    });
+
+    test("should return 400 for invalid product ID", async () => {
+      const res = await request(app).get("/api/products/inv@lid/recommendations");
+      expect(res.status).toBe(400);
+    });
+  });
+
   describe("GET /api/products/scan/:barcode", () => {
     test("should return 400 for invalid barcode format", async () => {
       const res = await request(app).get("/api/products/scan/abc");

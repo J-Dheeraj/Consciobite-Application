@@ -3,10 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchRecommendations } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
+import ReviewSection from "@/components/ReviewSection";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/AuthContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
@@ -85,6 +86,7 @@ export default function ProductDetail() {
   const [loggedPurchase, setLoggedPurchase] = useState(false);
   const [logError, setLogError] = useState("");
   const [showStats, setShowStats] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const {
     data: product,
@@ -95,6 +97,12 @@ export default function ProductDetail() {
     queryFn: () => fetchProduct(id),
   });
 
+  const { data: recData } = useQuery({
+    queryKey: ["recommendations", id],
+    queryFn: () => fetchRecommendations(id),
+    enabled: !!id,
+  });
+
   const error = queryError ? "Unable to load product details." : "";
   const [fav, setFav] = useState(false);
 
@@ -103,13 +111,19 @@ export default function ProductDetail() {
     setLoggedPurchase(false);
     setLogError("");
     setShowStats(false);
+    setQuantity(1);
   }, [product]);
 
   const handleLogPurchase = async () => {
     if (!product) return;
     setLogError("");
     try {
-      await logCarbonPurchase(product.id, product.name, 1, product.greenGrade.totalEmissions);
+      await logCarbonPurchase(
+        product.id,
+        product.name,
+        quantity,
+        product.greenGrade.totalEmissions
+      );
       setLoggedPurchase(true);
     } catch (err) {
       setLogError(err.message || "Unable to log purchase. Please try again.");
@@ -492,25 +506,65 @@ export default function ProductDetail() {
           ) : (
             isAuthenticated && (
               <>
-                <button
-                  onClick={handleLogPurchase}
-                  disabled={loggedPurchase}
+                <div
                   style={{
-                    width: "100%",
-                    padding: "13px 0",
-                    borderRadius: 28,
-                    border: "none",
-                    background: loggedPurchase ? "#1a5e3a" : "#27ae60",
-                    color: "#fff",
-                    fontSize: "0.95rem",
-                    fontWeight: 700,
-                    cursor: loggedPurchase ? "default" : "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
                     marginBottom: 10,
-                    boxShadow: "0 4px 12px rgba(39,174,96,0.3)",
                   }}
                 >
-                  {loggedPurchase ? "\u2713 Logged to Carbon Tracker" : "Log Purchase"}
-                </button>
+                  <label
+                    htmlFor="purchase-qty"
+                    style={{
+                      color: "#1a3a2a",
+                      fontSize: "0.85rem",
+                      fontWeight: 600,
+                      flexShrink: 0,
+                    }}
+                  >
+                    Qty:
+                  </label>
+                  <input
+                    id="purchase-qty"
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={quantity}
+                    onChange={(e) =>
+                      setQuantity(Math.max(1, Math.min(10, parseInt(e.target.value, 10) || 1)))
+                    }
+                    disabled={loggedPurchase}
+                    style={{
+                      width: 60,
+                      padding: "8px 10px",
+                      borderRadius: 10,
+                      border: "1px solid #2d6a4f",
+                      fontSize: "0.9rem",
+                      textAlign: "center",
+                      background: "#fff",
+                      color: "#1a3a2a",
+                    }}
+                  />
+                  <button
+                    onClick={handleLogPurchase}
+                    disabled={loggedPurchase}
+                    style={{
+                      flex: 1,
+                      padding: "13px 0",
+                      borderRadius: 28,
+                      border: "none",
+                      background: loggedPurchase ? "#1a5e3a" : "#27ae60",
+                      color: "#fff",
+                      fontSize: "0.95rem",
+                      fontWeight: 700,
+                      cursor: loggedPurchase ? "default" : "pointer",
+                      boxShadow: "0 4px 12px rgba(39,174,96,0.3)",
+                    }}
+                  >
+                    {loggedPurchase ? "\u2713 Logged to Carbon Tracker" : "Log Purchase"}
+                  </button>
+                </div>
                 {logError && (
                   <p
                     role="alert"
@@ -1087,10 +1141,67 @@ export default function ProductDetail() {
           </p>
         </div>
 
+        {/* Greener Alternatives */}
+        {recData && recData.recommendations && recData.recommendations.length > 0 && (
+          <div
+            style={{
+              width: "100%",
+              background: "#14352a",
+              borderRadius: 18,
+              padding: "16px 20px",
+              marginBottom: 16,
+            }}
+          >
+            <h3
+              style={{
+                color: "#52b788",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                fontSize: "1rem",
+                marginBottom: 12,
+              }}
+            >
+              Greener Alternatives
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {recData.recommendations.map((rec) => (
+                <Link
+                  key={rec.id}
+                  href={`/product/${rec.id}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "10px 14px",
+                    borderRadius: 12,
+                    background: "rgba(255,255,255,0.06)",
+                    textDecoration: "none",
+                    color: "#e8f5e9",
+                  }}
+                >
+                  <span style={{ fontSize: "0.88rem", fontWeight: 500 }}>
+                    {rec.brand} {rec.name}
+                  </span>
+                  <GradeBadge
+                    score={rec.greenGrade.score}
+                    color={rec.greenGrade.color}
+                    size="small"
+                  />
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Reviews */}
+        <div style={{ width: "100%" }}>
+          <ReviewSection productId={id} />
+        </div>
+
         {/* Back button */}
-        <div style={{ width: "100%", maxWidth: 380, padding: "0 16px" }}>
+        <div style={{ width: "100%", maxWidth: 380, padding: "16px 16px 0" }}>
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.back()}
             style={{
               padding: "13px 32px",
               borderRadius: 10,
