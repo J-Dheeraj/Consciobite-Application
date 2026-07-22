@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-17 after Docker fix + CONTRIBUTING.md session.
+**Last updated:** 2026-07-22 — search suggestions endpoint, security audit fix.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -35,11 +35,19 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 153 backend tests passing (incl. 36 passport tests). Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 143 backend tests on `claude/nifty-goodall-uj91rj` (6 new suggestions tests). Main has 137. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`) — currently failing CI.
+**DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`) — failing CI due to `npm audit` (high CVEs). Fix is in `claude/nifty-goodall-uj91rj`.
 
-**Active branch:** `claude/nifty-goodall-s4f427` — PR open against `main`.
+**Security fix (2026-07-22):** `npm audit fix` bumped `brace-expansion` to 1.1.16 and `js-yaml` to 4.3.0 (and `express` + `qs` + `body-parser`), clearing 2 HIGH-severity CVEs. PR #34's backend test CI will pass once this merges and PR #34 rebases.
+
+**Search suggestions endpoint (2026-07-22):** `GET /api/products/suggestions?q=` returns up to 8 products matching name/brand, sorted by score desc. Validated: q required, minLength 2, maxLength 50. Response: `{suggestions: [{id, name, brand, category, score}], query}`. `fetchSuggestions()` added to frontend services.
+
+**Active branch:** `claude/nifty-goodall-uj91rj` — pushed, PR not yet created.
+
+**Recommendations feature (PR #36, branch `claude/dreamy-dirac-4ua0hn`):** `GET /api/products/:id/recommendations` in products.js; Similar Products section in ProductDetailClient.js; 7 new tests. No CI runs yet.
+
+**Passport feature (PR #34, branch `claude/dreamy-dirac-fzmsdt`):** Frontend page `/passport/[id]`; 36 passport tests; failing CI (npm audit). Will be unblocked after `claude/nifty-goodall-uj91rj` merges.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 
@@ -49,3 +57,5 @@ tags: [hot-cache, meta]
 - `/carbon` protected by `RequireAuth` — no in-page auth gates
 - httpOnly cookies for JWT; CSRF double-submit pattern
 - All Express routes use `validate()` middleware with `pattern:` not `type: "number"`
+- Route order in products.js: `/suggestions` and `/stats` must appear before `/:id` to avoid shadowing
+- `GET /api/products/suggestions` uses `minLength: 2` (validate() supports minLength/maxLength for strings)

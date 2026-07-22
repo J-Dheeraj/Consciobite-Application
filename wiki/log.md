@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-22 — Search Suggestions Endpoint + Security Audit Fix
+
+**Operation:** Autonomous scheduled session. Checked open PRs, diagnosed CI failures, fixed npm audit vulnerabilities, added `GET /api/products/suggestions` endpoint.
+
+**Files changed:** 5
+- `backend/package-lock.json` — bumped brace-expansion → 1.1.16, js-yaml → 4.3.0, express → 4.22.2, qs → 6.15.3, body-parser → 1.20.6; clears 2 HIGH CVEs (GHSA-3jxr-9vmj-r5cp, GHSA-h67p-54hq-rp68) that were blocking PR #34's CI
+- `backend/src/routes/products.js` — added `GET /suggestions` route with `SUGGESTIONS_SCHEMA` (q: required, string, minLength 2, maxLength 50); returns up to 8 enriched products matching name/brand, sorted by score desc; placed before `/:id` catch-all
+- `backend/__tests__/api.test.js` — 6 new Supertest tests for `/suggestions`: happy path, missing q, short q, no matches, max-8 cap, score ordering
+- `frontend/src/services/products.js` — added `fetchSuggestions(q)` function
+- `frontend/src/services/api.js` — re-exported `fetchSuggestions`
+
+**Verification:**
+- 143 backend tests passing (137 → 143, all 6 new tests green)
+- `npm audit --omit=dev --audit-level=high` → 0 vulnerabilities
+- Prettier and ESLint clean
+
+**Open PRs status:**
+- PR #34 (`claude/dreamy-dirac-fzmsdt`): Backend Tests failing due to npm audit; will pass after this branch merges and PR #34 rebases
+- PR #36 (`claude/dreamy-dirac-4ua0hn`): 0 CI runs yet; adds `/recommendations` route
+
+**Branch:** `claude/nifty-goodall-uj91rj` — pushed to remote
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
