@@ -26,6 +26,7 @@ function sanitize(str, maxLen = 100) {
 }
 
 const VALID_SORTS = ["grade_asc", "grade_desc", "emissions_asc", "emissions_desc"];
+const VALID_TIERS = ["green", "amber", "red"];
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 100;
 const OPEN_FOOD_FACTS_TIMEOUT_MS = 10_000;
@@ -35,6 +36,7 @@ router.get("/", (req, res) => {
   const search = req.query.search ? sanitize(req.query.search, 50) : "";
   const category = req.query.category ? sanitize(req.query.category, 30) : "";
   const sort = VALID_SORTS.includes(req.query.sort) ? req.query.sort : "";
+  const tier = VALID_TIERS.includes(req.query.tier) ? req.query.tier : "";
 
   const page = Math.max(1, parseInt(req.query.page, 10) || 1);
   const limit = Math.min(
@@ -57,6 +59,11 @@ router.get("/", (req, res) => {
   if (category) {
     results = results.filter((p) => p.category.toLowerCase() === category.toLowerCase());
   }
+
+  if (tier === "green") results = results.filter((p) => p.greenGrade.score >= 7);
+  else if (tier === "amber")
+    results = results.filter((p) => p.greenGrade.score >= 4 && p.greenGrade.score < 7);
+  else if (tier === "red") results = results.filter((p) => p.greenGrade.score < 4);
 
   if (sort === "grade_asc") results.sort((a, b) => a.greenGrade.score - b.greenGrade.score);
   else if (sort === "grade_desc") results.sort((a, b) => b.greenGrade.score - a.greenGrade.score);
