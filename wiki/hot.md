@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-17 after Docker fix + CONTRIBUTING.md session.
+**Last updated:** 2026-07-22 after npm audit fix + tier filter + carbon dashboard widget session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -25,6 +25,12 @@ tags: [hot-cache, meta]
 
 **Docker fix (2026-07-17):** Backend `Dockerfile` lacked `python3 make g++` needed by `better-sqlite3` to compile on Alpine (musl — no prebuilt binary). Added `RUN apk add --no-cache python3 make g++` before `npm ci --production`. This was blocking PR #34's Docker Build Check CI job.
 
+**npm audit fix (2026-07-22):** `brace-expansion <1.1.16` (high) and `js-yaml 4.0.0–4.2.0` (high) were in backend production dependencies, blocking PR #34's Backend Tests CI step. Fixed via `npm audit fix` on main (`claude/dreamy-dirac-6st5cb`, PR #37). Once #37 merges, PR #34 can rebase and its CI will pass.
+
+**Grade tier filter (2026-07-22):** Added `?tier=green|amber|red` to `GET /api/products`. Green = score ≥ 7, Amber = [4,7), Red = <4. Frontend products page has pill buttons for tier selection. 4 new Supertest tests added; 141 backend tests total.
+
+**Dashboard carbon widget (2026-07-22):** Authenticated users see a "Your Carbon Footprint" card on the dashboard — weekly progress bar vs WEEKLY_CARBON_GOAL_KG (10 kg), plus total/monthly/log-count mini-stats. Uses existing `/api/carbon/summary` with `enabled: isAuthenticated` guard.
+
 **Recent fixes landed (2026-05-13):**
 - 7 merge conflicts resolved between feature branch and main
 - Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
@@ -35,11 +41,11 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 153 backend tests passing (incl. 36 passport tests). Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 141 backend tests passing on main (passport tests live only on PR #34 branch). Frontend builds 566 static pages (16 routes + 550 product pages).
 
 **DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`) — currently failing CI.
 
-**Active branch:** `claude/nifty-goodall-s4f427` — PR open against `main`.
+**Active branch:** `claude/dreamy-dirac-6st5cb` — PR #37 open against `main`.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 

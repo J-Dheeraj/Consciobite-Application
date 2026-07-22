@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-22 — npm Audit Fix + Tier Filter + Carbon Dashboard Widget
+
+**Operation:** Scheduled session. Fixed blocking npm audit vulnerabilities, added grade-tier filter to products API and UI, added personal carbon summary widget to dashboard.
+
+**Root cause (audit):** `brace-expansion <1.1.16` (high — DoS) and `js-yaml 4.0.0–4.2.0` (high — quadratic-complexity DoS) in backend production dependencies. These were blocking CI on PR #34. Fixed via `npm audit fix` updating `package-lock.json`.
+
+**Files changed:** 4
+- `backend/package-lock.json` — audit fix (brace-expansion, js-yaml, body-parser, qs)
+- `backend/src/routes/products.js` — added `?tier=green|amber|red` filter param
+- `backend/__tests__/api.test.js` — 4 new Supertest tests for tier filter (total 141 passing)
+- `frontend/src/app/products/page.js` — grade tier pill buttons (All / Green / Amber / Red)
+- `frontend/src/app/dashboard/page.js` — personal carbon summary widget (enabled: isAuthenticated)
+
+**Branch:** `claude/dreamy-dirac-6st5cb`
+
+**PR #37:** https://github.com/J-Dheeraj/Consciobite-Application/pull/37
+
+**Context for PR #34:** `npm audit --production --audit-level=high` now returns 0 vulnerabilities on main once PR #37 merges; PR #34 can rebase to unblock its CI.
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
