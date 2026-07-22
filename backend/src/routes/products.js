@@ -8,6 +8,17 @@ const COMPARE_SCHEMA = {
     ids: { required: true, type: "string", message: "Provide product IDs as ?ids=id1,id2,id3" },
   },
 };
+const SUGGESTIONS_SCHEMA = {
+  query: {
+    q: {
+      required: true,
+      type: "string",
+      minLength: 2,
+      maxLength: 50,
+      message: "q must be 2–50 characters",
+    },
+  },
+};
 const products = require("../data/products.json");
 const { calculateGreenGrade } = require("../services/greengrade");
 const { logger } = require("../middleware/logger");
@@ -174,6 +185,23 @@ async function lookupOpenFoodFacts(barcode) {
     return null;
   }
 }
+
+// GET /api/products/suggestions?q=<query>
+router.get("/suggestions", validate(SUGGESTIONS_SCHEMA), (req, res) => {
+  const q = sanitize(req.query.q, 50).toLowerCase();
+  const matches = enrichedProducts
+    .filter((p) => p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q))
+    .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
+    .slice(0, 8)
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      brand: p.brand,
+      category: p.category,
+      score: p.greenGrade.score,
+    }));
+  res.json({ suggestions: matches, query: q });
+});
 
 // GET /api/products/:id
 router.get("/:id", async (req, res, next) => {

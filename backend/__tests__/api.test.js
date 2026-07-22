@@ -83,6 +83,53 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/suggestions", () => {
+    test("should return suggestions matching product name", async () => {
+      const res = await request(app).get("/api/products/suggestions?q=or");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.suggestions)).toBe(true);
+      expect(typeof res.body.query).toBe("string");
+      res.body.suggestions.forEach((s) => {
+        expect(s).toHaveProperty("id");
+        expect(s).toHaveProperty("name");
+        expect(s).toHaveProperty("brand");
+        expect(s).toHaveProperty("category");
+        expect(s).toHaveProperty("score");
+      });
+    });
+
+    test("should return 400 when q is missing", async () => {
+      const res = await request(app).get("/api/products/suggestions");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 400 when q is less than 2 characters", async () => {
+      const res = await request(app).get("/api/products/suggestions?q=a");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return empty suggestions when no matches", async () => {
+      const res = await request(app).get("/api/products/suggestions?q=zzzzzzzzzzzzz");
+      expect(res.status).toBe(200);
+      expect(res.body.suggestions).toHaveLength(0);
+    });
+
+    test("should return at most 8 suggestions", async () => {
+      const res = await request(app).get("/api/products/suggestions?q=or");
+      expect(res.status).toBe(200);
+      expect(res.body.suggestions.length).toBeLessThanOrEqual(8);
+    });
+
+    test("suggestions should be sorted by score descending", async () => {
+      const res = await request(app).get("/api/products/suggestions?q=or");
+      expect(res.status).toBe(200);
+      const scores = res.body.suggestions.map((s) => s.score);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+      }
+    });
+  });
+
   describe("GET /api/products/:id", () => {
     test("should return 400 for invalid ID", async () => {
       const res = await request(app).get("/api/products/inv@lid!");
