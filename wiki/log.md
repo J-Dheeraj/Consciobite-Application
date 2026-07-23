@@ -13,6 +13,32 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-23 — User Profile Page
+
+**Operation:** Implemented user profile feature — backend endpoints + frontend page.
+
+**Branch:** `claude/dreamy-dirac-t5vjz8`
+
+**Files created:** 1
+- `frontend/src/app/profile/page.js` — profile page (account info, carbon stats, name + password forms)
+
+**Files modified:** 6
+- `backend/src/routes/auth.js` — added `PUT /api/auth/profile` (update name) and `PUT /api/auth/password` (change password); both auth + CSRF protected
+- `backend/src/index.js` — auth rate limiter set to 10 000 in test mode to prevent 429s during integration tests
+- `backend/__tests__/auth.test.js` — 10 new integration tests (profile update, password change, edge cases); 148 total (up from 141)
+- `frontend/src/services/auth.js` — added `updateProfile()` and `changePassword()`
+- `frontend/src/context/AuthContext.js` — added `updateUser()` for optimistic name update after profile save
+- `frontend/src/components/Navbar.js` — user name in desktop + mobile nav is now a `<Link>` to `/profile`
+
+**Test results:** 148 backend tests passing. ESLint clean. Prettier clean. Next.js static build produces 567 pages.
+
+**Open PRs (unchanged):** #34 (DPP frontend), #36 (recommendations), #37 (tier filter + carbon widget).
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
