@@ -13,6 +13,36 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-23 — User Profile Feature
+
+**Operation:** Implement user profile page with name editing, password change, and activity stats.
+
+**Root cause / motivation:** The app had no way for users to view or update their account. The `/api/auth/me` endpoint existed but only for reading. The username in the Navbar was a plain span with no link.
+
+**Files created:** 1
+- `frontend/src/app/profile/page.js` — Profile page (account details, inline name edit, stat tiles, password form)
+
+**Files modified:** 6
+- `backend/src/routes/auth.js` — Added `PATCH /api/auth/profile`, `PATCH /api/auth/password`, `GET /api/auth/stats`; added `validate` import
+- `backend/src/index.js` — Added PATCH to CORS allowed methods; added `skip: test-mode` to authLimiter
+- `backend/__tests__/auth.test.js` — Added 9 tests for the 3 new routes (147 total)
+- `frontend/src/services/auth.js` — Added `updateProfile`, `changePassword`, `fetchUserStats`
+- `frontend/src/services/api.js` — Re-exported new auth service functions
+- `frontend/src/components/Navbar.js` — Username is now a `<Link href="/profile">`; mobile menu name links to profile
+
+**Branch:** `claude/nifty-goodall-qppn2p`
+
+**Verification:**
+- 147 backend tests passing (all 6 suites)
+- Frontend builds 567 static pages (added /profile)
+- ESLint and Prettier clean
+- Auth rate limiter skip in test mode fixed exhaustion bug (22+ auth requests in test suite exceeded max: 20)
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
