@@ -73,7 +73,14 @@ export default function Navbar() {
         })}
         {isAuthenticated ? (
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
-            <span className={styles.userName}>{user?.name?.split(" ")[0]}</span>
+            <Link
+              href="/profile"
+              aria-current={pathname === "/profile" ? "page" : undefined}
+              className={`${styles.userName} ${pathname === "/profile" ? styles.navLinkActive : ""}`}
+              style={{ textDecoration: "none" }}
+            >
+              {user?.name?.split(" ")[0]}
+            </Link>
             <button onClick={handleLogout} className={styles.btn}>
               Logout
             </button>
@@ -129,12 +136,14 @@ export default function Navbar() {
           <div className={styles.divider} />
           {isAuthenticated ? (
             <>
-              <div
-                className={styles.mobileLink}
-                style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem" }}
+              <Link
+                href="/profile"
+                onClick={() => setMenuOpen(false)}
+                aria-current={pathname === "/profile" ? "page" : undefined}
+                className={`${styles.mobileLink} ${pathname === "/profile" ? styles.mobileLinkActive : ""}`}
               >
                 {user?.name}
-              </div>
+              </Link>
               <button
                 onClick={handleLogout}
                 className={styles.mobileLink}

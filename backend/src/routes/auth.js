@@ -11,6 +11,7 @@ const {
   refreshToken,
   generateCsrfToken,
 } = require("../middleware/auth");
+const { validate } = require("../middleware/validate");
 
 const router = express.Router();
 
@@ -182,5 +183,85 @@ router.post("/refresh", refreshToken);
 
 // GET /api/auth/csrf - get a CSRF token
 router.get("/csrf", generateCsrfToken);
+
+// PATCH /api/auth/profile - update display name
+router.patch(
+  "/profile",
+  requireAuth,
+  validate({
+    body: {
+      name: { required: true, type: "string", minLength: 1, maxLength: 50 },
+    },
+  }),
+  (req, res) => {
+    const sanitizedName = validator.escape(validator.trim(req.body.name)).slice(0, 50);
+    if (!sanitizedName) {
+      return res.status(400).json({ error: "Name must not be empty" });
+    }
+    const db = getDb();
+    db.prepare("UPDATE users SET name = ? WHERE id = ?").run(sanitizedName, req.user.id);
+    const user = db
+      .prepare("SELECT id, email, name, created_at FROM users WHERE id = ?")
+      .get(req.user.id);
+    res.json({ user });
+  }
+);
+
+// PATCH /api/auth/password - change password
+router.patch(
+  "/password",
+  requireAuth,
+  validate({
+    body: {
+      currentPassword: { required: true, type: "string" },
+      newPassword: { required: true, type: "string", minLength: 8, maxLength: 128 },
+    },
+  }),
+  async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+    const db = getDb();
+    const user = db.prepare("SELECT id, password_hash FROM users WHERE id = ?").get(req.user.id);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const ok = await bcrypt.compare(currentPassword, user.password_hash);
+    if (!ok) return res.status(400).json({ error: "Current password is incorrect" });
+
+    if (
+      newPassword.length < 8 ||
+      !/[A-Z]/.test(newPassword) ||
+      !/[a-z]/.test(newPassword) ||
+      !/[0-9]/.test(newPassword)
+    ) {
+      return res
+        .status(400)
+        .json({
+          error:
+            "New password must be at least 8 characters with uppercase, lowercase, and a number",
+        });
+    }
+
+    const hash = await bcrypt.hash(newPassword, 12);
+    db.prepare("UPDATE users SET password_hash = ? WHERE id = ?").run(hash, req.user.id);
+    res.json({ message: "Password updated" });
+  }
+);
+
+// GET /api/auth/stats - activity stats for the authenticated user
+router.get("/stats", requireAuth, (req, res) => {
+  const db = getDb();
+  const reviews = db
+    .prepare("SELECT COUNT(*) AS count FROM reviews WHERE user_id = ?")
+    .get(req.user.id);
+  const carbon = db
+    .prepare(
+      "SELECT COUNT(*) AS count, COALESCE(SUM(emissions), 0) AS total FROM carbon_logs WHERE user_id = ?"
+    )
+    .get(req.user.id);
+  res.json({
+    reviews_count: reviews.count,
+    carbon_entries: carbon.count,
+    total_co2e_kg: Math.round(carbon.total * 100) / 100,
+  });
+});
 
 module.exports = router;
