@@ -131,4 +131,123 @@ describe("Auth endpoints - validation", () => {
       expect(res.status).toBe(401);
     });
   });
+
+  describe("PUT /api/auth/profile", () => {
+    const email = `profile-${uid()}@example.com`;
+    const password = "ProfilePass1";
+    let token;
+
+    beforeAll(async () => {
+      const res = await request(app).post("/api/auth/register").send({
+        name: "Profile User",
+        email,
+        password,
+      });
+      token = res.body.token;
+    });
+
+    test("should return 401 without token", async () => {
+      const res = await request(app).put("/api/auth/profile").send({ name: "New Name" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject missing name", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject empty name", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should update display name", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Updated Name" });
+      expect(res.status).toBe(200);
+      expect(res.body.user.name).toBe("Updated Name");
+    });
+
+    test("should persist name change to GET /me", async () => {
+      await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Persisted Name" });
+      const me = await request(app).get("/api/auth/me").set("Authorization", `Bearer ${token}`);
+      expect(me.body.user.name).toBe("Persisted Name");
+    });
+  });
+
+  describe("PUT /api/auth/password", () => {
+    const email = `pwdchange-${uid()}@example.com`;
+    const password = "OldPass123";
+    let token;
+
+    beforeAll(async () => {
+      const res = await request(app).post("/api/auth/register").send({
+        name: "Pwd Change User",
+        email,
+        password,
+      });
+      token = res.body.token;
+    });
+
+    test("should return 401 without token", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .send({ currentPassword: password, newPassword: "NewPass123" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject missing fields", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject weak new password", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ currentPassword: password, newPassword: "weakpassword" });
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/uppercase/i);
+    });
+
+    test("should reject wrong current password", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ currentPassword: "WrongPass1", newPassword: "NewPass456" });
+      expect(res.status).toBe(401);
+      expect(res.body.error).toMatch(/incorrect/i);
+    });
+
+    test("should change password with correct credentials", async () => {
+      const res = await request(app)
+        .put("/api/auth/password")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ currentPassword: password, newPassword: "NewPass456" });
+      expect(res.status).toBe(200);
+      expect(res.body.message).toMatch(/success/i);
+    });
+
+    test("should authenticate with new password after change", async () => {
+      const res = await request(app)
+        .post("/api/auth/login")
+        .send({ email, password: "NewPass456" });
+      expect(res.status).toBe(200);
+      expect(res.body.token).toBeDefined();
+    });
+  });
 });
