@@ -13,6 +13,39 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-24 — User Profile Page
+
+**Operation:** Added `/profile` page for authenticated users. Also audited open PRs for CI status.
+
+**Files created:** 1
+- `frontend/src/app/profile/page.js` — profile page showing account details (name, email, member since), carbon footprint summary (total/weekly emissions, weekly goal progress bar, purchase log count), saved-product count from localStorage, and quick-link grid to Carbon Tracker, Favorites, Products, Scan
+
+**Files modified:** 2
+- `frontend/src/components/Navbar.js` — username (desktop + mobile) is now a `<Link href="/profile">` instead of a plain `<span>`
+- `frontend/src/components/Navbar.module.css` — added hover state to `.userName` for the new link
+
+**Data sources used:**
+- `fetchCurrentUser()` → `/api/auth/me` (returns `{ user: { id, email, name, created_at } }`)
+- `fetchCarbonSummary()` → `/api/carbon/summary` (returns `{ total, weekly, monthly, trend, topProducts }`)
+- `getFavoriteIds()` from `utils/favorites.js` (localStorage)
+
+**CI verification:**
+- 137 backend tests passing
+- Next.js static build produces 570 pages with `/profile` at 5.53 kB — no errors
+- ESLint and Prettier clean
+
+**PR state at time of session:**
+- PR #37 (`claude/dreamy-dirac-6st5cb`) — all CI green, ready to merge
+- PR #36 (`claude/dreamy-dirac-4ua0hn`) — no check runs registered
+- PR #34 (`claude/dreamy-dirac-fzmsdt`) — Backend Tests failing (existing issue)
+
+**Branch:** `claude/dreamy-dirac-pkwtyu` (pushed)
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
