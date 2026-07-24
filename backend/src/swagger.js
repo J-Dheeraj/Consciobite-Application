@@ -245,6 +245,33 @@ const options = {
           },
         },
       },
+      "/auth/profile": {
+        put: {
+          tags: ["Auth"],
+          summary: "Update display name",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["name"],
+                  properties: {
+                    name: { type: "string", maxLength: 50 },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Updated user profile" },
+            400: { description: "Invalid or missing name" },
+            401: { description: "Not authenticated" },
+            404: { description: "User not found" },
+          },
+        },
+      },
       "/reviews/{productId}": {
         get: {
           tags: ["Reviews"],

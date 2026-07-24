@@ -131,4 +131,63 @@ describe("Auth endpoints - validation", () => {
       expect(res.status).toBe(401);
     });
   });
+
+  describe("PUT /api/auth/profile", () => {
+    const email = `profiletest-${uid()}@example.com`;
+    let token;
+
+    beforeAll(async () => {
+      const res = await request(app).post("/api/auth/register").send({
+        name: "Original Name",
+        email,
+        password: "ProfilePass1",
+      });
+      token = res.body.token;
+    });
+
+    test("should update display name and persist in GET /api/auth/me", async () => {
+      const putRes = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Updated Name" });
+      expect(putRes.status).toBe(200);
+      expect(putRes.body.user.name).toBe("Updated Name");
+
+      const meRes = await request(app).get("/api/auth/me").set("Authorization", `Bearer ${token}`);
+      expect(meRes.status).toBe(200);
+      expect(meRes.body.user.name).toBe("Updated Name");
+    });
+
+    test("should return 400 when name is missing", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+    });
+
+    test("should return 400 when name is blank whitespace", async () => {
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "   " });
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 401 without a token", async () => {
+      const res = await request(app).put("/api/auth/profile").send({ name: "No Auth" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should truncate names longer than 50 characters", async () => {
+      const longName = "A".repeat(80);
+      const res = await request(app)
+        .put("/api/auth/profile")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: longName });
+      expect(res.status).toBe(200);
+      expect(res.body.user.name.length).toBeLessThanOrEqual(50);
+    });
+  });
 });

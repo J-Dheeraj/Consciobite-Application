@@ -10,6 +10,7 @@ const {
   requireAuth,
   refreshToken,
   generateCsrfToken,
+  csrfProtection,
 } = require("../middleware/auth");
 
 const router = express.Router();
@@ -175,6 +176,32 @@ router.get("/me", requireAuth, (req, res) => {
   }
 
   res.json({ user });
+});
+
+// PUT /api/auth/profile - update display name
+router.put("/profile", requireAuth, csrfProtection, (req, res) => {
+  const { name } = req.body;
+
+  if (!name || typeof name !== "string" || !name.trim()) {
+    return res.status(400).json({ error: "name is required" });
+  }
+
+  const sanitizedName = validator.escape(validator.trim(name)).slice(0, 50);
+
+  if (sanitizedName.length < 1) {
+    return res.status(400).json({ error: "name must not be empty after sanitization" });
+  }
+
+  const db = getDb();
+  const updated = db
+    .prepare("UPDATE users SET name = ? WHERE id = ? RETURNING id, email, name, created_at")
+    .get(sanitizedName, req.user.id);
+
+  if (!updated) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json({ user: updated });
 });
 
 // POST /api/auth/refresh - refresh an unexpired token
