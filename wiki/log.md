@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-24 — Passport Tests + Profile Update Endpoint
+
+**Operation:** Added missing test coverage for passport routes and a new `PUT /api/auth/profile` endpoint.
+
+**Root cause / gap identified:** `backend/src/routes/passport.js` was merged to main (3 routes: GET /api/v1/passport/:productId, POST /api/v1/portfolio/score, GET /api/v1/audit/:productId) with no test file — violating the CLAUDE.md invariant "every new route needs at least one Supertest integration test."
+
+**Files changed:** 4
+- `backend/__tests__/passport.test.js` — new file, 30 integration tests covering all 3 passport routes (happy paths, field validation, error cases, math invariants for portfolio summary)
+- `backend/__tests__/auth.test.js` — added 5 tests for new PUT /api/auth/profile endpoint
+- `backend/src/routes/auth.js` — added `PUT /api/auth/profile` route (requireAuth + csrfProtection, sanitizes/truncates name to 50 chars, uses SQLite RETURNING clause)
+- `backend/src/swagger.js` — added Swagger entry for PUT /api/auth/profile
+
+**Branch:** `claude/nifty-goodall-9bzt8o`
+
+**Test count:** 172 backend tests (was 137)
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
