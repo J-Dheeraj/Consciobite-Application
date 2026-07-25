@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-25 — Green Leaderboard Page + Products Route Test Coverage
+
+**Operation:** Add Green Leaderboard frontend feature and improve backend test coverage for products route.
+
+**Branch:** `claude/nifty-goodall-v4sm14`
+
+**Files changed:** 3
+- `frontend/src/app/leaderboard/page.js` — new page: top 20 products by GreenGrade, category pill filter, medal icons for top 3, React Query, dark/light theme
+- `frontend/src/components/Navbar.js` — added "Leaderboard" link after "Products"
+- `backend/__tests__/api.test.js` — 10 new Supertest tests covering: scan barcode local-DB hit, compare happy path, compare edge cases (non-alphanumeric ID, >5 IDs, 0 found → 404), emissions_asc/desc sort, grade_asc sort
+
+**Verification:**
+- 147 backend tests passing (up from 137 on main)
+- ESLint + Prettier clean
+- Frontend build produces 567 static pages (17 routes + 550 product pages)
+- New products route coverage: scan local hit (line 216), emissions sorts (lines 64/66), compare validation paths (lines 97-112)
+
+**Open PRs status:**
+- PR #34 (DPP frontend) — Backend Tests failing due to npm audit (brace-expansion, js-yaml vulns). PR #37 fixes these; once merged, PR #34 just needs a rebase.
+- PR #36 (recommendations + Similar Products) — No CI checks triggered.
+- PR #37 (tier filter + carbon widget + npm audit fix) — All CI checks passing.
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
