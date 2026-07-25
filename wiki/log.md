@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-25 — Eco Leaderboard + Carbon CSV Export
+
+**Operation:** Added two frontend features to improve product discoverability and carbon data portability.
+
+**Files created:** 1
+- `frontend/src/app/leaderboard/page.js` — new `/leaderboard` page. Fetches top 100 products sorted by GreenGrade descending, displays overall Top 10 with medal rankings and per-category top-5 grids. Uses React Query with 5-min stale time. Links to product detail pages.
+
+**Files modified:** 3
+- `frontend/src/components/Navbar.js` — added `{ to: "/leaderboard", label: "Leaderboard" }` to NAV_LINKS
+- `frontend/src/app/carbon/page.js` — added `handleExportCsv` callback + "Export CSV" button in Recent Logs header. Paginates through all carbon logs (up to 20 pages × 50 = 1000 entries) and triggers browser CSV download with ISO date filename.
+- `frontend/src/services/carbon.js` — updated `fetchCarbonLogs(page)` to `fetchCarbonLogs({ page, limit } = {})` for flexible limit control. Backward-compatible (no-arg call still works).
+
+**Verification:**
+- ESLint clean (`next/core-web-vitals`): 0 errors, 0 warnings
+- Prettier clean
+- Frontend build: 567 static pages (was 566 — +1 for /leaderboard)
+- Backend: 137 tests passing (no backend changes)
+
+**Branch:** `claude/dreamy-dirac-uylhum`
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
