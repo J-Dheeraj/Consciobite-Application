@@ -221,4 +221,83 @@ describe("API Endpoints", () => {
       expect(res.status).toBe(404);
     });
   });
+
+  describe("GET /api/products/:id (valid product)", () => {
+    test("should return enriched product for a valid ID", async () => {
+      const res = await request(app).get("/api/products/1");
+      expect(res.status).toBe(200);
+      expect(res.body.id).toBe("1");
+      expect(res.body.name).toBeDefined();
+      expect(res.body.greenGrade).toBeDefined();
+    });
+  });
+
+  describe("GET /api/products/scan/:barcode (local catalog hit)", () => {
+    test("should return product when barcode exists in catalog", async () => {
+      const res = await request(app).get("/api/products/scan/8888001010101");
+      expect(res.status).toBe(200);
+      expect(res.body.id).toBe("1");
+      expect(res.body.greenGrade).toBeDefined();
+    });
+
+    test("should return 400 for barcode that is too long", async () => {
+      const res = await request(app).get("/api/products/scan/123456789012345");
+      expect(res.status).toBe(400);
+    });
+  });
+
+  describe("GET /api/products/compare (happy path and edge cases)", () => {
+    test("should compare two valid products", async () => {
+      const res = await request(app).get("/api/products/compare?ids=1,2");
+      expect(res.status).toBe(200);
+      expect(res.body.products).toHaveLength(2);
+      res.body.products.forEach((p) => {
+        expect(p.greenGrade).toBeDefined();
+      });
+    });
+
+    test("should return 400 for non-alphanumeric product ID", async () => {
+      const res = await request(app).get("/api/products/compare?ids=inv@lid,2");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 400 for more than 5 IDs", async () => {
+      const res = await request(app).get("/api/products/compare?ids=1,2,3,4,5,6");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 404 when fewer than 2 products are found", async () => {
+      const res = await request(app).get("/api/products/compare?ids=zzz1,zzz2");
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe("GET /api/products (emissions and grade sort)", () => {
+    test("should sort by emissions ascending", async () => {
+      const res = await request(app).get("/api/products?sort=emissions_asc&limit=5");
+      expect(res.status).toBe(200);
+      const emissions = res.body.products.map((p) => p.greenGrade.totalEmissions);
+      for (let i = 1; i < emissions.length; i++) {
+        expect(emissions[i]).toBeGreaterThanOrEqual(emissions[i - 1]);
+      }
+    });
+
+    test("should sort by emissions descending", async () => {
+      const res = await request(app).get("/api/products?sort=emissions_desc&limit=5");
+      expect(res.status).toBe(200);
+      const emissions = res.body.products.map((p) => p.greenGrade.totalEmissions);
+      for (let i = 1; i < emissions.length; i++) {
+        expect(emissions[i]).toBeLessThanOrEqual(emissions[i - 1]);
+      }
+    });
+
+    test("should sort by grade ascending", async () => {
+      const res = await request(app).get("/api/products?sort=grade_asc&limit=5");
+      expect(res.status).toBe(200);
+      const scores = res.body.products.map((p) => p.greenGrade.score);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i]).toBeGreaterThanOrEqual(scores[i - 1]);
+      }
+    });
+  });
 });

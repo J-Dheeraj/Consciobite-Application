@@ -8,6 +8,7 @@ import styles from "./Navbar.module.css";
 
 const NAV_LINKS = [
   { to: "/products", label: "Products" },
+  { to: "/leaderboard", label: "Leaderboard" },
   { to: "/scan", label: "Scan" },
   { to: "/compare", label: "Compare" },
   { to: "/dashboard", label: "Dashboard" },
