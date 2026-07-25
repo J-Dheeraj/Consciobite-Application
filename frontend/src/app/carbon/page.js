@@ -16,6 +16,7 @@ export default function CarbonTracker() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [deleteError, setDeleteError] = useState("");
+  const [exporting, setExporting] = useState(false);
 
   const {
     data: carbonData,
@@ -45,6 +46,57 @@ export default function CarbonTracker() {
     },
     [queryClient]
   );
+
+  const handleExportCsv = useCallback(async () => {
+    setExporting(true);
+    try {
+      const allLogs = [];
+      let page = 1;
+      let hasMore = true;
+      while (hasMore && page <= 20) {
+        const data = await fetchCarbonLogs({ page, limit: 50 });
+        allLogs.push(...data.logs);
+        hasMore = page < data.pagination.totalPages;
+        page++;
+      }
+
+      const header = [
+        "Date",
+        "Product",
+        "Product ID",
+        "Quantity",
+        "Emissions per unit (kg CO2e)",
+        "Total (kg CO2e)",
+      ];
+      const rows = allLogs.map((log) => [
+        new Date(log.logged_at).toLocaleDateString("en-CA"),
+        log.product_name,
+        log.product_id,
+        log.quantity,
+        log.emissions,
+        (log.emissions * log.quantity).toFixed(2),
+      ]);
+
+      const csv = [header, ...rows]
+        .map((row) => row.map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      const today = new Date().toISOString().split("T")[0];
+      a.download = `consciobite-carbon-log-${today}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      setDeleteError("Failed to export logs. Please try again.");
+    } finally {
+      setExporting(false);
+    }
+  }, []);
 
   if (!isAuthenticated) {
     return (
@@ -420,16 +472,47 @@ export default function CarbonTracker() {
             boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
           }}
         >
-          <h3
+          <div
             style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 700,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
               marginBottom: 12,
-              color: isDark ? "#e8f5e9" : "#333",
             }}
           >
-            Recent Logs
-          </h3>
+            <h3
+              style={{
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                margin: 0,
+                color: isDark ? "#e8f5e9" : "#333",
+              }}
+            >
+              Recent Logs
+            </h3>
+            {logs.length > 0 && (
+              <button
+                onClick={handleExportCsv}
+                disabled={exporting}
+                style={{
+                  padding: "6px 14px",
+                  background: "none",
+                  border: `1px solid ${isDark ? "#2d4a35" : "#d1d5db"}`,
+                  borderRadius: 8,
+                  cursor: exporting ? "wait" : "pointer",
+                  fontSize: "0.8rem",
+                  fontWeight: 600,
+                  color: isDark ? "#95d5b2" : "#2d6a4f",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+                aria-label="Export carbon log as CSV"
+              >
+                {exporting ? "Exporting…" : "⬇ Export CSV"}
+              </button>
+            )}
+          </div>
           {logs.length === 0 ? (
             <p
               style={{

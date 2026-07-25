@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { to: "/products", label: "Products" },
   { to: "/scan", label: "Scan" },
   { to: "/compare", label: "Compare" },
+  { to: "/leaderboard", label: "Leaderboard" },
   { to: "/dashboard", label: "Dashboard" },
   { to: "/recipes", label: "Recipes" },
   { to: "/carbon", label: "Carbon" },

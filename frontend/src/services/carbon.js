@@ -4,8 +4,10 @@ export async function fetchCarbonSummary() {
   return httpClient(`${API_BASE}/carbon/summary`);
 }
 
-export async function fetchCarbonLogs(page = 1) {
-  return httpClient(`${API_BASE}/carbon/logs?page=${page}`);
+export async function fetchCarbonLogs({ page = 1, limit } = {}) {
+  const params = new URLSearchParams({ page: String(page) });
+  if (limit) params.set("limit", String(limit));
+  return httpClient(`${API_BASE}/carbon/logs?${params}`);
 }
 
 export async function logCarbonPurchase(productId, productName, quantity, emissions) {
