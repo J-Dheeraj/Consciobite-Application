@@ -233,9 +233,7 @@ describe("Auth endpoints - validation", () => {
         .set("Authorization", `Bearer ${token}`)
         .send({ name: "Persisted Name", weeklyGoal: 12 });
 
-      const meRes = await request(app)
-        .get("/api/auth/me")
-        .set("Authorization", `Bearer ${token}`);
+      const meRes = await request(app).get("/api/auth/me").set("Authorization", `Bearer ${token}`);
       expect(meRes.status).toBe(200);
       expect(meRes.body.user.name).toBe("Persisted Name");
       expect(meRes.body.user.weeklyGoal).toBe(12);
