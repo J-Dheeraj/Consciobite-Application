@@ -110,6 +110,33 @@ describe("Carbon tracking endpoints", () => {
     });
   });
 
+  describe("GET /api/carbon/export", () => {
+    test("should require authentication", async () => {
+      const res = await request(app).get("/api/carbon/export");
+      expect(res.status).toBe(401);
+    });
+
+    test("should return CSV with header row", async () => {
+      const res = await request(app)
+        .get("/api/carbon/export")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/text\/csv/);
+      const firstLine = res.text.split("\r\n")[0];
+      expect(firstLine).toBe(
+        "Date,Product Name,Product ID,Quantity,Emissions per Unit (kg CO2e),Total Emissions (kg CO2e)"
+      );
+    });
+
+    test("should include logged product data in CSV", async () => {
+      const res = await request(app)
+        .get("/api/carbon/export")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(res.text).toContain("Organic Bananas");
+    });
+  });
+
   describe("DELETE /api/carbon/log/:id", () => {
     test("should require authentication", async () => {
       const res = await request(app).delete("/api/carbon/log/someid");

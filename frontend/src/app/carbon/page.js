@@ -4,7 +4,12 @@ import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchCarbonSummary, fetchCarbonLogs, deleteCarbonLog } from "@/services/api";
+import {
+  fetchCarbonSummary,
+  fetchCarbonLogs,
+  deleteCarbonLog,
+  exportCarbonLogs,
+} from "@/services/api";
 import { WEEKLY_CARBON_GOAL_KG } from "@/utils/constants";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
@@ -16,6 +21,7 @@ export default function CarbonTracker() {
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [deleteError, setDeleteError] = useState("");
+  const [exporting, setExporting] = useState(false);
 
   const {
     data: carbonData,
@@ -45,6 +51,23 @@ export default function CarbonTracker() {
     },
     [queryClient]
   );
+
+  const handleExport = useCallback(async () => {
+    setExporting(true);
+    try {
+      const blob = await exportCarbonLogs();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "carbon-log.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // silent fail — user will notice the download didn't start
+    } finally {
+      setExporting(false);
+    }
+  }, []);
 
   if (!isAuthenticated) {
     return (
@@ -420,16 +443,45 @@ export default function CarbonTracker() {
             boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
           }}
         >
-          <h3
+          <div
             style={{
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 700,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
               marginBottom: 12,
-              color: isDark ? "#e8f5e9" : "#333",
             }}
           >
-            Recent Logs
-          </h3>
+            <h3
+              style={{
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                margin: 0,
+                color: isDark ? "#e8f5e9" : "#333",
+              }}
+            >
+              Recent Logs
+            </h3>
+            {logs.length > 0 && (
+              <button
+                onClick={handleExport}
+                disabled={exporting}
+                style={{
+                  background: "none",
+                  border: `1px solid ${isDark ? "#52b788" : "#2d6a4f"}`,
+                  color: isDark ? "#95d5b2" : "#2d6a4f",
+                  borderRadius: 8,
+                  padding: "5px 12px",
+                  fontSize: "0.78rem",
+                  fontWeight: 600,
+                  cursor: exporting ? "not-allowed" : "pointer",
+                  opacity: exporting ? 0.6 : 1,
+                }}
+                aria-label="Export carbon logs as CSV"
+              >
+                {exporting ? "Exporting…" : "Export CSV"}
+              </button>
+            )}
+          </div>
           {logs.length === 0 ? (
             <p
               style={{
