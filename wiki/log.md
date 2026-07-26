@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-26 — Carbon Log CSV Export
+
+**Operation:** Implement CSV export for carbon tracking logs (scheduled session).
+
+**Context reviewed:** Hot cache, graphify report, 4 open PRs (all green CI except PR #34 which fails npm audit — already fixed by PR #37). Current branch `claude/dreamy-dirac-lkxlp0` was clean on main.
+
+**Files changed:** 5
+- `backend/src/routes/carbon.js` — added `GET /api/carbon/export` route (auth-required, returns text/csv of all user logs: date, product name/id, quantity, emissions per unit, total emissions)
+- `backend/__tests__/carbon.test.js` — 3 new tests (auth guard, CSV header format, data presence); total 140 tests on this branch
+- `frontend/src/services/carbon.js` — added `exportCarbonLogs()` using fetch+blob (bypasses httpClient which forces JSON parse)
+- `frontend/src/services/api.js` — re-exported `exportCarbonLogs` from barrel
+- `frontend/src/app/carbon/page.js` — Export CSV button in Recent Logs header (visible only when logs exist, disabled during export)
+
+**Branch:** `claude/dreamy-dirac-lkxlp0`
+
+**Verification:**
+- 15/15 carbon tests pass, 140/140 total backend tests pass
+- Frontend Next.js build succeeds (566 pages, no errors)
+- ESLint + Prettier clean on all changed files
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
