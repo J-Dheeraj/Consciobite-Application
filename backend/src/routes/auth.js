@@ -10,7 +10,9 @@ const {
   requireAuth,
   refreshToken,
   generateCsrfToken,
+  csrfProtection,
 } = require("../middleware/auth");
+const { validate } = require("../middleware/validate");
 
 const router = express.Router();
 
@@ -167,14 +169,69 @@ router.post("/logout", (_req, res) => {
 router.get("/me", requireAuth, (req, res) => {
   const db = getDb();
   const user = db
-    .prepare("SELECT id, email, name, created_at FROM users WHERE id = ?")
+    .prepare("SELECT id, email, name, weekly_carbon_goal, created_at FROM users WHERE id = ?")
     .get(req.user.id);
 
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  res.json({ user });
+  res.json({
+    user: {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      weeklyGoal: user.weekly_carbon_goal ?? 10,
+      createdAt: user.created_at,
+    },
+  });
+});
+
+const PATCH_ME_SCHEMA = {
+  body: {
+    name: { required: false, type: "string", minLength: 1, maxLength: 50 },
+    weeklyGoal: { required: false, type: "number", min: 1, max: 200 },
+  },
+};
+
+// PATCH /api/auth/me - update name and/or weekly carbon goal
+router.patch("/me", csrfProtection, requireAuth, validate(PATCH_ME_SCHEMA), (req, res) => {
+  const { name, weeklyGoal } = req.body;
+
+  if (name === undefined && weeklyGoal === undefined) {
+    return res
+      .status(400)
+      .json({ error: "Provide at least one field to update (name, weeklyGoal)" });
+  }
+
+  const db = getDb();
+  const existing = db
+    .prepare("SELECT id, email, name, weekly_carbon_goal, created_at FROM users WHERE id = ?")
+    .get(req.user.id);
+
+  if (!existing) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const newName =
+    name !== undefined ? validator.escape(validator.trim(name)).slice(0, 50) : existing.name;
+  const newGoal = weeklyGoal !== undefined ? weeklyGoal : (existing.weekly_carbon_goal ?? 10);
+
+  db.prepare("UPDATE users SET name = ?, weekly_carbon_goal = ? WHERE id = ?").run(
+    newName,
+    newGoal,
+    req.user.id
+  );
+
+  res.json({
+    user: {
+      id: existing.id,
+      email: existing.email,
+      name: newName,
+      weeklyGoal: newGoal,
+      createdAt: existing.created_at,
+    },
+  });
 });
 
 // POST /api/auth/refresh - refresh an unexpired token

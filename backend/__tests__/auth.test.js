@@ -130,5 +130,115 @@ describe("Auth endpoints - validation", () => {
         .set("Authorization", "Bearer invalid-token");
       expect(res.status).toBe(401);
     });
+
+    test("should return user with weeklyGoal field when authenticated", async () => {
+      const email = `me-${uid()}@example.com`;
+      const regRes = await request(app).post("/api/auth/register").send({
+        name: "Me Test",
+        email,
+        password: "MePass1Abc",
+      });
+      expect(regRes.status).toBe(201);
+
+      const meRes = await request(app)
+        .get("/api/auth/me")
+        .set("Authorization", `Bearer ${regRes.body.token}`);
+      expect(meRes.status).toBe(200);
+      expect(meRes.body.user.weeklyGoal).toBeDefined();
+      expect(typeof meRes.body.user.weeklyGoal).toBe("number");
+    });
+  });
+
+  describe("PATCH /api/auth/me", () => {
+    let token;
+
+    beforeAll(async () => {
+      const email = `patch-me-${uid()}@example.com`;
+      const res = await request(app).post("/api/auth/register").send({
+        name: "Original Name",
+        email,
+        password: "PatchPass1",
+      });
+      token = res.body.token;
+    });
+
+    test("should return 401 without token", async () => {
+      const res = await request(app).patch("/api/auth/me").send({ name: "New Name" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should return 400 with no fields", async () => {
+      const res = await request(app)
+        .patch("/api/auth/me")
+        .set("Authorization", `Bearer ${token}`)
+        .send({});
+      expect(res.status).toBe(400);
+    });
+
+    test("should update name", async () => {
+      const res = await request(app)
+        .patch("/api/auth/me")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Updated Name" });
+      expect(res.status).toBe(200);
+      expect(res.body.user.name).toBe("Updated Name");
+    });
+
+    test("should update weeklyGoal", async () => {
+      const res = await request(app)
+        .patch("/api/auth/me")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ weeklyGoal: 15 });
+      expect(res.status).toBe(200);
+      expect(res.body.user.weeklyGoal).toBe(15);
+    });
+
+    test("should update both name and weeklyGoal", async () => {
+      const res = await request(app)
+        .patch("/api/auth/me")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Final Name", weeklyGoal: 20 });
+      expect(res.status).toBe(200);
+      expect(res.body.user.name).toBe("Final Name");
+      expect(res.body.user.weeklyGoal).toBe(20);
+    });
+
+    test("should reject weeklyGoal below minimum", async () => {
+      const res = await request(app)
+        .patch("/api/auth/me")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ weeklyGoal: 0 });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject weeklyGoal above maximum", async () => {
+      const res = await request(app)
+        .patch("/api/auth/me")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ weeklyGoal: 999 });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject empty name", async () => {
+      const res = await request(app)
+        .patch("/api/auth/me")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should persist changes to GET /me", async () => {
+      await request(app)
+        .patch("/api/auth/me")
+        .set("Authorization", `Bearer ${token}`)
+        .send({ name: "Persisted Name", weeklyGoal: 12 });
+
+      const meRes = await request(app)
+        .get("/api/auth/me")
+        .set("Authorization", `Bearer ${token}`);
+      expect(meRes.status).toBe(200);
+      expect(meRes.body.user.name).toBe("Persisted Name");
+      expect(meRes.body.user.weeklyGoal).toBe(12);
+    });
   });
 });
