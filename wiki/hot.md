@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-17 after Docker fix + CONTRIBUTING.md session.
+**Last updated:** 2026-07-26 after user profile + customizable carbon goal session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -35,11 +35,26 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 153 backend tests passing (incl. 36 passport tests). Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 147 backend tests passing. Frontend builds 567 static pages (17 routes + 550 product pages).
 
-**DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`) — currently failing CI.
+**DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`) — may still be failing CI.
 
-**Active branch:** `claude/nifty-goodall-s4f427` — PR open against `main`.
+**Open PRs (all against main @ 18bec95):**
+- PR #34: Digital Product Passport frontend (`claude/dreamy-dirac-fzmsdt`)
+- PR #36: Product recommendations + Similar Products UI (`claude/dreamy-dirac-4ua0hn`) — 144 tests
+- PR #37: npm audit fix + tier filter pills + carbon dashboard widget (`claude/dreamy-dirac-6st5cb`) — 141 tests
+- PR #38: User profile page + customizable weekly carbon goal (`claude/nifty-goodall-1w4m1h`) — **current branch, CI queued**
+
+**Active branch:** `claude/nifty-goodall-1w4m1h` — PR #38 open against `main`.
+
+**User profile feature (2026-07-26):**
+- DB migration `003_user_profile.sql` — adds `weekly_carbon_goal REAL DEFAULT 10.0` to `users` table
+- `PATCH /api/auth/me` — CSRF-protected, `requireAuth`-gated; accepts `{ name?, weeklyGoal? }`; validates via `validate()` middleware (name 1–50 chars, weeklyGoal 1–200)
+- `GET /api/auth/me` — updated to return `weeklyGoal` and `createdAt`
+- Auth rate limiter gains `skip: () => process.env.NODE_ENV === 'test'` (same pattern as CSRF bypass) to allow full test suite to run without hitting 20 req/15 min cap
+- `/profile` page — name editor + goal slider (1–50 kg); saves via `updateProfile()` service; updates `AuthContext` immediately on save
+- Navbar — user's first name is now `<Link href="/profile">` (desktop + mobile)
+- Carbon tracker — reads `user?.weeklyGoal ?? WEEKLY_CARBON_GOAL_KG` (personal goal takes precedence)
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 

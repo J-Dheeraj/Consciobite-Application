@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-26 — User Profile + Customizable Weekly Carbon Goal
+
+**Operation:** Implemented user profile page with personalizable weekly carbon goal.
+
+**Files changed:** 9 (+ 1 Prettier fix)
+- `backend/src/db/migrations/003_user_profile.sql` — new; adds `weekly_carbon_goal REAL DEFAULT 10.0` to `users` table
+- `backend/src/routes/auth.js` — added `PATCH /api/auth/me` (CSRF-protected, validate(), requireAuth); updated `GET /api/auth/me` to return `weeklyGoal` + `createdAt`
+- `backend/src/index.js` — added `skip: () => process.env.NODE_ENV === 'test'` to authLimiter (prevents rate-limit lockout during test suite)
+- `backend/__tests__/auth.test.js` — 10 new tests for GET /me weeklyGoal + PATCH /me; also Prettier formatting fix pushed as follow-up
+- `frontend/src/services/auth.js` — added `updateProfile({ name, weeklyGoal })`
+- `frontend/src/services/api.js` — re-exports `updateProfile`
+- `frontend/src/app/profile/page.js` — new page: name editor + weekly goal slider (1–50 kg); redirects unauthenticated users to /login; updates AuthContext on save
+- `frontend/src/components/Navbar.js` — user's first name is now `<Link href="/profile">` in desktop + mobile menus
+- `frontend/src/app/carbon/page.js` — uses `user?.weeklyGoal ?? WEEKLY_CARBON_GOAL_KG` instead of hardcoded constant
+
+**Branch:** `claude/nifty-goodall-1w4m1h`
+**PR:** #38 — CI queued after Prettier fix push
+
+**Test status:** 147 backend tests passing. Frontend builds 567 static pages.
+
+**CI note:** Initial CI run failed on Prettier check for `__tests__/auth.test.js` (file not formatted before first push). Fixed and re-pushed in follow-up commit.
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
