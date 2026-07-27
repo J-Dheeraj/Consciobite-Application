@@ -1,22 +1,42 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { fetchProduct } from "@/services/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { fetchProduct, listFavorites, removeFavorite } from "@/services/api";
 import ProductCard from "@/components/ProductCard";
 import { useTheme } from "@/context/ThemeContext";
+import { useAuth } from "@/context/AuthContext";
 import { getFavoriteIds, clearFavorites } from "@/utils/favorites";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
 import { pageContainer, card, primaryButton, heading } from "@/utils/pageStyles";
 
+function useFavoriteIds(isAuthenticated) {
+  const { data: serverData } = useQuery({
+    queryKey: ["favorites"],
+    queryFn: listFavorites,
+    enabled: isAuthenticated,
+    select: (d) => d.productIds,
+    staleTime: 30_000,
+  });
+
+  if (isAuthenticated) return serverData ?? [];
+  return getFavoriteIds();
+}
+
 export default function Favorites() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showConfirm, setShowConfirm] = useState(false);
   const confirmHeadingId = "confirm-dialog-title";
   const cancelBtnRef = useRef(null);
+
+  const favoriteIds = useFavoriteIds(isAuthenticated);
 
   useEffect(() => {
     if (!showConfirm) return;
@@ -29,18 +49,24 @@ export default function Favorites() {
   }, [showConfirm]);
 
   useEffect(() => {
-    const ids = getFavoriteIds();
-    if (ids.length === 0) {
+    if (isAuthenticated && favoriteIds === undefined) return;
+    if (favoriteIds.length === 0) {
+      setProducts([]);
       setLoading(false);
       return;
     }
-    Promise.all(ids.map((id) => fetchProduct(id).catch(() => null)))
+    setLoading(true);
+    Promise.all(favoriteIds.map((id) => fetchProduct(id).catch(() => null)))
       .then((results) => setProducts(results.filter(Boolean)))
       .finally(() => setLoading(false));
-  }, []);
+  }, [favoriteIds, isAuthenticated]);
 
-  const handleClearAll = () => {
+  const handleClearAll = async () => {
     clearFavorites();
+    if (isAuthenticated) {
+      await Promise.allSettled(favoriteIds.map((id) => removeFavorite(id)));
+      queryClient.invalidateQueries({ queryKey: ["favorites"] });
+    }
     setProducts([]);
     setShowConfirm(false);
   };
@@ -52,9 +78,13 @@ export default function Favorites() {
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
       <PageHero
-        icon={"\u2665"}
+        icon={"♥"}
         title="My Favorites"
-        subtitle="Products you've saved for quick access."
+        subtitle={
+          isAuthenticated
+            ? "Your saved products, synced across devices."
+            : "Products you've saved for quick access."
+        }
       />
 
       <div style={pageContainer(700)}>
@@ -118,7 +148,7 @@ export default function Favorites() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "2rem", marginBottom: 12 }}>{"\u26A0\uFE0F"}</div>
+              <div style={{ fontSize: "2rem", marginBottom: 12 }}>{"⚠️"}</div>
               <h3
                 id={confirmHeadingId}
                 style={{
@@ -186,7 +216,7 @@ export default function Favorites() {
               animation: "fadeInUp 0.4s ease",
             }}
           >
-            <div style={{ fontSize: "3rem", marginBottom: 12, opacity: 0.4 }}>{"\u2661"}</div>
+            <div style={{ fontSize: "3rem", marginBottom: 12, opacity: 0.4 }}>{"♡"}</div>
             <p
               style={{ color: isDark ? "#7a9a7e" : "#888", marginBottom: 20, fontSize: "0.95rem" }}
             >

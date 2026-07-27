@@ -10,6 +10,7 @@ import ProductImage from "@/components/ProductImage";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/AuthContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
+import { addFavorite, removeFavorite } from "@/services/favorites";
 
 const LEGEND_ITEMS = [
   { color: "#27ae60", label: "Best" },
@@ -290,7 +291,13 @@ export default function ProductDetail() {
 
           <div style={{ display: "flex", justifyContent: "center" }}>
             <button
-              onClick={() => setFav(toggleFavorite(product.id))}
+              onClick={() => {
+                const nowFav = toggleFavorite(product.id);
+                setFav(nowFav);
+                if (isAuthenticated) {
+                  (nowFav ? addFavorite(product.id) : removeFavorite(product.id)).catch(() => {});
+                }
+              }}
               aria-label={fav ? "Remove from favorites" : "Add to favorites"}
               style={{
                 background: "rgba(255,255,255,0.12)",

@@ -5,11 +5,14 @@ import Link from "next/link";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
+import { addFavorite, removeFavorite } from "@/services/favorites";
+import { useAuth } from "@/context/AuthContext";
 import { CATEGORY_ICONS } from "@/utils/constants";
 import styles from "./ProductCard.module.css";
 
 function ProductCard({ product, delay = 0 }) {
   const { greenGrade } = product;
+  const { isAuthenticated } = useAuth();
   const [fav, setFav] = useState(() => isFavorited(product.id));
 
   useEffect(() => {
@@ -53,7 +56,11 @@ function ProductCard({ product, delay = 0 }) {
       <button
         onClick={(e) => {
           e.preventDefault();
-          setFav(toggleFavorite(product.id));
+          const nowFav = toggleFavorite(product.id);
+          setFav(nowFav);
+          if (isAuthenticated) {
+            (nowFav ? addFavorite(product.id) : removeFavorite(product.id)).catch(() => {});
+          }
         }}
         aria-label={fav ? "Remove from favorites" : "Add to favorites"}
         title={fav ? "Remove from favorites" : "Add to favorites"}
