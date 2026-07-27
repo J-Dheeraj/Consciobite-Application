@@ -13,6 +13,43 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-27 — Backend-Persisted Favorites
+
+**Operation:** Implement user favorites persistence to SQLite backend with cross-device sync.
+
+**Root cause / motivation:** Favorites were stored in `localStorage` only — lost on device change or browser clear. Backend persistence is the next logical step now that auth and carbon tracking are fully implemented.
+
+**Files created:** 4
+- `backend/src/db/migrations/003_user_favorites.sql` — `user_favorites` table with `UNIQUE(user_id, product_id)` and cascade delete
+- `backend/src/routes/favorites.js` — `GET /api/favorites`, `POST /api/favorites/:productId`, `DELETE /api/favorites/:productId` (all requireAuth + CSRF)
+- `backend/__tests__/favorites.test.js` — 13 integration tests (auth, CRUD, user isolation, cross-user protection)
+- `frontend/src/services/favorites.js` — `listFavorites()`, `addFavorite()`, `removeFavorite()` API module
+
+**Files modified:** 5
+- `backend/src/index.js` — mount `/api/favorites` route
+- `frontend/src/services/api.js` — re-export favorites functions
+- `frontend/src/app/favorites/page.js` — React Query fetch from API when authenticated; localStorage fallback for guests; Clear All syncs to backend
+- `frontend/src/components/ProductCard.js` — add `useAuth`, fire-and-forget API call on toggle
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — fire-and-forget API call on toggle
+
+**Branch:** `claude/nifty-goodall-dm8aut`
+
+**Verification:**
+- 150 backend tests passing (all 7 suites)
+- Frontend builds 566 pages clean
+- ESLint and Prettier clean (both frontend and backend)
+
+**Open PRs status:**
+- PR #38 (user profile, all CI green) — awaiting merge
+- PR #37 (tier filter + carbon widget, all CI green) — awaiting merge
+- PR #36 (product recommendations, 0 CI runs) — investigate
+- PR #34 (DPP frontend, backend tests failing) — needs fix
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
