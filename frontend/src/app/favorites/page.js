@@ -1,7 +1,10 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchProduct } from "@/services/api";
+import { fetchFavoriteIds, clearServerFavorites } from "@/services/favorites";
+import { useAuth } from "@/context/AuthContext";
 import ProductCard from "@/components/ProductCard";
 import { useTheme } from "@/context/ThemeContext";
 import { getFavoriteIds, clearFavorites } from "@/utils/favorites";
@@ -9,14 +12,65 @@ import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
 import { pageContainer, card, primaryButton, heading } from "@/utils/pageStyles";
 
+function useServerFavorites(isAuthenticated) {
+  return useQuery({
+    queryKey: ["favorites"],
+    queryFn: fetchFavoriteIds,
+    enabled: isAuthenticated,
+    staleTime: 30_000,
+  });
+}
+
 export default function Favorites() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+
+  const { data: serverIds, isLoading: serverLoading } = useServerFavorites(isAuthenticated);
+
+  const [localProducts, setLocalProducts] = useState([]);
+  const [localLoading, setLocalLoading] = useState(!isAuthenticated);
   const [showConfirm, setShowConfirm] = useState(false);
   const confirmHeadingId = "confirm-dialog-title";
   const cancelBtnRef = useRef(null);
+
+  // Sync server favorites into localStorage when they load
+  useEffect(() => {
+    if (!isAuthenticated || !serverIds) return;
+    if (typeof window === "undefined") return;
+    localStorage.setItem("consciobite_favorites", JSON.stringify(serverIds));
+    window.dispatchEvent(new Event("favorites-updated"));
+  }, [isAuthenticated, serverIds]);
+
+  // Load product details from server IDs or localStorage IDs
+  const [serverProducts, setServerProducts] = useState([]);
+  const [serverProductsLoading, setServerProductsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated || !serverIds) return;
+    if (serverIds.length === 0) {
+      setServerProducts([]);
+      return;
+    }
+    setServerProductsLoading(true);
+    Promise.all(serverIds.map((id) => fetchProduct(id).catch(() => null)))
+      .then((results) => setServerProducts(results.filter(Boolean)))
+      .finally(() => setServerProductsLoading(false));
+  }, [isAuthenticated, serverIds]);
+
+  // Load from localStorage for unauthenticated users
+  useEffect(() => {
+    if (isAuthenticated) return;
+    const ids = getFavoriteIds();
+    if (ids.length === 0) {
+      setLocalLoading(false);
+      return;
+    }
+    Promise.all(ids.map((id) => fetchProduct(id).catch(() => null)))
+      .then((results) => setLocalProducts(results.filter(Boolean)))
+      .finally(() => setLocalLoading(false));
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!showConfirm) return;
@@ -28,33 +82,39 @@ export default function Favorites() {
     return () => document.removeEventListener("keydown", onKey);
   }, [showConfirm]);
 
-  useEffect(() => {
-    const ids = getFavoriteIds();
-    if (ids.length === 0) {
-      setLoading(false);
-      return;
+  async function handleClearAll() {
+    if (isAuthenticated) {
+      try {
+        await clearServerFavorites();
+        queryClient.setQueryData(["favorites"], []);
+      } catch {
+        // Best-effort — localStorage still cleared below
+      }
     }
-    Promise.all(ids.map((id) => fetchProduct(id).catch(() => null)))
-      .then((results) => setProducts(results.filter(Boolean)))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const handleClearAll = () => {
     clearFavorites();
-    setProducts([]);
+    setLocalProducts([]);
+    setServerProducts([]);
     setShowConfirm(false);
-  };
+  }
 
-  if (loading) {
+  const isLoading = isAuthenticated ? serverLoading || serverProductsLoading : localLoading;
+
+  const products = isAuthenticated ? serverProducts : localProducts;
+
+  if (isLoading) {
     return <Spinner message="Loading favorites..." />;
   }
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
       <PageHero
-        icon={"\u2665"}
+        icon={"♥"}
         title="My Favorites"
-        subtitle="Products you've saved for quick access."
+        subtitle={
+          isAuthenticated
+            ? "Your saved products, synced across devices."
+            : "Products you’ve saved for quick access."
+        }
       />
 
       <div style={pageContainer(700)}>
@@ -69,6 +129,17 @@ export default function Favorites() {
           >
             <span style={{ fontSize: "0.85rem", color: isDark ? "#7a9a7e" : "#888" }}>
               {products.length} saved product{products.length !== 1 ? "s" : ""}
+              {isAuthenticated && (
+                <span
+                  style={{
+                    marginLeft: 8,
+                    fontSize: "0.75rem",
+                    color: isDark ? "#52b788" : "#2d6a4f",
+                  }}
+                >
+                  {"✓ synced"}
+                </span>
+              )}
             </span>
             <button
               onClick={() => setShowConfirm(true)}
@@ -118,7 +189,7 @@ export default function Favorites() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "2rem", marginBottom: 12 }}>{"\u26A0\uFE0F"}</div>
+              <div style={{ fontSize: "2rem", marginBottom: 12 }}>{"⚠️"}</div>
               <h3
                 id={confirmHeadingId}
                 style={{
@@ -137,7 +208,9 @@ export default function Favorites() {
                   lineHeight: 1.5,
                 }}
               >
-                This will remove all {products.length} saved products. This action cannot be undone.
+                This will remove all {products.length} saved products.
+                {isAuthenticated && " Your saved list will be cleared from all devices."} This
+                action cannot be undone.
               </p>
               <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
                 <button
@@ -186,7 +259,7 @@ export default function Favorites() {
               animation: "fadeInUp 0.4s ease",
             }}
           >
-            <div style={{ fontSize: "3rem", marginBottom: 12, opacity: 0.4 }}>{"\u2661"}</div>
+            <div style={{ fontSize: "3rem", marginBottom: 12, opacity: 0.4 }}>{"♡"}</div>
             <p
               style={{ color: isDark ? "#7a9a7e" : "#888", marginBottom: 20, fontSize: "0.95rem" }}
             >

@@ -5,11 +5,14 @@ import Link from "next/link";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
+import { toggleServerFavorite } from "@/services/favorites";
+import { useAuth } from "@/context/AuthContext";
 import { CATEGORY_ICONS } from "@/utils/constants";
 import styles from "./ProductCard.module.css";
 
 function ProductCard({ product, delay = 0 }) {
   const { greenGrade } = product;
+  const { isAuthenticated } = useAuth();
   const [fav, setFav] = useState(() => isFavorited(product.id));
 
   useEffect(() => {
@@ -25,6 +28,21 @@ function ProductCard({ product, delay = 0 }) {
       : greenGrade.color === "yellow"
         ? "#e9c46a"
         : "#e63946";
+
+  async function handleToggle(e) {
+    e.preventDefault();
+    const nextFav = toggleFavorite(product.id);
+    setFav(nextFav);
+    if (isAuthenticated) {
+      try {
+        await toggleServerFavorite(product.id);
+      } catch {
+        // Revert optimistic update on API failure
+        const reverted = toggleFavorite(product.id);
+        setFav(reverted);
+      }
+    }
+  }
 
   return (
     <article
@@ -51,10 +69,7 @@ function ProductCard({ product, delay = 0 }) {
         </div>
       </Link>
       <button
-        onClick={(e) => {
-          e.preventDefault();
-          setFav(toggleFavorite(product.id));
-        }}
+        onClick={handleToggle}
         aria-label={fav ? "Remove from favorites" : "Add to favorites"}
         title={fav ? "Remove from favorites" : "Add to favorites"}
         className={`${styles.favButton} ${fav ? styles.favActive : styles.favInactive}`}
