@@ -13,6 +13,36 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-27 — Server-Side Favorites Persistence
+
+**Operation:** Implemented server-side favorites for authenticated users (scheduled session).
+
+**Problem addressed:** Favorites were localStorage-only — lost on device change, no cross-device sync.
+
+**Files created:** 4
+- `backend/src/db/migrations/003_favorites.sql` — `user_favorites` table (user_id FK → users ON DELETE CASCADE, product_id, UNIQUE per user+product)
+- `backend/src/routes/favorites.js` — GET /api/favorites (list), POST /api/favorites/:productId (toggle), DELETE /api/favorites (clear all); all gated by requireAuth + validate() middleware
+- `backend/__tests__/favorites.test.js` — 10 integration tests covering auth guard, add, toggle, list, clear, and validation
+- `frontend/src/services/favorites.js` — fetchFavoriteIds(), toggleServerFavorite(), clearServerFavorites()
+
+**Files modified:** 4
+- `backend/src/index.js` — mount favoritesRoutes at /api/favorites (csrfProtection)
+- `frontend/src/components/ProductCard.js` — call toggleServerFavorite() when isAuthenticated; optimistic localStorage update with revert on API failure
+- `frontend/src/app/favorites/page.js` — React Query fetch from server when authenticated; syncs IDs into localStorage on load; "✓ synced" badge; cross-device clear-all; localStorage fallback for guests
+- `frontend/src/services/api.js` — re-export favorites service functions
+
+**Verification:**
+- 147 backend tests passing (10 new)
+- ESLint and Prettier clean (backend + frontend)
+- Next.js static build: 566 pages, no errors
+
+**Branch:** `claude/dreamy-dirac-o8pvtd` — pushed to remote, PR pending.
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
