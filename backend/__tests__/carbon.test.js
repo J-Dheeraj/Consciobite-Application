@@ -110,6 +110,39 @@ describe("Carbon tracking endpoints", () => {
     });
   });
 
+  describe("GET /api/carbon/export", () => {
+    test("should require authentication", async () => {
+      const res = await request(app).get("/api/carbon/export");
+      expect(res.status).toBe(401);
+    });
+
+    test("should return CSV content type", async () => {
+      const res = await request(app)
+        .get("/api/carbon/export")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/text\/csv/);
+      expect(res.headers["content-disposition"]).toMatch(/attachment/);
+      expect(res.headers["content-disposition"]).toMatch(/carbon-log\.csv/);
+    });
+
+    test("should include CSV header row", async () => {
+      const res = await request(app)
+        .get("/api/carbon/export")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(res.text).toMatch(/Date,Product Name,Product ID/);
+    });
+
+    test("should include logged products in CSV body", async () => {
+      const res = await request(app)
+        .get("/api/carbon/export")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(res.text).toContain("Organic Bananas");
+    });
+  });
+
   describe("DELETE /api/carbon/log/:id", () => {
     test("should require authentication", async () => {
       const res = await request(app).delete("/api/carbon/log/someid");

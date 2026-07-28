@@ -20,3 +20,17 @@ export async function deleteCarbonLog(id) {
     method: "DELETE",
   });
 }
+
+export async function downloadCarbonExport() {
+  const token = typeof window !== "undefined" ? localStorage.getItem("consciobite_token") : null;
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const res = await fetch(`${API_BASE}/carbon/export`, {
+    credentials: "include",
+    headers,
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Export failed (${res.status})`);
+  }
+  return res.blob();
+}
