@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-17 after Docker fix + CONTRIBUTING.md session.
+**Last updated:** 2026-07-28 after carbon CSV export feature (PR #39).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -35,11 +35,20 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 153 backend tests passing (incl. 36 passport tests). Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status (main):** 137 backend tests passing. Frontend builds 566 static pages (16 routes + 550 product pages). PR #39 branch: 141 tests (4 new carbon export tests).
 
-**DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`) — currently failing CI.
+**DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`).
 
-**Active branch:** `claude/nifty-goodall-s4f427` — PR open against `main`.
+**Carbon CSV export (2026-07-28, PR #39):** `GET /api/carbon/export` — auth-required, returns RFC 4180 CSV of all user carbon logs with Content-Disposition header. `downloadCarbonExport()` added to frontend carbon service (raw fetch for blob). "Export CSV" button on carbon page next to "Recent Logs" heading, hidden when no logs, loading state during download. 4 new Supertest tests; total 141 backend tests.
+
+**Active branch:** `claude/nifty-goodall-juod2y` — PR #39 open against `main`.
+
+**Open PRs (all CI green, all against main at 18bec95):**
+- PR #34 (dreamy-dirac-fzmsdt): Digital Product Passport frontend — 566+550 static pages
+- PR #36 (dreamy-dirac-4ua0hn): Product recommendations + Similar Products UI — 7 new tests (144 total on that branch)
+- PR #37 (dreamy-dirac-6st5cb): npm audit fix + tier filter + carbon dashboard widget — 141 tests
+- PR #38 (nifty-goodall-1w4m1h): User profile page + PATCH /api/auth/me + customizable weekly goal — 10 new tests (147 total on that branch)
+- PR #39 (nifty-goodall-juod2y): Carbon CSV export — 4 new tests (141 total on this branch)
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 

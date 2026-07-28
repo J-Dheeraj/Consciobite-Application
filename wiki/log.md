@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-28 — Carbon Log CSV Export (PR #39)
+
+**Operation:** Scheduled session — reviewed open PRs (#34, #36, #37, #38 all CI green), identified carbon tracker as missing export capability, implemented CSV download feature.
+
+**Files changed:** 5
+- `backend/src/routes/carbon.js` — added `GET /api/carbon/export` route (auth-required, returns RFC 4180 CSV)
+- `backend/__tests__/carbon.test.js` — 4 new Supertest tests (401, CSV content-type, header row, data row); total 141 tests on branch
+- `frontend/src/services/carbon.js` — added `downloadCarbonExport()` using raw fetch for blob response
+- `frontend/src/services/api.js` — re-exported `downloadCarbonExport`
+- `frontend/src/app/carbon/page.js` — added "Export CSV" button next to "Recent Logs" heading; hidden when no logs; loading state
+
+**Branch:** `claude/nifty-goodall-juod2y`
+**PR:** #39 — opened, CI pending
+
+**Verification:**
+- All 141 backend tests passing
+- ESLint and Prettier clean (backend + frontend)
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
