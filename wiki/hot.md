@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-17 after Docker fix + CONTRIBUTING.md session.
+**Last updated:** 2026-07-28 after search suggestions + autocomplete session.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
 
@@ -35,11 +35,13 @@ tags: [hot-cache, meta]
 - Dockerfile updated for repo-root-relative COPY paths
 - `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
 
-**Current test status:** 153 backend tests passing (incl. 36 passport tests). Frontend builds 566 static pages (16 routes + 550 product pages).
+**Current test status:** 143 backend tests passing on `claude/dreamy-dirac-sy3onk` (137 on main + 6 new suggestions tests). Note: 153 total when PR #34 passport.test.js merges. Frontend builds 566 static pages (16 routes + 550 product pages).
 
-**DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`) — currently failing CI.
+**DPP (Digital Product Passport) backend (merged 2026-07-16):** `/api/passport/:productId`, `POST /api/portfolio/score`, `GET /api/audit/:productId` routes live on main in `backend/src/routes/passport.js`. Frontend passport page is in PR #34 (branch `claude/dreamy-dirac-fzmsdt`) — CI fails on npm audit (brace-expansion/js-yaml high vulns); tests themselves pass. PR #37 fixes those vulns and needs to merge first.
 
-**Active branch:** `claude/nifty-goodall-s4f427` — PR open against `main`.
+**Search suggestions (2026-07-28):** `GET /api/products/suggestions?q=` endpoint + autocomplete dropdown on Products page. Branch `claude/dreamy-dirac-sy3onk`. Service `fetchProductSuggestions()` in `frontend/src/services/products.js`. 6 new tests. Autocomplete: 300ms debounce, keyboard nav, score badge, `role="combobox"` a11y.
+
+**Active branch:** `claude/dreamy-dirac-sy3onk` — pushed, PR to open against `main`. Previous session branch `claude/nifty-goodall-s4f427` with Docker fix is already merged to main.
 
 **Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
 

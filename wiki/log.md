@@ -13,6 +13,29 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-28 — Search Suggestions Endpoint + Autocomplete UI
+
+**Operation:** Implemented product search suggestions — a new API endpoint and frontend autocomplete dropdown for the Products page.
+
+**Backend changes (2 files):**
+- `backend/src/routes/products.js` — added `GET /api/products/suggestions?q=` route (before `/:id` to avoid Express route conflict). Returns up to 8 matches by name/brand/category with `{id, name, brand, category, score, grade}`. Uses `validate()` middleware (required q, maxLength 50) and is auto-cached by the existing `cacheMiddleware(120)` via URL key.
+- `backend/__tests__/api.test.js` — added 6 Supertest tests: 200 with results, ≤8 results cap, shape assertion, empty array on no match, 400 missing q, 400 q>50 chars. **Total: 143 backend tests** (up from 137).
+
+**Frontend changes (3 files):**
+- `frontend/src/services/products.js` — added `fetchProductSuggestions(q)` service function
+- `frontend/src/services/api.js` — re-exported `fetchProductSuggestions`
+- `frontend/src/app/products/page.js` — added autocomplete dropdown on search input: 300 ms debounce, keyboard navigation (↑↓ Enter Escape), outside-click dismiss, score badge per suggestion, `role="combobox"` + `aria-controls` for a11y
+
+**Branch:** `claude/dreamy-dirac-sy3onk`
+**PR:** to be opened
+
+**Open PRs observed:** #34 (DPP frontend, failing CI due to npm audit vulns — same issue PR #37 fixes), #36 (recommendations), #37 (audit fix + tier filter), #38 (user profile), #39 (CSV export — all CI green)
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
