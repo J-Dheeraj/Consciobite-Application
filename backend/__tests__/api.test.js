@@ -215,6 +215,51 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/suggestions", () => {
+    test("should return suggestions for a valid query", async () => {
+      const res = await request(app).get("/api/products/suggestions?q=milk");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.suggestions)).toBe(true);
+    });
+
+    test("should return at most 8 suggestions", async () => {
+      const res = await request(app).get("/api/products/suggestions?q=a");
+      expect(res.status).toBe(200);
+      expect(res.body.suggestions.length).toBeLessThanOrEqual(8);
+    });
+
+    test("each suggestion should have id, name, brand, category, score", async () => {
+      const res = await request(app).get("/api/products/suggestions?q=organic");
+      expect(res.status).toBe(200);
+      res.body.suggestions.forEach((s) => {
+        expect(s).toHaveProperty("id");
+        expect(s).toHaveProperty("name");
+        expect(s).toHaveProperty("brand");
+        expect(s).toHaveProperty("category");
+        expect(s).toHaveProperty("score");
+      });
+    });
+
+    test("should return empty array for no matches", async () => {
+      const res = await request(app).get("/api/products/suggestions?q=zzzzzzzzzzzzzzz");
+      expect(res.status).toBe(200);
+      expect(res.body.suggestions).toEqual([]);
+    });
+
+    test("should return 400 when q is missing", async () => {
+      const res = await request(app).get("/api/products/suggestions");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 400 when q exceeds 50 characters", async () => {
+      const longQuery = "a".repeat(51);
+      const res = await request(app).get(
+        `/api/products/suggestions?q=${encodeURIComponent(longQuery)}`
+      );
+      expect(res.status).toBe(400);
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

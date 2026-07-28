@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { fetchProducts } from "@/services/api";
+import { fetchProducts, fetchProductSuggestions } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -38,6 +38,11 @@ export default function Products() {
   const [sort, setSort] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeSuggestion, setActiveSuggestion] = useState(-1);
+  const suggestDebounceRef = useRef(null);
+  const searchWrapperRef = useRef(null);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -64,6 +69,56 @@ export default function Products() {
   useEffect(() => {
     setPage(1);
   }, [search, category, sort]);
+
+  useEffect(() => {
+    function handleOutsideClick(e) {
+      if (searchWrapperRef.current && !searchWrapperRef.current.contains(e.target)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  function handleSearchChange(e) {
+    const val = e.target.value;
+    setSearch(val);
+    setActiveSuggestion(-1);
+    if (suggestDebounceRef.current) clearTimeout(suggestDebounceRef.current);
+    if (val.trim().length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+    suggestDebounceRef.current = setTimeout(async () => {
+      try {
+        const data = await fetchProductSuggestions(val.trim());
+        setSuggestions(data.suggestions || []);
+        setShowSuggestions((data.suggestions || []).length > 0);
+      } catch {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }, 300);
+  }
+
+  function handleSearchKeyDown(e) {
+    if (!showSuggestions || suggestions.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveSuggestion((prev) => Math.min(prev + 1, suggestions.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveSuggestion((prev) => Math.max(prev - 1, -1));
+    } else if (e.key === "Enter" && activeSuggestion >= 0) {
+      e.preventDefault();
+      router.push(`/product/${suggestions[activeSuggestion].id}`);
+      setShowSuggestions(false);
+    } else if (e.key === "Escape") {
+      setShowSuggestions(false);
+      setActiveSuggestion(-1);
+    }
+  }
 
   const bg = isDark ? "#0a0a0a" : "#f8f9fa";
   const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
@@ -106,23 +161,116 @@ export default function Products() {
             alignItems: "center",
           }}
         >
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{
-              flex: "1 1 240px",
-              padding: "11px 16px",
-              borderRadius: 10,
-              border: `1.5px solid ${inputBorder}`,
-              background: inputBg,
-              color: textPrimary,
-              fontSize: "0.9rem",
-              outline: "none",
-              fontWeight: 500,
-            }}
-          />
+          <div ref={searchWrapperRef} style={{ flex: "1 1 240px", position: "relative" }}>
+            <input
+              type="text"
+              role="combobox"
+              placeholder="Search products..."
+              value={search}
+              onChange={handleSearchChange}
+              onKeyDown={handleSearchKeyDown}
+              onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+              aria-autocomplete="list"
+              aria-expanded={showSuggestions}
+              aria-controls="product-suggestions-list"
+              style={{
+                width: "100%",
+                padding: "11px 16px",
+                borderRadius: 10,
+                border: `1.5px solid ${inputBorder}`,
+                background: inputBg,
+                color: textPrimary,
+                fontSize: "0.9rem",
+                outline: "none",
+                fontWeight: 500,
+                boxSizing: "border-box",
+              }}
+            />
+            {showSuggestions && suggestions.length > 0 && (
+              <ul
+                id="product-suggestions-list"
+                role="listbox"
+                style={{
+                  position: "absolute",
+                  top: "calc(100% + 4px)",
+                  left: 0,
+                  right: 0,
+                  zIndex: 100,
+                  background: cardBg,
+                  border: `1.5px solid ${inputBorder}`,
+                  borderRadius: 10,
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                  listStyle: "none",
+                  margin: 0,
+                  padding: "6px 0",
+                  overflow: "hidden",
+                }}
+              >
+                {suggestions.map((s, i) => (
+                  <li
+                    key={s.id}
+                    role="option"
+                    aria-selected={i === activeSuggestion}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      router.push(`/product/${s.id}`);
+                      setShowSuggestions(false);
+                    }}
+                    onMouseEnter={() => setActiveSuggestion(i)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      padding: "9px 14px",
+                      cursor: "pointer",
+                      background:
+                        i === activeSuggestion
+                          ? isDark
+                            ? "rgba(45,106,79,0.18)"
+                            : "#f0faf4"
+                          : "transparent",
+                      transition: "background 0.1s",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: 32,
+                        height: 32,
+                        borderRadius: "50%",
+                        background: scoreColor(s.score || 0),
+                        color: "#fff",
+                        fontWeight: 700,
+                        fontSize: "0.75rem",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {s.score ?? "—"}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{
+                          fontSize: "0.88rem",
+                          fontWeight: 600,
+                          color: textPrimary,
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {s.name}
+                      </div>
+                      <div style={{ fontSize: "0.75rem", color: textMuted }}>
+                        {s.brand} &middot; {s.category}
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
