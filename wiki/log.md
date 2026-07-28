@@ -25,11 +25,12 @@ Append-only. Newest entries at top.
 - `frontend/src/app/carbon/page.js` — added "Export CSV" button next to "Recent Logs" heading; hidden when no logs; loading state
 
 **Branch:** `claude/nifty-goodall-juod2y`
-**PR:** #39 — opened, CI pending
+**PR:** #39 — opened, CI green ✓ (all 3 checks: Backend Tests, Frontend Build & Test, Docker Build Check)
 
 **Verification:**
 - All 141 backend tests passing
 - ESLint and Prettier clean (backend + frontend)
+- CI green on first push's Backend Tests failed (npm audit high vulns: brace-expansion via swagger-jsdoc, js-yaml); fixed with `npm audit fix` — second push CI all green
 
 **Index updated:** no
 **Hot cache updated:** yes
