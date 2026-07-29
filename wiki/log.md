@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-29 — Server-Side Favorites Persistence
+
+**Operation:** Implement server-side favorites persistence for authenticated users. Favorites were previously localStorage-only, so they were lost on browser data clear or device change.
+
+**Files created:** 4
+- `backend/src/db/migrations/003_favorites.sql` — `user_favorites` table with `UNIQUE(user_id, product_id)` and `ON DELETE CASCADE`
+- `backend/src/routes/favorites.js` — GET, POST, DELETE /:productId, DELETE /all (auth + CSRF protected)
+- `backend/__tests__/favorites.test.js` — 13 integration tests covering all routes
+- `frontend/src/services/favorites.js` — `fetchFavorites`, `addFavorite`, `removeFavorite`, `clearServerFavorites`
+
+**Files modified:** 5
+- `backend/src/index.js` — mount `/api/favorites` and `/api/v1/favorites` routes
+- `backend/src/swagger.js` — Favorites tag with 4 new endpoint docs
+- `frontend/src/services/api.js` — re-export favorites service functions
+- `frontend/src/app/favorites/page.js` — React Query + server data when authenticated, localStorage fallback for guests; per-item × remove button
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — on toggle, fire-and-forget backend sync when authenticated
+
+**Test count:** 153 → 173 backend tests (all passing).
+
+**Branch:** `claude/nifty-goodall-cavczb`
+**PR:** #41 (open, CI running)
+
+**Index updated:** no
+**Hot cache updated:** yes (next)
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
