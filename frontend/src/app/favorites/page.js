@@ -1,22 +1,76 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { fetchProduct } from "@/services/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  fetchProduct,
+  fetchFavorites,
+  removeFavorite as serverRemoveFavorite,
+  clearServerFavorites,
+} from "@/services/api";
 import ProductCard from "@/components/ProductCard";
 import { useTheme } from "@/context/ThemeContext";
-import { getFavoriteIds, clearFavorites } from "@/utils/favorites";
+import { useAuth } from "@/context/AuthContext";
+import { getFavoriteIds, clearFavorites as clearLocalFavorites } from "@/utils/favorites";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
 import { pageContainer, card, primaryButton, heading } from "@/utils/pageStyles";
 
 export default function Favorites() {
   const { theme } = useTheme();
+  const { isAuthenticated } = useAuth();
   const isDark = theme === "dark";
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
   const [showConfirm, setShowConfirm] = useState(false);
   const confirmHeadingId = "confirm-dialog-title";
   const cancelBtnRef = useRef(null);
+
+  // Non-authenticated path: localStorage
+  const [localProducts, setLocalProducts] = useState([]);
+  const [localLoading, setLocalLoading] = useState(true);
+
+  // Authenticated path: server
+  const { data: favData, isLoading: serverLoading } = useQuery({
+    queryKey: ["favorites"],
+    queryFn: fetchFavorites,
+    enabled: isAuthenticated,
+  });
+
+  const serverIds = favData?.favorites ?? [];
+
+  const { data: serverProducts, isLoading: productsLoading } = useQuery({
+    queryKey: ["favoriteProducts", serverIds],
+    queryFn: () =>
+      Promise.all(serverIds.map((id) => fetchProduct(id).catch(() => null))).then((r) =>
+        r.filter(Boolean)
+      ),
+    enabled: isAuthenticated && serverIds.length > 0,
+  });
+
+  const clearMutation = useMutation({
+    mutationFn: clearServerFavorites,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }),
+  });
+
+  const removeMutation = useMutation({
+    mutationFn: serverRemoveFavorite,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["favorites"] }),
+  });
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLocalLoading(false);
+      return;
+    }
+    const ids = getFavoriteIds();
+    if (ids.length === 0) {
+      setLocalLoading(false);
+      return;
+    }
+    Promise.all(ids.map((id) => fetchProduct(id).catch(() => null)))
+      .then((results) => setLocalProducts(results.filter(Boolean)))
+      .finally(() => setLocalLoading(false));
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!showConfirm) return;
@@ -28,31 +82,34 @@ export default function Favorites() {
     return () => document.removeEventListener("keydown", onKey);
   }, [showConfirm]);
 
-  useEffect(() => {
-    const ids = getFavoriteIds();
-    if (ids.length === 0) {
-      setLoading(false);
-      return;
-    }
-    Promise.all(ids.map((id) => fetchProduct(id).catch(() => null)))
-      .then((results) => setProducts(results.filter(Boolean)))
-      .finally(() => setLoading(false));
-  }, []);
-
   const handleClearAll = () => {
-    clearFavorites();
-    setProducts([]);
+    if (isAuthenticated) {
+      clearMutation.mutate();
+    } else {
+      clearLocalFavorites();
+      setLocalProducts([]);
+    }
     setShowConfirm(false);
   };
 
-  if (loading) {
+  const isLoading = isAuthenticated
+    ? serverLoading || (serverIds.length > 0 && productsLoading)
+    : localLoading;
+
+  const products = isAuthenticated
+    ? serverIds.length === 0
+      ? []
+      : (serverProducts ?? [])
+    : localProducts;
+
+  if (isLoading) {
     return <Spinner message="Loading favorites..." />;
   }
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
       <PageHero
-        icon={"\u2665"}
+        icon={"♥"}
         title="My Favorites"
         subtitle="Products you've saved for quick access."
       />
@@ -118,7 +175,7 @@ export default function Favorites() {
                 textAlign: "center",
               }}
             >
-              <div style={{ fontSize: "2rem", marginBottom: 12 }}>{"\u26A0\uFE0F"}</div>
+              <div style={{ fontSize: "2rem", marginBottom: 12 }}>{"⚠️"}</div>
               <h3
                 id={confirmHeadingId}
                 style={{
@@ -186,7 +243,7 @@ export default function Favorites() {
               animation: "fadeInUp 0.4s ease",
             }}
           >
-            <div style={{ fontSize: "3rem", marginBottom: 12, opacity: 0.4 }}>{"\u2661"}</div>
+            <div style={{ fontSize: "3rem", marginBottom: 12, opacity: 0.4 }}>{"♡"}</div>
             <p
               style={{ color: isDark ? "#7a9a7e" : "#888", marginBottom: 20, fontSize: "0.95rem" }}
             >
@@ -201,9 +258,39 @@ export default function Favorites() {
           </div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            {products.map((p, i) => (
-              <ProductCard key={p.id} product={p} delay={i * 40} />
-            ))}
+            {products.map((p, i) =>
+              isAuthenticated ? (
+                <div key={p.id} style={{ position: "relative" }}>
+                  <ProductCard product={p} delay={i * 40} />
+                  <button
+                    onClick={() => removeMutation.mutate(p.id)}
+                    aria-label={`Remove ${p.name} from favorites`}
+                    title="Remove from favorites"
+                    style={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      background: isDark ? "rgba(30,46,34,0.9)" : "rgba(255,255,255,0.9)",
+                      border: "1px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
+                      borderRadius: "50%",
+                      width: 28,
+                      height: 28,
+                      cursor: "pointer",
+                      fontSize: "0.85rem",
+                      color: isDark ? "#7a9a7e" : "#888",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      lineHeight: 1,
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ) : (
+                <ProductCard key={p.id} product={p} delay={i * 40} />
+              )
+            )}
           </div>
         )}
       </div>

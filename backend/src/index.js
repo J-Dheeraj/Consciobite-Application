@@ -13,6 +13,7 @@ const recipeRoutes = require("./routes/recipes");
 const adminRoutes = require("./routes/admin");
 const passportRoutes = require("./routes/passport");
 const mlRoutes = require("./routes/ml");
+const favoritesRoutes = require("./routes/favorites");
 const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
 const { csrfProtection } = require("./middleware/auth");
@@ -217,6 +218,7 @@ app.use("/api/recipes", cacheMiddleware(600), recipeRoutes);
 app.use("/api/admin", csrfProtection, adminRoutes);
 app.use("/api/v1/ml", cacheMiddleware(120), mlRoutes);
 app.use("/api/v1", cacheMiddleware(120), passportRoutes);
+app.use("/api/favorites", csrfProtection, favoritesRoutes);
 
 // Versioned aliases (v1 = current)
 app.use("/api/v1/products", cacheMiddleware(120), productRoutes);
@@ -225,6 +227,7 @@ app.use("/api/v1/reviews", csrfProtection, reviewRoutes);
 app.use("/api/v1/carbon", csrfProtection, carbonRoutes);
 app.use("/api/v1/recipes", cacheMiddleware(600), recipeRoutes);
 app.use("/api/v1/admin", csrfProtection, adminRoutes);
+app.use("/api/v1/favorites", csrfProtection, favoritesRoutes);
 
 // ---------- 404 handler ----------
 app.use((_req, res) => {
