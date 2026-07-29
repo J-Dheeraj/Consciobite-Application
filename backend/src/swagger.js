@@ -1,5 +1,6 @@
-const swaggerJsdoc = require("swagger-jsdoc");
-
+// The OpenAPI spec is fully defined inline below (no JSDoc-comment scanning),
+// so swagger-jsdoc is not needed — its glob dependency chain carried
+// unpatchable audit findings, and with `apis: []` it was a pass-through.
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -542,6 +543,6 @@ const options = {
   apis: [],
 };
 
-const swaggerSpec = swaggerJsdoc(options);
+const swaggerSpec = options.definition;
 
 module.exports = { swaggerSpec };

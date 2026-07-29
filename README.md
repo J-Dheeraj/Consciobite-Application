@@ -36,7 +36,7 @@ SGX-listed food manufacturers in Singapore face Scope 3 carbon reporting obligat
 | Auth | JWT + bcryptjs, CSRF double-submit |
 | Security | Helmet, CORS, HPP, rate limiting, account lockout, input validation |
 | Infrastructure | Docker (multi-stage, non-root), GitHub Actions CI, Render.com |
-| API Documentation | Swagger UI + swagger-jsdoc |
+| API Documentation | Swagger UI (inline OpenAPI 3.0 spec) |
 
 ## Quick Start
 
