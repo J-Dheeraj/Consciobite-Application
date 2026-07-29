@@ -418,6 +418,108 @@ const options = {
           },
         },
       },
+      "/v1/ml/similar/{productId}": {
+        get: {
+          tags: ["ML Insights"],
+          summary: "Find greener alternatives by cosine similarity",
+          description:
+            "Returns the top-k most similar products by cosine similarity over the scaled 7-dimension emissions vector. Defaults to greener (lower total emissions) alternatives only. Advisory — backed by the offline-trained ML artifacts, separate from the GreenGrade engine.",
+          parameters: [
+            { name: "productId", in: "path", required: true, schema: { type: "string" } },
+            { name: "k", in: "query", schema: { type: "integer", default: 5, maximum: 20 } },
+            { name: "greenerOnly", in: "query", schema: { type: "boolean", default: true } },
+          ],
+          responses: {
+            200: { description: "Similar products with similarity scores" },
+            404: { description: "Product not found in similarity index" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
+      "/v1/ml/classify": {
+        post: {
+          tags: ["ML Insights"],
+          summary: "Predict product category from an emissions profile",
+          description:
+            "Decision-tree prediction of the product category from the 7 emission stages. Advisory only — intended for mis-tag detection and category pre-fill, never an automatic category assignment.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    landUseChange: { type: "number" },
+                    animalFeed: { type: "number" },
+                    farm: { type: "number" },
+                    processing: { type: "number" },
+                    transport: { type: "number" },
+                    packaging: { type: "number" },
+                    retail: { type: "number" },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Predicted category (advisory)" },
+            400: { description: "Invalid emissions payload" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
+      "/v1/ml/estimate-emissions": {
+        post: {
+          tags: ["ML Insights"],
+          summary: "Estimate total emissions from partial logistics data",
+          description:
+            "Regression-tree estimate of total emissions from only the transport, packaging, and retail stages. Advisory upgrade path for Tier 3 (estimated) products.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    transport: { type: "number" },
+                    packaging: { type: "number" },
+                    retail: { type: "number" },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Estimated total emissions in kg CO2e (advisory)" },
+            400: { description: "Invalid input" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
+      "/v1/ml/clusters": {
+        get: {
+          tags: ["ML Insights"],
+          summary: "K-Means cluster summary",
+          responses: {
+            200: { description: "Cluster count and products per cluster" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
+      "/v1/ml/clusters/{productId}": {
+        get: {
+          tags: ["ML Insights"],
+          summary: "Cluster membership for one product",
+          parameters: [
+            { name: "productId", in: "path", required: true, schema: { type: "string" } },
+          ],
+          responses: {
+            200: { description: "Cluster label" },
+            404: { description: "Product not found" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
       "/v1/audit/{productId}": {
         get: {
           tags: ["Digital Product Passport"],

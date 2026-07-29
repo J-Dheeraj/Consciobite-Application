@@ -12,6 +12,7 @@ const carbonRoutes = require("./routes/carbon");
 const recipeRoutes = require("./routes/recipes");
 const adminRoutes = require("./routes/admin");
 const passportRoutes = require("./routes/passport");
+const mlRoutes = require("./routes/ml");
 const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
 const { csrfProtection } = require("./middleware/auth");
@@ -20,6 +21,7 @@ const { getDb, closeDb } = require("./db/schema");
 const { runMigrations } = require("./db/migrate");
 const { CONFIG, validateConfig } = require("./config");
 const { trainModel, calculateGreenGrade } = require("./services/greengrade");
+const mlInsights = require("./services/mlInsights");
 const { getMethodology } = require("./services/dataProvenance");
 const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
 const products = require("./data/products.json");
@@ -70,6 +72,11 @@ logger.info("Database initialized");
 // ---------- Train GreenGrade ML model on product catalog ----------
 trainModel(products);
 logger.info(`GreenGrade model trained on ${products.length} products`);
+
+// Load offline-trained ML artifacts (scikit-learn export) for /api/v1/ml routes
+if (mlInsights.loadArtifacts()) {
+  logger.info("ML insights artifacts loaded");
+}
 
 // Snapshot scores on startup to detect future changes
 const scoreChanges = snapshotScores(products, (product) =>
@@ -208,6 +215,7 @@ app.use("/api/reviews", csrfProtection, reviewRoutes);
 app.use("/api/carbon", csrfProtection, carbonRoutes);
 app.use("/api/recipes", cacheMiddleware(600), recipeRoutes);
 app.use("/api/admin", csrfProtection, adminRoutes);
+app.use("/api/v1/ml", cacheMiddleware(120), mlRoutes);
 app.use("/api/v1", cacheMiddleware(120), passportRoutes);
 
 // Versioned aliases (v1 = current)

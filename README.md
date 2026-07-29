@@ -21,6 +21,9 @@ SGX-listed food manufacturers in Singapore face Scope 3 carbon reporting obligat
 - **Governance Layer** — Independent Advisory Panel oversight, manufacturer onboarding with non-contingent fee acknowledgement, public transparency dashboard with aggregate score-change statistics. Addresses the conflict of interest between listing fees and independent scoring.
 - **Barcode Scanning** — Look up any product's GreenGrade by barcode, with Open Food Facts fallback for 2M+ products.
 - **Anomaly Detection** — Mahalanobis distance from category centroids flags outliers beyond the chi-squared 95th percentile for 7 degrees of freedom.
+- **ML Insights Layer** — Advisory endpoints (`/api/v1/ml/*`) backed by scikit-learn models trained offline on the catalog: greener-alternative similarity search, category classification for mis-tag detection, emissions estimation from partial data, and K-Means sustainability clusters.
+
+> **Two engines, deliberately separate.** The GreenGrade score is produced by a hand-built statistical engine (Gaussian KDE + Mahalanobis anomaly detection in `backend/src/services/greengrade.js`). The ML Insights layer (`backend/src/services/mlInsights.js`) is a distinct, scikit-learn-derived engine trained offline in Python and evaluated in plain JS at runtime. ML predictions are advisory only — they never modify a product's category, emissions, or GreenGrade score, and never bypass the score audit trail. See [`ML_REPORT.md`](./ML_REPORT.md) for the full analysis.
 
 ## Tech Stack
 
@@ -61,6 +64,18 @@ export JWT_SECRET=your-secret-here
 docker compose up --build
 ```
 
+### ML Model Training
+
+The `/api/v1/ml/*` endpoints serve models trained offline with scikit-learn. The exported artifacts (`backend/src/data/ml_artifacts.json`) are committed, so no Python is needed to run the app. To retrain after changing the product catalog:
+
+```bash
+cd ml
+python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+.venv/bin/python greengrade_ml_analysis.py --data ../backend/src/data/products.json --out ../backend/src/data
+```
+
+Then restart the backend to load the new artifacts.
+
 ## API Reference
 
 ### B2B / Digital Product Passport
@@ -97,6 +112,16 @@ docker compose up --build
   "methodology_version": "3.0"
 }
 ```
+
+### ML Insights (advisory)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/ml/similar/:productId` | Top-k greener alternatives by cosine similarity (`?k=`, `?greenerOnly=`) |
+| POST | `/api/v1/ml/classify` | Predict category from an emissions profile |
+| POST | `/api/v1/ml/estimate-emissions` | Estimate total emissions from partial (logistics-only) data |
+| GET | `/api/v1/ml/clusters` | K-Means cluster summary |
+| GET | `/api/v1/ml/clusters/:productId` | Cluster membership for one product |
 
 ### Product Data
 
