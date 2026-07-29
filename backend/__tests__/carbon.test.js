@@ -110,6 +110,55 @@ describe("Carbon tracking endpoints", () => {
     });
   });
 
+  describe("GET /api/carbon/daily", () => {
+    test("should require authentication", async () => {
+      const res = await request(app).get("/api/carbon/daily");
+      expect(res.status).toBe(401);
+    });
+
+    test("should return daily trend and streak fields", async () => {
+      const res = await request(app)
+        .get("/api/carbon/daily")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.dailyTrend)).toBe(true);
+      expect(typeof res.body.currentStreak).toBe("number");
+      expect(typeof res.body.longestStreak).toBe("number");
+    });
+
+    test("should return exactly 14 entries in dailyTrend", async () => {
+      const res = await request(app)
+        .get("/api/carbon/daily")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.dailyTrend.length).toBe(14);
+    });
+
+    test("daily trend entries have expected shape", async () => {
+      const res = await request(app)
+        .get("/api/carbon/daily")
+        .set("Authorization", `Bearer ${authToken}`);
+      const entry = res.body.dailyTrend[13]; // today
+      expect(entry).toHaveProperty("date");
+      expect(entry).toHaveProperty("dayLabel");
+      expect(entry).toHaveProperty("emissions");
+      expect(entry).toHaveProperty("logs");
+      expect(entry.dayLabel).toBe("Today");
+      expect(typeof entry.emissions).toBe("number");
+      expect(typeof entry.logs).toBe("number");
+    });
+
+    test("current streak is at least 1 after logging today", async () => {
+      // A log was already created in the POST describe block for this user (today)
+      const res = await request(app)
+        .get("/api/carbon/daily")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.currentStreak).toBeGreaterThanOrEqual(1);
+      expect(res.body.longestStreak).toBeGreaterThanOrEqual(res.body.currentStreak);
+    });
+  });
+
   describe("DELETE /api/carbon/log/:id", () => {
     test("should require authentication", async () => {
       const res = await request(app).delete("/api/carbon/log/someid");

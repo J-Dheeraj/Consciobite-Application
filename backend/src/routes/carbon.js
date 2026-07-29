@@ -189,6 +189,92 @@ router.post("/log", requireAuth, validate(POST_LOG_SCHEMA), (req, res) => {
   res.status(201).json({ log });
 });
 
+// GET /api/carbon/daily - 14-day daily trend + activity streaks
+router.get("/daily", requireAuth, (req, res) => {
+  const db = getDb();
+  const userId = req.user.id;
+
+  const rows = db
+    .prepare(
+      `SELECT date(logged_at) as date,
+              ROUND(SUM(emissions * quantity), 2) as emissions,
+              COUNT(*) as logs
+       FROM carbon_logs
+       WHERE user_id = ? AND date(logged_at) >= date('now', '-13 days')
+       GROUP BY date(logged_at)
+       ORDER BY date ASC`
+    )
+    .all(userId);
+
+  const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const rowMap = {};
+  for (const r of rows) rowMap[r.date] = r;
+
+  const dailyTrend = [];
+  for (let i = 13; i >= 0; i--) {
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate() - i);
+    const dateStr = d.toISOString().slice(0, 10);
+    const dayLabel = i === 0 ? "Today" : i === 1 ? "Yesterday" : DAY_NAMES[d.getUTCDay()];
+    const row = rowMap[dateStr];
+    dailyTrend.push({
+      date: dateStr,
+      dayLabel,
+      emissions: row ? row.emissions : 0,
+      logs: row ? row.logs : 0,
+    });
+  }
+
+  const allDates = db
+    .prepare(
+      `SELECT DISTINCT date(logged_at) as date
+       FROM carbon_logs
+       WHERE user_id = ?
+       ORDER BY date DESC`
+    )
+    .all(userId)
+    .map((r) => r.date);
+
+  let currentStreak = 0;
+  let longestStreak = 0;
+
+  if (allDates.length > 0) {
+    const today = new Date().toISOString().slice(0, 10);
+    const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    const mostRecent = allDates[0];
+
+    if (mostRecent === today || mostRecent === yesterday) {
+      let streak = 1;
+      for (let i = 1; i < allDates.length; i++) {
+        const prev = new Date(allDates[i - 1]);
+        const curr = new Date(allDates[i]);
+        if (Math.round((prev - curr) / 86400000) === 1) {
+          streak++;
+        } else {
+          break;
+        }
+      }
+      currentStreak = streak;
+    }
+
+    let streak = 1;
+    let maxStreak = 1;
+    for (let i = 1; i < allDates.length; i++) {
+      const prev = new Date(allDates[i - 1]);
+      const curr = new Date(allDates[i]);
+      if (Math.round((prev - curr) / 86400000) === 1) {
+        streak++;
+        if (streak > maxStreak) maxStreak = streak;
+      } else {
+        streak = 1;
+      }
+    }
+    longestStreak = maxStreak;
+  }
+
+  res.json({ dailyTrend, currentStreak, longestStreak });
+});
+
 // DELETE /api/carbon/log/:id - delete a carbon log
 router.delete("/log/:id", requireAuth, validate(DELETE_LOG_SCHEMA), (req, res) => {
   const logId = req.params.id;

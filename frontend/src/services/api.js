@@ -8,7 +8,13 @@ export {
 } from "./products";
 export { registerUser, loginUser, fetchCurrentUser } from "./auth";
 export { fetchReviews, submitReview, deleteReview } from "./reviews";
-export { fetchCarbonSummary, fetchCarbonLogs, logCarbonPurchase, deleteCarbonLog } from "./carbon";
+export {
+  fetchCarbonSummary,
+  fetchCarbonLogs,
+  logCarbonPurchase,
+  deleteCarbonLog,
+  fetchCarbonDaily,
+} from "./carbon";
 export { fetchRecipes, fetchRecipe, fetchMethodology } from "./recipes";
 export {
   fetchConflictLog,

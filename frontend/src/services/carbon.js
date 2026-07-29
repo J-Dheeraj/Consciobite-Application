@@ -20,3 +20,7 @@ export async function deleteCarbonLog(id) {
     method: "DELETE",
   });
 }
+
+export async function fetchCarbonDaily() {
+  return httpClient(`${API_BASE}/carbon/daily`);
+}

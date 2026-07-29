@@ -4,7 +4,12 @@ import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchCarbonSummary, fetchCarbonLogs, deleteCarbonLog } from "@/services/api";
+import {
+  fetchCarbonSummary,
+  fetchCarbonLogs,
+  deleteCarbonLog,
+  fetchCarbonDaily,
+} from "@/services/api";
 import { WEEKLY_CARBON_GOAL_KG } from "@/utils/constants";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
@@ -28,6 +33,12 @@ export default function CarbonTracker() {
         summary: summaryData,
         logs: logsData.logs,
       })),
+  });
+
+  const { data: dailyData } = useQuery({
+    queryKey: ["carbon-daily"],
+    queryFn: fetchCarbonDaily,
+    enabled: isAuthenticated,
   });
 
   const summary = carbonData?.summary || null;
@@ -348,6 +359,117 @@ export default function CarbonTracker() {
                     />
                     <YAxis tick={{ fontSize: 11, fill: isDark ? "#7a9a7e" : "#888" }} />
                     <Tooltip />
+                    <Bar dataKey="emissions" name="kg CO₂e" fill="#52b788" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Daily Activity */}
+            {dailyData && (
+              <div
+                style={{
+                  background: isDark ? "#162419" : "#fff",
+                  borderRadius: 14,
+                  padding: 20,
+                  marginBottom: 16,
+                  boxShadow: isDark
+                    ? "0 4px 12px rgba(0,0,0,0.2)"
+                    : "0 2px 8px rgba(27,67,50,0.06)",
+                  animation: "fadeInUp 0.4s ease 0.2s both",
+                }}
+              >
+                <h3
+                  style={{
+                    fontFamily: "'Outfit', sans-serif",
+                    fontWeight: 700,
+                    marginBottom: 12,
+                    color: isDark ? "#e8f5e9" : "#333",
+                  }}
+                >
+                  Daily Activity (Last 14 Days)
+                </h3>
+
+                {/* Streak badges */}
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 10,
+                    marginBottom: 16,
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "6px 14px",
+                      borderRadius: 20,
+                      background:
+                        dailyData.currentStreak > 0
+                          ? isDark
+                            ? "#1c3a2a"
+                            : "#edf7f0"
+                          : isDark
+                            ? "#1e1e1e"
+                            : "#f5f5f5",
+                      fontSize: "0.85rem",
+                      fontWeight: 600,
+                      color:
+                        dailyData.currentStreak > 0
+                          ? isDark
+                            ? "#95d5b2"
+                            : "#2d6a4f"
+                          : isDark
+                            ? "#7a9a7e"
+                            : "#888",
+                    }}
+                  >
+                    {"🔥"} Current streak: {dailyData.currentStreak}{" "}
+                    {dailyData.currentStreak === 1 ? "day" : "days"}
+                  </div>
+                  <div
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 6,
+                      padding: "6px 14px",
+                      borderRadius: 20,
+                      background: isDark ? "#1c2e22" : "#f0fdf4",
+                      fontSize: "0.85rem",
+                      fontWeight: 600,
+                      color: isDark ? "#b0c4b1" : "#555",
+                    }}
+                  >
+                    {"🏆"} Best streak: {dailyData.longestStreak}{" "}
+                    {dailyData.longestStreak === 1 ? "day" : "days"}
+                  </div>
+                </div>
+
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart
+                    data={dailyData.dailyTrend}
+                    margin={{ top: 4, right: 4, left: -10, bottom: 4 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#2d4a35" : "#f0f0f0"} />
+                    <XAxis
+                      dataKey="dayLabel"
+                      tick={{ fontSize: 10, fill: isDark ? "#7a9a7e" : "#888" }}
+                      interval={0}
+                    />
+                    <YAxis tick={{ fontSize: 10, fill: isDark ? "#7a9a7e" : "#888" }} unit=" kg" />
+                    <Tooltip
+                      formatter={(value) => [`${value} kg CO₂e`, "Emissions"]}
+                      labelFormatter={(label) => `Day: ${label}`}
+                      contentStyle={{
+                        background: isDark ? "#14352a" : "#fff",
+                        border: "1px solid " + (isDark ? "#2d4a35" : "#eee"),
+                        borderRadius: 8,
+                        fontSize: "0.8rem",
+                        color: isDark ? "#e8f5e9" : "inherit",
+                      }}
+                    />
                     <Bar dataKey="emissions" name="kg CO₂e" fill="#52b788" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
