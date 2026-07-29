@@ -44,7 +44,7 @@ Source documents (immutable) live in `.raw/`.
 
 **Frontend** — Next.js 14 App Router (`output: 'export'` static site), React 18.2, TanStack React Query 5.90, Recharts 3.7, html5-qrcode, Sentry, CSS Modules + inline styles with CSS custom properties, ESLint (`next/core-web-vitals`) + Prettier.
 
-**Backend** — Node.js 20, Express 4.18, SQLite via better-sqlite3 (WAL mode), JWT + bcryptjs auth, Helmet / CORS / HPP / express-rate-limit security stack, custom `validate()` middleware, node-cache (in-memory), Winston logging, Swagger UI + swagger-jsdoc (dev only), Jest 30 + Supertest 7.2.
+**Backend** — Node.js 20, Express 4.18, SQLite via better-sqlite3 (WAL mode), JWT + bcryptjs auth, Helmet / CORS / HPP / express-rate-limit security stack, custom `validate()` middleware, node-cache (in-memory), Winston logging, Swagger UI with an inline OpenAPI spec (dev only), Jest 30 + Supertest 7.2.
 
 **Governance layer** — Score change audit trail (`scoreAudit.js`), manufacturer tracking, admin routes (`/api/admin/*`), `requireAdmin` middleware. See `wiki/domains/Grading Independence Governance.md`.
 
