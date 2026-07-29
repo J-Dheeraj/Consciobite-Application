@@ -61,6 +61,10 @@ validateProductCatalog(products);
 const app = express();
 const PORT = CONFIG.port;
 
+// Behind Render's proxy: trust the first hop so rate limiting and account
+// lockout key on the real client IP from X-Forwarded-For, not the proxy IP.
+app.set("trust proxy", 1);
+
 // ---------- Validate configuration ----------
 validateConfig();
 
@@ -191,7 +195,40 @@ if (process.env.NODE_ENV !== "production") {
 
 // ---------- Routes (v1) ----------
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "Consciobite API", version: "2.0.0", apiVersion: "v1" });
+  const checks = {
+    database: false,
+    migrations: false,
+    greengradeModel: false,
+    mlArtifacts: mlInsights.isReady(),
+  };
+
+  try {
+    const db = getDb();
+    // BEGIN IMMEDIATE acquires the write lock, verifying the DB is writable
+    // (not just readable) without persisting anything.
+    db.exec("BEGIN IMMEDIATE; ROLLBACK;");
+    checks.database = true;
+    checks.migrations = db.prepare("SELECT COUNT(*) AS c FROM _migrations").get().c > 0;
+  } catch (_) {
+    // leave database/migrations false
+  }
+
+  try {
+    calculateGreenGrade(products[0].emissions, products[0].category, products[0]);
+    checks.greengradeModel = true;
+  } catch (_) {
+    // leave greengradeModel false
+  }
+
+  // mlArtifacts is advisory-only and does not gate overall health.
+  const healthy = checks.database && checks.migrations && checks.greengradeModel;
+  res.status(healthy ? 200 : 503).json({
+    status: healthy ? "ok" : "degraded",
+    service: "Consciobite API",
+    version: "2.0.0",
+    apiVersion: "v1",
+    checks,
+  });
 });
 
 app.get("/api/methodology", (_req, res) => {

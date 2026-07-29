@@ -1,6 +1,7 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { AUTH_EXPIRED_EVENT } from "../utils/constants";
+import { API_BASE } from "../services/httpClient";
 
 const AuthContext = createContext();
 
@@ -48,7 +49,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(TOKEN_KEY);
     if (refreshTimer.current) clearTimeout(refreshTimer.current);
     try {
-      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+      await fetch(`${API_BASE}/auth/logout`, { method: "POST", credentials: "include" });
     } catch {
       // Best-effort cookie clear
     }
@@ -66,7 +67,7 @@ export function AuthProvider({ children }) {
     const refreshIn = Math.max(0, expiry - Date.now() - 5 * 60 * 1000);
     refreshTimer.current = setTimeout(async () => {
       try {
-        const res = await fetch("/api/auth/refresh", {
+        const res = await fetch(`${API_BASE}/auth/refresh`, {
           method: "POST",
           credentials: "include",
           headers: { Authorization: `Bearer ${token}` },
