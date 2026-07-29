@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-29 — Daily Carbon Analytics + Streak Tracking
+
+**Operation:** Added `GET /api/carbon/daily` endpoint and "Daily Activity" UI section to the Carbon Tracker page.
+
+**What was built:**
+- **Backend** — `GET /api/carbon/daily` (auth protected): returns `dailyTrend` (14 entries, one per day, zeros for inactive days), `currentStreak` (consecutive days ending today or yesterday), `longestStreak` (all-time best).
+- **Backend tests** — 5 new Supertest integration tests: auth guard, response shape, 14-entry count, entry field types + dayLabel="Today", streak ≥ 1 after prior log in same test run. Total: **165 backend tests**.
+- **Frontend service** — `fetchCarbonDaily()` added to `frontend/src/services/carbon.js`, re-exported from `api.js`.
+- **Frontend UI** — New "Daily Activity" section inserted in the Carbon Tracker page between the Weekly Trend chart and Top Impact Products. Shows 🔥 current / 🏆 best streak badges and a 14-day Recharts BarChart.
+
+**Files changed:** 5
+- `backend/src/routes/carbon.js` — new `/daily` route
+- `backend/__tests__/carbon.test.js` — 5 new tests
+- `frontend/src/services/carbon.js` — `fetchCarbonDaily`
+- `frontend/src/services/api.js` — re-export
+- `frontend/src/app/carbon/page.js` — streak UI + 14-day chart
+
+**Branch:** `claude/dreamy-dirac-1c9wjs`
+**CI:** ESLint, Prettier, and full Jest suite all green.
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
 
 **Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
