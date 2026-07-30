@@ -1,0 +1,481 @@
+{
+  "dataset": {
+    "n_products": 550,
+    "n_categories": 9,
+    "category_counts": {
+      "Pantry": 99,
+      "Snacks": 73,
+      "Dairy & Eggs": 70,
+      "Beverages": 59,
+      "Grains": 56,
+      "Protein": 53,
+      "Fruits": 48,
+      "Seafood": 46,
+      "Vegetables": 46
+    }
+  },
+  "knn": {
+    "best_k": 1,
+    "cv_scores_by_k": {
+      "1": 0.7404127481713687,
+      "3": 0.7244775339602926,
+      "5": 0.6902560083594567,
+      "7": 0.6765935214211076,
+      "9": 0.6492685475444097,
+      "11": 0.6446969696969697,
+      "13": 0.6150470219435736,
+      "15": 0.6037617554858933
+    },
+    "accuracy": 0.8108,
+    "precision_weighted": 0.8248,
+    "recall_weighted": 0.8108,
+    "f1_weighted": 0.8111,
+    "confusion_matrix": [
+      [
+        8,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2
+      ],
+      [
+        0,
+        14,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2
+      ],
+      [
+        0,
+        0,
+        0,
+        9,
+        0,
+        0,
+        0,
+        2,
+        0
+      ],
+      [
+        2,
+        0,
+        1,
+        2,
+        13,
+        0,
+        0,
+        2,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        1,
+        10,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        8,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        12,
+        0
+      ],
+      [
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        8
+      ]
+    ],
+    "labels": [
+      "Beverages",
+      "Dairy & Eggs",
+      "Fruits",
+      "Grains",
+      "Pantry",
+      "Protein",
+      "Seafood",
+      "Snacks",
+      "Vegetables"
+    ]
+  },
+  "decision_tree_gini": {
+    "accuracy": 0.7027,
+    "precision_weighted": 0.751,
+    "recall_weighted": 0.7027,
+    "f1_weighted": 0.7005,
+    "confusion_matrix": [
+      [
+        11,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        10,
+        0,
+        0,
+        0,
+        3,
+        1,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        6,
+        0,
+        3,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        7,
+        4,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        0,
+        18,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        1,
+        0,
+        0,
+        2,
+        7,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        7,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        2,
+        2,
+        1,
+        0,
+        8,
+        0
+      ],
+      [
+        3,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4
+      ]
+    ],
+    "labels": [
+      "Beverages",
+      "Dairy & Eggs",
+      "Fruits",
+      "Grains",
+      "Pantry",
+      "Protein",
+      "Seafood",
+      "Snacks",
+      "Vegetables"
+    ],
+    "feature_importances": {
+      "landUseChange": 0.1842,
+      "animalFeed": 0.1053,
+      "farm": 0.3684,
+      "processing": 0.0789,
+      "transport": 0.1316,
+      "packaging": 0.0789,
+      "retail": 0.0526
+    }
+  },
+  "random_forest": {
+    "accuracy": 0.6396,
+    "precision_weighted": 0.6723,
+    "recall_weighted": 0.6396,
+    "f1_weighted": 0.6365,
+    "confusion_matrix": [
+      [
+        4,
+        0,
+        0,
+        2,
+        5,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        13,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        5,
+        0,
+        4,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        2,
+        0,
+        0,
+        6,
+        2,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        2,
+        0,
+        0,
+        0,
+        17,
+        0,
+        0,
+        1,
+        0
+      ],
+      [
+        1,
+        0,
+        0,
+        0,
+        2,
+        8,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        7,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        3,
+        1,
+        4,
+        7,
+        0
+      ],
+      [
+        3,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        4
+      ]
+    ],
+    "labels": [
+      "Beverages",
+      "Dairy & Eggs",
+      "Fruits",
+      "Grains",
+      "Pantry",
+      "Protein",
+      "Seafood",
+      "Snacks",
+      "Vegetables"
+    ],
+    "feature_importances": {
+      "landUseChange": 0.1759,
+      "animalFeed": 0.1113,
+      "farm": 0.1876,
+      "processing": 0.1725,
+      "transport": 0.1718,
+      "packaging": 0.1505,
+      "retail": 0.0302
+    }
+  },
+  "_best_model": "knn",
+  "regression": {
+    "knn_regressor": {
+      "best_k": 11,
+      "mae": 1.3203,
+      "rmse": 2.4758,
+      "r2": 0.4219
+    },
+    "decision_tree_regressor": {
+      "mae": 1.3218,
+      "rmse": 2.7435,
+      "r2": 0.2902
+    },
+    "baseline_mean": {
+      "mae": 2.6253,
+      "rmse": 3.2667,
+      "r2": -0.0063
+    }
+  },
+  "clustering": {
+    "kmeans": {
+      "wcss_by_k": {
+        "2": 2440.09,
+        "3": 2021.05,
+        "4": 1812.35,
+        "5": 1356.85,
+        "6": 1147.57,
+        "7": 1039.16,
+        "8": 991.91,
+        "9": 911.01,
+        "10": 847.28,
+        "11": 709.06,
+        "12": 661.3
+      },
+      "silhouette_by_k": {
+        "2": 0.4724,
+        "3": 0.2924,
+        "4": 0.2452,
+        "5": 0.2628,
+        "6": 0.3459,
+        "7": 0.3157,
+        "8": 0.2717,
+        "9": 0.2738,
+        "10": 0.2854,
+        "11": 0.2922,
+        "12": 0.3073
+      },
+      "chosen_k": 2,
+      "cluster_vs_category_crosstab": {
+        "0": {
+          "Beverages": 56,
+          "Dairy & Eggs": 34,
+          "Fruits": 48,
+          "Grains": 56,
+          "Pantry": 99,
+          "Protein": 17,
+          "Seafood": 20,
+          "Snacks": 64,
+          "Vegetables": 46
+        },
+        "1": {
+          "Beverages": 3,
+          "Dairy & Eggs": 36,
+          "Fruits": 0,
+          "Grains": 0,
+          "Pantry": 0,
+          "Protein": 36,
+          "Seafood": 26,
+          "Snacks": 9,
+          "Vegetables": 0
+        }
+      }
+    },
+    "dbscan": {
+      "eps": 1.5,
+      "min_samples": 5,
+      "n_clusters_found": 3,
+      "n_noise_points": 17,
+      "noise_pct": 3.09
+    }
+  }
+}
