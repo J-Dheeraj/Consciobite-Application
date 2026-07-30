@@ -13,7 +13,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 export default function CarbonTracker() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, initializing } = useAuth();
   const queryClient = useQueryClient();
   const [deleteError, setDeleteError] = useState("");
 
@@ -45,6 +45,8 @@ export default function CarbonTracker() {
     },
     [queryClient]
   );
+
+  if (initializing) return null;
 
   if (!isAuthenticated) {
     return (

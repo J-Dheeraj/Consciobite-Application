@@ -14,6 +14,14 @@ describe("API Endpoints", () => {
       expect(res.body.service).toBe("Consciobite API");
       expect(res.body.version).toBe("2.0.0");
     });
+
+    test("should report readiness checks", async () => {
+      const res = await request(app).get("/api/health");
+      expect(res.body.checks.database).toBe(true);
+      expect(res.body.checks.migrations).toBe(true);
+      expect(res.body.checks.greengradeModel).toBe(true);
+      expect(res.body.checks.mlArtifacts).toBe(true);
+    });
   });
 
   describe("GET /api/products", () => {

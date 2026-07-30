@@ -1,5 +1,6 @@
-const swaggerJsdoc = require("swagger-jsdoc");
-
+// The OpenAPI spec is fully defined inline below (no JSDoc-comment scanning),
+// so swagger-jsdoc is not needed — its glob dependency chain carried
+// unpatchable audit findings, and with `apis: []` it was a pass-through.
 const options = {
   definition: {
     openapi: "3.0.0",
@@ -245,6 +246,63 @@ const options = {
           },
         },
       },
+      "/auth/logout": {
+        post: {
+          tags: ["Auth"],
+          summary: "Log out: revoke the presented token and clear the cookie",
+          description:
+            "The presented token's jti is written to the revocation registry, so stolen copies cannot be replayed. Idempotent — succeeds without a token.",
+          responses: { 200: { description: "Logged out" } },
+        },
+      },
+      "/auth/refresh": {
+        post: {
+          tags: ["Auth"],
+          summary: "Rotate the session: issue a fresh token and cookie",
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: "New token with expiresAt (ms epoch)" },
+            401: { description: "Invalid, expired, or revoked token" },
+          },
+        },
+      },
+      "/auth/export": {
+        get: {
+          tags: ["Auth"],
+          summary: "Export all stored data for the authenticated user",
+          description: "Data portability: returns profile, reviews, and carbon logs as JSON.",
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: "Full user data export" },
+            401: { description: "Not authenticated" },
+          },
+        },
+      },
+      "/auth/account": {
+        delete: {
+          tags: ["Auth"],
+          summary: "Permanently delete the account and all associated data",
+          description:
+            "Requires the current password as confirmation. Deletes profile, reviews, carbon history, and token records in one transaction.",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["password"],
+                  properties: { password: { type: "string" } },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Account deleted" },
+            401: { description: "Incorrect password or not authenticated" },
+          },
+        },
+      },
       "/reviews/{productId}": {
         get: {
           tags: ["Reviews"],
@@ -353,7 +411,7 @@ const options = {
           tags: ["Digital Product Passport"],
           summary: "Generate a Digital Product Passport for a single SKU",
           description:
-            "Returns a structured JSON passport with GreenGrade score, percentile ranking, emission breakdown by supply chain stage, data confidence tier, and total carbon footprint. Designed for EU ESPR and SGX Scope 3 reporting.",
+            "Returns a structured JSON passport with GreenGrade score, percentile ranking, emission breakdown by supply chain stage, data confidence tier, and total carbon footprint. Structured to support EU ESPR and SGX Scope 3 reporting workflows.",
           parameters: [
             { name: "productId", in: "path", required: true, schema: { type: "string" } },
           ],
@@ -418,10 +476,112 @@ const options = {
           },
         },
       },
+      "/v1/ml/similar/{productId}": {
+        get: {
+          tags: ["ML Insights"],
+          summary: "Find greener alternatives by cosine similarity",
+          description:
+            "Returns the top-k most similar products by cosine similarity over the scaled 7-dimension emissions vector. Defaults to greener (lower total emissions) alternatives only. Advisory — backed by the offline-trained ML artifacts, separate from the GreenGrade engine.",
+          parameters: [
+            { name: "productId", in: "path", required: true, schema: { type: "string" } },
+            { name: "k", in: "query", schema: { type: "integer", default: 5, maximum: 20 } },
+            { name: "greenerOnly", in: "query", schema: { type: "boolean", default: true } },
+          ],
+          responses: {
+            200: { description: "Similar products with similarity scores" },
+            404: { description: "Product not found in similarity index" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
+      "/v1/ml/classify": {
+        post: {
+          tags: ["ML Insights"],
+          summary: "Predict product category from an emissions profile",
+          description:
+            "Decision-tree prediction of the product category from the 7 emission stages. Advisory only — intended for mis-tag detection and category pre-fill, never an automatic category assignment.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    landUseChange: { type: "number" },
+                    animalFeed: { type: "number" },
+                    farm: { type: "number" },
+                    processing: { type: "number" },
+                    transport: { type: "number" },
+                    packaging: { type: "number" },
+                    retail: { type: "number" },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Predicted category (advisory)" },
+            400: { description: "Invalid emissions payload" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
+      "/v1/ml/estimate-emissions": {
+        post: {
+          tags: ["ML Insights"],
+          summary: "Estimate total emissions from partial logistics data",
+          description:
+            "Regression-tree estimate of total emissions from only the transport, packaging, and retail stages. Advisory upgrade path for Tier 3 (estimated) products.",
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    transport: { type: "number" },
+                    packaging: { type: "number" },
+                    retail: { type: "number" },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Estimated total emissions in kg CO2e (advisory)" },
+            400: { description: "Invalid input" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
+      "/v1/ml/clusters": {
+        get: {
+          tags: ["ML Insights"],
+          summary: "K-Means cluster summary",
+          responses: {
+            200: { description: "Cluster count and products per cluster" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
+      "/v1/ml/clusters/{productId}": {
+        get: {
+          tags: ["ML Insights"],
+          summary: "Cluster membership for one product",
+          parameters: [
+            { name: "productId", in: "path", required: true, schema: { type: "string" } },
+          ],
+          responses: {
+            200: { description: "Cluster label" },
+            404: { description: "Product not found" },
+            503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
       "/v1/audit/{productId}": {
         get: {
           tags: ["Digital Product Passport"],
-          summary: "Get immutable score audit trail for a product",
+          summary: "Get the score audit trail for a product",
           description:
             "Returns every recorded GreenGrade score change for the specified product, including old/new scores, delta, reason, and timestamp. Demonstrates algorithmic independence.",
           parameters: [
@@ -440,6 +600,6 @@ const options = {
   apis: [],
 };
 
-const swaggerSpec = swaggerJsdoc(options);
+const swaggerSpec = options.definition;
 
 module.exports = { swaggerSpec };

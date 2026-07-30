@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-07-30
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,50 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-07-30 — Second Architecture Review Ingested
+
+**Operation:** INGEST `.raw/architecture-review-2026-07-30.md` (external review #2, `main@2cb26e9`)
+
+**Pages created:** 2
+- `sources/Architecture Review 2026-07-30`
+- `domains/Production Readiness`
+
+**Pages updated:** 3
+- `hot.md` — full rewrite (was stale since 2026-05-29; now covers B2B pivot, passport API, ML layer, both reviews, tier-1/2 fixes, open blockers)
+- `index.md` — added source + domain pages
+- `log.md` — this entry
+
+**Key findings:**
+- Score improved 5/10 → **6/10 "Pilot-ready"** (disposable-data pilots only; enterprise: no)
+- All 8 tier-1/tier-2 fixes from review #1 acknowledged as resolved; CI + live health independently verified by reviewer
+- Decisive blocker unchanged: ephemeral SQLite on Render free tier (no persistent disk)
+- New findings: Sentry miswired (`REACT_APP_SENTRY_DSN` + uninvoked `initSentry()`), branch protection absent (PR 42 merged before CI finished), OFF worst-case ~31s latency, migration health check too shallow
+- Strategic steer: evidence ingestion/provenance/versioning > additional ML
+
+**Context (work since last log entry, 2026-05-29 → 2026-07-30):** B2B repositioning (README, `METHODOLOGY.md`, passport/portfolio/audit endpoints), course-aligned ML layer (`/api/v1/ml/*`, `ML_REPORT.md`), governance frontend, `trailingSlash` 404 fix, cold-start `ApiReadyGate`, swagger-jsdoc removal (audit chain), review #1 tier-1/2 fixes (commits `2bd6790`, `6f69df0`). Tests grew 117 → 161 backend + 6 frontend.
+
+**Index updated:** yes
+**Hot cache updated:** yes
+
+---
+
+## 2026-07-17 — Docker Build Fix + CONTRIBUTING.md
+
+**Operation:** Diagnosed and fixed CI failure on PR #34 (Digital Product Passport frontend). Authored `CONTRIBUTING.md`.
+
+**Root cause:** `better-sqlite3` is a native addon. On `node:20-alpine` (musl libc) there are no prebuilt binaries, so npm falls back to compiling from source via node-gyp — which requires Python, make, and g++. The backend Dockerfile had none of these.
+
+**Files changed:** 2
+- `backend/Dockerfile` — added `RUN apk add --no-cache python3 make g++` before `npm ci --production`
+- `CONTRIBUTING.md` — new file (was listed as a planned improvement in CLAUDE.md)
+
+**Branch:** `claude/nifty-goodall-s4f427`
+
+**PR #34 status:** Still open on `claude/dreamy-dirac-fzmsdt`. Its CI Docker Build Check will pass once this fix merges to main and it rebases.
+**Hot cache updated:** yes
 
 ---
 

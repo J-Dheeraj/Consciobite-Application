@@ -1,4 +1,5 @@
 const winston = require("winston");
+const crypto = require("crypto");
 
 const logger = winston.createLogger({
   level: process.env.NODE_ENV === "test" ? "error" : process.env.LOG_LEVEL || "info",
@@ -15,10 +16,18 @@ const logger = winston.createLogger({
 
 function requestLogger(req, res, next) {
   const start = Date.now();
+  // Honor an inbound X-Request-Id (from a proxy or client), otherwise mint
+  // one, so a request can be traced across log lines and returned responses.
+  const requestId = req.headers["x-request-id"] || crypto.randomUUID();
+  req.requestId = requestId;
+  res.setHeader("X-Request-Id", requestId);
+
   res.on("finish", () => {
     const duration = Date.now() - start;
     const level = res.statusCode >= 400 ? "warn" : "info";
-    logger[level](`${req.method} ${req.originalUrl} ${res.statusCode} ${duration}ms`);
+    logger[level](`${req.method} ${req.originalUrl} ${res.statusCode} ${duration}ms`, {
+      requestId,
+    });
   });
   next();
 }
