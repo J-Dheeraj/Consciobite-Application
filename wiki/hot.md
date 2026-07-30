@@ -39,6 +39,6 @@ tags: [hot-cache, meta]
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
 - `WEEKLY_CARBON_GOAL_KG` in `frontend/src/utils/constants.js`
 - `/carbon` protected by `RequireAuth` — no in-page auth gates
-- JWT: httpOnly cookie **and** localStorage copy (known weakness — see [[Production Readiness]]); CSRF double-submit on mutating routes
+- JWT: httpOnly cookie + memory-only copy (never localStorage, as of 2026-07-30); logout revokes via `jti`; CSRF double-submit on mutating routes
 - All Express routes use `validate()` middleware with `pattern:` not `type: "number"`
 - ML endpoints advisory-only; never write scores/categories or bypass audit log

@@ -117,7 +117,7 @@ Consciobite-Application/
 - `AUTH_EXPIRED_EVENT` is the shared constant for the 401 event bus — never use the raw string `"auth-expired"`
 - `WEEKLY_CARBON_GOAL_KG` lives in `frontend/src/utils/constants.js`
 - `/carbon` route is protected by `RequireAuth` — do not add in-page auth gates
-- httpOnly cookies store JWT tokens; CSRF double-submit pattern protects mutating routes
+- httpOnly cookies store JWT tokens; the frontend keeps its copy in memory only (never localStorage); logout revokes the token's `jti` server-side; CSRF double-submit pattern protects mutating routes
 - Admin routes use `requireAdmin` middleware — checks `users.role = 'admin'` in SQLite
 
 ---

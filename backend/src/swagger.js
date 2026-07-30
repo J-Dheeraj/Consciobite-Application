@@ -246,6 +246,63 @@ const options = {
           },
         },
       },
+      "/auth/logout": {
+        post: {
+          tags: ["Auth"],
+          summary: "Log out: revoke the presented token and clear the cookie",
+          description:
+            "The presented token's jti is written to the revocation registry, so stolen copies cannot be replayed. Idempotent — succeeds without a token.",
+          responses: { 200: { description: "Logged out" } },
+        },
+      },
+      "/auth/refresh": {
+        post: {
+          tags: ["Auth"],
+          summary: "Rotate the session: issue a fresh token and cookie",
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: "New token with expiresAt (ms epoch)" },
+            401: { description: "Invalid, expired, or revoked token" },
+          },
+        },
+      },
+      "/auth/export": {
+        get: {
+          tags: ["Auth"],
+          summary: "Export all stored data for the authenticated user",
+          description: "Data portability: returns profile, reviews, and carbon logs as JSON.",
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: "Full user data export" },
+            401: { description: "Not authenticated" },
+          },
+        },
+      },
+      "/auth/account": {
+        delete: {
+          tags: ["Auth"],
+          summary: "Permanently delete the account and all associated data",
+          description:
+            "Requires the current password as confirmation. Deletes profile, reviews, carbon history, and token records in one transaction.",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["password"],
+                  properties: { password: { type: "string" } },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Account deleted" },
+            401: { description: "Incorrect password or not authenticated" },
+          },
+        },
+      },
       "/reviews/{productId}": {
         get: {
           tags: ["Reviews"],

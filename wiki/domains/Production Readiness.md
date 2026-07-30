@@ -28,22 +28,32 @@ Cross-cutting tracking of what separates the current deployment from production/
 | Overstated claims ("immutable", "ready for ESPR") | README/Swagger reworded to accurate descriptions |
 | No frontend tests; audit gate `\|\| true` | jest + testing-library suite in CI; audit gate `--audit-level=critical` (Next 14 high CVEs are server-side; static export unaffected; fix = breaking Next 16) |
 
-## Open blockers (tier 3 — each needs a scoping decision)
+## Fixed in response to review #2 (2026-07-30)
+
+| Fix | Where |
+|---|---|
+| JWT in localStorage (XSS-stealable) | Token now memory-only (`httpClient.setAuthToken`); session restore via httpOnly cookie → `/auth/refresh` on mount; `initializing` state prevents signed-out flash |
+| No revocation on logout | JWTs carry `jti`; `revoked_tokens` table (migration 003); logout revokes; all auth middleware rejects revoked tokens; refresh rotates |
+| Sentry miswired | `NEXT_PUBLIC_SENTRY_DSN` + `initSentry()` invoked in Providers |
+| Shallow migration check | Health verifies the exact expected migration file set |
+| No liveness/readiness split | `/api/health/live` (liveness) vs `/api/health` (readiness) |
+| No request tracing | X-Request-Id honored/minted, echoed, logged |
+| OFF ~31s worst case | Circuit breaker: opens after 3 consecutive failures, 60s cooldown, half-open probe |
+| No privacy controls | `GET /auth/export`, `DELETE /auth/account` (password-confirmed, transactional), `PRIVACY.md` |
+| Score records unbound from inputs | `methodology_version`, `catalog_hash` (sha256 of products.json), `code_revision` on every score change |
+| No dependency triage policy | `SECURITY.md` with per-finding triage table |
+| Hostname inference | `NEXT_PUBLIC_API_URL` now takes precedence in `getApiBase()` |
+| Duplicate route registration | Single ROUTE_TABLE mounts both /api and /api/v1 |
+| No backup tooling | `npm run backup` (SQLite online backup API) |
+
+## Open blockers (infrastructure decisions)
 
 1. **Ephemeral SQLite** — Render free tier, no persistent disk; redeploy can erase all business data. Fix: managed PostgreSQL (CLAUDE.md forbids migrating without discussion; Render free Postgres expires after 90 days → effectively a paid decision; better-sqlite3 sync → pg async touches every route). See [[Stack Migration Plan]].
-2. **JWT in `localStorage` + response body** — XSS-stealable; preferred: httpOnly session cookie, short-lived access token in memory, rotating refresh tokens, server-side revocation. Own PR; changes felt session behavior.
-3. **No token revocation on logout** — needs `jti`/session records; depends on item 2.
-4. **Process-local rate limit/lockout/cache** — Redis when (and only when) multi-instance.
-5. **No backup/restore/DR, monitoring, alerting** — depends on item 1 for anything meaningful.
-6. **Branch protection not enforced** — PR 42 merged before its CI finished. Repo-settings change (required status checks), not a code change.
-
-## Newer findings to pick up (from review #2)
-
-- **Sentry miswired**: `REACT_APP_SENTRY_DSN` is never exposed by Next.js (needs `NEXT_PUBLIC_` prefix) and `initSentry()` appears uninvoked — monitoring is silently absent.
-- Migration health check should verify the exact expected migration set, not `count > 0`.
-- OFF worst case ~31s; add circuit breaker + concurrency cap.
-- Catalogue-as-committed-JSON blocks manufacturer onboarding; needs relational product/evidence tables with versioning.
-- Privacy program absent: retention, deletion, export, consent, log redaction; carbon history = behavioural personal data.
+2. **Process-local rate limit/lockout/cache** — Redis when (and only when) multi-instance.
+3. **No managed backups/DR** — `npm run backup` exists but snapshots die with the host; depends on item 1 for anything meaningful.
+4. **Branch protection not enforced** — cannot be set from the dev environment (no repo-admin token); requires GitHub UI: Settings → Branches → protect `main` with required status checks.
+5. Catalogue-as-committed-JSON blocks manufacturer onboarding; needs relational product/evidence tables with versioning.
+6. Tamper-evident audit storage (chaining/signatures/external checkpoint) still roadmap.
 
 ## Reviewer's strategic steer
 

@@ -33,3 +33,6 @@ frontend/out/
 # Python ML training env
 ml/.venv/
 __pycache__/
+
+# Database backups
+backend/backups/
