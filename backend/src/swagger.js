@@ -354,7 +354,7 @@ const options = {
           tags: ["Digital Product Passport"],
           summary: "Generate a Digital Product Passport for a single SKU",
           description:
-            "Returns a structured JSON passport with GreenGrade score, percentile ranking, emission breakdown by supply chain stage, data confidence tier, and total carbon footprint. Designed for EU ESPR and SGX Scope 3 reporting.",
+            "Returns a structured JSON passport with GreenGrade score, percentile ranking, emission breakdown by supply chain stage, data confidence tier, and total carbon footprint. Structured to support EU ESPR and SGX Scope 3 reporting workflows.",
           parameters: [
             { name: "productId", in: "path", required: true, schema: { type: "string" } },
           ],
@@ -524,7 +524,7 @@ const options = {
       "/v1/audit/{productId}": {
         get: {
           tags: ["Digital Product Passport"],
-          summary: "Get immutable score audit trail for a product",
+          summary: "Get the score audit trail for a product",
           description:
             "Returns every recorded GreenGrade score change for the specified product, including old/new scores, delta, reason, and timestamp. Demonstrates algorithmic independence.",
           parameters: [
