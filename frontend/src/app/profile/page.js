@@ -45,7 +45,7 @@ function SectionCard({ title, children, isDark }) {
 export default function ProfilePage() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const { user, isAuthenticated, login, token } = useAuth();
+  const { user, isAuthenticated, initializing, updateUser } = useAuth();
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -55,6 +55,9 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Wait for the cookie-based session restore before deciding to redirect,
+    // otherwise a signed-in user landing here directly is bounced to /login.
+    if (initializing) return;
     if (!isAuthenticated) {
       router.push("/login");
       return;
@@ -63,7 +66,11 @@ export default function ProfilePage() {
       setName(user.name || "");
       setWeeklyGoal(user.weeklyGoal ?? WEEKLY_CARBON_GOAL_KG);
     }
-  }, [user, isAuthenticated, router]);
+  }, [user, isAuthenticated, initializing, router]);
+
+  if (initializing) {
+    return <Spinner message="Loading your profile..." />;
+  }
 
   if (!isAuthenticated) {
     return <Spinner message="Redirecting..." />;
@@ -79,7 +86,7 @@ export default function ProfilePage() {
 
     try {
       const data = await updateProfile({ name: name.trim(), weeklyGoal });
-      login(data.user, token);
+      updateUser(data.user);
       setSuccess("Profile saved.");
     } catch (err) {
       setError(err.message || "Failed to save profile. Please try again.");

@@ -4,11 +4,12 @@ const validator = require("validator");
 const crypto = require("crypto");
 const { getDb } = require("../db/schema");
 const {
-  generateToken,
+  issueToken,
   setAuthCookie,
   clearAuthCookie,
   requireAuth,
   refreshToken,
+  logoutHandler,
   generateCsrfToken,
   csrfProtection,
 } = require("../middleware/auth");
@@ -113,10 +114,10 @@ router.post("/register", async (req, res) => {
   );
 
   const user = { id, email: sanitizedEmail, name: sanitizedName };
-  const token = generateToken(user);
+  const { token, expiresAt } = issueToken(user);
   setAuthCookie(res, token);
 
-  res.status(201).json({ user, token });
+  res.status(201).json({ user, token, expiresAt });
 });
 
 // POST /api/auth/login
@@ -150,20 +151,18 @@ router.post("/login", async (req, res) => {
   }
 
   clearAttempts(normalizedEmail, ip);
-  const token = generateToken({ id: user.id, email: user.email });
+  const { token, expiresAt } = issueToken({ id: user.id, email: user.email });
   setAuthCookie(res, token);
 
   res.json({
     user: { id: user.id, email: user.email, name: user.name },
     token,
+    expiresAt,
   });
 });
 
-// POST /api/auth/logout - clear the auth cookie
-router.post("/logout", (_req, res) => {
-  clearAuthCookie(res);
-  res.json({ message: "Logged out" });
-});
+// POST /api/auth/logout - revoke the presented token and clear the cookie
+router.post("/logout", logoutHandler);
 
 // GET /api/auth/me
 router.get("/me", requireAuth, (req, res) => {
@@ -239,5 +238,63 @@ router.post("/refresh", refreshToken);
 
 // GET /api/auth/csrf - get a CSRF token
 router.get("/csrf", generateCsrfToken);
+
+// GET /api/auth/export - full export of the user's stored data (data portability)
+router.get("/export", requireAuth, (req, res) => {
+  const db = getDb();
+  const user = db
+    .prepare("SELECT id, email, name, weekly_carbon_goal, created_at FROM users WHERE id = ?")
+    .get(req.user.id);
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const reviews = db
+    .prepare("SELECT id, product_id, rating, comment, created_at FROM reviews WHERE user_id = ?")
+    .all(req.user.id);
+  const carbonLogs = db
+    .prepare(
+      "SELECT id, product_id, product_name, quantity, emissions, logged_at FROM carbon_logs WHERE user_id = ?"
+    )
+    .all(req.user.id);
+
+  res.json({
+    exported_at: new Date().toISOString(),
+    user,
+    reviews,
+    carbon_logs: carbonLogs,
+  });
+});
+
+// DELETE /api/auth/account - permanently delete the account and all its data.
+// Requires the current password as confirmation.
+router.delete("/account", requireAuth, async (req, res) => {
+  const { password } = req.body || {};
+  if (!password) {
+    return res.status(400).json({ error: "Password confirmation is required" });
+  }
+
+  const db = getDb();
+  const user = db.prepare("SELECT id, password_hash FROM users WHERE id = ?").get(req.user.id);
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const passwordOk = await bcrypt.compare(password, user.password_hash);
+  if (!passwordOk) {
+    return res.status(401).json({ error: "Incorrect password" });
+  }
+
+  const deleteAll = db.transaction((userId) => {
+    db.prepare("DELETE FROM reviews WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM carbon_logs WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM revoked_tokens WHERE user_id = ?").run(userId);
+    db.prepare("DELETE FROM users WHERE id = ?").run(userId);
+  });
+  deleteAll(req.user.id);
+
+  clearAuthCookie(res);
+  res.json({ message: "Account and all associated data deleted" });
+});
 
 module.exports = router;

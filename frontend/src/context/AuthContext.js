@@ -1,11 +1,9 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { AUTH_EXPIRED_EVENT } from "../utils/constants";
+import { API_BASE, setAuthToken } from "../services/httpClient";
 
 const AuthContext = createContext();
-
-const TOKEN_KEY = "consciobite_token";
-const USER_KEY = "consciobite_user";
 
 function getTokenExpiry(token) {
   try {
@@ -16,57 +14,101 @@ function getTokenExpiry(token) {
   }
 }
 
+// The access token is held in memory only (React state + httpClient module
+// state) — never persisted to localStorage — so XSS cannot steal a stored
+// copy. Sessions survive reloads via the httpOnly cookie: on mount we call
+// /auth/refresh, which rotates the cookie and returns a fresh in-memory token.
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    if (typeof window === "undefined") return null;
-    try {
-      const stored = localStorage.getItem(USER_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
-
-  const [token, setToken] = useState(() => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem(TOKEN_KEY);
-  });
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(null);
+  const [expiresAt, setExpiresAt] = useState(null);
+  // True until the initial cookie-based session restore attempt finishes,
+  // so auth-gated pages can wait instead of flashing a signed-out state.
+  const [initializing, setInitializing] = useState(true);
 
   const refreshTimer = useRef(null);
 
-  const login = useCallback((userData, authToken) => {
+  const applySession = useCallback((userData, authToken, expiry) => {
     setUser(userData);
     setToken(authToken);
-    localStorage.setItem(USER_KEY, JSON.stringify(userData));
-    localStorage.setItem(TOKEN_KEY, authToken);
+    setExpiresAt(expiry ?? getTokenExpiry(authToken));
+    setAuthToken(authToken);
+  }, []);
+
+  const login = useCallback(
+    (userData, authToken, expiry) => {
+      applySession(userData, authToken, expiry);
+    },
+    [applySession]
+  );
+
+  // Refresh only the user profile (e.g. after saving settings) without
+  // touching the token or its expiry.
+  const updateUser = useCallback((userData) => {
+    setUser(userData);
   }, []);
 
   const logout = useCallback(async () => {
     setUser(null);
     setToken(null);
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem(TOKEN_KEY);
+    setExpiresAt(null);
+    setAuthToken(null);
     if (refreshTimer.current) clearTimeout(refreshTimer.current);
     try {
-      await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+      // Revokes the presented token server-side and clears the cookie
+      await fetch(`${API_BASE}/auth/logout`, { method: "POST", credentials: "include" });
     } catch {
-      // Best-effort cookie clear
+      // Best-effort revocation
     }
   }, []);
 
+  // Session restore on mount: exchange the httpOnly cookie for a fresh token
   useEffect(() => {
-    if (!token) return;
+    let cancelled = false;
 
-    const expiry = getTokenExpiry(token);
-    if (expiry < Date.now()) {
+    async function restore() {
+      try {
+        const res = await fetch(`${API_BASE}/auth/refresh`, {
+          method: "POST",
+          credentials: "include",
+        });
+        if (!res.ok || cancelled) return;
+        const data = await res.json();
+
+        const meRes = await fetch(`${API_BASE}/auth/me`, {
+          credentials: "include",
+          headers: { Authorization: `Bearer ${data.token}` },
+        });
+        if (!meRes.ok || cancelled) return;
+        const me = await meRes.json();
+
+        applySession(me.user, data.token, data.expiresAt);
+      } catch {
+        // No active session
+      } finally {
+        if (!cancelled) setInitializing(false);
+      }
+    }
+
+    restore();
+    return () => {
+      cancelled = true;
+    };
+  }, [applySession]);
+
+  // Scheduled refresh 5 minutes before expiry
+  useEffect(() => {
+    if (!token || !expiresAt) return;
+
+    if (expiresAt < Date.now()) {
       logout();
       return;
     }
 
-    const refreshIn = Math.max(0, expiry - Date.now() - 5 * 60 * 1000);
+    const refreshIn = Math.max(0, expiresAt - Date.now() - 5 * 60 * 1000);
     refreshTimer.current = setTimeout(async () => {
       try {
-        const res = await fetch("/api/auth/refresh", {
+        const res = await fetch(`${API_BASE}/auth/refresh`, {
           method: "POST",
           credentials: "include",
           headers: { Authorization: `Bearer ${token}` },
@@ -74,7 +116,8 @@ export function AuthProvider({ children }) {
         if (res.ok) {
           const data = await res.json();
           setToken(data.token);
-          localStorage.setItem(TOKEN_KEY, data.token);
+          setExpiresAt(data.expiresAt ?? getTokenExpiry(data.token));
+          setAuthToken(data.token);
         } else {
           logout();
         }
@@ -86,7 +129,7 @@ export function AuthProvider({ children }) {
     return () => {
       if (refreshTimer.current) clearTimeout(refreshTimer.current);
     };
-  }, [token, logout]);
+  }, [token, expiresAt, logout]);
 
   useEffect(() => {
     const handleExpired = () => logout();
@@ -95,7 +138,9 @@ export function AuthProvider({ children }) {
   }, [logout]);
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isAuthenticated: !!token }}>
+    <AuthContext.Provider
+      value={{ user, token, login, logout, updateUser, isAuthenticated: !!token, initializing }}
+    >
       {children}
     </AuthContext.Provider>
   );
