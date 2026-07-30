@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 after second external architecture review ingest.
+**Last updated:** 2026-07-30 after review-#2 fixes and merge with main (parallel Docker-fix + PR #34 work).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -25,15 +25,19 @@ tags: [hot-cache, meta]
 - #1 (2026-07-29, `main@9914b96`): 5/10 "Prototype".
 - #2 (2026-07-30, `main@2cb26e9`): **6/10 "Pilot-ready"** — disposable-data pilots only, enterprise: no. See [[Architecture Review 2026-07-30]] and [[Production Readiness]].
 
-**Review fixes landed** (`2bd6790` tier 1, `6f69df0` tier 2): AuthContext refresh/logout now use `API_BASE` (was silently broken in prod — hit frontend origin); `trust proxy 1`; deep `/api/health` (DB writability via BEGIN IMMEDIATE, migrations, scoring, ML artifacts; 503 when degraded); OFF lookup retry+backoff with 503-vs-404 distinction; audit attribution (`admin:<email>`, `system:startup`, reason never null); "immutable"/"ESPR-ready" claims reworded; frontend jest suite (6 tests) wired into CI; frontend audit gate `--audit-level=critical` (Next 14 high CVEs are server-side; static export unaffected; fix requires breaking Next 16).
+**Review-#1 fixes landed** (`2bd6790` tier 1, `6f69df0` tier 2): AuthContext refresh/logout now use `API_BASE` (was silently broken in prod — hit frontend origin); `trust proxy 1`; deep `/api/health` (DB writability via BEGIN IMMEDIATE, migrations, scoring, ML artifacts; 503 when degraded); OFF lookup retry+backoff with 503-vs-404 distinction; audit attribution (`admin:<email>`, `system:startup`, reason never null); "immutable"/"ESPR-ready" claims reworded; frontend jest suite wired into CI; frontend audit gate `--audit-level=critical` (Next 14 high CVEs are server-side; static export unaffected; fix requires breaking Next 16).
 
-**Also fixed:** `swagger-jsdoc` removed entirely (unpatchable brace-expansion chain; spec was inline anyway — `swaggerSpec = options.definition`). Backend `npm audit --production --audit-level=high` = 0 vulns. `trailingSlash: true` fixed static-hosting 404s. Cold-start UX: `ApiReadyGate` polls `/api/health`, shows "Waking up the server...".
+**Review-#2 fixes landed** (`af395ee`): access token memory-only (never localStorage; cookie-based session restore, `initializing` state); `jti` revocation registry (migration 003) — logout revokes, refresh rotates; Sentry actually wired (`NEXT_PUBLIC_SENTRY_DSN` + `initSentry()` invoked); X-Request-Id tracing; `/api/health/live` + exact migration-set readiness; OFF circuit breaker (3 fails → 60s open); privacy controls (`GET /auth/export`, `DELETE /auth/account`, `PRIVACY.md`); score provenance (methodology version + catalog sha256 + code revision per change); `SECURITY.md` triage policy; `NEXT_PUBLIC_API_URL` precedence; ROUTE_TABLE consolidation; `npm run backup`. See [[Production Readiness]].
 
-**Open blockers (tier 3, each needs scoping decision):** ephemeral SQLite on Render free tier (THE blocker — no persistent disk, redeploy erases data; CLAUDE.md requires discussion before Postgres); JWT in localStorage (XSS-stealable) + no revocation on logout; process-local rate-limit/lockout; no backup/DR/monitoring; branch protection absent (PR 42 merged before CI finished); **Sentry miswired** (`REACT_APP_SENTRY_DSN` never exposed by Next.js; `initSentry()` uninvoked). Reviewer steer: evidence ingestion/provenance > more ML.
+**Also fixed earlier:** `swagger-jsdoc` removed (unpatchable brace-expansion chain; spec inline). Backend prod audit = 0 vulns. `trailingSlash: true` fixed static-hosting 404s. `ApiReadyGate` cold-start UX. Backend Dockerfile: `apk add python3 make g++` for better-sqlite3 on Alpine (2026-07-17, was blocking PR #34's Docker check).
 
-**Test status:** 161 backend + 6 frontend, all passing. Frontend builds 569 static pages.
+**Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
 
-**Active branch:** `claude/improve-application-S5njo` — merged to `main` through `2cb26e9`.
+**Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; branch protection absent (needs GitHub UI — API token can't set it); catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap. Reviewer steer: evidence ingestion/provenance > more ML.
+
+**Test status:** 173 backend + 9 frontend, all passing. Frontend builds 569 static pages.
+
+**Active branch:** `claude/improve-application-S5njo` — carries unmerged review-#2 fixes (`af395ee`) awaiting merge to `main`.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
