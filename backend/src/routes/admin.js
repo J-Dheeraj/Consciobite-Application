@@ -34,9 +34,14 @@ router.get("/conflict-log", validate(LOG_SCHEMA), (req, res) => {
 
 // --- Rescore all products and log changes ---
 
-router.post("/rescore", (_req, res) => {
-  const changes = snapshotScores(products, (product) =>
-    calculateGreenGrade(product.emissions, product.category, product)
+router.post("/rescore", (req, res) => {
+  const changes = snapshotScores(
+    products,
+    (product) => calculateGreenGrade(product.emissions, product.category, product),
+    {
+      changedBy: `admin:${req.user.email || req.user.id}`,
+      changeReason: "Manual rescore via admin API",
+    }
   );
 
   res.json({

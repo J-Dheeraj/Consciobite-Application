@@ -83,8 +83,10 @@ if (mlInsights.loadArtifacts()) {
 }
 
 // Snapshot scores on startup to detect future changes
-const scoreChanges = snapshotScores(products, (product) =>
-  calculateGreenGrade(product.emissions, product.category, product)
+const scoreChanges = snapshotScores(
+  products,
+  (product) => calculateGreenGrade(product.emissions, product.category, product),
+  { changedBy: "system:startup", changeReason: "Score drift detected at startup snapshot" }
 );
 if (scoreChanges.length > 0) {
   logger.warn(`Score audit: ${scoreChanges.length} score change(s) detected on startup`);

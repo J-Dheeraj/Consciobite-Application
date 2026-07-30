@@ -47,13 +47,14 @@ function logScoreChange({
     newScore,
     parseFloat((newScore - oldScore).toFixed(4)),
     changedBy,
-    changeReason ?? null
+    changeReason || "unspecified"
   );
 
   db.prepare(UPSERT_SNAPSHOT).run(productId, newScore);
 }
 
-function snapshotScores(products, scoreFn) {
+function snapshotScores(products, scoreFn, options = {}) {
+  const { changedBy = "system", changeReason = "Model retrain / algorithm update" } = options;
   const db = getDb();
   const getSnap = db.prepare(GET_SNAPSHOT);
   const changes = [];
@@ -72,8 +73,8 @@ function snapshotScores(products, scoreFn) {
         productName: product.name,
         oldScore,
         newScore,
-        changedBy: "system",
-        changeReason: "Model retrain / algorithm update",
+        changedBy,
+        changeReason,
       });
       changes.push({ productId: product.id, name: product.name, oldScore, newScore });
     } else if (oldScore === null) {

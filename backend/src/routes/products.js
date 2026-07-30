@@ -137,42 +137,68 @@ router.get("/stats", (req, res) => {
   res.json({ totalProducts: products.length, categories: stats });
 });
 
-// Lookup a product by barcode via Open Food Facts. Returns enriched product or null.
+const OPEN_FOOD_FACTS_RETRIES = 2;
+const OPEN_FOOD_FACTS_BACKOFF_MS = 300;
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Lookup a product by barcode via Open Food Facts, with retry + backoff.
+// Returns a discriminated result so callers can tell an upstream outage
+// apart from a genuine miss:
+//   { status: "found", product } | { status: "not_found" } | { status: "unavailable" }
 // Skips external calls in NODE_ENV=test for deterministic results.
 async function lookupOpenFoodFacts(barcode) {
-  if (process.env.NODE_ENV === "test") return null;
+  if (process.env.NODE_ENV === "test") return { status: "not_found" };
 
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), OPEN_FOOD_FACTS_TIMEOUT_MS);
-    const response = await fetch(
-      `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json?fields=product_name,brands,categories_tags,ecoscore_grade,ecoscore_score,nutriments`,
-      { signal: controller.signal }
-    );
-    clearTimeout(timeout);
+  let lastError;
+  for (let attempt = 0; attempt <= OPEN_FOOD_FACTS_RETRIES; attempt++) {
+    if (attempt > 0) await sleep(OPEN_FOOD_FACTS_BACKOFF_MS * 2 ** (attempt - 1));
 
-    if (!response.ok) return null;
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), OPEN_FOOD_FACTS_TIMEOUT_MS);
+      let response;
+      try {
+        response = await fetch(
+          `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(barcode)}.json?fields=product_name,brands,categories_tags,ecoscore_grade,ecoscore_score,nutriments`,
+          { signal: controller.signal }
+        );
+      } finally {
+        clearTimeout(timeout);
+      }
 
-    const data = await response.json();
-    if (!data.product || data.status === 0) return null;
+      // 5xx is an upstream failure worth retrying; other non-OK is a miss
+      if (response.status >= 500) {
+        lastError = new Error(`upstream returned ${response.status}`);
+        continue;
+      }
+      if (!response.ok) return { status: "not_found" };
 
-    const p = data.product;
-    const category = mapOpenFoodFactsCategory(p.categories_tags || []);
-    const externalProduct = {
-      id: `off_${barcode}`,
-      name: p.product_name || "Unknown Product",
-      brand: p.brands || "Unknown Brand",
-      category,
-      description: `Product from Open Food Facts database. Ecoscore: ${p.ecoscore_grade || "unknown"}.`,
-      barcode,
-      emissions: estimateEmissions(p.ecoscore_grade, category),
-      source: "openfoodfacts",
-    };
-    return enrichProduct(externalProduct);
-  } catch (err) {
-    logger.warn(`Open Food Facts lookup failed for ${barcode}: ${err.message}`);
-    return null;
+      const data = await response.json();
+      if (!data.product || data.status === 0) return { status: "not_found" };
+
+      const p = data.product;
+      const category = mapOpenFoodFactsCategory(p.categories_tags || []);
+      const externalProduct = {
+        id: `off_${barcode}`,
+        name: p.product_name || "Unknown Product",
+        brand: p.brands || "Unknown Brand",
+        category,
+        description: `Product from Open Food Facts database. Ecoscore: ${p.ecoscore_grade || "unknown"}.`,
+        barcode,
+        emissions: estimateEmissions(p.ecoscore_grade, category),
+        source: "openfoodfacts",
+      };
+      return { status: "found", product: enrichProduct(externalProduct) };
+    } catch (err) {
+      lastError = err;
+    }
   }
+
+  logger.warn(
+    `Open Food Facts unavailable for ${barcode} after ${OPEN_FOOD_FACTS_RETRIES + 1} attempts: ${lastError?.message}`
+  );
+  return { status: "unavailable" };
 }
 
 // GET /api/products/:id
@@ -186,9 +212,16 @@ router.get("/:id", async (req, res, next) => {
       if (!validator.isNumeric(barcode) || barcode.length < 8 || barcode.length > 14) {
         return res.status(400).json({ error: "Invalid product ID" });
       }
-      const offProduct = await lookupOpenFoodFacts(barcode);
-      if (!offProduct) return res.status(404).json({ error: "Product not found" });
-      return res.json(offProduct);
+      const lookup = await lookupOpenFoodFacts(barcode);
+      if (lookup.status === "unavailable") {
+        return res
+          .status(503)
+          .json({ error: "Barcode lookup service temporarily unavailable, please retry" });
+      }
+      if (lookup.status === "not_found") {
+        return res.status(404).json({ error: "Product not found" });
+      }
+      return res.json(lookup.product);
     }
 
     if (!validator.isAlphanumeric(id)) {
@@ -216,8 +249,13 @@ router.get("/scan/:barcode", async (req, res, next) => {
       return res.json(enrichProduct(product));
     }
 
-    const offProduct = await lookupOpenFoodFacts(barcode);
-    if (offProduct) return res.json(offProduct);
+    const lookup = await lookupOpenFoodFacts(barcode);
+    if (lookup.status === "found") return res.json(lookup.product);
+    if (lookup.status === "unavailable") {
+      return res
+        .status(503)
+        .json({ error: "Barcode lookup service temporarily unavailable, please retry" });
+    }
     return res.status(404).json({ error: "Product not found for this barcode" });
   } catch (err) {
     next(err);

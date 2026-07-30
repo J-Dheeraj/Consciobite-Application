@@ -65,9 +65,18 @@ jobs:
         working-directory: ./frontend
         run: npm run lint
 
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm test
+
+      # The deployed frontend is a static export (output: 'export') — the
+      # Next.js server never runs in production, so high-severity server CVEs
+      # in Next 14 (whose only fix is the breaking Next 16 upgrade) don't
+      # affect the shipped artifact. Gate on critical findings instead of
+      # bypassing the audit entirely.
       - name: Audit frontend dependencies
         working-directory: ./frontend
-        run: npm audit --production --audit-level=high || true
+        run: npm audit --production --audit-level=critical
 
       - name: Build frontend
         working-directory: ./frontend
