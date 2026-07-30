@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 after review-#2 fixes and merge with main (parallel Docker-fix + PR #34 work).
+**Last updated:** 2026-07-30 (community evidence submission feature on `claude/dreamy-dirac-2jgkme`).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -37,7 +37,9 @@ tags: [hot-cache, meta]
 
 **Test status:** 173 backend + 9 frontend, all passing. Frontend builds 569 static pages.
 
-**Active branch:** `claude/improve-application-S5njo` — carries unmerged review-#2 fixes (`af395ee`) awaiting merge to `main`.
+**Active branch:** `claude/dreamy-dirac-2jgkme` — community evidence submission feature (`96422bb`), pushed, awaiting merge to `main`. Branch is based on `main@7d68316` (which includes all previous review-#1 and review-#2 fixes).
+
+**Community evidence feature (2026-07-30):** `POST /api/products/:id/evidence` (auth required) accepts citation, source_type (peer_reviewed_lca | lca_database | manufacturer_study | industry_report | other), methodology, url, year. Submissions go into `submitted_evidence` table (migration 004) as pending. Admin approves/rejects via `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review`. Approved submissions surface via `GET /api/products/:id/evidence` and are displayed in `EvidenceSection` component on the product detail page. `csrfProtection` added to the products router. 181 backend tests passing.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

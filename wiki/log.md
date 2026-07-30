@@ -13,6 +13,33 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-30 — Community Evidence Submission Feature
+
+**Operation:** Implement community evidence submission with admin review workflow on branch `claude/dreamy-dirac-2jgkme`.
+
+**Files created:** 3
+- `backend/src/db/migrations/004_submitted_evidence.sql` — new table: submitted_evidence (product_id, citation, source_type, methodology, url, year, status pending/approved/rejected, reviewer fields)
+- `backend/src/services/evidenceService.js` — submitEvidence, getApprovedEvidence, getPendingEvidence, reviewEvidence
+- `frontend/src/components/EvidenceSection.js` — shows approved community citations, form for authenticated users, sign-in prompt for anonymous
+
+**Files modified:** 7
+- `backend/src/routes/products.js` — GET/POST /api/products/:id/evidence (public list + auth-gated submit)
+- `backend/src/routes/admin.js` — GET /admin/pending-evidence + POST /admin/evidence/:id/review
+- `backend/src/index.js` — csrfProtection added to products router entry (POST routes now protected)
+- `backend/__tests__/api.test.js` — 8 new Supertest tests (181 total, all passing)
+- `frontend/src/services/products.js` — fetchProductEvidence, submitProductEvidence
+- `frontend/src/services/api.js` — exported new service functions
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added EvidenceSection component
+
+**Branch:** `claude/dreamy-dirac-2jgkme` (pushed to origin)
+
+**Motivation:** Architecture reviewer #2 steered toward "evidence ingestion/provenance > additional ML". This adds a mechanism for users and manufacturers to submit LCA citations for any product, with admin review before public display. Directly addresses the "evidence ingestion" gap.
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Second Architecture Review Ingested
 
 **Operation:** INGEST `.raw/architecture-review-2026-07-30.md` (external review #2, `main@2cb26e9`)
