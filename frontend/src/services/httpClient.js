@@ -1,6 +1,14 @@
 import { AUTH_EXPIRED_EVENT } from "../utils/constants";
 
 function getApiBase() {
+  // Explicit configuration wins: set NEXT_PUBLIC_API_URL at build time
+  // (render.yaml wires it from the API service host).
+  const configured = process.env.NEXT_PUBLIC_API_URL;
+  if (configured) {
+    const base = configured.startsWith("http") ? configured : `https://${configured}`;
+    return `${base.replace(/\/$/, "")}/api`;
+  }
+  // Fallback: infer the API host from Render's -app/-api naming convention.
   if (typeof window !== "undefined") {
     const { hostname, protocol } = window.location;
     if (hostname.endsWith(".onrender.com")) {
@@ -15,10 +23,19 @@ const API_BASE = getApiBase();
 
 let csrfToken = null;
 
-function getAuthHeaders() {
-  if (typeof window === "undefined") return {};
-  const token = localStorage.getItem("consciobite_token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
+// Access token lives in memory only — never in localStorage — so XSS cannot
+// read a persisted copy. AuthContext calls setAuthToken on login/refresh/
+// logout; session restore across reloads uses the httpOnly refresh cookie.
+let inMemoryToken = null;
+
+export function setAuthToken(token) {
+  inMemoryToken = token;
+}
+
+// Exported for callers that bypass httpClient because they need a non-JSON
+// response (e.g. blob downloads) but still require the auth header.
+export function getAuthHeaders() {
+  return inMemoryToken ? { Authorization: `Bearer ${inMemoryToken}` } : {};
 }
 
 async function ensureCsrfToken() {
@@ -70,13 +87,8 @@ export async function httpClient(url, options = {}) {
       }
       throw new Error(body.error || `Request failed (${res.status})`);
     }
-    if (
-      res.status === 401 &&
-      typeof window !== "undefined" &&
-      localStorage.getItem("consciobite_token")
-    ) {
-      localStorage.removeItem("consciobite_token");
-      localStorage.removeItem("consciobite_user");
+    if (res.status === 401 && typeof window !== "undefined" && inMemoryToken) {
+      inMemoryToken = null;
       window.dispatchEvent(new Event(AUTH_EXPIRED_EVENT));
     }
     const body = await res.json().catch(() => ({}));

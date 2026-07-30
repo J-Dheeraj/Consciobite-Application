@@ -185,7 +185,7 @@ function LinkProductForm({ manufacturers, isDark }) {
 
 export default function ManufacturersPage() {
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, initializing } = useAuth();
   const isDark = theme === "dark";
   const queryClient = useQueryClient();
 
@@ -234,6 +234,8 @@ export default function ManufacturersPage() {
     setFormError("");
     create.mutate({ name: name.trim(), email: email.trim(), isPaying });
   };
+
+  if (initializing) return null;
 
   if (!isAuthenticated) {
     return (

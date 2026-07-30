@@ -1,6 +1,8 @@
 import * as Sentry from "@sentry/react";
 
-const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN;
+// NEXT_PUBLIC_ prefix is required for Next.js to inline the value at build
+// time; the previous REACT_APP_ name was a CRA convention Next never exposes.
+const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 
 export function initSentry() {
   if (!SENTRY_DSN) return;

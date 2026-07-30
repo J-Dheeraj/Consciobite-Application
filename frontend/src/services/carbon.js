@@ -1,4 +1,4 @@
-import { httpClient, API_BASE } from "./httpClient";
+import { httpClient, API_BASE, getAuthHeaders } from "./httpClient";
 
 export async function fetchCarbonSummary() {
   return httpClient(`${API_BASE}/carbon/summary`);
@@ -22,11 +22,11 @@ export async function deleteCarbonLog(id) {
 }
 
 export async function downloadCarbonExport() {
-  const token = typeof window !== "undefined" ? localStorage.getItem("consciobite_token") : null;
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  // Raw fetch (not httpClient) because the response is a blob, not JSON —
+  // but the auth token still comes from memory, never localStorage.
   const res = await fetch(`${API_BASE}/carbon/export`, {
     credentials: "include",
-    headers,
+    headers: getAuthHeaders(),
   });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
