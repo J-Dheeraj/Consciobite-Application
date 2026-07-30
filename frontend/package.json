@@ -13,11 +13,14 @@
     "recharts": "^3.7.0"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^14.2.0",
+    "@testing-library/react": "^14.3.1",
     "@testing-library/user-event": "^14.5.2",
     "eslint": "^8.57.1",
     "eslint-config-next": "^14.2.35",
+    "jest": "^30.4.2",
+    "jest-environment-jsdom": "^30.4.1",
     "prettier": "^3.2.0"
   },
   "scripts": {
@@ -26,6 +29,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\""
+    "format:check": "prettier --check \"src/**/*.{js,jsx,css}\"",
+    "test": "jest"
   }
 }
