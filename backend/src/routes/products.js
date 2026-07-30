@@ -140,6 +140,36 @@ router.get("/stats", (req, res) => {
 const OPEN_FOOD_FACTS_RETRIES = 2;
 const OPEN_FOOD_FACTS_BACKOFF_MS = 300;
 
+// Circuit breaker: after BREAKER_THRESHOLD consecutive failed lookups the
+// breaker opens and requests fail fast with "unavailable" (no upstream call)
+// until BREAKER_COOLDOWN_MS passes; the next request then probes upstream
+// (half-open) and either closes the breaker or re-opens it. Prevents a dead
+// upstream from tying up ~31s of retries per request.
+const BREAKER_THRESHOLD = 3;
+const BREAKER_COOLDOWN_MS = 60_000;
+const breaker = { consecutiveFailures: 0, openedAt: null };
+
+function breakerIsOpen() {
+  if (breaker.openedAt === null) return false;
+  if (Date.now() - breaker.openedAt >= BREAKER_COOLDOWN_MS) return false; // half-open: allow a probe
+  return true;
+}
+
+function breakerRecordSuccess() {
+  breaker.consecutiveFailures = 0;
+  breaker.openedAt = null;
+}
+
+function breakerRecordFailure() {
+  breaker.consecutiveFailures++;
+  if (breaker.consecutiveFailures >= BREAKER_THRESHOLD) {
+    breaker.openedAt = Date.now();
+    logger.warn(
+      `Open Food Facts circuit breaker opened after ${breaker.consecutiveFailures} consecutive failures`
+    );
+  }
+}
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // Lookup a product by barcode via Open Food Facts, with retry + backoff.
@@ -149,6 +179,10 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 // Skips external calls in NODE_ENV=test for deterministic results.
 async function lookupOpenFoodFacts(barcode) {
   if (process.env.NODE_ENV === "test") return { status: "not_found" };
+
+  if (breakerIsOpen()) {
+    return { status: "unavailable" };
+  }
 
   let lastError;
   for (let attempt = 0; attempt <= OPEN_FOOD_FACTS_RETRIES; attempt++) {
@@ -172,10 +206,16 @@ async function lookupOpenFoodFacts(barcode) {
         lastError = new Error(`upstream returned ${response.status}`);
         continue;
       }
-      if (!response.ok) return { status: "not_found" };
+      if (!response.ok) {
+        breakerRecordSuccess(); // upstream answered — not a service failure
+        return { status: "not_found" };
+      }
 
       const data = await response.json();
-      if (!data.product || data.status === 0) return { status: "not_found" };
+      if (!data.product || data.status === 0) {
+        breakerRecordSuccess();
+        return { status: "not_found" };
+      }
 
       const p = data.product;
       const category = mapOpenFoodFactsCategory(p.categories_tags || []);
@@ -189,12 +229,14 @@ async function lookupOpenFoodFacts(barcode) {
         emissions: estimateEmissions(p.ecoscore_grade, category),
         source: "openfoodfacts",
       };
+      breakerRecordSuccess();
       return { status: "found", product: enrichProduct(externalProduct) };
     } catch (err) {
       lastError = err;
     }
   }
 
+  breakerRecordFailure();
   logger.warn(
     `Open Food Facts unavailable for ${barcode} after ${OPEN_FOOD_FACTS_RETRIES + 1} attempts: ${lastError?.message}`
   );

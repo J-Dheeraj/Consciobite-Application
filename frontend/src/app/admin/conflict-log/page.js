@@ -59,7 +59,7 @@ function deltaColor(delta) {
 
 export default function ConflictLogPage() {
   const { theme } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, initializing } = useAuth();
   const isDark = theme === "dark";
   const [filter, setFilter] = useState("all");
   const queryClient = useQueryClient();
@@ -74,6 +74,8 @@ export default function ConflictLogPage() {
     mutationFn: triggerRescore,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["conflict-log"] }),
   });
+
+  if (initializing) return null;
 
   if (!isAuthenticated) {
     return (

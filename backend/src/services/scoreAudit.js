@@ -1,12 +1,26 @@
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 const { getDb } = require("../db/schema");
 const { logger } = require("../middleware/logger");
+
+// Provenance bound into every score-change record: the methodology version,
+// a hash of the exact catalog the score was computed from, and the deployed
+// code revision. Resolved once at module load.
+const METHODOLOGY_VERSION = "3.0";
+const CATALOG_HASH = crypto
+  .createHash("sha256")
+  .update(fs.readFileSync(path.join(__dirname, "..", "data", "products.json")))
+  .digest("hex");
+const CODE_REVISION =
+  process.env.RENDER_GIT_COMMIT || process.env.GIT_SHA || process.env.SOURCE_VERSION || "unknown";
 
 const INSERT_LOG = `
   INSERT INTO score_change_logs
     (id, product_id, product_name, manufacturer_id, is_paying_client,
-     old_score, new_score, score_delta, changed_by, change_reason)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     old_score, new_score, score_delta, changed_by, change_reason,
+     methodology_version, catalog_hash, code_revision)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
 const UPSERT_SNAPSHOT = `
@@ -47,7 +61,10 @@ function logScoreChange({
     newScore,
     parseFloat((newScore - oldScore).toFixed(4)),
     changedBy,
-    changeReason || "unspecified"
+    changeReason || "unspecified",
+    METHODOLOGY_VERSION,
+    CATALOG_HASH,
+    CODE_REVISION
   );
 
   db.prepare(UPSERT_SNAPSHOT).run(productId, newScore);

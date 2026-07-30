@@ -142,8 +142,11 @@ Then restart the backend to load the new artifacts.
 |--------|----------|-------------|
 | POST | `/api/auth/register` | Register |
 | POST | `/api/auth/login` | Login (JWT) |
-| POST | `/api/auth/logout` | Logout |
+| POST | `/api/auth/logout` | Logout (revokes the token server-side) |
+| POST | `/api/auth/refresh` | Rotate session token |
 | GET | `/api/auth/me` | Current user |
+| GET | `/api/auth/export` | Export all stored user data (auth) |
+| DELETE | `/api/auth/account` | Delete account + all data (auth, password-confirmed) |
 | GET | `/api/reviews/:productId` | Product reviews |
 | POST | `/api/reviews/:productId` | Submit review (auth) |
 | GET | `/api/carbon/summary` | Carbon footprint summary (auth) |
@@ -174,7 +177,8 @@ Full technical specification: [`METHODOLOGY.md`](./METHODOLOGY.md)
 | `NODE_ENV` | Yes | `development`, `production`, or `test` |
 | `PORT` | No | Backend port (default: 4000) |
 | `ALLOWED_ORIGINS` | No | Comma-separated CORS origins |
-| `NEXT_PUBLIC_API_URL` | No | Frontend build-time API URL |
+| `NEXT_PUBLIC_API_URL` | No | Frontend build-time API URL (overrides hostname inference) |
+| `NEXT_PUBLIC_SENTRY_DSN` | No | Frontend Sentry DSN (error monitoring) |
 
 See `backend/.env.example` for the full template.
 

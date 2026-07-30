@@ -19,10 +19,44 @@ const COOKIE_OPTIONS = {
 };
 
 function generateToken(user) {
-  return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, {
+  return jwt.sign({ id: user.id, email: user.email, jti: crypto.randomUUID() }, JWT_SECRET, {
     expiresIn: JWT_EXPIRES_IN,
     algorithm: JWT_ALGORITHM,
   });
+}
+
+// Issue a token plus its expiry (ms epoch) so clients can schedule refresh
+// without decoding the JWT themselves.
+function issueToken(user) {
+  const token = generateToken(user);
+  const { exp } = jwt.decode(token);
+  return { token, expiresAt: exp * 1000 };
+}
+
+// ---------- Revocation registry ----------
+// Tokens carry a jti; logout writes the jti to revoked_tokens so a stolen
+// copy dies immediately instead of living until natural expiry. Expired rows
+// are purged lazily on each write.
+
+function getDbLazy() {
+  // Lazy require avoids a schema.js <-> middleware require cycle at load time
+  const { getDb } = require("../db/schema");
+  return getDb();
+}
+
+function revokeToken(decoded) {
+  if (!decoded || !decoded.jti || !decoded.exp) return;
+  const db = getDbLazy();
+  db.prepare("DELETE FROM revoked_tokens WHERE expires_at < ?").run(Math.floor(Date.now() / 1000));
+  db.prepare(
+    "INSERT OR IGNORE INTO revoked_tokens (jti, user_id, expires_at) VALUES (?, ?, ?)"
+  ).run(decoded.jti, decoded.id ?? null, decoded.exp);
+}
+
+function isRevoked(decoded) {
+  if (!decoded || !decoded.jti) return false;
+  const row = getDbLazy().prepare("SELECT 1 FROM revoked_tokens WHERE jti = ?").get(decoded.jti);
+  return row !== undefined;
 }
 
 function setAuthCookie(res, token) {
@@ -44,6 +78,16 @@ function extractToken(req) {
   return null;
 }
 
+function verifyActiveToken(token) {
+  const decoded = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
+  if (isRevoked(decoded)) {
+    const err = new Error("Token revoked");
+    err.revoked = true;
+    throw err;
+  }
+  return decoded;
+}
+
 function requireAuth(req, res, next) {
   const token = extractToken(req);
   if (!token) {
@@ -51,8 +95,7 @@ function requireAuth(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
-    req.user = decoded;
+    req.user = verifyActiveToken(token);
     next();
   } catch {
     return res.status(401).json({ error: "Invalid or expired token" });
@@ -66,14 +109,12 @@ function requireAdmin(req, res, next) {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
-    req.user = decoded;
+    req.user = verifyActiveToken(token);
   } catch {
     return res.status(401).json({ error: "Invalid or expired token" });
   }
 
-  const { getDb } = require("../db/schema");
-  const row = getDb().prepare("SELECT role FROM users WHERE id = ?").get(req.user.id);
+  const row = getDbLazy().prepare("SELECT role FROM users WHERE id = ?").get(req.user.id);
   if (!row || row.role !== "admin") {
     return res.status(403).json({ error: "Admin access required" });
   }
@@ -85,7 +126,7 @@ function optionalAuth(req, _res, next) {
   const token = extractToken(req);
   if (token) {
     try {
-      req.user = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
+      req.user = verifyActiveToken(token);
     } catch {
       // Invalid token, proceed without auth
     }
@@ -100,16 +141,29 @@ function refreshToken(req, res) {
   }
 
   try {
-    const decoded = jwt.verify(token, JWT_SECRET, {
-      algorithms: [JWT_ALGORITHM],
-      ignoreExpiration: false,
-    });
-    const newToken = generateToken({ id: decoded.id, email: decoded.email });
-    setAuthCookie(res, newToken);
-    res.json({ token: newToken });
+    const decoded = verifyActiveToken(token);
+    const issued = issueToken({ id: decoded.id, email: decoded.email });
+    setAuthCookie(res, issued.token);
+    res.json(issued);
   } catch {
     return res.status(401).json({ error: "Invalid or expired token" });
   }
+}
+
+// Revoke the presented token (if any) and clear the cookie. Idempotent:
+// succeeds even when no valid token is presented.
+function logoutHandler(req, res) {
+  const token = extractToken(req);
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
+      revokeToken(decoded);
+    } catch {
+      // Expired or invalid token: nothing to revoke
+    }
+  }
+  clearAuthCookie(res);
+  res.json({ message: "Logged out" });
 }
 
 function csrfProtection(req, res, next) {
@@ -152,12 +206,14 @@ function generateCsrfToken(_req, res) {
 
 module.exports = {
   generateToken,
+  issueToken,
   setAuthCookie,
   clearAuthCookie,
   requireAuth,
   requireAdmin,
   optionalAuth,
   refreshToken,
+  logoutHandler,
   csrfProtection,
   generateCsrfToken,
 };
