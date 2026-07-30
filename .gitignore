@@ -29,3 +29,10 @@ npm-debug.log*
 node_modules/
 .next/
 frontend/out/
+
+# Python ML training env
+ml/.venv/
+__pycache__/
+
+# Database backups
+backend/backups/

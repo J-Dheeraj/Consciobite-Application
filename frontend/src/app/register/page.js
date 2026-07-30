@@ -41,7 +41,7 @@ export default function Register() {
     setLoading(true);
     try {
       const data = await registerUser(name, email, password);
-      login(data.user, data.token);
+      login(data.user, data.token, data.expiresAt);
       router.push("/");
     } catch (err) {
       setError(err.message || "Registration failed");

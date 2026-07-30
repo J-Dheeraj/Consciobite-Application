@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-05-21
+updated: 2026-07-30
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,45 +13,39 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-17 after Docker fix + CONTRIBUTING.md merged; PR #34 rebased.
+**Last updated:** 2026-07-30 — PR #34 (passport frontend) updated from main with review-#2 fixes.
 
-**Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. Food sustainability app. Rates grocery products A-F using GreenGrade (KDE + sigmoid scoring across 7 lifecycle emission dimensions). Features carbon tracker, barcode scanner (Open Food Facts fallback), recipe recommender, and review system.
+**Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
-**Stack migration (2026-05):** Frontend migrated from CRA-style React SPA to Next.js 14 App Router with `output: 'export'`. Build produces static HTML in `build/` directory (Next.js outputs to `out/`, build script renames via `rm -rf build && mv out build`). Dynamic route `/product/[id]` uses `generateStaticParams()` reading 550 product IDs from `backend/src/data/products.json` at build time. Product page split into server wrapper (`page.js`) + client component (`ProductDetailClient.js`).
+**B2B layer (2026-07):** `/api/v1/passport/:id`, `POST /api/v1/portfolio/score` (≤100 SKUs), `/api/v1/audit/:id` in `backend/src/routes/passport.js`. `METHODOLOGY.md` at repo root. README rewritten for B2B (no student-project framing).
 
-**API architecture:** Domain-decomposed modules in `frontend/src/services/` — `httpClient.js` + `products.js`, `auth.js`, `reviews.js`, `carbon.js`, `recipes.js`. `httpClient.js` has `getApiBase()` for Render hostname auto-detection (`-app` -> `-api` suffix swap). No `next.config.js` rewrites (incompatible with static export).
+**ML insights layer (2026-07-30):** Course-aligned, advisory-only `/api/v1/ml/*` (similar/classify/estimate-emissions/clusters) — scikit-learn trained offline (`ml/greengrade_ml_analysis.py`), artifacts in `backend/src/data/ml_artifacts.json`, evaluated in plain JS (`backend/src/services/mlInsights.js`). Never touches scores/categories or audit trail. `ML_REPORT.md` = course report with real numbers from sklearn + NumPy reference runs. K-Means k=2 rediscovers animal/plant divide (silhouette 0.472); deployed classifiers are decision trees (auditability > accuracy).
 
-**Deployment:** Render Static Site serves `build/` directory. `render.yaml` blueprint uses `runtime: static` with `staticPublishPath: build`. Docker uses repo-root build context (`context: .` in docker-compose.yml) so `generateStaticParams()` can access `backend/src/data/products.json` during build. Nginx serves static files with SPA fallback (`try_files $uri $uri/ /index.html`).
+**Two external architecture reviews:**
+- #1 (2026-07-29, `main@9914b96`): 5/10 "Prototype".
+- #2 (2026-07-30, `main@2cb26e9`): **6/10 "Pilot-ready"** — disposable-data pilots only, enterprise: no. See [[Architecture Review 2026-07-30]] and [[Production Readiness]].
 
-**Docker fix (2026-07-17, merged PR #35):** Backend `Dockerfile` lacked `python3 make g++` needed by `better-sqlite3` to compile on Alpine (musl — no prebuilt binary). Added `RUN apk add --no-cache python3 make g++` before `npm ci --production`. Also added `CONTRIBUTING.md` (was listed as a planned improvement).
+**Review-#1 fixes landed** (`2bd6790` tier 1, `6f69df0` tier 2): AuthContext refresh/logout now use `API_BASE` (was silently broken in prod — hit frontend origin); `trust proxy 1`; deep `/api/health` (DB writability via BEGIN IMMEDIATE, migrations, scoring, ML artifacts; 503 when degraded); OFF lookup retry+backoff with 503-vs-404 distinction; audit attribution (`admin:<email>`, `system:startup`, reason never null); "immutable"/"ESPR-ready" claims reworded; frontend jest suite wired into CI; frontend audit gate `--audit-level=critical` (Next 14 high CVEs are server-side; static export unaffected; fix requires breaking Next 16).
 
-**Recent fixes landed (2026-05-13):**
-- 7 merge conflicts resolved between feature branch and main
-- Backend Prettier/ESLint formatting fixed (4 backend + 9 frontend files)
-- `validate()` schema fixes: removed `max: 100` from carbon quantity (let handler clamp), raised reviews `productId` maxLength from 20 to 50, removed UUID patterns from delete schemas (allow non-UUID strings to reach 404)
-- Frontend ESLint migrated from `react-app` to `next/core-web-vitals`
-- Unescaped JSX entities fixed (`"` -> `&ldquo;`/`&rdquo;`, `'` -> `&apos;`)
-- Docker build context changed from `./frontend` to `.` (repo root) so products.json is accessible
-- Dockerfile updated for repo-root-relative COPY paths
-- `REACT_APP_API_URL` -> `NEXT_PUBLIC_API_URL` in docker-compose.yml
+**Review-#2 fixes landed** (`af395ee`): access token memory-only (never localStorage; cookie-based session restore, `initializing` state); `jti` revocation registry (migration 003) — logout revokes, refresh rotates; Sentry actually wired (`NEXT_PUBLIC_SENTRY_DSN` + `initSentry()` invoked); X-Request-Id tracing; `/api/health/live` + exact migration-set readiness; OFF circuit breaker (3 fails → 60s open); privacy controls (`GET /auth/export`, `DELETE /auth/account`, `PRIVACY.md`); score provenance (methodology version + catalog sha256 + code revision per change); `SECURITY.md` triage policy; `NEXT_PUBLIC_API_URL` precedence; ROUTE_TABLE consolidation; `npm run backup`. See [[Production Readiness]].
 
-**Current test status:** 153 backend tests passing (36 new passport/portfolio/audit tests added). Frontend builds 1117 static pages (17 routes + 550 product pages + 550 passport pages).
+**Also fixed earlier:** `swagger-jsdoc` removed (unpatchable brace-expansion chain; spec inline). Backend prod audit = 0 vulns. `trailingSlash: true` fixed static-hosting 404s. `ApiReadyGate` cold-start UX. Backend Dockerfile: `apk add python3 make g++` for better-sqlite3 on Alpine (2026-07-17, was blocking PR #34's Docker check).
 
-**Active branch:** `claude/dreamy-dirac-4ua0hn` — current session branch.
-
-**Passport feature (PR #34, branch `claude/dreamy-dirac-fzmsdt`, rebased 2026-07-21):**
-- Backend: `/api/v1/passport/:id`, `/api/v1/portfolio/score`, `/api/v1/audit/:id` routes (merged in PR #33)
+**Passport frontend (PR #34, branch `claude/dreamy-dirac-fzmsdt`):**
 - Frontend service layer: `fetchPassport(id)`, `fetchPortfolioScore(ids)`, `fetchAuditLog(id)` in `products.js`; re-exported from `api.js`
-- Frontend page: `/passport/[id]` — `PassportCard` with SVG score ring, 7-dimension emission bars (bar width proportional to max, color green/amber/red), confidence tier badge, summary grid (score, percentile, total CO₂e, methodology version), generated date footer
-- `generateStaticParams()` generates 550 passport pages from `backend/src/data/products.json`
-- "Eco Passport" button added to product detail page (`/product/[id]`)
-- better-sqlite3 bumped to ^12.11.1 for prebuilt binary availability in CI
+- Frontend page: `/passport/[id]` — `PassportCard` with SVG score ring, 7-dimension emission bars, confidence tier badge, summary grid, generated date footer; 550 pages via `generateStaticParams()`
+- "Eco Passport" button on product detail page; 36 passport integration tests in `backend/__tests__/passport.test.js`
 
-**Governance layer (2026-05-29):** Session 1 complete. SQLite tables: `manufacturers`, `product_manufacturers`, `score_change_logs`, `product_scores`. Service: `scoreAudit.js` logs every score change with paying-client flag. Admin routes at `/api/admin/*` (requireAdmin middleware, checks `users.role`). Scores snapshotted on startup (550 products); changes auto-detected on server restart. **Charter drafted:** `/GreenGrade_Governance_Charter.md` — 3-seat advisory panel (academic, regulatory, non-client industry), 4 powers (methodology audit, score challenge, conflict flag, annual report), conflict-of-interest firewall, voluntary service. Landing page updated: "Independent Scoring" copy, 550 product count. Stack migration plan at [[Stack Migration Plan]].
+**Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap. Branch protection now active on `main` (PR + required "CI" check). Reviewer steer: evidence ingestion/provenance > more ML.
 
-**Key invariants (unchanged):**
+**Test status:** 173 backend + 9 frontend, all passing. Frontend builds 569 static pages.
+
+**Active branch:** `claude/improve-application-S5njo` — carries unmerged review-#2 fixes (`af395ee`) awaiting merge to `main`.
+
+**Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
 - `WEEKLY_CARBON_GOAL_KG` in `frontend/src/utils/constants.js`
 - `/carbon` protected by `RequireAuth` — no in-page auth gates
-- httpOnly cookies for JWT; CSRF double-submit pattern
+- JWT: httpOnly cookie + memory-only copy (never localStorage, as of 2026-07-30); logout revokes via `jti`; CSRF double-submit on mutating routes
 - All Express routes use `validate()` middleware with `pattern:` not `type: "number"`
+- ML endpoints advisory-only; never write scores/categories or bypass audit log

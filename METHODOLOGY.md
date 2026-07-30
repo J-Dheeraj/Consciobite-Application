@@ -288,3 +288,65 @@ Each product response includes:
 ## 12. Contact
 
 For technical questions about the scoring methodology, data sources, or API integration, contact the maintainers through the [GitHub repository](https://github.com/J-Dheeraj/Consciobite-Application).
+
+---
+
+## 13. ML Insights Layer (Course-Aligned Models)
+
+Separate from the GreenGrade v3.0 engine documented in sections 1–12, the
+application ships an advisory ML layer under `/api/v1/ml/*`. It is a distinct
+engine — scikit-learn models trained offline in Python
+(`ml/greengrade_ml_analysis.py`), exported to `backend/src/data/ml_artifacts.json`,
+and evaluated at request time in plain JavaScript
+(`backend/src/services/mlInsights.js`). No Python runs in production. Nothing
+in this layer feeds into the GreenGrade score, and its predictions never
+modify a product's category, emissions, or score, nor bypass the score audit
+trail (section 10 of the Governance Charter).
+
+### 13.1 Tasks and models
+
+Three tasks were run against the full 550-product catalog (80/20 stratified
+split, `StandardScaler` fitted on training data only):
+
+**Category classification (9-class).** Predict a product's category from its
+7-dimension emissions profile — used to flag likely mis-tagged SKUs.
+Algorithms compared: KNN (k tuned by 5-fold CV), Decision Trees
+(Gini/entropy, depth 6), SVM (linear/RBF/polynomial kernels), Random Forest,
+AdaBoost, and a soft-voting ensemble. Best held-out weighted F1: KNN at k=1
+(0.8111, NumPy reference run) with the soft-voting ensemble close behind
+(0.8088, scikit-learn run). The **deployed model is the depth-6 Gini
+decision tree** (~0.65–0.70 weighted F1) — deliberately traded accuracy for
+auditability: its exported nested-rule JSON lets a reviewer read the exact
+rule behind any prediction, which the governance framework requires of an
+advisory signal.
+
+**Emissions estimation from partial data (regression).** Estimate
+`total_emissions` from only the logistics stages (`transport`, `packaging`,
+`retail`) — an upgrade path for Tier 3 "estimated" products (section 6.1),
+which otherwise fall back to a flat category average. The **deployed depth-5
+regression tree** achieves MAE 1.00 kg CO2e/kg and R² 0.79 on the held-out
+set versus MAE 2.63 / R² ≈ 0 for the mean baseline, and outperformed the KNN
+regressor (MAE 1.14, R² 0.68) in the canonical scikit-learn run.
+
+**Clustering (unsupervised).** K-Means (K-Means++ init) with silhouette
+selection chose k=2 (silhouette 0.472): a 440-product plant/processed
+cluster and a 110-product animal-product cluster — the model rediscovered
+the animal-vs-plant divide that dominates food-system emissions without
+seeing any labels. DBSCAN (eps 1.5, min_samples 5) found 3 clusters with 17
+noise points (3.09%), an independent cross-check on the Mahalanobis anomaly
+detector in section 5.
+
+### 13.2 Endpoints
+
+| Method | Endpoint | Model behind it |
+|---|---|---|
+| GET | `/api/v1/ml/similar/:productId` | Cosine similarity over scaled emission vectors (pre-normalized index) |
+| POST | `/api/v1/ml/classify` | Gini decision tree (nested-rule JSON) |
+| POST | `/api/v1/ml/estimate-emissions` | Regression tree (nested-rule JSON) |
+| GET | `/api/v1/ml/clusters` | K-Means (k=2) cluster labels |
+| GET | `/api/v1/ml/clusters/:productId` | K-Means (k=2) cluster labels |
+
+Full analysis, evaluation tables, and the cross-implementation validation of
+these numbers: [`ML_REPORT.md`](./ML_REPORT.md). Raw metrics:
+`backend/src/data/metrics_summary.json` (scikit-learn run) and
+`ml/numpy_metrics_reference.json` (NumPy reference run).

@@ -44,7 +44,7 @@ Source documents (immutable) live in `.raw/`.
 
 **Frontend** — Next.js 14 App Router (`output: 'export'` static site), React 18.2, TanStack React Query 5.90, Recharts 3.7, html5-qrcode, Sentry, CSS Modules + inline styles with CSS custom properties, ESLint (`next/core-web-vitals`) + Prettier.
 
-**Backend** — Node.js 20, Express 4.18, SQLite via better-sqlite3 (WAL mode), JWT + bcryptjs auth, Helmet / CORS / HPP / express-rate-limit security stack, custom `validate()` middleware, node-cache (in-memory), Winston logging, Swagger UI + swagger-jsdoc (dev only), Jest 30 + Supertest 7.2.
+**Backend** — Node.js 20, Express 4.18, SQLite via better-sqlite3 (WAL mode), JWT + bcryptjs auth, Helmet / CORS / HPP / express-rate-limit security stack, custom `validate()` middleware, node-cache (in-memory), Winston logging, Swagger UI with an inline OpenAPI spec (dev only), Jest 30 + Supertest 7.2.
 
 **Governance layer** — Score change audit trail (`scoreAudit.js`), manufacturer tracking, admin routes (`/api/admin/*`), `requireAdmin` middleware. See `wiki/domains/Grading Independence Governance.md`.
 
@@ -117,7 +117,7 @@ Consciobite-Application/
 - `AUTH_EXPIRED_EVENT` is the shared constant for the 401 event bus — never use the raw string `"auth-expired"`
 - `WEEKLY_CARBON_GOAL_KG` lives in `frontend/src/utils/constants.js`
 - `/carbon` route is protected by `RequireAuth` — do not add in-page auth gates
-- httpOnly cookies store JWT tokens; CSRF double-submit pattern protects mutating routes
+- httpOnly cookies store JWT tokens; the frontend keeps its copy in memory only (never localStorage); logout revokes the token's `jti` server-side; CSRF double-submit pattern protects mutating routes
 - Admin routes use `requireAdmin` middleware — checks `users.role = 'admin'` in SQLite
 
 ---
