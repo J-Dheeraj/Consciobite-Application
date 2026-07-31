@@ -268,4 +268,105 @@ describe("Admin governance endpoints", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("GET /api/admin/pending-evidence", () => {
+    test("should reject unauthenticated requests", async () => {
+      const res = await request(app).get("/api/admin/pending-evidence");
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${userToken}`);
+      expect(res.status).toBe(403);
+    });
+
+    test("should return pending evidence for admin", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("evidence");
+      expect(res.body).toHaveProperty("total");
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+    });
+
+    test("should respect limit and offset params", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence?limit=5&offset=0")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+    });
+  });
+
+  describe("POST /api/admin/evidence/:id/review", () => {
+    let submittedEvidenceId;
+
+    beforeAll(async () => {
+      const submitRes = await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          citation:
+            "Test peer-reviewed LCA study for evidence review integration test (Consciobite 2026)",
+          source_type: "peer_reviewed_lca",
+          methodology: "ISO 14040/44",
+          url: "https://example.com/lca-study",
+          year: 2025,
+        });
+      submittedEvidenceId = submitRes.body?.id;
+    });
+
+    test("should reject unauthenticated requests", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/1/review`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/1/review`)
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(403);
+    });
+
+    test("should approve a pending evidence submission", async () => {
+      if (!submittedEvidenceId) return;
+      const res = await request(app)
+        .post(`/api/admin/evidence/${submittedEvidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved", notes: "Verified source, good methodology." });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("approved");
+    });
+
+    test("should return 404 when re-reviewing already reviewed evidence", async () => {
+      if (!submittedEvidenceId) return;
+      const res = await request(app)
+        .post(`/api/admin/evidence/${submittedEvidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected", notes: "No longer pending." });
+      expect(res.status).toBe(404);
+    });
+
+    test("should reject an invalid evidence ID", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/abc/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject invalid status value", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/999/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "maybe" });
+      expect(res.status).toBe(400);
+    });
+  });
 });
