@@ -32,7 +32,9 @@ export function setAuthToken(token) {
   inMemoryToken = token;
 }
 
-function getAuthHeaders() {
+// Exported for callers that bypass httpClient because they need a non-JSON
+// response (e.g. blob downloads) but still require the auth header.
+export function getAuthHeaders() {
   return inMemoryToken ? { Authorization: `Bearer ${inMemoryToken}` } : {};
 }
 

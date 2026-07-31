@@ -130,6 +130,28 @@ Append-only. Newest entries at top.
 **Test status:** 147 backend tests passing. Frontend builds 567 static pages.
 
 **CI note:** Initial CI run failed on Prettier check for `__tests__/auth.test.js` (file not formatted before first push). Fixed and re-pushed in follow-up commit.
+**Hot cache updated:** yes
+
+---
+
+## 2026-07-28 — Carbon Log CSV Export (PR #39)
+
+**Operation:** Scheduled session — reviewed open PRs (#34, #36, #37, #38 all CI green), identified carbon tracker as missing export capability, implemented CSV download feature.
+
+**Files changed:** 5
+- `backend/src/routes/carbon.js` — added `GET /api/carbon/export` route (auth-required, returns RFC 4180 CSV)
+- `backend/__tests__/carbon.test.js` — 4 new Supertest tests (401, CSV content-type, header row, data row); total 141 tests on branch
+- `frontend/src/services/carbon.js` — added `downloadCarbonExport()` using raw fetch for blob response
+- `frontend/src/services/api.js` — re-exported `downloadCarbonExport`
+- `frontend/src/app/carbon/page.js` — added "Export CSV" button next to "Recent Logs" heading; hidden when no logs; loading state
+
+**Branch:** `claude/nifty-goodall-juod2y`
+**PR:** #39 — opened, CI green ✓ (all 3 checks: Backend Tests, Frontend Build & Test, Docker Build Check)
+
+**Verification:**
+- All 141 backend tests passing
+- ESLint and Prettier clean (backend + frontend)
+- CI green on first push's Backend Tests failed (npm audit high vulns: brace-expansion via swagger-jsdoc, js-yaml); fixed with `npm audit fix` — second push CI all green
 
 **Index updated:** no
 **Hot cache updated:** yes
