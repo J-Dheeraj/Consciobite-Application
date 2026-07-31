@@ -29,3 +29,14 @@ export async function fetchStats() {
 export async function fetchRecommendations(id) {
   return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/recommendations`);
 }
+
+export async function fetchProductEvidence(id) {
+  return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/evidence`);
+}
+
+export async function submitProductEvidence(id, data) {
+  return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/evidence`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}

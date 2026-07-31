@@ -277,7 +277,7 @@ app.get("/api/transparency/stats", cacheMiddleware(300), (_req, res) => {
 // /api/v1 (versioned alias) from a single table so the two surfaces cannot
 // drift apart.
 const ROUTE_TABLE = [
-  ["/products", [cacheMiddleware(120)], productRoutes],
+  ["/products", [cacheMiddleware(120), csrfProtection], productRoutes],
   ["/auth", [], authRoutes],
   ["/reviews", [csrfProtection], reviewRoutes],
   ["/carbon", [csrfProtection], carbonRoutes],
