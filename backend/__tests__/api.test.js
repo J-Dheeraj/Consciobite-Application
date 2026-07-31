@@ -74,6 +74,37 @@ describe("API Endpoints", () => {
         expect(p.greenGrade.breakdown).toHaveLength(7);
       });
     });
+
+    test("should filter by tier=green — all scores >= 7", async () => {
+      const res = await request(app).get("/api/products?tier=green&limit=100");
+      expect(res.status).toBe(200);
+      res.body.products.forEach((p) => {
+        expect(p.greenGrade.score).toBeGreaterThanOrEqual(7);
+      });
+    });
+
+    test("should filter by tier=amber — scores in [4, 7)", async () => {
+      const res = await request(app).get("/api/products?tier=amber&limit=100");
+      expect(res.status).toBe(200);
+      res.body.products.forEach((p) => {
+        expect(p.greenGrade.score).toBeGreaterThanOrEqual(4);
+        expect(p.greenGrade.score).toBeLessThan(7);
+      });
+    });
+
+    test("should filter by tier=red — all scores < 4", async () => {
+      const res = await request(app).get("/api/products?tier=red&limit=100");
+      expect(res.status).toBe(200);
+      res.body.products.forEach((p) => {
+        expect(p.greenGrade.score).toBeLessThan(4);
+      });
+    });
+
+    test("should ignore unknown tier values", async () => {
+      const res = await request(app).get("/api/products?tier=invalid");
+      expect(res.status).toBe(200);
+      expect(res.body.products.length).toBeGreaterThan(0);
+    });
   });
 
   describe("GET /api/products/stats", () => {
