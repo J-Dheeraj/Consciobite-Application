@@ -5,6 +5,11 @@ export {
   compareProducts,
   fetchStats,
   fetchRecommendations,
+  fetchPassport,
+  fetchPortfolioScore,
+  fetchAuditLog,
+  fetchProductEvidence,
+  submitProductEvidence,
 } from "./products";
 export { registerUser, loginUser, fetchCurrentUser, updateProfile } from "./auth";
 export { fetchReviews, submitReview, deleteReview } from "./reviews";
