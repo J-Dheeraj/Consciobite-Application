@@ -15,6 +15,7 @@ const recipeRoutes = require("./routes/recipes");
 const adminRoutes = require("./routes/admin");
 const passportRoutes = require("./routes/passport");
 const mlRoutes = require("./routes/ml");
+const favoritesRoutes = require("./routes/favorites");
 const evidenceRoutes = require("./routes/evidence");
 const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
@@ -283,6 +284,7 @@ const ROUTE_TABLE = [
   ["/carbon", [csrfProtection], carbonRoutes],
   ["/recipes", [cacheMiddleware(600)], recipeRoutes],
   ["/admin", [csrfProtection], adminRoutes],
+  ["/favorites", [csrfProtection], favoritesRoutes],
 ];
 for (const [route, middlewares, router] of ROUTE_TABLE) {
   for (const prefix of ["/api", "/api/v1"]) {

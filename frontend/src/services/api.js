@@ -30,3 +30,4 @@ export {
   acknowledgeFee,
   fetchTransparencyStats,
 } from "./admin";
+export { fetchFavorites, addFavorite, removeFavorite, clearServerFavorites } from "./favorites";

@@ -3,7 +3,13 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase, fetchRecommendations } from "@/services/api";
+import {
+  fetchProduct,
+  logCarbonPurchase,
+  fetchRecommendations,
+  addFavorite,
+  removeFavorite,
+} from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -297,7 +303,13 @@ export default function ProductDetail() {
 
           <div style={{ display: "flex", justifyContent: "center" }}>
             <button
-              onClick={() => setFav(toggleFavorite(product.id))}
+              onClick={() => {
+                const nowFaved = toggleFavorite(product.id);
+                setFav(nowFaved);
+                if (isAuthenticated) {
+                  (nowFaved ? addFavorite(product.id) : removeFavorite(product.id)).catch(() => {});
+                }
+              }}
               aria-label={fav ? "Remove from favorites" : "Add to favorites"}
               style={{
                 background: "rgba(255,255,255,0.12)",

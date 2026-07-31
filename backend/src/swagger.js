@@ -621,6 +621,66 @@ const options = {
           },
         },
       },
+      "/favorites": {
+        get: {
+          tags: ["Favorites"],
+          summary: "List saved favorite product IDs",
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: "Array of favorited product IDs" },
+            401: { description: "Not authenticated" },
+          },
+        },
+        post: {
+          tags: ["Favorites"],
+          summary: "Add a product to favorites",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["productId"],
+                  properties: { productId: { type: "string", maxLength: 50 } },
+                },
+              },
+            },
+          },
+          responses: {
+            201: { description: "Favorite added" },
+            400: { description: "Missing productId" },
+            401: { description: "Not authenticated" },
+            409: { description: "Already in favorites" },
+          },
+        },
+      },
+      "/favorites/all": {
+        delete: {
+          tags: ["Favorites"],
+          summary: "Clear all favorites",
+          security: [{ bearerAuth: [] }],
+          responses: {
+            200: { description: "Number of favorites deleted" },
+            401: { description: "Not authenticated" },
+          },
+        },
+      },
+      "/favorites/{productId}": {
+        delete: {
+          tags: ["Favorites"],
+          summary: "Remove a specific favorite",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: "productId", in: "path", required: true, schema: { type: "string" } },
+          ],
+          responses: {
+            200: { description: "Favorite removed" },
+            401: { description: "Not authenticated" },
+            404: { description: "Favorite not found" },
+          },
+        },
+      },
       "/v1/evidence/sources": {
         get: {
           tags: ["Evidence & Provenance"],
