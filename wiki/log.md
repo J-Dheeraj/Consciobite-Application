@@ -18,7 +18,7 @@ Append-only. Newest entries at top.
 **Operation:** Implement community evidence submission with admin review workflow on branch `claude/dreamy-dirac-2jgkme`.
 
 **Files created:** 3
-- `backend/src/db/migrations/004_submitted_evidence.sql` — new table: submitted_evidence (product_id, citation, source_type, methodology, url, year, status pending/approved/rejected, reviewer fields)
+- `backend/src/db/migrations/006_submitted_evidence.sql` — new table: submitted_evidence (product_id, citation, source_type, methodology, url, year, status pending/approved/rejected, reviewer fields)
 - `backend/src/services/evidenceService.js` — submitEvidence, getApprovedEvidence, getPendingEvidence, reviewEvidence
 - `frontend/src/components/EvidenceSection.js` — shows approved community citations, form for authenticated users, sign-in prompt for anonymous
 

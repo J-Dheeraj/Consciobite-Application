@@ -39,7 +39,7 @@ tags: [hot-cache, meta]
 
 **Active branch:** `claude/dreamy-dirac-2jgkme` — community evidence submission feature (`96422bb`), pushed, awaiting merge to `main`. Branch is based on `main@7d68316` (which includes all previous review-#1 and review-#2 fixes).
 
-**Community evidence feature (2026-07-30):** `POST /api/products/:id/evidence` (auth required) accepts citation, source_type (peer_reviewed_lca | lca_database | manufacturer_study | industry_report | other), methodology, url, year. Submissions go into `submitted_evidence` table (migration 004) as pending. Admin approves/rejects via `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review`. Approved submissions surface via `GET /api/products/:id/evidence` and are displayed in `EvidenceSection` component on the product detail page. `csrfProtection` added to the products router. 181 backend tests passing.
+**Community evidence feature (2026-07-30):** `POST /api/products/:id/evidence` (auth required) accepts citation, source_type (peer_reviewed_lca | lca_database | manufacturer_study | industry_report | other), methodology, url, year. Submissions go into `submitted_evidence` table (migration 006) as pending. Admin approves/rejects via `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review`. Approved submissions surface via `GET /api/products/:id/evidence` and are displayed in `EvidenceSection` component on the product detail page. `csrfProtection` added to the products router. 181 backend tests passing.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
