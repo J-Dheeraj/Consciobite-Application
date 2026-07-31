@@ -13,7 +13,8 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 export default function CarbonTracker() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const { isAuthenticated, initializing } = useAuth();
+  const { isAuthenticated, initializing, user } = useAuth();
+  const weeklyGoal = user?.weeklyGoal ?? WEEKLY_CARBON_GOAL_KG;
   const queryClient = useQueryClient();
   const [deleteError, setDeleteError] = useState("");
 
@@ -95,9 +96,7 @@ export default function CarbonTracker() {
     return <Spinner message="Loading carbon data..." />;
   }
 
-  const weeklyProgress = summary
-    ? Math.min((summary.weekly.emissions / WEEKLY_CARBON_GOAL_KG) * 100, 100)
-    : 0;
+  const weeklyProgress = summary ? Math.min((summary.weekly.emissions / weeklyGoal) * 100, 100) : 0;
   const trendData = summary?.trend || [];
 
   return (
@@ -179,7 +178,7 @@ export default function CarbonTracker() {
                     fontFamily: "'Outfit', sans-serif",
                     fontWeight: 800,
                     fontSize: "1.5rem",
-                    color: summary.weekly.emissions > WEEKLY_CARBON_GOAL_KG ? "#e63946" : "#2d6a4f",
+                    color: summary.weekly.emissions > weeklyGoal ? "#e63946" : "#2d6a4f",
                   }}
                 >
                   {summary.weekly.emissions}
@@ -283,7 +282,7 @@ export default function CarbonTracker() {
                     color: isDark ? "#e8f5e9" : "#333",
                   }}
                 >
-                  Weekly Goal: {WEEKLY_CARBON_GOAL_KG} kg CO{"\u2082"}e
+                  Weekly Goal: {weeklyGoal} kg CO{"\u2082"}e
                 </span>
                 <span
                   style={{
