@@ -285,7 +285,8 @@ describe("API Endpoints", () => {
         .post("/api/products/1/evidence")
         .set("Authorization", `Bearer ${authToken}`)
         .send({
-          citation: "Poore, J. & Nemecek, T. (2018). Reducing food's environmental impacts. Science.",
+          citation:
+            "Poore, J. & Nemecek, T. (2018). Reducing food's environmental impacts. Science.",
           source_type: "peer_reviewed_lca",
           url: "https://doi.org/10.1126/science.aaq0216",
           year: 2018,

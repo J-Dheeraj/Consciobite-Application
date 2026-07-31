@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-30 — Evidence Source Registry
+
+**Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
+
+**Files created:** 3
+- `backend/src/db/migrations/007_evidence_sources.sql` — `evidence_sources` table (seeded with 4 canonical sources) + `product_evidence_links` table
+- `backend/src/routes/evidence.js` — 5 endpoints (3 public GET + 2 admin-only POST)
+- `backend/__tests__/evidence.test.js` — 14 integration tests
+
+**Files updated:** 2
+- `backend/src/index.js` — mount `evidenceRoutes` at `/api/v1/evidence`
+- `backend/src/swagger.js` — `EvidenceSource` schema + Evidence & Provenance tag with all 5 endpoints
+
+**Test count:** 173 → 187 backend (all passing). 14 new tests cover source listing, reliability filter, per-key lookup, per-product provenance, 401 enforcement on admin routes.
+
+**Branch:** `claude/nifty-goodall-zt4vpf`, commit `32d27eb`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Community Evidence Submission Feature
 
 **Operation:** Implement community evidence submission with admin review workflow on branch `claude/dreamy-dirac-2jgkme`.

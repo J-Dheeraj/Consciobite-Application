@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 (community evidence submission feature on `claude/dreamy-dirac-2jgkme`).
+**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -31,15 +31,19 @@ tags: [hot-cache, meta]
 
 **Also fixed earlier:** `swagger-jsdoc` removed (unpatchable brace-expansion chain; spec inline). Backend prod audit = 0 vulns. `trailingSlash: true` fixed static-hosting 404s. `ApiReadyGate` cold-start UX. Backend Dockerfile: `apk add python3 make g++` for better-sqlite3 on Alpine (2026-07-17, was blocking PR #34's Docker check).
 
+**Evidence registry (2026-07-30, commit `32d27eb`):** Persistent, admin-extensible evidence source registry directly addressing review-#2 steer ("evidence ingestion/provenance > more ML"). Migration 007: `evidence_sources` table seeded with 4 canonical sources (Poore & Nemecek 2018, Our World in Data, Open Food Facts, category-estimate) + `product_evidence_links` for explicit product–source bindings. New v1-only routes in `backend/src/routes/evidence.js`: `GET /api/v1/evidence/sources`, `GET /api/v1/evidence/sources/:key`, `GET /api/v1/evidence/product/:id`, `POST /api/v1/evidence/sources` (admin), `POST /api/v1/evidence/product-link` (admin). Swagger: `EvidenceSource` schema + 5 endpoints under "Evidence & Provenance" tag. 14 new tests.
+
 **Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
 
-**Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; branch protection absent (needs GitHub UI — API token can't set it); catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap. Reviewer steer: evidence ingestion/provenance > more ML.
+**Open PRs (not yet merged):** #34 DPP frontend, #36 recommendations, #37 audit vuln fix + tier filter, #38 user profile, #39 CSV export, #41 server-side favorites. PRs #36/#37/#38 are based on old main (`18bec95`) and may need rebasing.
 
-**Test status:** 173 backend + 9 frontend, all passing. Frontend builds 569 static pages.
+**Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap.
 
-**Active branch:** `claude/dreamy-dirac-2jgkme` — community evidence submission feature (`96422bb`), pushed, awaiting merge to `main`. Branch is based on `main@7d68316` (which includes all previous review-#1 and review-#2 fixes).
+**Community evidence submission (PR #45, branch `claude/dreamy-dirac-2jgkme`):** the *contribution* half of the evidence story (the registry above is the *curation* half — they are complementary, not duplicates). `POST /api/products/:id/evidence` (auth required) accepts citation, source_type, methodology, url, year; submissions land in `submitted_evidence` (migration **006**) as pending. Admins approve/reject via `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review`; approved entries surface through `GET /api/products/:id/evidence` and the `EvidenceSection` component. `csrfProtection` added to the products router.
 
-**Community evidence feature (2026-07-30):** `POST /api/products/:id/evidence` (auth required) accepts citation, source_type (peer_reviewed_lca | lca_database | manufacturer_study | industry_report | other), methodology, url, year. Submissions go into `submitted_evidence` table (migration 006) as pending. Admin approves/rejects via `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review`. Approved submissions surface via `GET /api/products/:id/evidence` and are displayed in `EvidenceSection` component on the product detail page. `csrfProtection` added to the products router. 181 backend tests passing.
+**Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
+
+**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 569 static pages.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
