@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchRecommendations } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -94,6 +94,12 @@ export default function ProductDetail() {
   } = useQuery({
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
+  });
+
+  const { data: recsData } = useQuery({
+    queryKey: ["recommendations", id],
+    queryFn: () => fetchRecommendations(id),
+    enabled: !!id,
   });
 
   const error = queryError ? "Unable to load product details." : "";
@@ -1090,6 +1096,82 @@ export default function ProductDetail() {
             {product.description}
           </p>
         </div>
+
+        {/* Similar Products */}
+        {recsData?.recommendations?.length > 0 && (
+          <div
+            style={{
+              width: "100%",
+              maxWidth: 420,
+              marginBottom: 20,
+              padding: "0 4px",
+            }}
+          >
+            <div
+              style={{
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                fontSize: "0.9rem",
+                color: "#52b788",
+                textTransform: "uppercase",
+                letterSpacing: "0.07em",
+                marginBottom: 12,
+                paddingLeft: 4,
+              }}
+            >
+              Similar {recsData.category} Products
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {recsData.recommendations.map((rec) => (
+                <Link
+                  key={rec.id}
+                  href={`/product/${rec.id}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    background: "#14352a",
+                    borderRadius: 12,
+                    padding: "12px 16px",
+                    textDecoration: "none",
+                    color: "inherit",
+                  }}
+                >
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div
+                      style={{
+                        fontFamily: "'Outfit', sans-serif",
+                        fontWeight: 600,
+                        fontSize: "0.88rem",
+                        color: "#e8f5e9",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                      }}
+                    >
+                      {rec.name}
+                    </div>
+                    <div style={{ fontSize: "0.75rem", color: "#7a9a7e", marginTop: 2 }}>
+                      {rec.brand}
+                    </div>
+                  </div>
+                  <div
+                    style={{
+                      flexShrink: 0,
+                      marginLeft: 12,
+                      fontFamily: "'Outfit', sans-serif",
+                      fontWeight: 800,
+                      fontSize: "1rem",
+                      color: scoreColor(rec.greenGrade?.score ?? 0),
+                    }}
+                  >
+                    {rec.greenGrade?.score ?? "—"}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Back button + Passport link */}
         <div
