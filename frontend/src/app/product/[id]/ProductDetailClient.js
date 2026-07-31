@@ -10,6 +10,7 @@ import ProductImage from "@/components/ProductImage";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/AuthContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
+import EvidenceSection from "@/components/EvidenceSection";
 
 const LEGEND_ITEMS = [
   { color: "#27ae60", label: "Best" },
@@ -1078,6 +1079,9 @@ export default function ProductDetail() {
           </div>
         )}
 
+        {/* Community Evidence */}
+        <EvidenceSection productId={product.id} />
+
         {/* Description */}
         <div
           style={{
@@ -1169,12 +1173,21 @@ export default function ProductDetail() {
           </div>
         )}
 
-        {/* Back button */}
-        <div style={{ width: "100%", maxWidth: 380, padding: "0 16px" }}>
+        {/* Back button + Passport link */}
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 380,
+            padding: "0 16px",
+            display: "flex",
+            gap: 10,
+          }}
+        >
           <button
             onClick={() => router.push("/")}
             style={{
-              padding: "13px 32px",
+              flex: 1,
+              padding: "13px 0",
               borderRadius: 10,
               border: "none",
               background: "#27ae60",
@@ -1187,6 +1200,25 @@ export default function ProductDetail() {
           >
             Back
           </button>
+          <Link
+            href={`/passport/${id}`}
+            style={{
+              flex: 1,
+              padding: "13px 0",
+              borderRadius: 10,
+              background: "#14352a",
+              color: "#52b788",
+              fontSize: "0.88rem",
+              fontWeight: 700,
+              textDecoration: "none",
+              textAlign: "center",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            Eco Passport
+          </Link>
         </div>
       </div>
     </div>
