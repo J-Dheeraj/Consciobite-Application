@@ -15,10 +15,10 @@ Append-only. Newest entries at top.
 
 ## 2026-07-30 — Evidence Source Registry
 
-**Operation:** Implement evidence source registry (migration 004 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
+**Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
 
 **Files created:** 3
-- `backend/src/db/migrations/004_evidence_sources.sql` — `evidence_sources` table (seeded with 4 canonical sources) + `product_evidence_links` table
+- `backend/src/db/migrations/007_evidence_sources.sql` — `evidence_sources` table (seeded with 4 canonical sources) + `product_evidence_links` table
 - `backend/src/routes/evidence.js` — 5 endpoints (3 public GET + 2 admin-only POST)
 - `backend/__tests__/evidence.test.js` — 14 integration tests
 
