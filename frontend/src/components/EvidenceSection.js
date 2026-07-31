@@ -185,7 +185,9 @@ export default function EvidenceSection({ productId }) {
               }}
             />
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}>
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 10 }}
+          >
             <div>
               <label
                 style={{
@@ -391,7 +393,14 @@ export default function EvidenceSection({ productId }) {
             {item.citation}
           </div>
           {item.methodology && (
-            <div style={{ color: "#7a9a7e", fontSize: "0.72rem", fontStyle: "italic", marginBottom: 4 }}>
+            <div
+              style={{
+                color: "#7a9a7e",
+                fontSize: "0.72rem",
+                fontStyle: "italic",
+                marginBottom: 4,
+              }}
+            >
               {item.methodology}
             </div>
           )}
