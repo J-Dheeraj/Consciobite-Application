@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-07-31
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-07-31 — admin evidence review UI landed (branch `claude/dreamy-dirac-po4i0a`, commit `d90af1f`); 259 backend tests.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -55,7 +55,9 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Admin evidence review (2026-07-31, branch `claude/dreamy-dirac-po4i0a`):** The `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review` routes already existed (backend, PR #45) but had no tests and no frontend. Now complete: 10 new integration tests in `admin.test.js` (covering auth enforcement, approve/reject, 404 on re-review, invalid inputs); `fetchPendingEvidence()` and `reviewEvidence()` added to `frontend/src/services/admin.js`; `/admin/evidence-review` page shows the pending queue with per-row inline expand/review panel (notes textarea, approve and reject buttons). This closes the evidence loop: community submissions (`POST /api/products/:id/evidence`) → admin review queue → approved evidence surfaces via `GET /api/products/:id/evidence` in the `EvidenceSection` component.
+
+**Test status:** 259 backend + 9 frontend, all passing. Frontend builds 1123 static pages (550 product + 550 passport + routes including /admin/evidence-review).
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
