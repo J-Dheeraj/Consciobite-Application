@@ -8,6 +8,8 @@ export {
   fetchPassport,
   fetchPortfolioScore,
   fetchAuditLog,
+  fetchProductEvidence,
+  submitProductEvidence,
 } from "./products";
 export { registerUser, loginUser, fetchCurrentUser } from "./auth";
 export { fetchReviews, submitReview, deleteReview } from "./reviews";

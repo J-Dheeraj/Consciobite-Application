@@ -10,6 +10,7 @@ import ProductImage from "@/components/ProductImage";
 import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/AuthContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
+import EvidenceSection from "@/components/EvidenceSection";
 
 const LEGEND_ITEMS = [
   { color: "#27ae60", label: "Best" },
@@ -1071,6 +1072,9 @@ export default function ProductDetail() {
             )}
           </div>
         )}
+
+        {/* Community Evidence */}
+        <EvidenceSection productId={product.id} />
 
         {/* Description */}
         <div

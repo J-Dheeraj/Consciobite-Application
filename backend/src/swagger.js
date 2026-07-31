@@ -116,6 +116,32 @@ const options = {
             error: { type: "string" },
           },
         },
+        EvidenceSource: {
+          type: "object",
+          properties: {
+            key: { type: "string", description: "Unique identifier for this source" },
+            title: { type: "string" },
+            authors: { type: "string", nullable: true },
+            year: { type: "integer" },
+            doi: { type: "string", nullable: true },
+            url: { type: "string", nullable: true },
+            source_type: {
+              type: "string",
+              enum: [
+                "peer_reviewed_lca",
+                "curated_aggregation",
+                "crowdsourced_database",
+                "derived_estimate",
+              ],
+            },
+            methodology: { type: "string", nullable: true },
+            granularity: { type: "string", enum: ["product_type", "brand_product", "category"] },
+            reliability: { type: "string", enum: ["high", "medium", "low"] },
+            ingested_by: { type: "string", nullable: true },
+            ingested_at: { type: "string", format: "date-time" },
+            notes: { type: "string", nullable: true },
+          },
+        },
       },
     },
     paths: {
@@ -592,6 +618,158 @@ const options = {
           responses: {
             200: { description: "Audit trail entries" },
             404: { description: "Product not found" },
+          },
+        },
+      },
+      "/v1/evidence/sources": {
+        get: {
+          tags: ["Evidence & Provenance"],
+          summary: "List all evidence sources",
+          description:
+            "Returns the registry of literature sources, databases, and estimation methods that back GreenGrade emission factors.",
+          parameters: [
+            {
+              name: "reliability",
+              in: "query",
+              schema: { type: "string", enum: ["high", "medium", "low"] },
+              description: "Filter by reliability tier",
+            },
+          ],
+          responses: {
+            200: {
+              description: "Array of evidence sources",
+              content: {
+                "application/json": {
+                  schema: { type: "array", items: { $ref: "#/components/schemas/EvidenceSource" } },
+                },
+              },
+            },
+            400: { description: "Invalid reliability value" },
+          },
+        },
+        post: {
+          tags: ["Evidence & Provenance"],
+          summary: "Ingest a new evidence source (admin only)",
+          description: "Add a new literature source or database to the evidence registry.",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["key", "title", "year", "source_type", "reliability"],
+                  properties: {
+                    key: { type: "string", description: "Unique slug, e.g. clark-2022" },
+                    title: { type: "string" },
+                    authors: { type: "string" },
+                    year: { type: "integer" },
+                    doi: { type: "string" },
+                    url: { type: "string" },
+                    source_type: { type: "string" },
+                    methodology: { type: "string" },
+                    granularity: {
+                      type: "string",
+                      enum: ["product_type", "brand_product", "category"],
+                    },
+                    reliability: { type: "string", enum: ["high", "medium", "low"] },
+                    notes: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            201: { description: "Created evidence source" },
+            400: { description: "Validation error" },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+            409: { description: "Source key already exists" },
+          },
+        },
+      },
+      "/v1/evidence/sources/{key}": {
+        get: {
+          tags: ["Evidence & Provenance"],
+          summary: "Get a single evidence source",
+          parameters: [{ name: "key", in: "path", required: true, schema: { type: "string" } }],
+          responses: {
+            200: {
+              description: "Evidence source with explicit link count",
+              content: {
+                "application/json": {
+                  schema: {
+                    allOf: [
+                      { $ref: "#/components/schemas/EvidenceSource" },
+                      { type: "object", properties: { explicitLinkCount: { type: "integer" } } },
+                    ],
+                  },
+                },
+              },
+            },
+            400: { description: "Invalid key format" },
+            404: { description: "Source not found" },
+          },
+        },
+      },
+      "/v1/evidence/product/{id}": {
+        get: {
+          tags: ["Evidence & Provenance"],
+          summary: "Get provenance for a product",
+          description:
+            "Returns the computed data provenance (tier, sources, confidence) and any explicit product-to-source links recorded by admins.",
+          parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+          responses: {
+            200: { description: "Product provenance with computed confidence and explicit links" },
+            400: { description: "Invalid product ID" },
+            404: { description: "Product not found" },
+          },
+        },
+      },
+      "/v1/evidence/product-link": {
+        post: {
+          tags: ["Evidence & Provenance"],
+          summary: "Link a product to an evidence source (admin only)",
+          description:
+            "Records an explicit provenance link between a product and a literature source, optionally scoped to a single emission category.",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["product_id", "source_key"],
+                  properties: {
+                    product_id: { type: "string" },
+                    source_key: { type: "string" },
+                    emission_category: {
+                      type: "string",
+                      description: "Scope to one of the 7 GreenGrade dimensions, or omit for all",
+                      enum: [
+                        "Land Use Change",
+                        "Animal Feed",
+                        "Farm",
+                        "Processing",
+                        "Transport",
+                        "Packaging",
+                        "Retail",
+                      ],
+                    },
+                    confidence_override: { type: "string", enum: ["high", "medium", "low"] },
+                    notes: { type: "string" },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            201: { description: "Link created" },
+            400: { description: "Validation error" },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+            404: { description: "Product or source not found" },
+            409: { description: "Link already exists" },
           },
         },
       },
