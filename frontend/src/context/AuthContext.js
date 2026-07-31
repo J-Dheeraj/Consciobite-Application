@@ -42,6 +42,12 @@ export function AuthProvider({ children }) {
     [applySession]
   );
 
+  // Refresh only the user profile (e.g. after saving settings) without
+  // touching the token or its expiry.
+  const updateUser = useCallback((userData) => {
+    setUser(userData);
+  }, []);
+
   const logout = useCallback(async () => {
     setUser(null);
     setToken(null);
@@ -133,7 +139,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, token, login, logout, isAuthenticated: !!token, initializing }}
+      value={{ user, token, login, logout, updateUser, isAuthenticated: !!token, initializing }}
     >
       {children}
     </AuthContext.Provider>

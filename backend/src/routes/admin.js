@@ -5,6 +5,7 @@ const { validate } = require("../middleware/validate");
 const { getDb } = require("../db/schema");
 const { getConflictLog, getConflictStats, snapshotScores } = require("../services/scoreAudit");
 const { calculateGreenGrade } = require("../services/greengrade");
+const { getPendingEvidence, reviewEvidence } = require("../services/evidenceService");
 const products = require("../data/products.json");
 
 const router = express.Router();
@@ -133,6 +134,43 @@ router.post("/manufacturers/:id/acknowledge-fee", validate(ACK_SCHEMA), (req, re
   }
 
   res.json({ acknowledged: true });
+});
+
+// --- Community Evidence Review ---
+
+const EVIDENCE_REVIEW_SCHEMA = {
+  body: {
+    status: {
+      required: true,
+      type: "string",
+      pattern: /^(approved|rejected)$/,
+      message: "status must be 'approved' or 'rejected'",
+    },
+    notes: { required: false, type: "string", maxLength: 500 },
+  },
+};
+
+router.get("/pending-evidence", (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit) || 50, 200);
+  const offset = parseInt(req.query.offset) || 0;
+  const pending = getPendingEvidence({ limit, offset });
+  res.json({ evidence: pending, total: pending.length });
+});
+
+router.post("/evidence/:id/review", validate(EVIDENCE_REVIEW_SCHEMA), (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (isNaN(id) || id < 1) {
+    return res.status(400).json({ error: "Invalid evidence ID" });
+  }
+
+  const { status, notes } = req.body;
+  const updated = reviewEvidence(id, req.user.id, status, notes);
+
+  if (!updated) {
+    return res.status(404).json({ error: "Evidence not found or already reviewed" });
+  }
+
+  res.json({ id, status, message: `Evidence ${status}` });
 });
 
 module.exports = router;

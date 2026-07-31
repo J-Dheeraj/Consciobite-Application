@@ -36,6 +36,7 @@ export default function Products() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
   const [sort, setSort] = useState("");
+  const [tier, setTier] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
@@ -47,6 +48,7 @@ export default function Products() {
       if (search.trim()) params.search = search.trim();
       if (category !== "All") params.category = category;
       if (sort) params.sort = sort;
+      if (tier) params.tier = tier;
       const data = await fetchProducts(params);
       setProducts(data.products || []);
       setTotalPages(data.pagination?.totalPages || 1);
@@ -55,7 +57,7 @@ export default function Products() {
     } finally {
       setLoading(false);
     }
-  }, [search, category, sort, page]);
+  }, [search, category, sort, tier, page]);
 
   useEffect(() => {
     loadProducts();
@@ -63,7 +65,7 @@ export default function Products() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, category, sort]);
+  }, [search, category, sort, tier]);
 
   const bg = isDark ? "#0a0a0a" : "#f8f9fa";
   const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
@@ -163,6 +165,52 @@ export default function Products() {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Grade Tier Pills */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+          {[
+            { value: "", label: "All Grades" },
+            { value: "green", label: "🟢 Green (7+)" },
+            { value: "amber", label: "🟡 Amber (4–6)" },
+            { value: "red", label: "🔴 Red (<4)" },
+          ].map(({ value, label }) => {
+            const active = tier === value;
+            return (
+              <button
+                key={value}
+                onClick={() => setTier(value)}
+                style={{
+                  padding: "7px 14px",
+                  borderRadius: 20,
+                  border: active
+                    ? "none"
+                    : `1.5px solid ${isDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.12)"}`,
+                  background: active
+                    ? value === "green"
+                      ? "#2d6a4f"
+                      : value === "amber"
+                        ? "#b45309"
+                        : value === "red"
+                          ? "#c0392b"
+                          : isDark
+                            ? "#2d4a35"
+                            : "#edf7f0"
+                    : isDark
+                      ? "rgba(255,255,255,0.04)"
+                      : "#fff",
+                  color: active ? "#fff" : isDark ? "rgba(255,255,255,0.7)" : "#444",
+                  fontSize: "0.82rem",
+                  fontWeight: active ? 600 : 500,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Error */}

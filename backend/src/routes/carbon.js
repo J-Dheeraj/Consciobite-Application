@@ -189,6 +189,40 @@ router.post("/log", requireAuth, validate(POST_LOG_SCHEMA), (req, res) => {
   res.status(201).json({ log });
 });
 
+// GET /api/carbon/export - download all logs as CSV
+router.get("/export", requireAuth, (req, res) => {
+  const db = getDb();
+  const logs = db
+    .prepare(
+      `
+    SELECT logged_at, product_name, product_id, quantity, emissions,
+           ROUND(emissions * quantity, 4) as total_emissions
+    FROM carbon_logs
+    WHERE user_id = ?
+    ORDER BY logged_at DESC
+  `
+    )
+    .all(req.user.id);
+
+  const header =
+    "Date,Product Name,Product ID,Quantity,Emissions per Unit (kg CO2e),Total Emissions (kg CO2e)";
+  const rows = logs.map((log) =>
+    [
+      log.logged_at,
+      `"${String(log.product_name).replace(/"/g, '""')}"`,
+      log.product_id,
+      log.quantity,
+      log.emissions,
+      log.total_emissions,
+    ].join(",")
+  );
+
+  const csv = [header, ...rows].join("\n");
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", 'attachment; filename="carbon-log.csv"');
+  res.send(csv);
+});
+
 // DELETE /api/carbon/log/:id - delete a carbon log
 router.delete("/log/:id", requireAuth, validate(DELETE_LOG_SCHEMA), (req, res) => {
   const logId = req.params.id;

@@ -1,9 +1,11 @@
 "use client";
 import React, { useMemo } from "react";
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchStats, fetchProducts } from "@/services/api";
+import { fetchStats, fetchProducts, fetchCarbonSummary } from "@/services/api";
 import { useTheme } from "@/context/ThemeContext";
-import { CATEGORY_ICONS } from "@/utils/constants";
+import { useAuth } from "@/context/AuthContext";
+import { CATEGORY_ICONS, WEEKLY_CARBON_GOAL_KG } from "@/utils/constants";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
 import {
@@ -131,6 +133,7 @@ function StatCard({ icon, label, value, subtext, color, isDark }) {
 export default function Dashboard() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
+  const { isAuthenticated } = useAuth();
 
   const {
     data: dashData,
@@ -142,6 +145,12 @@ export default function Dashboard() {
       Promise.all([fetchStats(), fetchProducts({ sort: "grade_desc", limit: 10 })]).then(
         ([statsData, prodData]) => ({ stats: statsData, topProducts: prodData.products })
       ),
+  });
+
+  const { data: carbonSummary } = useQuery({
+    queryKey: ["carbon-summary-widget"],
+    queryFn: fetchCarbonSummary,
+    enabled: isAuthenticated,
   });
 
   const stats = dashData?.stats;
@@ -288,6 +297,149 @@ export default function Dashboard() {
             isDark={isDark}
           />
         </div>
+
+        {/* Personal Carbon Widget (authenticated users only) */}
+        {isAuthenticated && carbonSummary && (
+          <div
+            style={{
+              ...cardStyle(isDark),
+              marginBottom: 16,
+              animation: "fadeInUp 0.4s ease 0.05s both",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                flexWrap: "wrap",
+                gap: 8,
+                marginBottom: 12,
+              }}
+            >
+              <div>
+                <h3 style={{ ...sectionHeadingStyle(isDark), marginBottom: 2 }}>
+                  Your Carbon Footprint
+                </h3>
+                <p style={subtextStyle(isDark)}>
+                  Weekly progress toward your {WEEKLY_CARBON_GOAL_KG} kg CO₂e goal.
+                </p>
+              </div>
+              <Link
+                href="/carbon"
+                style={{
+                  fontSize: "0.8rem",
+                  color: isDark ? "#95d5b2" : "#2d6a4f",
+                  textDecoration: "none",
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                View Tracker →
+              </Link>
+            </div>
+
+            {/* Weekly progress bar */}
+            {(() => {
+              const weekly = carbonSummary.weeklyEmissions ?? 0;
+              const pct = Math.min(100, (weekly / WEEKLY_CARBON_GOAL_KG) * 100);
+              const overGoal = weekly > WEEKLY_CARBON_GOAL_KG;
+              const barColor = overGoal
+                ? "#e63946"
+                : weekly / WEEKLY_CARBON_GOAL_KG > 0.75
+                  ? "#e9c46a"
+                  : "#52b788";
+              return (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      fontSize: "0.8rem",
+                      marginBottom: 6,
+                      color: isDark ? "#b0c4b1" : "#555",
+                    }}
+                  >
+                    <span style={{ fontWeight: 600, color: overGoal ? "#e63946" : barColor }}>
+                      {weekly.toFixed(2)} kg this week
+                    </span>
+                    <span>{WEEKLY_CARBON_GOAL_KG} kg goal</span>
+                  </div>
+                  <div
+                    style={{
+                      background: isDark ? "#1e3a28" : "#e8f5e9",
+                      borderRadius: 8,
+                      height: 10,
+                      overflow: "hidden",
+                      marginBottom: 14,
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: `${pct}%`,
+                        height: "100%",
+                        background: barColor,
+                        borderRadius: 8,
+                        transition: "width 0.6s ease",
+                      }}
+                    />
+                  </div>
+                </>
+              );
+            })()}
+
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(110px, 1fr))",
+                gap: 10,
+              }}
+            >
+              {[
+                {
+                  label: "Total Logged",
+                  value: `${(carbonSummary.totalEmissions ?? 0).toFixed(1)} kg`,
+                  icon: "🌍",
+                },
+                {
+                  label: "This Month",
+                  value: `${(carbonSummary.monthlyEmissions ?? 0).toFixed(1)} kg`,
+                  icon: "📅",
+                },
+                {
+                  label: "Log Entries",
+                  value: carbonSummary.totalLogs ?? 0,
+                  icon: "📋",
+                },
+              ].map(({ label, value, icon }) => (
+                <div
+                  key={label}
+                  style={{
+                    background: isDark ? "#1a3327" : "#f5fbf7",
+                    borderRadius: 10,
+                    padding: "10px 12px",
+                    textAlign: "center",
+                  }}
+                >
+                  <div style={{ fontSize: "1.1rem", marginBottom: 2 }}>{icon}</div>
+                  <div
+                    style={{
+                      fontFamily: "'Outfit', sans-serif",
+                      fontWeight: 700,
+                      fontSize: "1.05rem",
+                      color: isDark ? "#95d5b2" : "#2d6a4f",
+                    }}
+                  >
+                    {value}
+                  </div>
+                  <div style={{ fontSize: "0.72rem", color: isDark ? "#7a9a7e" : "#888" }}>
+                    {label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Score by Category Chart */}
         <div
