@@ -29,3 +29,30 @@ export async function fetchStats() {
 export async function fetchRecommendations(id) {
   return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/recommendations`);
 }
+
+export async function fetchPassport(id) {
+  return httpClient(`${API_BASE}/v1/passport/${encodeURIComponent(id)}`);
+}
+
+export async function fetchPortfolioScore(ids) {
+  return httpClient(`${API_BASE}/v1/portfolio/score`, {
+    method: "POST",
+    body: JSON.stringify({ product_ids: ids }),
+  });
+}
+
+export async function fetchAuditLog(id, { limit = 50, offset = 0 } = {}) {
+  const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  return httpClient(`${API_BASE}/v1/audit/${encodeURIComponent(id)}?${params}`);
+}
+
+export async function fetchProductEvidence(id) {
+  return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/evidence`);
+}
+
+export async function submitProductEvidence(id, data) {
+  return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/evidence`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}

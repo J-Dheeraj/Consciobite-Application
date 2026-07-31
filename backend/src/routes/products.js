@@ -2,10 +2,31 @@ const express = require("express");
 const validator = require("validator");
 const router = express.Router();
 const { validate } = require("../middleware/validate");
+const { requireAuth } = require("../middleware/auth");
+const {
+  submitEvidence,
+  getApprovedEvidence,
+  VALID_SOURCE_TYPES,
+} = require("../services/evidenceService");
 
 const COMPARE_SCHEMA = {
   query: {
     ids: { required: true, type: "string", message: "Provide product IDs as ?ids=id1,id2,id3" },
+  },
+};
+const EVIDENCE_SUBMIT_SCHEMA = {
+  body: {
+    citation: {
+      required: true,
+      type: "string",
+      minLength: 20,
+      maxLength: 500,
+      message: "citation is required (20–500 chars)",
+    },
+    source_type: { required: false, type: "string" },
+    methodology: { required: false, type: "string", maxLength: 500 },
+    url: { required: false, type: "string", maxLength: 500 },
+    year: { required: false },
   },
 };
 const products = require("../data/products.json");
@@ -249,6 +270,81 @@ async function lookupOpenFoodFacts(barcode) {
   );
   return { status: "unavailable" };
 }
+
+// GET /api/products/:id/recommendations
+router.get("/:id/recommendations", (req, res) => {
+  const id = sanitize(req.params.id, 20);
+  if (!validator.isAlphanumeric(id)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+  const product = enrichedProducts.find((p) => p.id === id);
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+  const similar = enrichedProducts
+    .filter((p) => p.id !== id && p.category === product.category)
+    .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
+    .slice(0, 6);
+  res.json({ recommendations: similar, category: product.category });
+});
+
+// GET /api/products/:id/evidence — public list of approved community evidence
+router.get("/:id/evidence", (req, res, next) => {
+  try {
+    const id = sanitize(req.params.id, 20);
+    if (!validator.isAlphanumeric(id)) {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+    const product = products.find((p) => String(p.id) === id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    const evidence = getApprovedEvidence(id);
+    res.json({ evidence, total: evidence.length });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/products/:id/evidence — submit community evidence (auth required)
+router.post("/:id/evidence", requireAuth, validate(EVIDENCE_SUBMIT_SCHEMA), (req, res, next) => {
+  try {
+    const id = sanitize(req.params.id, 20);
+    if (!validator.isAlphanumeric(id)) {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+    const product = products.find((p) => String(p.id) === id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    const { citation, source_type, methodology, url, year } = req.body;
+
+    if (source_type && !VALID_SOURCE_TYPES.includes(source_type)) {
+      return res
+        .status(400)
+        .json({ error: `source_type must be one of: ${VALID_SOURCE_TYPES.join(", ")}` });
+    }
+
+    const yearNum = year !== undefined ? Number(year) : null;
+    if (yearNum !== null && (isNaN(yearNum) || yearNum < 1990 || yearNum > 2030)) {
+      return res.status(400).json({ error: "year must be between 1990 and 2030" });
+    }
+
+    const result = submitEvidence(id, req.user.id, req.user.email, {
+      citation: citation.trim(),
+      sourceType: source_type || "other",
+      methodology: methodology ? methodology.trim() : null,
+      url: url ? url.trim() : null,
+      year: yearNum,
+    });
+
+    res.status(201).json({
+      id: result.id,
+      status: "pending",
+      message: "Evidence submitted and pending review. Thank you for your contribution.",
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 // GET /api/products/:id
 router.get("/:id", async (req, res, next) => {

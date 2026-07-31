@@ -254,6 +254,140 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/:id/recommendations", () => {
+    test("should return recommendations for a valid product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.recommendations)).toBe(true);
+      expect(typeof res.body.category).toBe("string");
+    });
+
+    test("recommendations should be from the same category", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const { category, recommendations } = res.body;
+      recommendations.forEach((r) => {
+        expect(r.category).toBe(category);
+      });
+    });
+
+    test("recommendations should not include the queried product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const ids = res.body.recommendations.map((r) => r.id);
+      expect(ids).not.toContain("1");
+    });
+
+    test("recommendations should be sorted by score descending", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const scores = res.body.recommendations.map((r) => r.greenGrade.score);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+      }
+    });
+
+    test("should return at most 6 recommendations", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(res.body.recommendations.length).toBeLessThanOrEqual(6);
+    });
+
+    test("should return 400 for invalid product ID", async () => {
+      const res = await request(app).get("/api/products/inv@lid/recommendations");
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 404 for non-existent product", async () => {
+      const res = await request(app).get("/api/products/99999/recommendations");
+      expect(res.status).toBe(404);
+    });
+  });
+
+  describe("Community Evidence endpoints", () => {
+    let authToken;
+
+    beforeAll(async () => {
+      const email = `evidence-${randomUUID().slice(0, 8)}@example.com`;
+      const res = await request(app)
+        .post("/api/auth/register")
+        .send({ name: "Evidence Tester", email, password: "ValidPass1" });
+      authToken = res.body.token;
+    });
+
+    test("GET /api/products/1/evidence returns approved evidence list", async () => {
+      const res = await request(app).get("/api/products/1/evidence");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+      expect(typeof res.body.total).toBe("number");
+    });
+
+    test("GET /api/products/999999/evidence returns 404 for unknown product", async () => {
+      const res = await request(app).get("/api/products/999999/evidence");
+      expect(res.status).toBe(404);
+    });
+
+    test("POST /api/products/1/evidence requires authentication", async () => {
+      const res = await request(app).post("/api/products/1/evidence").send({
+        citation: "Test citation that is long enough to pass validation",
+      });
+      expect(res.status).toBe(401);
+    });
+
+    test("POST /api/products/1/evidence rejects missing citation", async () => {
+      const res = await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ source_type: "other" });
+      expect(res.status).toBe(400);
+    });
+
+    test("POST /api/products/1/evidence rejects short citation", async () => {
+      const res = await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ citation: "Too short" });
+      expect(res.status).toBe(400);
+    });
+
+    test("POST /api/products/1/evidence rejects invalid source_type", async () => {
+      const res = await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+          citation: "A valid citation that meets the minimum length requirement for testing",
+          source_type: "invalid_type",
+        });
+      expect(res.status).toBe(400);
+    });
+
+    test("POST /api/products/1/evidence accepts valid submission", async () => {
+      const res = await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+          citation:
+            "Poore, J. & Nemecek, T. (2018). Reducing food's environmental impacts. Science.",
+          source_type: "peer_reviewed_lca",
+          url: "https://doi.org/10.1126/science.aaq0216",
+          year: 2018,
+        });
+      expect(res.status).toBe(201);
+      expect(res.body.status).toBe("pending");
+      expect(res.body.id).toBeDefined();
+    });
+
+    test("POST /api/products/999999/evidence returns 404 for unknown product", async () => {
+      const res = await request(app)
+        .post("/api/products/999999/evidence")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({
+          citation: "A valid citation that meets the minimum length requirement for testing",
+        });
+      expect(res.status).toBe(404);
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

@@ -13,6 +13,53 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-07-30 — Evidence Source Registry
+
+**Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
+
+**Files created:** 3
+- `backend/src/db/migrations/007_evidence_sources.sql` — `evidence_sources` table (seeded with 4 canonical sources) + `product_evidence_links` table
+- `backend/src/routes/evidence.js` — 5 endpoints (3 public GET + 2 admin-only POST)
+- `backend/__tests__/evidence.test.js` — 14 integration tests
+
+**Files updated:** 2
+- `backend/src/index.js` — mount `evidenceRoutes` at `/api/v1/evidence`
+- `backend/src/swagger.js` — `EvidenceSource` schema + Evidence & Provenance tag with all 5 endpoints
+
+**Test count:** 173 → 187 backend (all passing). 14 new tests cover source listing, reliability filter, per-key lookup, per-product provenance, 401 enforcement on admin routes.
+
+**Branch:** `claude/nifty-goodall-zt4vpf`, commit `32d27eb`
+**Hot cache updated:** yes
+
+---
+
+## 2026-07-30 — Community Evidence Submission Feature
+
+**Operation:** Implement community evidence submission with admin review workflow on branch `claude/dreamy-dirac-2jgkme`.
+
+**Files created:** 3
+- `backend/src/db/migrations/006_submitted_evidence.sql` — new table: submitted_evidence (product_id, citation, source_type, methodology, url, year, status pending/approved/rejected, reviewer fields)
+- `backend/src/services/evidenceService.js` — submitEvidence, getApprovedEvidence, getPendingEvidence, reviewEvidence
+- `frontend/src/components/EvidenceSection.js` — shows approved community citations, form for authenticated users, sign-in prompt for anonymous
+
+**Files modified:** 7
+- `backend/src/routes/products.js` — GET/POST /api/products/:id/evidence (public list + auth-gated submit)
+- `backend/src/routes/admin.js` — GET /admin/pending-evidence + POST /admin/evidence/:id/review
+- `backend/src/index.js` — csrfProtection added to products router entry (POST routes now protected)
+- `backend/__tests__/api.test.js` — 8 new Supertest tests (181 total, all passing)
+- `frontend/src/services/products.js` — fetchProductEvidence, submitProductEvidence
+- `frontend/src/services/api.js` — exported new service functions
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added EvidenceSection component
+
+**Branch:** `claude/dreamy-dirac-2jgkme` (pushed to origin)
+
+**Motivation:** Architecture reviewer #2 steered toward "evidence ingestion/provenance > additional ML". This adds a mechanism for users and manufacturers to submit LCA citations for any product, with admin review before public display. Directly addresses the "evidence ingestion" gap.
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Second Architecture Review Ingested
 
 **Operation:** INGEST `.raw/architecture-review-2026-07-30.md` (external review #2, `main@2cb26e9`)
@@ -74,11 +121,56 @@ Append-only. Newest entries at top.
 - `backend/Dockerfile` — added `RUN apk add --no-cache python3 make g++` before `npm ci --production`
 - `CONTRIBUTING.md` — new file (was listed as a planned improvement in CLAUDE.md)
 
-**Branch:** `claude/nifty-goodall-s4f427`
+**Branch:** `claude/nifty-goodall-s4f427` — merged to main as PR #35.
+**Hot cache updated:** yes
 
-**PR #34 status:** Still open on `claude/dreamy-dirac-fzmsdt`. Its CI Docker Build Check will pass once this fix merges to main and it rebases.
+---
+
+## 2026-07-21 — Recommendations Endpoint + Similar Products UI
+
+**Operation:** Add missing `GET /api/products/:id/recommendations` backend endpoint, wire it into the product detail page, and write 7 integration tests. Also merged PR #35 (Dockerfile fix) and rebased PR #34 (Passport frontend) to unblock its CI.
+
+**Files changed:** 3
+- `backend/src/routes/products.js` — added `GET /:id/recommendations` route (placed before `/:id` to avoid shadowing); returns up to 6 same-category products sorted by score desc, excludes self; 400/404 on invalid or missing product
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added `useQuery(["recommendations", id])` call; added Similar Products card section above Back button
+- `backend/__tests__/api.test.js` — 7 new Supertest tests: happy path, same-category, self-exclusion, score ordering, max-6, bad ID, missing product
+
+**PR actions:**
+- PR #35 merged to main (Dockerfile fix + CONTRIBUTING.md, all CI green)
+- PR #34 rebased onto new main (wiki conflict resolved by merging both sides)
+- PR #36 opened for this session's work: `claude/dreamy-dirac-4ua0hn` → `main`
+
+**Verification:**
+- 144 backend tests passing (137 → 144, all 7 new tests green)
+- ESLint and Prettier clean (backend + frontend)
+- `GET /api/products/1/recommendations` returns 200 with ≤6 same-category products
 
 **Index updated:** no
+**Hot cache updated:** yes
+
+---
+
+## 2026-07-16 — Digital Product Passport Frontend + Tests
+
+**Operation:** Add frontend page and service layer for the Digital Product Passport API (added in previous session), plus integration test coverage for all three passport routes.
+
+**Files created:** 4
+- `backend/__tests__/passport.test.js` — 36 Supertest integration tests for GET /passport/:id, POST /portfolio/score, GET /audit/:id
+- `frontend/src/app/passport/[id]/page.js` — static server wrapper with generateStaticParams (550 pages)
+- `frontend/src/app/passport/[id]/PassportClient.js` — PassportCard UI: SVG score ring, 7-dimension emission bars, confidence badge, summary grid, methodology link
+- (inferred: `frontend/src/app/passport/` directory)
+
+**Files updated:** 3
+- `frontend/src/services/products.js` — added fetchPassport, fetchPortfolioScore, fetchAuditLog
+- `frontend/src/services/api.js` — re-exported new passport service functions
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — added "Eco Passport" button alongside "Back" button
+
+**Verification:**
+- 153 backend tests passing (117 → 153, all 36 new tests green)
+- ESLint and Prettier clean (no warnings or errors)
+- Branch: `claude/dreamy-dirac-fzmsdt` pushed to remote
+
+**Index updated:** yes
 **Hot cache updated:** yes
 
 ---
