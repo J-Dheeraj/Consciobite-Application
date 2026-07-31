@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 after review-#2 fixes and merge with main (parallel Docker-fix + PR #34 work).
+**Last updated:** 2026-07-30 after evidence source registry landed on `claude/nifty-goodall-zt4vpf`.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -31,13 +31,17 @@ tags: [hot-cache, meta]
 
 **Also fixed earlier:** `swagger-jsdoc` removed (unpatchable brace-expansion chain; spec inline). Backend prod audit = 0 vulns. `trailingSlash: true` fixed static-hosting 404s. `ApiReadyGate` cold-start UX. Backend Dockerfile: `apk add python3 make g++` for better-sqlite3 on Alpine (2026-07-17, was blocking PR #34's Docker check).
 
+**Evidence registry (2026-07-30, commit `32d27eb`):** Persistent, admin-extensible evidence source registry directly addressing review-#2 steer ("evidence ingestion/provenance > more ML"). Migration 004: `evidence_sources` table seeded with 4 canonical sources (Poore & Nemecek 2018, Our World in Data, Open Food Facts, category-estimate) + `product_evidence_links` for explicit product–source bindings. New v1-only routes in `backend/src/routes/evidence.js`: `GET /api/v1/evidence/sources`, `GET /api/v1/evidence/sources/:key`, `GET /api/v1/evidence/product/:id`, `POST /api/v1/evidence/sources` (admin), `POST /api/v1/evidence/product-link` (admin). Swagger: `EvidenceSource` schema + 5 endpoints under "Evidence & Provenance" tag. 14 new tests.
+
 **Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
 
-**Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; branch protection absent (needs GitHub UI — API token can't set it); catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap. Reviewer steer: evidence ingestion/provenance > more ML.
+**Open PRs (not yet merged):** #34 DPP frontend, #36 recommendations, #37 audit vuln fix + tier filter, #38 user profile, #39 CSV export, #41 server-side favorites. PRs #36/#37/#38 are based on old main (`18bec95`) and may need rebasing.
 
-**Test status:** 173 backend + 9 frontend, all passing. Frontend builds 569 static pages.
+**Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; branch protection absent (needs GitHub UI — API token can't set it); catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap.
 
-**Active branch:** `claude/improve-application-S5njo` — carries unmerged review-#2 fixes (`af395ee`) awaiting merge to `main`.
+**Test status:** 187 backend + 9 frontend, all passing. Frontend builds 569 static pages.
+
+**Active branch:** `claude/nifty-goodall-zt4vpf` — evidence registry commit `32d27eb`, pushed and awaiting PR.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
