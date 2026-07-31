@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProduct, logCarbonPurchase } from "@/services/api";
+import { fetchProduct, logCarbonPurchase, fetchProductScoreHistory, fetchRecommendations } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import GradeBadge from "@/components/GradeBadge";
 import ProductImage from "@/components/ProductImage";
@@ -93,6 +93,18 @@ export default function ProductDetail() {
   } = useQuery({
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
+  });
+
+  const { data: scoreHistory } = useQuery({
+    queryKey: ["product-score-history", id],
+    queryFn: () => fetchProductScoreHistory(id),
+    enabled: !!id,
+  });
+
+  const { data: recommendations } = useQuery({
+    queryKey: ["product-recommendations", id],
+    queryFn: () => fetchRecommendations(id),
+    enabled: !!id,
   });
 
   const error = queryError ? "Unable to load product details." : "";
@@ -1069,6 +1081,155 @@ export default function ProductDetail() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Score History */}
+        {scoreHistory && (
+          <div
+            style={{
+              width: "100%",
+              background: "#14352a",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+            }}
+          >
+            <h4
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 14,
+                fontSize: "0.95rem",
+              }}
+            >
+              Score History
+            </h4>
+            {scoreHistory.history.length === 0 ? (
+              <p style={{ color: "#7a9a7e", fontSize: "0.82rem", margin: 0 }}>
+                No score changes recorded for this product.
+              </p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {scoreHistory.history.map((entry) => (
+                  <div
+                    key={entry.id}
+                    style={{
+                      background: "rgba(255,255,255,0.06)",
+                      borderRadius: 10,
+                      padding: "10px 12px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 4,
+                      }}
+                    >
+                      <span style={{ color: "#b8d4c0", fontSize: "0.75rem" }}>
+                        {new Date(entry.changedAt).toLocaleDateString("en-GB", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </span>
+                      <span
+                        style={{
+                          fontWeight: 700,
+                          fontSize: "0.8rem",
+                          color: entry.delta > 0 ? "#27ae60" : entry.delta < 0 ? "#e74c3c" : "#fff",
+                        }}
+                      >
+                        {entry.delta > 0 ? "+" : ""}
+                        {entry.delta.toFixed(1)} (
+                        {entry.oldScore.toFixed(1)} → {entry.newScore.toFixed(1)})
+                      </span>
+                    </div>
+                    {entry.changeReason && (
+                      <p style={{ color: "#7a9a7e", fontSize: "0.72rem", margin: 0 }}>
+                        {entry.changeReason}
+                      </p>
+                    )}
+                    {entry.methodologyVersion && (
+                      <p style={{ color: "#4a6a4e", fontSize: "0.68rem", margin: "2px 0 0" }}>
+                        Methodology v{entry.methodologyVersion}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Similar Products */}
+        {recommendations && recommendations.recommendations.length > 0 && (
+          <div
+            style={{
+              width: "100%",
+              background: "#14352a",
+              borderRadius: 18,
+              padding: "20px",
+              marginBottom: 16,
+            }}
+          >
+            <h4
+              style={{
+                color: "#fff",
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 700,
+                marginBottom: 14,
+                fontSize: "0.95rem",
+              }}
+            >
+              Similar Products
+            </h4>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {recommendations.recommendations.map((rec) => (
+                <a
+                  key={rec.id}
+                  href={`/product/${rec.id}`}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    background: "rgba(255,255,255,0.06)",
+                    borderRadius: 10,
+                    padding: "10px 12px",
+                    textDecoration: "none",
+                  }}
+                >
+                  <div>
+                    <div style={{ color: "#fff", fontSize: "0.85rem", fontWeight: 600 }}>
+                      {rec.brand} {rec.name}
+                    </div>
+                    <div style={{ color: "#7a9a7e", fontSize: "0.72rem", marginTop: 2 }}>
+                      {rec.category}
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      background: scoreColor(rec.greenGrade.score),
+                      color: "#fff",
+                      fontWeight: 700,
+                      fontSize: "0.75rem",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {rec.greenGrade.score}
+                  </span>
+                </a>
+              ))}
+            </div>
           </div>
         )}
 

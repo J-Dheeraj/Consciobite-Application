@@ -144,6 +144,97 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/:id/score-history", () => {
+    test("returns 200 with empty history for valid product with no changes", async () => {
+      const res = await request(app).get("/api/products/1/score-history");
+      expect(res.status).toBe(200);
+      expect(res.body.productId).toBe("1");
+      expect(res.body.productName).toBeDefined();
+      expect(Array.isArray(res.body.history)).toBe(true);
+    });
+
+    test("returns correct response schema", async () => {
+      const res = await request(app).get("/api/products/1/score-history");
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("productId", "1");
+      expect(res.body).toHaveProperty("productName");
+      expect(res.body).toHaveProperty("history");
+    });
+
+    test("returns 400 for invalid product ID", async () => {
+      const res = await request(app).get("/api/products/inv@lid/score-history");
+      expect(res.status).toBe(400);
+    });
+
+    test("returns 404 for unknown product", async () => {
+      const res = await request(app).get("/api/products/99999/score-history");
+      expect(res.status).toBe(404);
+    });
+
+    test("does not expose manufacturer or changedBy in history entries", async () => {
+      const res = await request(app).get("/api/products/1/score-history");
+      expect(res.status).toBe(200);
+      for (const entry of res.body.history) {
+        expect(entry).not.toHaveProperty("manufacturer_id");
+        expect(entry).not.toHaveProperty("is_paying_client");
+        expect(entry).not.toHaveProperty("changed_by");
+        expect(entry).not.toHaveProperty("catalog_hash");
+      }
+    });
+  });
+
+  describe("GET /api/products/:id/recommendations", () => {
+    test("returns 200 with recommendations array for valid product", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(res.body.productId).toBe("1");
+      expect(res.body.category).toBeDefined();
+      expect(Array.isArray(res.body.recommendations)).toBe(true);
+    });
+
+    test("recommendations are from the same category", async () => {
+      const productRes = await request(app).get("/api/products/1");
+      const category = productRes.body.category;
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      for (const r of res.body.recommendations) {
+        expect(r.category).toBe(category);
+      }
+    });
+
+    test("product is not present in its own recommendations", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const ids = res.body.recommendations.map((r) => r.id);
+      expect(ids).not.toContain("1");
+    });
+
+    test("returns at most 6 recommendations", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      expect(res.body.recommendations.length).toBeLessThanOrEqual(6);
+    });
+
+    test("recommendations are sorted by score descending", async () => {
+      const res = await request(app).get("/api/products/1/recommendations");
+      expect(res.status).toBe(200);
+      const scores = res.body.recommendations.map((r) => r.greenGrade.score);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+      }
+    });
+
+    test("returns 400 for invalid product ID", async () => {
+      const res = await request(app).get("/api/products/inv@lid/recommendations");
+      expect(res.status).toBe(400);
+    });
+
+    test("returns 404 for unknown product", async () => {
+      const res = await request(app).get("/api/products/99999/recommendations");
+      expect(res.status).toBe(404);
+    });
+  });
+
   describe("Auth endpoints", () => {
     const testUser = {
       name: "Test User",

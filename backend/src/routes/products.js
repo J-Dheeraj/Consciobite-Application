@@ -2,6 +2,7 @@ const express = require("express");
 const validator = require("validator");
 const router = express.Router();
 const { validate } = require("../middleware/validate");
+const { getDb } = require("../db/schema");
 
 const COMPARE_SCHEMA = {
   query: {
@@ -242,6 +243,79 @@ async function lookupOpenFoodFacts(barcode) {
   );
   return { status: "unavailable" };
 }
+
+// GET /api/products/:id/score-history — public audit trail for a product's score changes
+router.get("/:id/score-history", (req, res) => {
+  const id = sanitize(req.params.id, 20);
+
+  if (!validator.isAlphanumeric(id)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+
+  const product = products.find((p) => p.id === id);
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  const db = getDb();
+  const rows = db
+    .prepare(
+      `SELECT
+         id,
+         changed_at     AS changedAt,
+         old_score      AS oldScore,
+         new_score      AS newScore,
+         score_delta    AS delta,
+         change_reason  AS changeReason,
+         methodology_version AS methodologyVersion
+       FROM score_change_logs
+       WHERE product_id = ?
+       ORDER BY changed_at DESC
+       LIMIT 50`
+    )
+    .all(id);
+
+  res.json({
+    productId: id,
+    productName: product.name,
+    history: rows,
+  });
+});
+
+// GET /api/products/:id/recommendations — up to 6 same-category products sorted by score
+router.get("/:id/recommendations", (req, res) => {
+  const id = sanitize(req.params.id, 20);
+
+  if (!validator.isAlphanumeric(id)) {
+    return res.status(400).json({ error: "Invalid product ID" });
+  }
+
+  const product = enrichedProducts.find((p) => p.id === id);
+  if (!product) {
+    return res.status(404).json({ error: "Product not found" });
+  }
+
+  const peers = enrichedProducts
+    .filter((p) => p.id !== id && p.category === product.category)
+    .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
+    .slice(0, 6);
+
+  res.json({
+    productId: id,
+    category: product.category,
+    recommendations: peers.map((p) => ({
+      id: p.id,
+      name: p.name,
+      brand: p.brand,
+      category: p.category,
+      greenGrade: {
+        score: p.greenGrade.score,
+        color: p.greenGrade.color,
+        totalEmissions: p.greenGrade.totalEmissions,
+      },
+    })),
+  });
+});
 
 // GET /api/products/:id
 router.get("/:id", async (req, res, next) => {
