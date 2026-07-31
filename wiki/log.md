@@ -146,7 +146,7 @@ Append-only. Newest entries at top.
 - `frontend/src/app/carbon/page.js` — added "Export CSV" button next to "Recent Logs" heading; hidden when no logs; loading state
 
 **Branch:** `claude/nifty-goodall-juod2y`
-**PR:** #39 — opened, CI green ✓ (all 3 checks: Backend Tests, Frontend Build & Test, Docker Build Check)
+**PR:** #39 — **merged** ✓ (all 3 CI checks green; merged to main 2026-07-28)
 
 **Verification:**
 - All 141 backend tests passing
