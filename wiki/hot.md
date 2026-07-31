@@ -37,13 +37,15 @@ tags: [hot-cache, meta]
 
 **Open PRs (not yet merged):** #34 DPP frontend, #36 recommendations, #37 audit vuln fix + tier filter, #38 user profile, #39 CSV export, #41 server-side favorites. PRs #36/#37/#38 are based on old main (`18bec95`) and may need rebasing.
 
+**Passport frontend (PR #34, branch `claude/dreamy-dirac-fzmsdt`):** `/passport/[id]` page with `PassportCard` (SVG score ring, 7-dimension emission bars, confidence badge, methodology version); `fetchPassport`/`fetchPortfolioScore`/`fetchAuditLog` in the products service; "Eco Passport" button on the product detail page; 550 pages via `generateStaticParams()`.
+
 **Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap.
 
 **Community evidence submission (PR #45, branch `claude/dreamy-dirac-2jgkme`):** the *contribution* half of the evidence story (the registry above is the *curation* half — they are complementary, not duplicates). `POST /api/products/:id/evidence` (auth required) accepts citation, source_type, methodology, url, year; submissions land in `submitted_evidence` (migration **006**) as pending. Admins approve/reject via `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review`; approved entries surface through `GET /api/products/:id/evidence` and the `EvidenceSection` component. `csrfProtection` added to the products router.
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 569 static pages.
+**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

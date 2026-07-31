@@ -5,6 +5,9 @@ export {
   compareProducts,
   fetchStats,
   fetchRecommendations,
+  fetchPassport,
+  fetchPortfolioScore,
+  fetchAuditLog,
   fetchProductEvidence,
   submitProductEvidence,
 } from "./products";
