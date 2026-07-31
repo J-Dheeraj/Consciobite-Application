@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-07-31
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,29 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-07-31 — Score History + Recommendations Endpoints
+
+**Operation:** Implement public score-history endpoint + product recommendations on branch `claude/nifty-goodall-2ge1iu` (commit `771cb77`).
+
+**Files changed:** 5
+- `backend/src/routes/products.js` — added `getDb` import; `GET /:id/score-history`; `GET /:id/recommendations`
+- `backend/__tests__/api.test.js` — 5 score-history tests + 7 recommendation tests (total: 185 backend tests)
+- `frontend/src/services/products.js` — added `fetchProductScoreHistory`
+- `frontend/src/services/api.js` — re-exported `fetchProductScoreHistory`
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — Score History + Similar Products cards
+
+**Key decisions:**
+- Score history endpoint redacts `manufacturer_id`, `is_paying_client`, `changed_by`, `catalog_hash` — audit trail is transparent without exposing business-sensitive data
+- Recommendations activate the `fetchRecommendations()` function that was already in the frontend service but had no backend implementation
+- Both cards load in parallel via React Query, render only when data arrives
+
+**Motivation:** Directly responds to reviewer steer ("evidence ingestion/provenance > more ML"). The score history makes the governance audit trail accessible to end users, not just admins.
+
+**Index updated:** no (no new wiki pages created)
+**Hot cache updated:** yes
 
 ---
 

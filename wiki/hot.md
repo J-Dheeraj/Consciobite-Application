@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-07-31
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 after review-#2 fixes and merge with main (parallel Docker-fix + PR #34 work).
+**Last updated:** 2026-07-31 after score-history + recommendations feature on `claude/nifty-goodall-2ge1iu`.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -35,9 +35,16 @@ tags: [hot-cache, meta]
 
 **Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; branch protection absent (needs GitHub UI — API token can't set it); catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap. Reviewer steer: evidence ingestion/provenance > more ML.
 
-**Test status:** 173 backend + 9 frontend, all passing. Frontend builds 569 static pages.
+**Test status:** 185 backend + 9 frontend, all passing. Frontend builds 569 static pages.
 
-**Active branch:** `claude/improve-application-S5njo` — carries unmerged review-#2 fixes (`af395ee`) awaiting merge to `main`.
+**Active branch:** `claude/nifty-goodall-2ge1iu` — commit `771cb77`: score history + recommendations endpoints + product detail UI cards.
+
+**New in 2026-07-31 (commit `771cb77`):**
+- `GET /api/products/:id/score-history` — public audit-trail endpoint. Returns changedAt, oldScore, newScore, delta, changeReason, methodologyVersion. Redacts manufacturer, paying-status, changedBy, catalog_hash. 
+- `GET /api/products/:id/recommendations` — up to 6 same-category peers sorted by score descending, self-excluded. Activates the already-present `fetchRecommendations()` frontend service.
+- 12 new Supertest tests (5 score-history + 7 recommendations) → total 185.
+- Product detail page gains "Score History" and "Similar Products" cards via React Query parallel fetches.
+- Directly addresses reviewer steer "evidence ingestion/provenance > more ML".
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
