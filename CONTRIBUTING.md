@@ -66,12 +66,36 @@ Every new route needs at least one Supertest integration test. The test file liv
 
 ## Code style
 
-Prettier and ESLint are enforced in CI. Run them locally before pushing:
+Prettier and ESLint are enforced in CI. A pre-commit hook formats staged
+files automatically, so in normal use you don't need to run Prettier by hand.
+
+**One-time setup** — run `npm install` at the repo root (in addition to the
+installs in `backend/` and `frontend/`). This installs the hook via husky:
 
 ```bash
-cd backend && npx prettier --write . && npx eslint src --fix
-cd frontend && npx prettier --write . && npx eslint src --fix
+npm install   # repo root — activates the pre-commit hook
 ```
+
+Once active, `git commit` runs Prettier over your staged `.js`/`.jsx`/`.css`
+files in `backend/{src,__tests__}` and `frontend/src`, and restages them.
+
+To format or check everything manually:
+
+```bash
+npm run format        # repo root — formats both workspaces
+npm run format:check  # same check CI runs
+```
+
+ESLint is not part of the hook (it can require judgement to fix); run it
+before pushing:
+
+```bash
+cd backend && npx eslint src __tests__ --fix
+cd frontend && npm run lint
+```
+
+If you need to bypass the hook for a work-in-progress commit, use
+`git commit --no-verify` — but CI will still fail on unformatted code.
 
 ## Key constraints
 
