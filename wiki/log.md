@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-01 — Portfolio Report Export
+
+**Operation:** Implement `GET /api/v1/portfolio/report` endpoint (CSV + JSON), addressing architecture review steer "repeatable exports". Frontend "Download Report" button added to the compare page.
+
+**Files created:** 0
+
+**Files updated:** 6
+- `backend/src/routes/passport.js` — new `/portfolio/report` route with RFC 4180 CSV serialisation and JSON format option; `tierLabel()` helper; `csvCell()` escaper
+- `backend/__tests__/passport.test.js` — 10 new tests (259 total, all passing); covers CSV headers, portfolio summary section, JSON format, tier field, validation errors, skip-invalid-IDs, 100-ID limit
+- `backend/src/swagger.js` — `Passport` component schema + `/v1/portfolio/report` endpoint with `text/csv` and `application/json` response content
+- `frontend/src/services/products.js` — `downloadPortfolioReport(ids)` — raw fetch → blob → anchor download (no auth header required; public endpoint)
+- `frontend/src/services/api.js` — re-exports `downloadPortfolioReport`
+- `frontend/src/app/compare/page.js` — "Download Report" button appears after comparison runs; `reportLoading` / `reportError` state
+
+**Test count:** 259 backend (all passing). No new DB migrations.
+
+**Branch:** `claude/dreamy-dirac-gs03un`, commit `71700ad`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".

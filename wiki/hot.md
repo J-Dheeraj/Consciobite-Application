@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-01 — portfolio report export implemented on branch `claude/dreamy-dirac-gs03un` (commit `71700ad`); all PRs through #47 merged to main.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -32,6 +32,8 @@ tags: [hot-cache, meta]
 **Also fixed earlier:** `swagger-jsdoc` removed (unpatchable brace-expansion chain; spec inline). Backend prod audit = 0 vulns. `trailingSlash: true` fixed static-hosting 404s. `ApiReadyGate` cold-start UX. Backend Dockerfile: `apk add python3 make g++` for better-sqlite3 on Alpine (2026-07-17, was blocking PR #34's Docker check).
 
 **Evidence registry (2026-07-30, commit `32d27eb`):** Persistent, admin-extensible evidence source registry directly addressing review-#2 steer ("evidence ingestion/provenance > more ML"). Migration 007: `evidence_sources` table seeded with 4 canonical sources (Poore & Nemecek 2018, Our World in Data, Open Food Facts, category-estimate) + `product_evidence_links` for explicit product–source bindings. New v1-only routes in `backend/src/routes/evidence.js`: `GET /api/v1/evidence/sources`, `GET /api/v1/evidence/sources/:key`, `GET /api/v1/evidence/product/:id`, `POST /api/v1/evidence/sources` (admin), `POST /api/v1/evidence/product-link` (admin). Swagger: `EvidenceSource` schema + 5 endpoints under "Evidence & Provenance" tag. 14 new tests.
+
+**Portfolio report export (2026-08-01, commit `71700ad`):** `GET /api/v1/portfolio/report?ids=1,2,3&format=csv` (default) or `?format=json`. Returns downloadable CSV with all 7 emission dimensions, tier label (Green/Amber/Red), percentile, data confidence, + a portfolio summary section (product count, average score, total emissions, counts by tier). JSON format returns structured equivalent. Max 100 IDs. No auth required (public B2B endpoint). Swagger: `Passport` component schema + endpoint documented. 10 new tests (259 total). Frontend: `downloadPortfolioReport(ids)` in products service + "⭳ Download Report" button on compare page (appears after comparison runs). Addresses reviewer steer "repeatable exports".
 
 **Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
 
@@ -55,7 +57,7 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status:** 259 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
