@@ -3,7 +3,7 @@ import React from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchTransparencyStats } from "@/services/admin";
+import { fetchTransparencyStats, fetchEvidenceSources } from "@/services/admin";
 import PageHero from "@/components/PageHero";
 import Spinner from "@/components/Spinner";
 import { pageContainer, card } from "@/utils/pageStyles";
@@ -136,6 +136,12 @@ export default function TransparencyPage() {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["transparency-stats"],
     queryFn: fetchTransparencyStats,
+  });
+
+  const { data: evidenceSources } = useQuery({
+    queryKey: ["evidence-sources"],
+    queryFn: fetchEvidenceSources,
+    staleTime: 10 * 60 * 1000,
   });
 
   const textColor = isDark ? "#c8d6c8" : "#444";
@@ -295,6 +301,96 @@ export default function TransparencyPage() {
             </div>
           ) : null}
         </SectionCard>
+
+        {/* Evidence Sources */}
+        {evidenceSources && evidenceSources.length > 0 && (
+          <SectionCard title="Data Sources & Evidence Registry" isDark={isDark}>
+            <p style={{ color: textColor, lineHeight: 1.7, marginBottom: 16 }}>
+              GreenGrade scores are grounded in peer-reviewed research and authoritative datasets.
+              The following canonical sources underpin our emission estimates.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {evidenceSources.map((src) => (
+                <div
+                  key={src.key}
+                  style={{
+                    padding: "14px 16px",
+                    borderRadius: 10,
+                    background: isDark ? "#0f1c13" : "#f9fafb",
+                    border: `1px solid ${isDark ? "#1c2e22" : "#e5e7eb"}`,
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                    <span
+                      style={{
+                        padding: "2px 8px",
+                        borderRadius: 6,
+                        fontSize: 11,
+                        fontWeight: 700,
+                        background:
+                          src.reliability === "high"
+                            ? isDark ? "#0f2a1a" : "#ecfdf5"
+                            : src.reliability === "medium"
+                            ? isDark ? "#1c2e22" : "#f0fdf4"
+                            : isDark ? "#1c1c1c" : "#f9fafb",
+                        color:
+                          src.reliability === "high"
+                            ? "#2d6a4f"
+                            : src.reliability === "medium"
+                            ? "#4a7c59"
+                            : "#6b7280",
+                      }}
+                    >
+                      {src.reliability.charAt(0).toUpperCase() + src.reliability.slice(1)} confidence
+                    </span>
+                    {src.year && (
+                      <span style={{ fontSize: 12, color: isDark ? "#6b8a6e" : "#999" }}>
+                        {src.year}
+                      </span>
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      fontWeight: 600,
+                      fontSize: 14,
+                      color: isDark ? "#e8f5e9" : "#1a3a2a",
+                      marginBottom: 2,
+                    }}
+                  >
+                    {src.title}
+                  </div>
+                  {src.authors && (
+                    <div style={{ fontSize: 12, color: isDark ? "#6b8a6e" : "#777", marginBottom: 4 }}>
+                      {src.authors}
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                    {src.doi && (
+                      <a
+                        href={`https://doi.org/${src.doi}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: 12, color: "#2d6a4f", fontWeight: 600 }}
+                      >
+                        DOI: {src.doi}
+                      </a>
+                    )}
+                    {src.url && !src.doi && (
+                      <a
+                        href={src.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: 12, color: "#2d6a4f", fontWeight: 600 }}
+                      >
+                        View source
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+        )}
 
         {/* Annual Review Statement */}
         <SectionCard title="Annual Review Statement" isDark={isDark}>

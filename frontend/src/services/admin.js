@@ -38,3 +38,19 @@ export async function acknowledgeFee(manufacturerId) {
 export async function fetchTransparencyStats() {
   return httpClient(`${API_BASE}/transparency/stats`);
 }
+
+export async function fetchPendingEvidence({ limit = 50, offset = 0 } = {}) {
+  const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  return httpClient(`${API_BASE}/admin/pending-evidence?${params}`);
+}
+
+export async function reviewEvidence(id, { status, notes }) {
+  return httpClient(`${API_BASE}/admin/evidence/${id}/review`, {
+    method: "POST",
+    body: JSON.stringify({ status, notes }),
+  });
+}
+
+export async function fetchEvidenceSources() {
+  return httpClient(`${API_BASE}/v1/evidence/sources`);
+}
