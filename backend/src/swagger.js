@@ -116,6 +116,35 @@ const options = {
             error: { type: "string" },
           },
         },
+        Passport: {
+          type: "object",
+          properties: {
+            product_id: { type: "string" },
+            product_name: { type: "string" },
+            brand: { type: "string" },
+            category: { type: "string" },
+            greengrade_score: { type: "number", description: "0–10 environmental score" },
+            tier: { type: "string", enum: ["Green", "Amber", "Red"] },
+            score_percentile: { type: "number", nullable: true },
+            total_carbon_footprint_kg_co2e: { type: "number" },
+            emission_breakdown: {
+              type: "object",
+              properties: {
+                land_use_change: { type: "number" },
+                animal_feed: { type: "number" },
+                farm_operations: { type: "number" },
+                processing: { type: "number" },
+                transport: { type: "number" },
+                packaging: { type: "number" },
+                retail: { type: "number" },
+              },
+            },
+            data_confidence_tier: { type: "integer", nullable: true },
+            data_confidence_label: { type: "string", nullable: true },
+            methodology_version: { type: "string" },
+            passport_generated_at: { type: "string", format: "date-time" },
+          },
+        },
         EvidenceSource: {
           type: "object",
           properties: {
@@ -601,6 +630,63 @@ const options = {
             200: { description: "Cluster label" },
             404: { description: "Product not found" },
             503: { description: "ML artifacts not loaded" },
+          },
+        },
+      },
+      "/v1/portfolio/report": {
+        get: {
+          tags: ["Digital Product Passport"],
+          summary: "Download a portfolio GreenGrade report",
+          description:
+            "Returns a downloadable CSV (default) or JSON report containing full GreenGrade passport data for up to 100 products. Includes a portfolio summary section. Designed for regulatory submissions (ESPR, SGX Scope 3) and internal reporting.",
+          parameters: [
+            {
+              name: "ids",
+              in: "query",
+              required: true,
+              description: "Comma-separated product IDs (max 100)",
+              schema: { type: "string", example: "1,2,3" },
+            },
+            {
+              name: "format",
+              in: "query",
+              required: false,
+              description: "Response format",
+              schema: { type: "string", enum: ["csv", "json"], default: "csv" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Portfolio report (CSV or JSON)",
+              content: {
+                "text/csv": {
+                  schema: { type: "string", description: "RFC 4180 CSV with product rows and portfolio summary" },
+                },
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      report_generated_at: { type: "string", format: "date-time" },
+                      methodology_version: { type: "string" },
+                      products: { type: "array", items: { $ref: "#/components/schemas/Passport" } },
+                      portfolio_summary: {
+                        type: "object",
+                        properties: {
+                          product_count: { type: "integer" },
+                          average_score: { type: "number" },
+                          green_count: { type: "integer" },
+                          amber_count: { type: "integer" },
+                          red_count: { type: "integer" },
+                          total_emissions_kg_co2e: { type: "number" },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            400: { description: "Missing or invalid ids / unsupported format" },
+            404: { description: "No valid products found" },
           },
         },
       },

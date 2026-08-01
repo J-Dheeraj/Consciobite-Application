@@ -139,4 +139,86 @@ describe("Digital Product Passport endpoints", () => {
       expect(res.status).toBe(400);
     });
   });
+
+  describe("GET /api/v1/portfolio/report", () => {
+    test("should return CSV report for valid product IDs", async () => {
+      const res = await request(app).get("/api/v1/portfolio/report?ids=1,2,3");
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/text\/csv/);
+      expect(res.headers["content-disposition"]).toMatch(/attachment/);
+      expect(res.headers["content-disposition"]).toMatch(/greengrade-portfolio-report\.csv/);
+    });
+
+    test("CSV should contain header row with expected columns", async () => {
+      const res = await request(app).get("/api/v1/portfolio/report?ids=1");
+      expect(res.status).toBe(200);
+      const lines = res.text.split("\n");
+      const header = lines[0];
+      expect(header).toContain("Product ID");
+      expect(header).toContain("GreenGrade Score");
+      expect(header).toContain("Tier");
+      expect(header).toContain("Total Emissions");
+      expect(header).toContain("Methodology Version");
+    });
+
+    test("CSV should include portfolio summary section", async () => {
+      const res = await request(app).get("/api/v1/portfolio/report?ids=1,2");
+      expect(res.status).toBe(200);
+      expect(res.text).toContain("Portfolio Summary");
+      expect(res.text).toContain("Product Count");
+      expect(res.text).toContain("Average GreenGrade Score");
+      expect(res.text).toContain("Methodology Version");
+    });
+
+    test("should return JSON report when format=json", async () => {
+      const res = await request(app).get("/api/v1/portfolio/report?ids=1,2&format=json");
+      expect(res.status).toBe(200);
+      expect(res.body.report_generated_at).toBeDefined();
+      expect(Array.isArray(res.body.products)).toBe(true);
+      expect(res.body.products.length).toBe(2);
+      expect(res.body.portfolio_summary).toBeDefined();
+      expect(typeof res.body.portfolio_summary.average_score).toBe("number");
+      expect(typeof res.body.portfolio_summary.green_count).toBe("number");
+      expect(typeof res.body.portfolio_summary.amber_count).toBe("number");
+      expect(typeof res.body.portfolio_summary.red_count).toBe("number");
+      expect(typeof res.body.portfolio_summary.total_emissions_kg_co2e).toBe("number");
+    });
+
+    test("JSON products should include tier field", async () => {
+      const res = await request(app).get("/api/v1/portfolio/report?ids=1&format=json");
+      expect(res.status).toBe(200);
+      expect(res.body.products[0].tier).toBeDefined();
+      expect(["Green", "Amber", "Red"]).toContain(res.body.products[0].tier);
+    });
+
+    test("should return 400 when ids is missing", async () => {
+      const res = await request(app).get("/api/v1/portfolio/report");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+    });
+
+    test("should return 400 for unsupported format", async () => {
+      const res = await request(app).get("/api/v1/portfolio/report?ids=1&format=xml");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toContain("format");
+    });
+
+    test("should return 404 when no valid products found", async () => {
+      const res = await request(app).get("/api/v1/portfolio/report?ids=99999,88888");
+      expect(res.status).toBe(404);
+    });
+
+    test("should skip invalid IDs and report on valid ones", async () => {
+      const res = await request(app).get("/api/v1/portfolio/report?ids=1,99999&format=json");
+      expect(res.status).toBe(200);
+      expect(res.body.products.length).toBe(1);
+    });
+
+    test("should return 400 when more than 100 IDs are provided", async () => {
+      const ids = Array.from({ length: 101 }, (_, i) => String(i + 1)).join(",");
+      const res = await request(app).get(`/api/v1/portfolio/report?ids=${ids}`);
+      expect(res.status).toBe(400);
+      expect(res.body.error).toContain("100");
+    });
+  });
 });

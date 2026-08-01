@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { fetchProducts, compareProducts } from "@/services/api";
+import { fetchProducts, compareProducts, downloadPortfolioReport } from "@/services/api";
 import GradeBadge from "@/components/GradeBadge";
 import GradeBreakdown from "@/components/GradeBreakdown";
 import { useTheme } from "@/context/ThemeContext";
@@ -15,6 +15,8 @@ export default function Compare() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState("");
 
   useEffect(() => {
     fetchProducts({ limit: 100 })
@@ -42,6 +44,19 @@ export default function Compare() {
       setError(err.message || "Unable to compare products.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadReport = async () => {
+    if (!compared || compared.length === 0) return;
+    setReportError("");
+    setReportLoading(true);
+    try {
+      await downloadPortfolioReport(compared.map((p) => String(p.id)));
+    } catch (err) {
+      setReportError(err.message || "Report download failed.");
+    } finally {
+      setReportLoading(false);
     }
   };
 
@@ -199,6 +214,42 @@ export default function Compare() {
 
         {compared && (
           <div style={{ animation: "fadeInUp 0.4s ease" }}>
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16, gap: 8 }}>
+              <button
+                onClick={handleDownloadReport}
+                disabled={reportLoading}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  padding: "9px 18px",
+                  background: reportLoading
+                    ? isDark
+                      ? "#2d4a35"
+                      : "#e8e8e8"
+                    : "linear-gradient(135deg, #2d6a4f, #40916c)",
+                  color: reportLoading ? "#aaa" : "#fff",
+                  border: "none",
+                  borderRadius: 10,
+                  cursor: reportLoading ? "not-allowed" : "pointer",
+                  fontWeight: 600,
+                  fontSize: "0.85rem",
+                  boxShadow: reportLoading ? "none" : "0 2px 6px rgba(45,106,79,0.25)",
+                  transition: "all 0.2s ease",
+                }}
+                aria-label="Download portfolio report as CSV"
+              >
+                {reportLoading ? "Downloading..." : "⭳ Download Report"}
+              </button>
+            </div>
+            {reportError && (
+              <p
+                role="alert"
+                style={{ color: "#e63946", marginBottom: 12, fontSize: "0.85rem" }}
+              >
+                {reportError}
+              </p>
+            )}
             <div
               style={{
                 display: "grid",

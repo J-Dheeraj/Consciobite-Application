@@ -141,6 +141,159 @@ router.post("/portfolio/score", validate(PORTFOLIO_SCHEMA), (req, res) => {
   });
 });
 
+// GET /portfolio/report
+
+function csvCell(value) {
+  const str = value === null || value === undefined ? "" : String(value);
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function tierLabel(score) {
+  if (score >= 7) return "Green";
+  if (score >= 4) return "Amber";
+  return "Red";
+}
+
+const REPORT_SCHEMA = {
+  query: {
+    ids: { required: true, message: "ids is required (comma-separated product IDs)" },
+    format: { required: false, type: "string" },
+  },
+};
+
+router.get("/portfolio/report", validate(REPORT_SCHEMA), (req, res) => {
+  const rawIds = String(req.query.ids || "");
+  const format = String(req.query.format || "csv").toLowerCase();
+
+  if (!["csv", "json"].includes(format)) {
+    return res.status(400).json({ error: "format must be csv or json" });
+  }
+
+  const idList = rawIds
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  if (idList.length < 1 || idList.length > 100) {
+    return res
+      .status(400)
+      .json({ error: "ids must contain between 1 and 100 comma-separated product IDs" });
+  }
+
+  const passports = [];
+  for (const rawId of idList) {
+    const id = sanitize(rawId, 20);
+    if (!validator.isAlphanumeric(id)) continue;
+    const product = products.find((p) => String(p.id) === id);
+    if (!product) continue;
+    passports.push(buildPassport(product));
+  }
+
+  if (passports.length === 0) {
+    return res.status(404).json({ error: "No valid products found for the provided IDs" });
+  }
+
+  const reportGeneratedAt = new Date().toISOString();
+
+  if (format === "json") {
+    const scores = passports.map((p) => p.greengrade_score);
+    const avgScore = Math.round((scores.reduce((s, v) => s + v, 0) / scores.length) * 10) / 10;
+    return res.json({
+      report_generated_at: reportGeneratedAt,
+      methodology_version: "3.0",
+      products: passports.map((p) => ({
+        ...p,
+        tier: tierLabel(p.greengrade_score),
+      })),
+      portfolio_summary: {
+        product_count: passports.length,
+        average_score: avgScore,
+        green_count: passports.filter((p) => p.greengrade_score >= 7).length,
+        amber_count: passports.filter((p) => p.greengrade_score >= 4 && p.greengrade_score < 7)
+          .length,
+        red_count: passports.filter((p) => p.greengrade_score < 4).length,
+        total_emissions_kg_co2e: Math.round(
+          passports.reduce((s, p) => s + p.total_carbon_footprint_kg_co2e, 0) * 100
+        ) / 100,
+      },
+    });
+  }
+
+  // CSV format
+  const CSV_HEADERS = [
+    "Product ID",
+    "Product Name",
+    "Brand",
+    "Category",
+    "GreenGrade Score (0-10)",
+    "Tier",
+    "Percentile (%)",
+    "Total Emissions (kg CO2e)",
+    "Land Use Change (kg CO2e)",
+    "Animal Feed (kg CO2e)",
+    "Farm Operations (kg CO2e)",
+    "Processing (kg CO2e)",
+    "Transport (kg CO2e)",
+    "Packaging (kg CO2e)",
+    "Retail (kg CO2e)",
+    "Data Confidence Tier",
+    "Data Confidence Label",
+    "Methodology Version",
+    "Report Generated At",
+  ].join(",");
+
+  const rows = passports.map((p) =>
+    [
+      csvCell(p.product_id),
+      csvCell(p.product_name),
+      csvCell(p.brand),
+      csvCell(p.category),
+      csvCell(p.greengrade_score),
+      csvCell(tierLabel(p.greengrade_score)),
+      csvCell(p.score_percentile !== null ? Math.round(p.score_percentile) : ""),
+      csvCell(p.total_carbon_footprint_kg_co2e),
+      csvCell(p.emission_breakdown.land_use_change),
+      csvCell(p.emission_breakdown.animal_feed),
+      csvCell(p.emission_breakdown.farm_operations),
+      csvCell(p.emission_breakdown.processing),
+      csvCell(p.emission_breakdown.transport),
+      csvCell(p.emission_breakdown.packaging),
+      csvCell(p.emission_breakdown.retail),
+      csvCell(p.data_confidence_tier ?? ""),
+      csvCell(p.data_confidence_label ?? ""),
+      csvCell(p.methodology_version),
+      csvCell(reportGeneratedAt),
+    ].join(",")
+  );
+
+  const scores = passports.map((p) => p.greengrade_score);
+  const avgScore = Math.round((scores.reduce((s, v) => s + v, 0) / scores.length) * 10) / 10;
+  const totalEmissions =
+    Math.round(passports.reduce((s, p) => s + p.total_carbon_footprint_kg_co2e, 0) * 100) / 100;
+
+  const summaryRows = [
+    "",
+    "# Portfolio Summary",
+    `"Product Count","${passports.length}"`,
+    `"Average GreenGrade Score","${avgScore}"`,
+    `"Total Portfolio Emissions (kg CO2e)","${totalEmissions}"`,
+    `"Green Products (≥7)","${passports.filter((p) => p.greengrade_score >= 7).length}"`,
+    `"Amber Products (4–7)","${passports.filter((p) => p.greengrade_score >= 4 && p.greengrade_score < 7).length}"`,
+    `"Red Products (<4)","${passports.filter((p) => p.greengrade_score < 4).length}"`,
+    `"Methodology Version","3.0"`,
+    `"Report Generated At","${reportGeneratedAt}"`,
+  ];
+
+  const csv = [CSV_HEADERS, ...rows, ...summaryRows].join("\n");
+
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", 'attachment; filename="greengrade-portfolio-report.csv"');
+  res.send(csv);
+});
+
 // GET /audit/:productId
 
 const AUDIT_SCHEMA = {
