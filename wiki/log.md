@@ -13,6 +13,24 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-01 — Admin Evidence Review UI + Transparency Evidence Sources
+
+**Operation:** Complete the community evidence workflow by adding an admin review UI; surface evidence provenance on the public transparency page.
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — admin page at `/admin/evidence` listing all pending community evidence submissions with per-card approve/reject (with optional notes), React Query invalidation on review, empty-state message. Guarded to admin role only.
+
+**Files updated:** 2
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence`, `reviewEvidence`, `fetchEvidenceSources` service functions
+- `frontend/src/app/transparency/page.js` — added "Data Sources & Evidence Registry" section fetching from `/api/v1/evidence/sources`; shows title, authors, year, reliability badge, DOI/URL links; renders only when sources are available
+
+**Test count:** 249 backend (unchanged, all passing). No new backend routes were added.
+
+**Branch:** `claude/nifty-goodall-mp449f`, commit `d0da8f3`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
