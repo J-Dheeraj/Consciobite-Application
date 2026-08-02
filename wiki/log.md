@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-02 — Frontend Test Suite Expansion
+
+**Operation:** Add smoke tests for 5 previously-untested frontend components; fix @/ alias resolution in jest.config.js.
+
+**Files created:** 5
+- `frontend/src/components/__tests__/ProductCard.test.js` — 7 tests (render, link, emissions, GradeBadge, fav button toggle)
+- `frontend/src/components/__tests__/GradeBreakdown.test.js` — 7 tests (categories, score labels, emissions, heading)
+- `frontend/src/components/__tests__/Navbar.test.js` — 6 tests (brand, sign-in link, nav links, auth state, logout, hamburger)
+- `frontend/src/components/__tests__/EvidenceSection.test.js` — 6 tests (empty state, sign-in link, submit button, form, validation, approved items)
+- `frontend/src/components/__tests__/ErrorBoundary.test.js` — 5 tests (normal render, error UI, buttons, captureError, try-again recovery)
+
+**Files updated:** 1
+- `frontend/jest.config.js` — added `"^@/(.*)$": "<rootDir>/src/$1"` to moduleNameMapper so jest.mock() calls can resolve the @/ path alias
+
+**Test count:** 9 → 44 frontend (all passing), 249 backend (unchanged).
+
+**Branch:** `claude/dreamy-dirac-9kdlij`, commit `da8eec9`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".

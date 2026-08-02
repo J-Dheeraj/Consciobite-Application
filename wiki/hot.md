@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-02 — frontend test suite expanded: 5 new test files (ProductCard, GradeBreakdown, Navbar, EvidenceSection, ErrorBoundary); jest.config.js patched with @/ moduleNameMapper. Test count: 9 → 44 frontend, 249 backend. Commit da8eec9 on branch `claude/dreamy-dirac-9kdlij`.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -55,7 +55,7 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status:** 249 backend + 44 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
