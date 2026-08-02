@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { fetchProducts } from "@/services/api";
+import { downloadPortfolioExport } from "@/services/products";
 import { scoreColor } from "@/utils/constants";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -39,6 +40,8 @@ export default function Products() {
   const [tier, setTier] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState(null);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -67,6 +70,28 @@ export default function Products() {
     setPage(1);
   }, [search, category, sort, tier]);
 
+  async function handleExportCSV() {
+    setExporting(true);
+    setExportError(null);
+    try {
+      const opts =
+        category !== "All"
+          ? { category }
+          : { ids: products.map((p) => String(p.id)).join(",") };
+      const blob = await downloadPortfolioExport({ ...opts, format: "csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "portfolio-export.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setExportError(err.message);
+    } finally {
+      setExporting(false);
+    }
+  }
+
   const bg = isDark ? "#0a0a0a" : "#f8f9fa";
   const cardBg = isDark ? "rgba(255,255,255,0.04)" : "#fff";
   const cardBorder = isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
@@ -80,22 +105,44 @@ export default function Products() {
     <div style={{ background: bg, minHeight: "100vh", padding: "24px 16px 80px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         {/* Header */}
-        <div style={{ marginBottom: 28 }}>
-          <h1
-            style={{
-              color: textPrimary,
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 800,
-              fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
-              letterSpacing: "-0.03em",
-              marginBottom: 6,
-            }}
-          >
-            Browse Products
-          </h1>
-          <p style={{ color: textSecondary, fontSize: "0.95rem" }}>
-            Explore GreenGrade scores across {products.length > 0 ? "500+" : "all"} food products
-          </p>
+        <div style={{ marginBottom: 28, display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+          <div>
+            <h1
+              style={{
+                color: textPrimary,
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 800,
+                fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
+                letterSpacing: "-0.03em",
+                marginBottom: 6,
+              }}
+            >
+              Browse Products
+            </h1>
+            <p style={{ color: textSecondary, fontSize: "0.95rem" }}>
+              Explore GreenGrade scores across {products.length > 0 ? "500+" : "all"} food products
+            </p>
+          </div>
+          {!loading && products.length > 0 && (
+            <button
+              onClick={handleExportCSV}
+              disabled={exporting}
+              style={{
+                padding: "10px 18px",
+                borderRadius: 10,
+                border: `1.5px solid ${isDark ? "rgba(45,106,79,0.4)" : "#2d6a4f"}`,
+                background: isDark ? "rgba(45,106,79,0.12)" : "#edf7f0",
+                color: "#2d6a4f",
+                fontSize: "0.88rem",
+                fontWeight: 600,
+                cursor: exporting ? "default" : "pointer",
+                opacity: exporting ? 0.65 : 1,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {exporting ? "Exporting…" : "Export CSV"}
+            </button>
+          )}
         </div>
 
         {/* Filters */}
@@ -212,6 +259,22 @@ export default function Products() {
             );
           })}
         </div>
+
+        {/* Export error */}
+        {exportError && (
+          <div
+            style={{
+              padding: "14px 20px",
+              borderRadius: 10,
+              background: isDark ? "rgba(231,76,60,0.15)" : "#fef2f2",
+              color: "#e74c3c",
+              marginBottom: 12,
+              fontSize: "0.9rem",
+            }}
+          >
+            Export failed: {exportError}
+          </div>
+        )}
 
         {/* Error */}
         {error && (

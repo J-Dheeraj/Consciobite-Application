@@ -141,6 +141,144 @@ router.post("/portfolio/score", validate(PORTFOLIO_SCHEMA), (req, res) => {
   });
 });
 
+// GET /portfolio/export
+
+const EXPORT_SCHEMA = {
+  query: {
+    ids: {
+      required: false,
+      type: "string",
+      maxLength: 500,
+      message: "ids must be a comma-separated list of product IDs",
+    },
+    category: {
+      required: false,
+      type: "string",
+      maxLength: 50,
+      message: "category must be a string",
+    },
+    format: {
+      required: false,
+      type: "string",
+      maxLength: 4,
+      message: "format must be csv or json",
+    },
+  },
+};
+
+function csvEscape(value) {
+  if (value === null || value === undefined) return "";
+  const str = String(value);
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function passportsToCSV(passports) {
+  const header = [
+    "Product ID",
+    "Product Name",
+    "Brand",
+    "Category",
+    "GreenGrade Score",
+    "Score Percentile",
+    "Data Confidence Tier",
+    "Data Confidence Label",
+    "Total Carbon Footprint (kg CO2e)",
+    "Land Use Change (kg CO2e)",
+    "Animal Feed (kg CO2e)",
+    "Farm Operations (kg CO2e)",
+    "Processing (kg CO2e)",
+    "Transport (kg CO2e)",
+    "Packaging (kg CO2e)",
+    "Retail (kg CO2e)",
+    "Methodology Version",
+    "Passport Generated At",
+  ].join(",");
+
+  const rows = passports.map((p) =>
+    [
+      csvEscape(p.product_id),
+      csvEscape(p.product_name),
+      csvEscape(p.brand),
+      csvEscape(p.category),
+      csvEscape(p.greengrade_score),
+      csvEscape(p.score_percentile),
+      csvEscape(p.data_confidence_tier),
+      csvEscape(p.data_confidence_label),
+      csvEscape(p.total_carbon_footprint_kg_co2e),
+      csvEscape(p.emission_breakdown.land_use_change),
+      csvEscape(p.emission_breakdown.animal_feed),
+      csvEscape(p.emission_breakdown.farm_operations),
+      csvEscape(p.emission_breakdown.processing),
+      csvEscape(p.emission_breakdown.transport),
+      csvEscape(p.emission_breakdown.packaging),
+      csvEscape(p.emission_breakdown.retail),
+      csvEscape(p.methodology_version),
+      csvEscape(p.passport_generated_at),
+    ].join(",")
+  );
+
+  return [header, ...rows].join("\n");
+}
+
+router.get("/portfolio/export", validate(EXPORT_SCHEMA), (req, res) => {
+  const { ids, category, format = "csv" } = req.query;
+
+  if (format !== "csv" && format !== "json") {
+    return res.status(400).json({ error: "format must be csv or json" });
+  }
+
+  if (!ids && !category) {
+    return res.status(400).json({ error: "Provide ids or category query parameter" });
+  }
+
+  if (ids && category) {
+    return res.status(400).json({ error: "Provide either ids or category, not both" });
+  }
+
+  let selected = [];
+
+  if (ids) {
+    const rawIds = ids
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .slice(0, 100);
+
+    for (const rawId of rawIds) {
+      const id = sanitize(rawId, 20);
+      if (!validator.isAlphanumeric(id)) continue;
+      const product = products.find((p) => String(p.id) === id);
+      if (product) selected.push(product);
+    }
+  } else {
+    const cat = sanitize(category, 50);
+    selected = products.filter(
+      (p) => typeof p.category === "string" && p.category.toLowerCase() === cat.toLowerCase()
+    );
+    selected = selected.slice(0, 100);
+  }
+
+  if (selected.length === 0) {
+    return res.status(404).json({ error: "No matching products found" });
+  }
+
+  const passports = selected.map(buildPassport);
+
+  if (format === "json") {
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Content-Disposition", 'attachment; filename="portfolio-export.json"');
+    return res.json({ products: passports, product_count: passports.length });
+  }
+
+  const csv = passportsToCSV(passports);
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", 'attachment; filename="portfolio-export.csv"');
+  res.send(csv);
+});
+
 // GET /audit/:productId
 
 const AUDIT_SCHEMA = {

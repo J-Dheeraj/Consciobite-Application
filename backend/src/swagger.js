@@ -502,6 +502,53 @@ const options = {
           },
         },
       },
+      "/v1/portfolio/export": {
+        get: {
+          tags: ["Digital Product Passport"],
+          summary: "Export portfolio as CSV or JSON",
+          description:
+            "Exports Digital Product Passport data for a set of products. Provide either `ids` (comma-separated product IDs, max 100) or `category` (exact category name). Use `format=csv` (default) for a spreadsheet-ready download or `format=json` for a structured machine-readable export. Suitable for SGX Scope 3 and EU ESPR reporting workflows.",
+          parameters: [
+            {
+              name: "ids",
+              in: "query",
+              description: "Comma-separated product IDs (max 100)",
+              schema: { type: "string" },
+            },
+            {
+              name: "category",
+              in: "query",
+              description: "Filter by product category (exact match, case-insensitive)",
+              schema: { type: "string" },
+            },
+            {
+              name: "format",
+              in: "query",
+              description: "Response format",
+              schema: { type: "string", enum: ["csv", "json"], default: "csv" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Portfolio export file",
+              content: {
+                "text/csv": { schema: { type: "string" } },
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      products: { type: "array" },
+                      product_count: { type: "integer" },
+                    },
+                  },
+                },
+              },
+            },
+            400: { description: "Invalid query parameters" },
+            404: { description: "No matching products found" },
+          },
+        },
+      },
       "/v1/ml/similar/{productId}": {
         get: {
           tags: ["ML Insights"],

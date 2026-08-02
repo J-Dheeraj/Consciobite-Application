@@ -139,4 +139,84 @@ describe("Digital Product Passport endpoints", () => {
       expect(res.status).toBe(400);
     });
   });
+
+  describe("GET /api/v1/portfolio/export", () => {
+    test("should return CSV for valid ids", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1,2,3");
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/text\/csv/);
+      expect(res.headers["content-disposition"]).toMatch(/portfolio-export\.csv/);
+      expect(res.text).toMatch(/GreenGrade Score/);
+      expect(res.text).toMatch(/Product ID/);
+    });
+
+    test("should return JSON when format=json", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1,2&format=json");
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/application\/json/);
+      expect(res.headers["content-disposition"]).toMatch(/portfolio-export\.json/);
+      expect(Array.isArray(res.body.products)).toBe(true);
+      expect(res.body.product_count).toBe(2);
+    });
+
+    test("should return CSV for category filter", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?category=Beverages");
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/text\/csv/);
+      expect(res.text.split("\n").length).toBeGreaterThan(1);
+    });
+
+    test("CSV rows contain all 7 emission dimensions", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1&format=csv");
+      expect(res.status).toBe(200);
+      const header = res.text.split("\n")[0];
+      expect(header).toContain("Land Use Change");
+      expect(header).toContain("Animal Feed");
+      expect(header).toContain("Farm Operations");
+      expect(header).toContain("Processing");
+      expect(header).toContain("Transport");
+      expect(header).toContain("Packaging");
+      expect(header).toContain("Retail");
+    });
+
+    test("should return 400 when neither ids nor category provided", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/ids or category/);
+    });
+
+    test("should return 400 when both ids and category provided", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1&category=Dairy");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/either/);
+    });
+
+    test("should return 400 for invalid format", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1&format=xml");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/format/);
+    });
+
+    test("should return 404 when no valid ids found", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=99999,88888");
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBeDefined();
+    });
+
+    test("should skip invalid IDs and export valid ones", async () => {
+      const res = await request(app).get(
+        "/api/v1/portfolio/export?ids=1,not-valid,99999&format=json"
+      );
+      expect(res.status).toBe(200);
+      expect(res.body.product_count).toBe(1);
+    });
+
+    test("JSON export includes methodology_version and passport_generated_at", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1&format=json");
+      expect(res.status).toBe(200);
+      const product = res.body.products[0];
+      expect(product.methodology_version).toBe("3.0");
+      expect(product.passport_generated_at).toBeDefined();
+    });
+  });
 });

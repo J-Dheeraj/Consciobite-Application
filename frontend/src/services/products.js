@@ -56,3 +56,18 @@ export async function submitProductEvidence(id, data) {
     body: JSON.stringify(data),
   });
 }
+
+export async function downloadPortfolioExport({ ids, category, format = "csv" } = {}) {
+  const params = new URLSearchParams();
+  if (ids) params.set("ids", ids);
+  if (category) params.set("category", category);
+  params.set("format", format);
+  const res = await fetch(`${API_BASE}/v1/portfolio/export?${params}`, {
+    credentials: "include",
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Export failed (${res.status})`);
+  }
+  return res.blob();
+}
