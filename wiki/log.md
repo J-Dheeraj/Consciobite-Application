@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-02
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,26 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-02 — Portfolio Export Endpoint
+
+**Operation:** Implement B2B portfolio CSV/JSON export, addressing architecture review strategic steer ("repeatable exports").
+
+**Files created:** 0
+
+**Files updated:** 5
+- `backend/src/routes/passport.js` — `GET /api/v1/portfolio/export` accepts `?ids=` or `?category=` + `?format=csv|json`; full CSV with 18 columns including all 7 emission dimensions; JSON returns passport array
+- `backend/src/swagger.js` — new endpoint documented under "Digital Product Passport" tag
+- `backend/__tests__/passport.test.js` — 10 new integration tests (259 total, all passing)
+- `frontend/src/services/products.js` — `downloadPortfolioExport()` service function (blob fetch pattern from carbon export)
+- `frontend/src/app/products/page.js` — "Export CSV" button in header; appears when products are loaded; exports by category when filter active, by current-page IDs otherwise
+
+**Test count:** 249 → 259 backend (all passing).
+
+**Branch:** `claude/nifty-goodall-y2i66d`, commit `514efef`
+**Hot cache updated:** yes
 
 ---
 
