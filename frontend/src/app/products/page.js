@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { fetchProducts } from "@/services/api";
+import { fetchProducts, downloadCatalogExport } from "@/services/api";
 import { scoreColor } from "@/utils/constants";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -39,6 +39,7 @@ export default function Products() {
   const [tier, setTier] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [exporting, setExporting] = useState(false);
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -80,22 +81,62 @@ export default function Products() {
     <div style={{ background: bg, minHeight: "100vh", padding: "24px 16px 80px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
         {/* Header */}
-        <div style={{ marginBottom: 28 }}>
-          <h1
+        <div
+          style={{
+            marginBottom: 28,
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 12,
+          }}
+        >
+          <div>
+            <h1
+              style={{
+                color: textPrimary,
+                fontFamily: "'Outfit', sans-serif",
+                fontWeight: 800,
+                fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
+                letterSpacing: "-0.03em",
+                marginBottom: 6,
+              }}
+            >
+              Browse Products
+            </h1>
+            <p style={{ color: textSecondary, fontSize: "0.95rem" }}>
+              Explore GreenGrade scores across {products.length > 0 ? "500+" : "all"} food products
+            </p>
+          </div>
+          <button
+            onClick={async () => {
+              setExporting(true);
+              try {
+                await downloadCatalogExport("csv");
+              } finally {
+                setExporting(false);
+              }
+            }}
+            disabled={exporting}
             style={{
-              color: textPrimary,
-              fontFamily: "'Outfit', sans-serif",
-              fontWeight: 800,
-              fontSize: "clamp(1.5rem, 4vw, 2.2rem)",
-              letterSpacing: "-0.03em",
-              marginBottom: 6,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              padding: "9px 16px",
+              borderRadius: 10,
+              border: `1.5px solid ${isDark ? "rgba(82,183,136,0.35)" : "rgba(39,174,96,0.35)"}`,
+              background: isDark ? "rgba(82,183,136,0.08)" : "rgba(39,174,96,0.06)",
+              color: isDark ? "#52b788" : "#1a7a40",
+              fontSize: "0.85rem",
+              fontWeight: 600,
+              cursor: exporting ? "wait" : "pointer",
+              whiteSpace: "nowrap",
+              opacity: exporting ? 0.7 : 1,
+              transition: "all 0.15s",
             }}
           >
-            Browse Products
-          </h1>
-          <p style={{ color: textSecondary, fontSize: "0.95rem" }}>
-            Explore GreenGrade scores across {products.length > 0 ? "500+" : "all"} food products
-          </p>
+            {exporting ? "Exporting…" : "Export CSV"}
+          </button>
         </div>
 
         {/* Filters */}

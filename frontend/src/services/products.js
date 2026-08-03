@@ -56,3 +56,19 @@ export async function submitProductEvidence(id, data) {
     body: JSON.stringify(data),
   });
 }
+
+export async function fetchScoreHistory(id) {
+  return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/score-history`);
+}
+
+export async function downloadCatalogExport(format = "csv") {
+  const url = `${API_BASE}/products/export?format=${format}`;
+  const response = await fetch(url, { credentials: "include" });
+  if (!response.ok) throw new Error(`Export failed: ${response.status}`);
+  const blob = await response.blob();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = format === "json" ? "consciobite-catalog.json" : "consciobite-catalog.csv";
+  a.click();
+  URL.revokeObjectURL(a.href);
+}

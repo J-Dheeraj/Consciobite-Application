@@ -179,4 +179,11 @@ function getConflictStats() {
   };
 }
 
-module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats };
+module.exports = {
+  logScoreChange,
+  snapshotScores,
+  getConflictLog,
+  getConflictStats,
+  METHODOLOGY_VERSION,
+  CATALOG_HASH,
+};

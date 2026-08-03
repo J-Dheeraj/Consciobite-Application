@@ -8,6 +8,8 @@ const {
   getApprovedEvidence,
   VALID_SOURCE_TYPES,
 } = require("../services/evidenceService");
+const { getDb } = require("../db/schema");
+const { METHODOLOGY_VERSION, CATALOG_HASH } = require("../services/scoreAudit");
 
 const COMPARE_SCHEMA = {
   query: {
@@ -163,6 +165,90 @@ router.get("/stats", (req, res) => {
   stats.sort((a, b) => b.avgScore - a.avgScore);
 
   res.json({ totalProducts: products.length, categories: stats });
+});
+
+const EXPORT_SCHEMA = {
+  query: {
+    format: { required: false, type: "string", pattern: /^(csv|json)$/ },
+  },
+};
+
+// Escape a CSV field: wrap in quotes if it contains comma, quote, or newline
+function csvField(val) {
+  const s = val === null || val === undefined ? "" : String(val);
+  if (s.includes(",") || s.includes('"') || s.includes("\n")) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+}
+
+function toTier(score) {
+  if (score >= 7) return "green";
+  if (score >= 4) return "amber";
+  return "red";
+}
+
+const CSV_HEADERS = [
+  "id",
+  "name",
+  "brand",
+  "category",
+  "barcode",
+  "greengrade_score",
+  "tier",
+  "total_emissions_kg",
+  "land_use_change_kg",
+  "animal_feed_kg",
+  "farm_kg",
+  "processing_kg",
+  "transport_kg",
+  "packaging_kg",
+  "retail_kg",
+  "methodology_version",
+  "catalog_hash",
+];
+
+// GET /api/products/export — bulk download of all 550 product scores
+router.get("/export", validate(EXPORT_SCHEMA), (req, res) => {
+  const format = req.query.format === "json" ? "json" : "csv";
+
+  const rows = enrichedProducts.map((p) => ({
+    id: p.id,
+    name: p.name,
+    brand: p.brand,
+    category: p.category,
+    barcode: p.barcode || "",
+    greengrade_score: p.greenGrade.score,
+    tier: toTier(p.greenGrade.score),
+    total_emissions_kg: p.greenGrade.totalEmissions,
+    land_use_change_kg: p.emissions.landUseChange || 0,
+    animal_feed_kg: p.emissions.animalFeed || 0,
+    farm_kg: p.emissions.farm || 0,
+    processing_kg: p.emissions.processing || 0,
+    transport_kg: p.emissions.transport || 0,
+    packaging_kg: p.emissions.packaging || 0,
+    retail_kg: p.emissions.retail || 0,
+    methodology_version: METHODOLOGY_VERSION,
+    catalog_hash: CATALOG_HASH,
+  }));
+
+  if (format === "json") {
+    res.setHeader("Content-Disposition", "attachment; filename=consciobite-catalog.json");
+    return res.json({
+      count: rows.length,
+      methodology_version: METHODOLOGY_VERSION,
+      products: rows,
+    });
+  }
+
+  const lines = [CSV_HEADERS.join(",")];
+  for (const row of rows) {
+    lines.push(CSV_HEADERS.map((h) => csvField(row[h])).join(","));
+  }
+
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
+  res.setHeader("Content-Disposition", "attachment; filename=consciobite-catalog.csv");
+  res.send(lines.join("\r\n"));
 });
 
 const OPEN_FOOD_FACTS_RETRIES = 2;
@@ -340,6 +426,39 @@ router.post("/:id/evidence", requireAuth, validate(EVIDENCE_SUBMIT_SCHEMA), (req
       id: result.id,
       status: "pending",
       message: "Evidence submitted and pending review. Thank you for your contribution.",
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/products/:id/score-history — public view of score changes for a product
+router.get("/:id/score-history", (req, res, next) => {
+  try {
+    const id = sanitize(req.params.id, 20);
+    if (!validator.isAlphanumeric(id)) {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+    const product = products.find((p) => String(p.id) === id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    const db = getDb();
+    const rows = db
+      .prepare(
+        `SELECT changed_at, old_score, new_score, score_delta, change_reason, methodology_version
+         FROM score_change_logs
+         WHERE product_id = ?
+         ORDER BY changed_at DESC
+         LIMIT 100`
+      )
+      .all(id);
+
+    res.json({
+      productId: id,
+      productName: product.name,
+      currentScore: enrichedProducts.find((p) => p.id === id)?.greenGrade.score,
+      history: rows,
+      total: rows.length,
     });
   } catch (err) {
     next(err);

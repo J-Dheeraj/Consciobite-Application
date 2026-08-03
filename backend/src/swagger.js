@@ -213,6 +213,78 @@ const options = {
           responses: { 200: { description: "Aggregated statistics" } },
         },
       },
+      "/products/export": {
+        get: {
+          tags: ["Products"],
+          summary: "Bulk export all product scores",
+          description:
+            "Download the complete 550-product catalog with GreenGrade scores, tier classification, and all 7 emission dimensions. Includes methodology version and catalog hash for provenance verification. Use format=csv (default) for spreadsheet integration or format=json for API pipelines.",
+          parameters: [
+            {
+              name: "format",
+              in: "query",
+              description: "Output format — csv (default) or json",
+              required: false,
+              schema: { type: "string", enum: ["csv", "json"] },
+            },
+          ],
+          responses: {
+            200: { description: "Catalog export in the requested format" },
+            400: { description: "Invalid format parameter" },
+          },
+        },
+      },
+      "/products/{id}/score-history": {
+        get: {
+          tags: ["Products"],
+          summary: "Get score change history for a product",
+          description:
+            "Returns the public audit trail of GreenGrade score changes for a single product, ordered newest first. Each entry shows the old score, new score, delta, methodology version, and reason. An empty history array means the score has not changed since the catalog was loaded.",
+          parameters: [
+            {
+              name: "id",
+              in: "path",
+              required: true,
+              schema: { type: "string" },
+              description: "Product ID",
+            },
+          ],
+          responses: {
+            200: {
+              description: "Score history",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      productId: { type: "string" },
+                      productName: { type: "string" },
+                      currentScore: { type: "number" },
+                      history: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            changed_at: { type: "string", format: "date-time" },
+                            old_score: { type: "number" },
+                            new_score: { type: "number" },
+                            score_delta: { type: "number" },
+                            change_reason: { type: "string" },
+                            methodology_version: { type: "string" },
+                          },
+                        },
+                      },
+                      total: { type: "integer" },
+                    },
+                  },
+                },
+              },
+            },
+            400: { description: "Invalid product ID" },
+            404: { description: "Product not found" },
+          },
+        },
+      },
       "/auth/register": {
         post: {
           tags: ["Auth"],

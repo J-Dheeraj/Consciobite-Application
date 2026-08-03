@@ -10,6 +10,8 @@ export {
   fetchAuditLog,
   fetchProductEvidence,
   submitProductEvidence,
+  fetchScoreHistory,
+  downloadCatalogExport,
 } from "./products";
 export { registerUser, loginUser, fetchCurrentUser, updateProfile } from "./auth";
 export { fetchReviews, submitReview, deleteReview } from "./reviews";

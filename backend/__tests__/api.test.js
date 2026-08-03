@@ -388,6 +388,105 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/export", () => {
+    test("returns CSV by default", async () => {
+      const res = await request(app).get("/api/products/export");
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/text\/csv/);
+      expect(res.headers["content-disposition"]).toMatch(/consciobite-catalog\.csv/);
+    });
+
+    test("CSV contains header row with required columns", async () => {
+      const res = await request(app).get("/api/products/export");
+      const firstLine = res.text.split("\r\n")[0];
+      expect(firstLine).toContain("id");
+      expect(firstLine).toContain("greengrade_score");
+      expect(firstLine).toContain("tier");
+      expect(firstLine).toContain("methodology_version");
+      expect(firstLine).toContain("catalog_hash");
+    });
+
+    test("CSV contains 550 data rows (one per product)", async () => {
+      const res = await request(app).get("/api/products/export");
+      const lines = res.text.split("\r\n").filter(Boolean);
+      expect(lines.length).toBe(551); // header + 550 products
+    });
+
+    test("returns JSON when format=json", async () => {
+      const res = await request(app).get("/api/products/export?format=json");
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/application\/json/);
+      expect(res.body.count).toBe(550);
+      expect(Array.isArray(res.body.products)).toBe(true);
+      expect(res.body.methodology_version).toBeDefined();
+    });
+
+    test("JSON product rows have required fields", async () => {
+      const res = await request(app).get("/api/products/export?format=json");
+      const sample = res.body.products[0];
+      expect(sample).toHaveProperty("id");
+      expect(sample).toHaveProperty("greengrade_score");
+      expect(sample).toHaveProperty("tier");
+      expect(sample).toHaveProperty("total_emissions_kg");
+      expect(sample).toHaveProperty("methodology_version");
+      expect(sample).toHaveProperty("catalog_hash");
+    });
+
+    test("tier values are valid (green/amber/red)", async () => {
+      const res = await request(app).get("/api/products/export?format=json");
+      const tiers = new Set(res.body.products.map((p) => p.tier));
+      expect([...tiers].every((t) => ["green", "amber", "red"].includes(t))).toBe(true);
+    });
+
+    test("rejects unknown format value", async () => {
+      const res = await request(app).get("/api/products/export?format=xml");
+      expect(res.status).toBe(400);
+    });
+  });
+
+  describe("GET /api/products/:id/score-history", () => {
+    test("returns score history for a valid product", async () => {
+      const res = await request(app).get("/api/products/1/score-history");
+      expect(res.status).toBe(200);
+      expect(res.body.productId).toBe("1");
+      expect(res.body.productName).toBeDefined();
+      expect(typeof res.body.currentScore).toBe("number");
+      expect(Array.isArray(res.body.history)).toBe(true);
+    });
+
+    test("returns 404 for non-existent product", async () => {
+      const res = await request(app).get("/api/products/999999/score-history");
+      expect(res.status).toBe(404);
+    });
+
+    test("returns 400 for invalid product ID", async () => {
+      const res = await request(app).get("/api/products/invalid-id!/score-history");
+      expect(res.status).toBe(400);
+    });
+
+    test("history entries have public-safe fields only", async () => {
+      const res = await request(app).get("/api/products/1/score-history");
+      expect(res.status).toBe(200);
+      if (res.body.history.length > 0) {
+        const entry = res.body.history[0];
+        expect(entry).toHaveProperty("changed_at");
+        expect(entry).toHaveProperty("old_score");
+        expect(entry).toHaveProperty("new_score");
+        expect(entry).toHaveProperty("score_delta");
+        expect(entry).toHaveProperty("methodology_version");
+        // changed_by should NOT be exposed
+        expect(entry.changed_by).toBeUndefined();
+        expect(entry.catalog_hash).toBeUndefined();
+      }
+    });
+
+    test("history total matches history array length", async () => {
+      const res = await request(app).get("/api/products/1/score-history");
+      expect(res.status).toBe(200);
+      expect(res.body.total).toBe(res.body.history.length);
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");
