@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-03
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,23 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-03 — Portfolio Export Report
+
+**Operation:** Implement B2B portfolio report export endpoint (`POST /api/v1/portfolio/export`), addressing architecture reviewer steer "repeatable exports" for regulatory compliance.
+
+**Files modified:** 4
+- `backend/src/routes/passport.js` — added `POST /portfolio/export` (auth-required): validates body, builds passports, returns JSON structured report or RFC 4180 CSV; JSON includes `methodology_version`, `catalog_hash` (sha256 of products.json), `reporting_standard`, `portfolio_summary`, `category_breakdown`, and per-product DPP; CSV has Content-Disposition attachment header
+- `backend/__tests__/passport.test.js` — 10 new Supertest tests covering auth gate (401), JSON format, CSV format (Content-Type + Content-Disposition), custom report_title, missing/invalid inputs, no-valid-products 404, partial-valid-IDs, generated_at timestamp
+- `backend/src/swagger.js` — `/v1/portfolio/export` endpoint under "Digital Product Passport" tag with full request/response schema
+- `frontend/src/services/products.js` — `exportPortfolioReport()` using raw fetch + `getAuthHeaders()` for non-JSON response; CSV triggers browser download via blob URL, JSON returns parsed object
+
+**Test count:** 249 → 259 backend (all passing)
+
+**Branch:** `claude/nifty-goodall-ex4um6`, commit `3e03889`
+**Hot cache updated:** yes
 
 ---
 
