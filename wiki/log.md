@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-03
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,31 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-03 — Bulk Catalog Export + Per-Product Score History
+
+**Operation:** Implement bulk product catalog export and per-product public score history, directly addressing architecture review-#2 steer ("repeatable exports" and "provenance/versioning").
+
+**Files created:** 1
+- `frontend/src/components/ScoreHistorySection.js` — collapsible component; lazy-fetches score history on expand; shows table with date, old/new score, delta chip, methodology version, reason
+
+**Files updated:** 8
+- `backend/src/services/scoreAudit.js` — export `METHODOLOGY_VERSION` + `CATALOG_HASH` for use by other modules
+- `backend/src/routes/products.js` — `GET /export?format=csv|json` (all 550 products, includes provenance fields); `GET /:id/score-history` (public audit trail, no admin-only fields); `EXPORT_SCHEMA` + validation; `csvField()` helper; `toTier()` helper; `CSV_HEADERS` constant
+- `backend/src/swagger.js` — `/products/export` + `/products/{id}/score-history` documented
+- `backend/__tests__/api.test.js` — 12 new tests (7 export + 5 score-history), 261 total
+- `frontend/src/services/products.js` — `fetchScoreHistory(id)`, `downloadCatalogExport(format)`
+- `frontend/src/services/api.js` — re-export both new functions
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — import + render `ScoreHistorySection`
+- `frontend/src/app/products/page.js` — import `downloadCatalogExport`; header row with "Export CSV" button + loading state
+
+**Test count:** 249 → 261 backend (all passing). 9 frontend (unchanged).
+
+**Branch:** `claude/dreamy-dirac-pba9s4`, commit `33c5695` (pushed to origin)
+
+**Hot cache updated:** yes
 
 ---
 
