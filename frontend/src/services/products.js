@@ -1,4 +1,4 @@
-import { httpClient, API_BASE } from "./httpClient";
+import { httpClient, getAuthHeaders, API_BASE } from "./httpClient";
 
 export async function fetchProducts({ search, category, sort, page, limit } = {}) {
   const params = new URLSearchParams();
@@ -55,4 +55,39 @@ export async function submitProductEvidence(id, data) {
     method: "POST",
     body: JSON.stringify(data),
   });
+}
+
+// Export a portfolio report in JSON or CSV format.
+// For CSV: triggers a browser download and returns null.
+// For JSON: returns the parsed report object.
+export async function exportPortfolioReport({ productIds, format = "json", reportTitle } = {}) {
+  const res = await fetch(`${API_BASE}/v1/portfolio/export`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify({
+      product_ids: productIds,
+      format,
+      ...(reportTitle ? { report_title: reportTitle } : {}),
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Export failed (${res.status})`);
+  }
+
+  if (format === "csv") {
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const dateStr = new Date().toISOString().slice(0, 10);
+    a.href = url;
+    a.download = `portfolio-report-${dateStr}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    return null;
+  }
+
+  return res.json();
 }

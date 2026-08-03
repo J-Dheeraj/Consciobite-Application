@@ -502,6 +502,55 @@ const options = {
           },
         },
       },
+      "/v1/portfolio/export": {
+        post: {
+          tags: ["Digital Product Passport"],
+          summary: "Export portfolio report (JSON or CSV)",
+          description:
+            "Generates a structured B2B report for up to 100 SKUs, suitable for EU ESPR Article 7 or SGX Scope 3 regulatory submission. Returns JSON (structured with provenance metadata) or CSV (RFC 4180 attachment). Requires authentication.",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["product_ids"],
+                  properties: {
+                    product_ids: {
+                      type: "array",
+                      items: { type: "string" },
+                      minItems: 1,
+                      maxItems: 100,
+                      description: "Array of product IDs to include in the report",
+                    },
+                    format: {
+                      type: "string",
+                      enum: ["json", "csv"],
+                      default: "json",
+                      description: "Output format: 'json' for a structured report, 'csv' for a downloadable spreadsheet",
+                    },
+                    report_title: {
+                      type: "string",
+                      maxLength: 200,
+                      description: "Optional title for the report (JSON format only)",
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: {
+              description:
+                "Portfolio report. Content-Type is application/json or text/csv based on the format parameter.",
+            },
+            400: { description: "Invalid input (bad product_ids, unsupported format)" },
+            401: { description: "Authentication required" },
+            404: { description: "No valid products found for the provided IDs" },
+          },
+        },
+      },
       "/v1/ml/similar/{productId}": {
         get: {
           tags: ["ML Insights"],
