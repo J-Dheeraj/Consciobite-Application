@@ -17,7 +17,7 @@ export default function Compare() {
   const [searchFilter, setSearchFilter] = useState("");
 
   useEffect(() => {
-    fetchProducts({ limit: 100 })
+    fetchProducts({ limit: 600 })
       .then((data) => setAllProducts(data.products))
       .catch((err) => setError(err.message || "Unable to load products."));
   }, []);

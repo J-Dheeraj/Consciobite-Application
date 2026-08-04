@@ -49,7 +49,7 @@ function sanitize(str, maxLen = 100) {
 const VALID_SORTS = ["grade_asc", "grade_desc", "emissions_asc", "emissions_desc"];
 const VALID_TIERS = ["green", "amber", "red"];
 const DEFAULT_PAGE_SIZE = 20;
-const MAX_PAGE_SIZE = 100;
+const MAX_PAGE_SIZE = 600;
 const OPEN_FOOD_FACTS_TIMEOUT_MS = 10_000;
 
 // GET /api/products
