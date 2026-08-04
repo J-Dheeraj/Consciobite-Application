@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-04
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,24 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-04 — Portfolio Scorer Frontend Page
+
+**Operation:** Implement `/portfolio` page wiring the existing `POST /api/v1/portfolio/score` B2B endpoint to a user-facing UI.
+
+**Files created:** 2
+- `frontend/src/app/portfolio/page.js` — Portfolio Scorer page (product search + selection up to 100, score button, results: portfolio summary card, category benchmarks, sortable per-product table with passport links)
+- `frontend/src/app/__tests__/portfolio.test.js` — 6 integration tests (render, search input, disabled state, product loading, selection, clear-all)
+
+**Files updated:** 1
+- `frontend/src/components/Navbar.js` — added "Portfolio" to `NAV_LINKS` between Compare and Dashboard
+
+**Test count:** 9 → 15 frontend (all passing). 249 backend (all passing).
+
+**Branch:** `claude/nifty-goodall-oxfs41`, commit `533377a`
+**Hot cache updated:** yes
 
 ---
 
