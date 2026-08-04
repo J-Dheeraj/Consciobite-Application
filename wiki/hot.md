@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-04
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-04 — two bug fixes on `claude/dreamy-dirac-ivhza5` (commit `6a26216`): dashboard carbon widget now uses `user.weeklyGoal ?? WEEKLY_CARBON_GOAL_KG` instead of the hardcoded constant; products `MAX_PAGE_SIZE` raised 100→600 and compare page requests `limit: 600` so all 550 catalogue products are selectable. **No open PRs** as of this session — all previous work (#34–#47) is merged to main.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 

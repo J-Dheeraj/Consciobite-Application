@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-04
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,25 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-04 — Dashboard Goal Bug Fix + Compare Full Catalog
+
+**Operation:** Scheduled session. All previous PRs (#34–#47) were merged; no open issues. Identified and fixed two bugs.
+
+**Bug 1 — Dashboard carbon widget hardcoded goal:** The personal carbon progress card in `dashboard/page.js` used the `WEEKLY_CARBON_GOAL_KG` constant rather than `user.weeklyGoal` (added in PR #38). The widget now reads `user?.weeklyGoal ?? WEEKLY_CARBON_GOAL_KG`, consistent with how `carbon/page.js` already behaves.
+
+**Bug 2 — Compare page missing 82% of catalog:** `compare/page.js` called `fetchProducts({ limit: 100 })` against an API capped at `MAX_PAGE_SIZE = 100`, meaning 450 of the 550 products were unreachable for comparison. Fixed by raising `MAX_PAGE_SIZE` to 600 in `backend/src/routes/products.js` and updating the compare page to request `limit: 600`. All 249 backend tests pass; ESLint and Prettier clean.
+
+**Files changed:** 3
+- `backend/src/routes/products.js` — `MAX_PAGE_SIZE` 100 → 600
+- `frontend/src/app/compare/page.js` — `limit: 100` → `limit: 600`
+- `frontend/src/app/dashboard/page.js` — use `user.weeklyGoal` in carbon widget
+
+**Branch:** `claude/dreamy-dirac-ivhza5`, commit `6a26216`
+**Test count:** 249 backend (all passing)
+**Hot cache updated:** yes
 
 ---
 
