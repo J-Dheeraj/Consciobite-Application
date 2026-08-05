@@ -28,6 +28,8 @@ export {
   fetchManufacturers,
   linkProductManufacturer,
   acknowledgeFee,
+  fetchPendingEvidence,
+  reviewEvidence,
   fetchTransparencyStats,
 } from "./admin";
 export { fetchFavorites, addFavorite, removeFavorite, clearServerFavorites } from "./favorites";

@@ -35,6 +35,17 @@ export async function acknowledgeFee(manufacturerId) {
   });
 }
 
+export async function fetchPendingEvidence({ limit = 50, offset = 0 } = {}) {
+  return httpClient(`${API_BASE}/admin/pending-evidence?limit=${limit}&offset=${offset}`);
+}
+
+export async function reviewEvidence(id, { status, notes }) {
+  return httpClient(`${API_BASE}/admin/evidence/${id}/review`, {
+    method: "POST",
+    body: JSON.stringify({ status, notes }),
+  });
+}
+
 export async function fetchTransparencyStats() {
   return httpClient(`${API_BASE}/transparency/stats`);
 }
