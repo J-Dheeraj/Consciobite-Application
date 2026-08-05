@@ -13,6 +13,25 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-05 — Admin Evidence Review Queue
+
+**Operation:** Add admin frontend page for reviewing pending community evidence submissions, completing the loop started by PR #45 (community evidence submission).
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — Evidence review queue: lists pending LCA citations with inline Approve/Reject, optional reviewer notes, empty-state, and admin-only guard matching other admin pages
+
+**Files modified:** 3
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewPendingEvidence()`
+- `frontend/src/services/api.js` — re-exported both new functions
+- `backend/__tests__/admin.test.js` — 12 new tests for `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review`
+
+**Test count:** 249 → 261 backend (all passing).
+
+**Branch:** `claude/nifty-goodall-jf12tl`, commit `e776c3e`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".

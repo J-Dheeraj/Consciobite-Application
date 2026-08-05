@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-05
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-05 — admin evidence review queue frontend page added (commit `e776c3e`); 261 backend tests passing.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -55,7 +55,9 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Admin evidence review (2026-08-05, commit `e776c3e`):** Frontend page `/admin/evidence` completes the community evidence loop. Lists all pending LCA citations with inline Approve/Reject controls and optional reviewer notes. New service functions `fetchPendingEvidence` + `reviewPendingEvidence` in `frontend/src/services/admin.js`. 12 new backend tests cover auth guard, admin gate, input validation, approve/reject, idempotency, and end-to-end visibility. Branch `claude/nifty-goodall-jf12tl`.
+
+**Test status:** 261 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
