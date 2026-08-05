@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-05
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,23 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-05 — Admin Pending Evidence Review Page
+
+**Operation:** Build the missing frontend for `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review` — the backend routes existed since PR #45 but had no admin UI.
+
+**Files created:** 1
+- `frontend/src/app/admin/pending-evidence/page.js` — card-per-submission list with Approve/Reject buttons, reviewer notes textarea, source-type badge, React Query invalidation on review action; same auth-guard and 403-error pattern as other admin pages
+
+**Files updated:** 2
+- `frontend/src/services/admin.js` — `fetchPendingEvidence()` and `reviewEvidence(id, {status, notes})` service functions
+- `frontend/src/services/api.js` — re-export the two new admin service functions
+
+**Branch:** `claude/dreamy-dirac-rdn9ce`, commit `a8daad4`
+**Test count:** 249 backend (all passing; no new backend tests needed — existing admin.test.js covers the routes)
+**Hot cache updated:** yes
 
 ---
 
