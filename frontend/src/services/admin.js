@@ -35,6 +35,21 @@ export async function acknowledgeFee(manufacturerId) {
   });
 }
 
+export async function fetchPendingEvidence({ limit = 50, offset = 0 } = {}) {
+  const params = new URLSearchParams();
+  if (offset) params.set("offset", String(offset));
+  if (limit !== 50) params.set("limit", String(limit));
+  const query = params.toString();
+  return httpClient(`${API_BASE}/admin/pending-evidence${query ? `?${query}` : ""}`);
+}
+
+export async function reviewEvidence(id, status, notes) {
+  return httpClient(`${API_BASE}/admin/evidence/${id}/review`, {
+    method: "POST",
+    body: JSON.stringify({ status, notes: notes || undefined }),
+  });
+}
+
 export async function fetchTransparencyStats() {
   return httpClient(`${API_BASE}/transparency/stats`);
 }
