@@ -13,6 +13,24 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-06 — Admin Evidence Review Page
+
+**Operation:** Complete the community evidence submission story with an admin review UI, plus backend test coverage for the evidence admin routes.
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — React Query page for listing + approving/rejecting pending community evidence submissions; `EvidenceCard` component with expandable detail, optional reviewer notes, and approve/reject buttons with toast feedback
+
+**Files updated:** 2
+- `frontend/src/services/admin.js` — `fetchPendingEvidence()` and `reviewEvidence()` service functions
+- `backend/__tests__/admin.test.js` — 10 new tests: GET /admin/pending-evidence (3) + POST /admin/evidence/:id/review (7)
+
+**Test count:** 249 → 259 backend (all passing)
+
+**Branch:** `claude/dreamy-dirac-9komoh`, commit `08f7dd1`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
