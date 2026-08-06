@@ -260,6 +260,117 @@ describe("Admin governance endpoints", () => {
     });
   });
 
+  describe("GET /api/admin/pending-evidence", () => {
+    test("should return pending evidence list for admin", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("evidence");
+      expect(res.body).toHaveProperty("total");
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+    });
+
+    test("should reject unauthenticated requests", async () => {
+      const res = await request(app).get("/api/admin/pending-evidence");
+      expect(res.status).toBe(401);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${userToken}`);
+      expect(res.status).toBe(403);
+    });
+  });
+
+  describe("POST /api/admin/evidence/:id/review", () => {
+    let evidenceId;
+    let evidenceId2;
+    let adminUserId;
+
+    beforeAll(async () => {
+      const db = getDb();
+      adminUserId = db.prepare("SELECT id FROM users WHERE email = ?").get(adminEmail)?.id;
+
+      const info = db
+        .prepare(
+          `INSERT INTO submitted_evidence
+             (product_id, submitted_by, submitter_email, citation, source_type)
+           VALUES (?, ?, ?, ?, ?)`
+        )
+        .run("1", adminUserId, adminEmail, "Test citation for review", "other");
+      evidenceId = info.lastInsertRowid;
+
+      const info2 = db
+        .prepare(
+          `INSERT INTO submitted_evidence
+             (product_id, submitted_by, submitter_email, citation, source_type)
+           VALUES (?, ?, ?, ?, ?)`
+        )
+        .run("2", adminUserId, adminEmail, "Another citation", "peer_reviewed_lca");
+      evidenceId2 = info2.lastInsertRowid;
+    });
+
+    test("should approve a pending evidence submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved", notes: "Looks good" });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("approved");
+      expect(res.body.id).toBe(evidenceId);
+    });
+
+    test("should return 404 for already-reviewed evidence", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected" });
+      expect(res.status).toBe(404);
+    });
+
+    test("should reject with invalid status", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId2}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "maybe" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 400 for invalid evidence ID", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/abc/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 404 for non-existent evidence", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/999999/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(404);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId2}/review`)
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(403);
+    });
+
+    test("should reject submission without required status field", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId2}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ notes: "Missing status" });
+      expect(res.status).toBe(400);
+    });
+  });
+
   describe("v1 alias", () => {
     test("should work at /api/v1/admin/conflict-log", async () => {
       const res = await request(app)
