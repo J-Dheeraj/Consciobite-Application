@@ -13,6 +13,25 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-06 — Admin Hub + Evidence Review UI
+
+**Operation:** Complete the community evidence workflow by adding a frontend admin hub and a pending evidence review page. All prior PRs (#34–#47) were already merged; no open PRs existed.
+
+**Files created:** 2
+- `frontend/src/app/admin/page.js` — Admin hub with 3 section cards (Score Audit, Manufacturer Onboarding, Evidence Review); shows a red badge on Evidence Review when pending submissions exist; requires admin auth
+- `frontend/src/app/admin/evidence/page.js` — Pending evidence review page; per-row Approve/Reject buttons with optional notes field; inline status feedback; React Query invalidation on each decision
+
+**Files updated:** 2
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence(id, status, notes)`
+- `backend/__tests__/admin.test.js` — 11 new integration tests for `GET /admin/pending-evidence` and `POST /admin/evidence/:id/review` (auth enforcement, role check, approve, reject, double-review 404 guard, invalid ID 400)
+
+**Test count:** 189 → 260 backend (all passing). 11 new tests.
+
+**Branch:** `claude/nifty-goodall-j5njyc`, commit `91c81ab`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
