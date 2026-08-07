@@ -175,4 +175,81 @@ describe("Carbon tracking endpoints", () => {
       expect(res.body.message).toBe("Log deleted");
     });
   });
+
+  describe("GET /api/carbon/insights", () => {
+    test("should require authentication", async () => {
+      const res = await request(app).get("/api/carbon/insights");
+      expect(res.status).toBe(401);
+    });
+
+    test("should return byCategory and swaps arrays", async () => {
+      const res = await request(app)
+        .get("/api/carbon/insights")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.byCategory)).toBe(true);
+      expect(Array.isArray(res.body.swaps)).toBe(true);
+    });
+
+    test("should group emissions by category when logs exist", async () => {
+      // Log a known product (id=1 is Firm Tofu, category=Protein)
+      await request(app)
+        .post("/api/carbon/log")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ productId: "1", productName: "Firm Tofu", quantity: 1, emissions: 1.7 });
+
+      const res = await request(app)
+        .get("/api/carbon/insights")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.byCategory.length).toBeGreaterThan(0);
+      // Should have an emissions value
+      const firstCat = res.body.byCategory[0];
+      expect(typeof firstCat.category).toBe("string");
+      expect(typeof firstCat.emissions).toBe("number");
+      expect(firstCat.emissions).toBeGreaterThan(0);
+    });
+
+    test("byCategory should be sorted by emissions descending", async () => {
+      const res = await request(app)
+        .get("/api/carbon/insights")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      const cats = res.body.byCategory;
+      for (let i = 1; i < cats.length; i++) {
+        expect(cats[i - 1].emissions).toBeGreaterThanOrEqual(cats[i].emissions);
+      }
+    });
+
+    test("swaps should have from/to/savingPerUnit shape", async () => {
+      const res = await request(app)
+        .get("/api/carbon/insights")
+        .set("Authorization", `Bearer ${authToken}`);
+      expect(res.status).toBe(200);
+      for (const swap of res.body.swaps) {
+        expect(swap.from).toBeDefined();
+        expect(swap.to).toBeDefined();
+        expect(typeof swap.savingPerUnit).toBe("number");
+        expect(swap.savingPerUnit).toBeGreaterThan(0);
+        expect(swap.to.emissions).toBeLessThan(swap.from.emissions);
+      }
+    });
+
+    test("should return empty arrays for user with no logs", async () => {
+      const emptyEmail = `empty-${randomUUID().slice(0, 8)}@example.com`;
+      const reg = await request(app).post("/api/auth/register").send({
+        name: "Empty User",
+        email: emptyEmail,
+        password: "EmptyPass1",
+      });
+      const emptyToken = reg.body.token;
+
+      const res = await request(app)
+        .get("/api/carbon/insights")
+        .set("Authorization", `Bearer ${emptyToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.byCategory).toEqual([]);
+      expect(res.body.swaps).toEqual([]);
+    });
+  });
 });

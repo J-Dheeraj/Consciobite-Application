@@ -21,6 +21,10 @@ export async function deleteCarbonLog(id) {
   });
 }
 
+export async function fetchCarbonInsights() {
+  return httpClient(`${API_BASE}/carbon/insights`);
+}
+
 export async function downloadCarbonExport() {
   // Raw fetch (not httpClient) because the response is a blob, not JSON —
   // but the auth token still comes from memory, never localStorage.

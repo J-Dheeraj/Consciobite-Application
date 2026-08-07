@@ -19,6 +19,7 @@ export {
   logCarbonPurchase,
   deleteCarbonLog,
   downloadCarbonExport,
+  fetchCarbonInsights,
 } from "./carbon";
 export { fetchRecipes, fetchRecipe, fetchMethodology } from "./recipes";
 export {

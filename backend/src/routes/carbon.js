@@ -1,9 +1,22 @@
 const express = require("express");
 const validator = require("validator");
 const crypto = require("crypto");
+const path = require("path");
 const { getDb } = require("../db/schema");
 const { requireAuth } = require("../middleware/auth");
 const { validate } = require("../middleware/validate");
+
+const PRODUCTS_PATH = path.join(__dirname, "../data/products.json");
+
+function buildProductLookup() {
+  const products = require(PRODUCTS_PATH);
+  const map = {};
+  for (const p of products) {
+    const total = Object.values(p.emissions).reduce((s, v) => s + v, 0);
+    map[p.id] = { category: p.category, totalEmissions: Math.round(total * 100) / 100, name: p.name };
+  }
+  return { map, products };
+}
 
 const router = express.Router();
 
@@ -221,6 +234,55 @@ router.get("/export", requireAuth, (req, res) => {
   res.setHeader("Content-Type", "text/csv");
   res.setHeader("Content-Disposition", 'attachment; filename="carbon-log.csv"');
   res.send(csv);
+});
+
+// GET /api/carbon/insights - emissions by category + greener swap suggestions
+router.get("/insights", requireAuth, (req, res) => {
+  const db = getDb();
+  const userId = req.user.id;
+  const { map: productMap, products } = buildProductLookup();
+
+  const logs = db
+    .prepare(
+      `SELECT product_id, product_name,
+              ROUND(SUM(emissions * quantity), 2) as totalEmissions,
+              COUNT(*) as logs
+       FROM carbon_logs WHERE user_id = ?
+       GROUP BY product_id ORDER BY totalEmissions DESC`
+    )
+    .all(userId);
+
+  // Group by category
+  const categoryTotals = {};
+  for (const log of logs) {
+    const cat = productMap[log.product_id]?.category || "Other";
+    if (!categoryTotals[cat]) categoryTotals[cat] = { category: cat, emissions: 0, logs: 0 };
+    categoryTotals[cat].emissions = Math.round((categoryTotals[cat].emissions + log.totalEmissions) * 100) / 100;
+    categoryTotals[cat].logs += log.logs;
+  }
+  const byCategory = Object.values(categoryTotals).sort((a, b) => b.emissions - a.emissions);
+
+  // Greener swaps: for each of the top 3 products find the cheapest same-category alternative
+  const swaps = [];
+  for (const log of logs.slice(0, 3)) {
+    const current = productMap[log.product_id];
+    if (!current) continue;
+    const alt = products
+      .filter((p) => p.id !== log.product_id && p.category === current.category)
+      .map((p) => ({ id: p.id, name: p.name, totalEmissions: Object.values(p.emissions).reduce((s, v) => s + v, 0) }))
+      .filter((p) => p.totalEmissions < current.totalEmissions)
+      .sort((a, b) => a.totalEmissions - b.totalEmissions)[0];
+
+    if (alt) {
+      swaps.push({
+        from: { id: log.product_id, name: log.product_name, emissions: current.totalEmissions },
+        to: { id: alt.id, name: alt.name, emissions: Math.round(alt.totalEmissions * 100) / 100 },
+        savingPerUnit: Math.round((current.totalEmissions - alt.totalEmissions) * 100) / 100,
+      });
+    }
+  }
+
+  res.json({ byCategory, swaps });
 });
 
 // DELETE /api/carbon/log/:id - delete a carbon log

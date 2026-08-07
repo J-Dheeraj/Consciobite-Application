@@ -9,11 +9,24 @@ import {
   fetchCarbonLogs,
   deleteCarbonLog,
   downloadCarbonExport,
+  fetchCarbonInsights,
 } from "@/services/api";
 import { WEEKLY_CARBON_GOAL_KG } from "@/utils/constants";
 import Spinner from "@/components/Spinner";
 import PageHero from "@/components/PageHero";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
+} from "recharts";
 
 export default function CarbonTracker() {
   const { theme } = useTheme();
@@ -35,6 +48,12 @@ export default function CarbonTracker() {
         summary: summaryData,
         logs: logsData.logs,
       })),
+  });
+
+  const { data: insights } = useQuery({
+    queryKey: ["carbon-insights"],
+    queryFn: fetchCarbonInsights,
+    enabled: isAuthenticated,
   });
 
   const summary = carbonData?.summary || null;
@@ -124,6 +143,20 @@ export default function CarbonTracker() {
 
   const weeklyProgress = summary ? Math.min((summary.weekly.emissions / weeklyGoal) * 100, 100) : 0;
   const trendData = summary?.trend || [];
+  const categoryData = insights?.byCategory || [];
+  const swaps = insights?.swaps || [];
+
+  const CATEGORY_COLORS = [
+    "#52b788",
+    "#2d6a4f",
+    "#40916c",
+    "#74c69d",
+    "#95d5b2",
+    "#b7e4c7",
+    "#d8f3dc",
+    "#e9c46a",
+    "#f4a261",
+  ];
 
   return (
     <div style={{ animation: "fadeIn 0.4s ease" }}>
@@ -378,6 +411,165 @@ export default function CarbonTracker() {
                     <Bar dataKey="emissions" name="kg CO₂e" fill="#52b788" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Emissions by Category */}
+            {categoryData.length > 0 && (
+              <div
+                style={{
+                  background: isDark ? "#162419" : "#fff",
+                  borderRadius: 14,
+                  padding: 20,
+                  marginBottom: 16,
+                  boxShadow: isDark
+                    ? "0 4px 12px rgba(0,0,0,0.2)"
+                    : "0 2px 8px rgba(27,67,50,0.06)",
+                }}
+              >
+                <h3
+                  style={{
+                    fontFamily: "'Outfit', sans-serif",
+                    fontWeight: 700,
+                    marginBottom: 12,
+                    color: isDark ? "#e8f5e9" : "#333",
+                  }}
+                >
+                  Emissions by Category
+                </h3>
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie
+                      data={categoryData}
+                      dataKey="emissions"
+                      nameKey="category"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={55}
+                      outerRadius={85}
+                      paddingAngle={2}
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell
+                          key={entry.category}
+                          fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value) => [`${value} kg CO₂e`, "Emissions"]}
+                      contentStyle={{
+                        background: isDark ? "#162419" : "#fff",
+                        border: "1px solid " + (isDark ? "#2d4a35" : "#e0e0e0"),
+                        borderRadius: 8,
+                        color: isDark ? "#e8f5e9" : "#333",
+                      }}
+                    />
+                    <Legend
+                      formatter={(value) => (
+                        <span style={{ fontSize: "0.78rem", color: isDark ? "#b7e4c7" : "#555" }}>
+                          {value}
+                        </span>
+                      )}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+
+            {/* Greener Swaps */}
+            {swaps.length > 0 && (
+              <div
+                style={{
+                  background: isDark ? "#162419" : "#fff",
+                  borderRadius: 14,
+                  padding: 20,
+                  marginBottom: 16,
+                  boxShadow: isDark
+                    ? "0 4px 12px rgba(0,0,0,0.2)"
+                    : "0 2px 8px rgba(27,67,50,0.06)",
+                }}
+              >
+                <h3
+                  style={{
+                    fontFamily: "'Outfit', sans-serif",
+                    fontWeight: 700,
+                    marginBottom: 4,
+                    color: isDark ? "#e8f5e9" : "#333",
+                  }}
+                >
+                  Greener Swaps
+                </h3>
+                <p
+                  style={{
+                    fontSize: "0.82rem",
+                    color: isDark ? "#7a9a7e" : "#888",
+                    marginBottom: 14,
+                  }}
+                >
+                  Lower-emission alternatives for your highest-impact purchases
+                </p>
+                {swaps.map((swap, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      padding: "12px 0",
+                      borderBottom:
+                        i < swaps.length - 1
+                          ? "1px solid " + (isDark ? "#2d4a35" : "#f0f0f0")
+                          : "none",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "0.85rem",
+                          color: isDark ? "#e8f5e9" : "#333",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {swap.from.name}
+                      </span>
+                      <span style={{ color: isDark ? "#7a9a7e" : "#aaa", fontSize: "0.82rem" }}>
+                        ({swap.from.emissions} kg)
+                      </span>
+                      <span style={{ color: isDark ? "#7a9a7e" : "#bbb", fontSize: "0.9rem" }}>
+                        →
+                      </span>
+                      <a
+                        href={`/product/${swap.to.id}`}
+                        style={{
+                          fontSize: "0.85rem",
+                          color: isDark ? "#95d5b2" : "#2d6a4f",
+                          fontWeight: 600,
+                          textDecoration: "none",
+                        }}
+                      >
+                        {swap.to.name}
+                      </a>
+                      <span style={{ color: isDark ? "#7a9a7e" : "#aaa", fontSize: "0.82rem" }}>
+                        ({swap.to.emissions} kg)
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        marginTop: 4,
+                        fontSize: "0.78rem",
+                        color: "#52b788",
+                        fontWeight: 600,
+                      }}
+                    >
+                      Save {swap.savingPerUnit} kg CO₂e per purchase
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
 
