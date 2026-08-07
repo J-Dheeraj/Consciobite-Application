@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-07 — Carbon Insights Feature
+
+**Operation:** Add `GET /api/carbon/insights` endpoint + frontend donut chart and greener swap panels on the carbon tracker page.
+
+**Motivation:** Carbon tracker had weekly/monthly/all-time stats and a trend bar chart but no category-level breakdown or actionable suggestions. This adds both without requiring DB schema changes (category data is joined from products.json in-memory).
+
+**Files modified:** 5
+- `backend/src/routes/carbon.js` — new `/insights` route: groups carbon_logs by product category (via products.json lookup), returns `byCategory` sorted by emissions desc and `swaps` (up to 3 greener same-category alternatives for the user's top products)
+- `backend/__tests__/carbon.test.js` — 6 new tests (auth guard, response shape, category sort, swap invariants, empty-user case)
+- `frontend/src/services/carbon.js` — `fetchCarbonInsights()` function
+- `frontend/src/services/api.js` — re-export of `fetchCarbonInsights`
+- `frontend/src/app/carbon/page.js` — new `useQuery(["carbon-insights"])`, donut PieChart for emissions by category, Greener Swaps panel with per-unit savings links
+
+**Test count:** 189 → 255 backend (all passing). 6 new carbon insights tests.
+
+**Branch:** `claude/nifty-goodall-6a5sn6`, commit `7516505`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
