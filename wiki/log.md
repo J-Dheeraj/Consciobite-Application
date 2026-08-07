@@ -13,6 +13,24 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-07 — Portfolio Analyzer + Admin Evidence Review Queue
+
+**Operation:** Implement two new frontend features surfacing existing backend APIs.
+
+**Files created:** 2
+- `frontend/src/app/portfolio/page.js` — Portfolio Analyzer page; searches products, selects up to 20, calls `POST /api/v1/portfolio/score`, renders summary tiles + category benchmark chart + SKU breakdown table + DPP quick-links
+- `frontend/src/app/admin/pending-evidence/page.js` — Admin-only queue for approving/rejecting community evidence submissions; calls `GET /api/admin/pending-evidence` + `POST /api/admin/evidence/:id/review`
+
+**Files modified:** 2
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence()` service functions
+- `frontend/src/components/Navbar.js` — replaced "Tips" link with "Portfolio" link
+
+**Branch:** `claude/dreamy-dirac-ks0gi3`, commit `b389549`
+**Test status:** 249 backend tests passing; frontend builds clean (lint + Prettier both pass)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
