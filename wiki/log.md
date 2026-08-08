@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-08
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,25 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-08 — Admin Evidence Review UI
+
+**Operation:** Complete the community evidence submission workflow by adding a frontend admin review page. The backend endpoints (`GET /api/admin/pending-evidence`, `POST /api/admin/evidence/:id/review`) existed since PR #45 but had no frontend UI.
+
+**Files created:** 2
+- `frontend/src/app/admin/evidence-review/page.js` — approve/reject pending community evidence submissions with inline review panel, optional notes, and 60s auto-refresh
+- `frontend/src/app/admin/layout.js` — shared admin section tab navigation (Score Audit / Manufacturers / Evidence Review)
+
+**Files modified:** 2
+- `frontend/src/services/admin.js` — `fetchPendingEvidence()` and `reviewEvidenceSubmission(id, status, notes)`
+- `backend/__tests__/admin.test.js` — 9 new tests covering the pending-evidence and evidence-review admin endpoints
+
+**Test count:** 189 → 258 backend (all passing, full suite).
+
+**Branch:** `claude/dreamy-dirac-fbtegs`, commit `417ecad`
+**Hot cache updated:** yes
 
 ---
 
