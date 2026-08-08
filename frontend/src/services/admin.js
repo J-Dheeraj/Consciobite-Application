@@ -38,3 +38,14 @@ export async function acknowledgeFee(manufacturerId) {
 export async function fetchTransparencyStats() {
   return httpClient(`${API_BASE}/transparency/stats`);
 }
+
+export async function fetchPendingEvidence() {
+  return httpClient(`${API_BASE}/admin/pending-evidence`);
+}
+
+export async function reviewEvidenceSubmission(id, status, notes) {
+  return httpClient(`${API_BASE}/admin/evidence/${id}/review`, {
+    method: "POST",
+    body: JSON.stringify({ status, notes: notes || undefined }),
+  });
+}
