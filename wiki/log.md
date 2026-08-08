@@ -13,6 +13,25 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-08 — Admin Evidence Review Page
+
+**Operation:** Add frontend admin UI for reviewing community evidence submissions, closing the loop on the community evidence submission feature (PR #45).
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — card-per-submission layout; shows product link, source type badge, citation, optional methodology/URL behind expand toggle, submitter email, date, approve/reject with notes field; optimistic removal on review
+
+**Files updated:** 1
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewPendingEvidence()` wired to GET /admin/pending-evidence and POST /admin/evidence/:id/review
+
+**Backend:** No changes — all endpoints were already in place from PR #45.
+
+**Test status:** 249 backend tests, all passing. ESLint and Prettier clean (both workspaces).
+
+**Branch:** `claude/nifty-goodall-s2vdal`, commit `f7212bb`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
