@@ -56,3 +56,10 @@ export async function submitProductEvidence(id, data) {
     body: JSON.stringify(data),
   });
 }
+
+export async function fetchEvidenceSources({ reliability } = {}) {
+  const params = new URLSearchParams();
+  if (reliability) params.set("reliability", reliability);
+  const qs = params.toString();
+  return httpClient(`${API_BASE}/v1/evidence/sources${qs ? `?${qs}` : ""}`);
+}

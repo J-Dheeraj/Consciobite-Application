@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
-import { fetchMethodology } from "@/services/api";
+import { fetchMethodology, fetchEvidenceSources } from "@/services/api";
 import Spinner from "@/components/Spinner";
 
 const SectionCard = ({ title, children, isDark }) => (
@@ -79,6 +79,203 @@ const TierBadge = ({ tier, isDark }) => {
     </div>
   );
 };
+
+const RELIABILITY_OPTIONS = [
+  { value: "", label: "All" },
+  { value: "high", label: "High", color: "#27ae60" },
+  { value: "medium", label: "Medium", color: "#f39c12" },
+  { value: "low", label: "Low", color: "#e74c3c" },
+];
+
+function EvidenceRegistrySection({ isDark }) {
+  const [reliabilityFilter, setReliabilityFilter] = useState("");
+  const textColor = isDark ? "#b0c4b1" : "#555";
+
+  const { data: sources, isLoading } = useQuery({
+    queryKey: ["evidence-sources", reliabilityFilter],
+    queryFn: () =>
+      fetchEvidenceSources(reliabilityFilter ? { reliability: reliabilityFilter } : {}),
+    staleTime: 300_000,
+  });
+
+  return (
+    <SectionCard title="Evidence Registry" isDark={isDark}>
+      <p style={{ color: textColor, fontSize: "0.9rem", lineHeight: 1.7, marginBottom: 14 }}>
+        The following peer-reviewed studies and databases underpin the emission factors used in
+        GreenGrade scoring. Each source is independently assessed for reliability and granularity.
+      </p>
+
+      {/* Reliability filter pills */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
+        {RELIABILITY_OPTIONS.map(({ value, label, color }) => {
+          const active = reliabilityFilter === value;
+          return (
+            <button
+              key={value}
+              onClick={() => setReliabilityFilter(value)}
+              style={{
+                padding: "4px 14px",
+                borderRadius: 20,
+                border: `1px solid ${color || (isDark ? "#2d4a35" : "#d1d5db")}`,
+                background: active ? color || (isDark ? "#2d4a35" : "#e8f0e8") : "transparent",
+                color: active ? "#fff" : color || (isDark ? "#b0c4b1" : "#555"),
+                fontSize: "0.78rem",
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.15s",
+              }}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      {isLoading ? (
+        <Spinner message="Loading evidence registry..." />
+      ) : sources && sources.length > 0 ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {sources.map((source) => {
+            const reliabilityColor =
+              source.reliability === "high"
+                ? "#27ae60"
+                : source.reliability === "medium"
+                  ? "#f39c12"
+                  : "#e74c3c";
+            return (
+              <div
+                key={source.key}
+                style={{
+                  padding: "14px 16px",
+                  borderRadius: 10,
+                  background: isDark ? "#1c2e22" : "#f8faf8",
+                  border: `1px solid ${isDark ? "#2d4a35" : "#e8f0e8"}`,
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 8,
+                    flexWrap: "wrap",
+                    marginBottom: 6,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontWeight: 700,
+                      fontSize: "0.9rem",
+                      color: isDark ? "#e8f5e9" : "#1a3a2a",
+                      flex: 1,
+                      minWidth: 0,
+                    }}
+                  >
+                    {source.title}
+                  </span>
+                  <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                    <span
+                      style={{
+                        padding: "1px 8px",
+                        borderRadius: 10,
+                        background: isDark ? "#2d4a35" : "#e8f0e8",
+                        fontSize: "0.7rem",
+                        color: textColor,
+                      }}
+                    >
+                      {source.year}
+                    </span>
+                    <span
+                      style={{
+                        padding: "1px 8px",
+                        borderRadius: 10,
+                        background: `${reliabilityColor}20`,
+                        fontSize: "0.7rem",
+                        color: reliabilityColor,
+                        fontWeight: 600,
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {source.reliability}
+                    </span>
+                    <span
+                      style={{
+                        padding: "1px 8px",
+                        borderRadius: 10,
+                        background: isDark ? "#2d4a35" : "#e8f0e8",
+                        fontSize: "0.7rem",
+                        color: textColor,
+                        textTransform: "capitalize",
+                      }}
+                    >
+                      {source.source_type}
+                    </span>
+                  </div>
+                </div>
+                {source.authors && (
+                  <p
+                    style={{
+                      fontSize: "0.78rem",
+                      color: isDark ? "#7a9a7e" : "#888",
+                      fontStyle: "italic",
+                      marginBottom: 4,
+                    }}
+                  >
+                    {source.authors}
+                  </p>
+                )}
+                {source.methodology && (
+                  <p
+                    style={{
+                      fontSize: "0.82rem",
+                      color: textColor,
+                      lineHeight: 1.5,
+                      marginBottom: 4,
+                    }}
+                  >
+                    {source.methodology}
+                  </p>
+                )}
+                {source.granularity && (
+                  <p style={{ fontSize: "0.75rem", color: isDark ? "#4a6a4e" : "#aaa", margin: 0 }}>
+                    Granularity: {source.granularity}
+                  </p>
+                )}
+                {(source.doi || source.url) && (
+                  <div style={{ marginTop: 6 }}>
+                    {source.doi && (
+                      <a
+                        href={`https://doi.org/${source.doi}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: "0.78rem", color: "#52b788", marginRight: 12 }}
+                      >
+                        DOI: {source.doi}
+                      </a>
+                    )}
+                    {source.url && (
+                      <a
+                        href={source.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: "0.78rem", color: "#52b788" }}
+                      >
+                        View source ↗
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p style={{ color: textColor, fontSize: "0.88rem", fontStyle: "italic" }}>
+          No evidence sources found for the selected filter.
+        </p>
+      )}
+    </SectionCard>
+  );
+}
 
 export default function Methodology() {
   const { theme } = useTheme();
@@ -488,6 +685,9 @@ export default function Methodology() {
             ))}
           </div>
         </SectionCard>
+
+        {/* Evidence Registry — live from DB */}
+        <EvidenceRegistrySection isDark={isDark} />
 
         {/* Limitations */}
         <SectionCard title="Known Limitations" isDark={isDark}>
