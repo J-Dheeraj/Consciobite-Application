@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-09
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,27 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-09 — Admin Evidence Review UI
+
+**Operation:** Add the missing frontend admin page for reviewing community-submitted evidence citations and expand backend test coverage for the two admin evidence endpoints.
+
+**Context:** The community evidence submission feature (PR #45, merged) added `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review` backend routes, but no admin UI existed to call them. This session adds the complete loop.
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — React Query page showing pending citation cards with approve/reject buttons, optional reviewer notes input, expand/collapse for URL/methodology details, empty-state and error handling
+
+**Files modified:** 2
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence()` service functions
+- `backend/__tests__/admin.test.js` — 8 new Supertest integration tests covering: admin-only access enforcement, pending list returned, status validation, approve, 404-on-already-reviewed, 400-on-invalid-id, approved evidence visible to public list
+
+**Test count:** 189 → 257 backend (all passing). 8 new tests in `admin.test.js`.
+
+**Branch:** `claude/dreamy-dirac-j0c44r`, commit `664cb2b`
+
+**Hot cache updated:** yes
 
 ---
 
