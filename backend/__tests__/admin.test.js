@@ -268,4 +268,89 @@ describe("Admin governance endpoints", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("Community evidence review", () => {
+    let evidenceId;
+
+    beforeAll(async () => {
+      // Submit a piece of evidence as a regular user so we have something to review
+      const submitRes = await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          citation: "Test citation for admin review (at least 20 chars)",
+          source_type: "peer_reviewed_lca",
+          methodology: "Cradle-to-grave LCA",
+          url: "https://example.com/study",
+          year: 2023,
+        });
+      evidenceId = submitRes.body.id;
+    });
+
+    test("GET /api/admin/pending-evidence requires admin", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${userToken}`);
+      expect(res.status).toBe(403);
+    });
+
+    test("GET /api/admin/pending-evidence returns pending list", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+      const found = res.body.evidence.find((e) => e.id === evidenceId);
+      expect(found).toBeDefined();
+      expect(found.source_type).toBe("peer_reviewed_lca");
+    });
+
+    test("POST /api/admin/evidence/:id/review requires admin", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(403);
+    });
+
+    test("POST /api/admin/evidence/:id/review rejects invalid status", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "maybe" });
+      expect(res.status).toBe(400);
+    });
+
+    test("POST /api/admin/evidence/:id/review approves submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved", notes: "Verified against Poore & Nemecek 2018" });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("approved");
+    });
+
+    test("POST /api/admin/evidence/:id/review returns 404 for already-reviewed", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected" });
+      expect(res.status).toBe(404);
+    });
+
+    test("POST /api/admin/evidence/:id/review returns 400 for invalid id", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/abc/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(400);
+    });
+
+    test("approved evidence appears in product evidence list", async () => {
+      const res = await request(app).get("/api/products/1/evidence");
+      expect(res.status).toBe(200);
+      const found = res.body.evidence.find((e) => e.id === evidenceId);
+      expect(found).toBeDefined();
+    });
+  });
 });
