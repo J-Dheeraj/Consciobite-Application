@@ -13,6 +13,23 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-09 — Evidence Registry Frontend
+
+**Operation:** Connect the existing `/api/v1/evidence/sources` backend endpoint to the methodology page frontend.
+
+**Files modified:** 3
+- `frontend/src/services/products.js` — added `fetchEvidenceSources({ reliability? })` service function
+- `frontend/src/services/api.js` — exported `fetchEvidenceSources` from the api barrel
+- `frontend/src/app/methodology/page.js` — added `EvidenceRegistrySection` component with React Query fetch, reliability filter pills, and live DB-backed source cards
+
+**Branch:** `claude/nifty-goodall-5s3n4m`, commit `d917415`
+**Tests:** 249 backend + 9 frontend, all passing (no new backend tests needed — evidence routes already had 14 tests; no new backend code added)
+**Motivation:** Architecture reviewer #2 steered toward "evidence ingestion/provenance > additional ML". The evidence registry backend (migration 007) existed but was not surfaced in the frontend. The methodology page now shows live evidence sources with reliability filtering, making the evidence provenance story visible to B2B users and the advisory panel.
+
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
