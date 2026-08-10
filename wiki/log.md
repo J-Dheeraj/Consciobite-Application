@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-10
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,26 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-10 — Admin Evidence Review UI
+
+**Operation:** Scheduled session. Added admin frontend page and backend tests for the community evidence review workflow.
+
+**Gap closed:** The community evidence submission flow (PR #45, branch `claude/dreamy-dirac-2jgkme`) landed backend endpoints (`GET /admin/pending-evidence`, `POST /admin/evidence/:id/review`) but had no frontend for admins to approve/reject submissions. This session closes that gap.
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — `/admin/evidence` page listing pending submissions with per-item approve/reject, optional reviewer notes, inline URL details, and status toast; follows conflict-log page pattern (React Query + admin auth guard + theme-aware styles)
+
+**Files updated:** 2
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidenceItem(id, { status, notes })`
+- `backend/__tests__/admin.test.js` — 10 new Supertest tests covering GET /admin/pending-evidence (auth guards + response shape) and POST /admin/evidence/:id/review (auth guards, validation, approve flow, idempotency, 404 for unknown ID)
+
+**Test count:** 249 → 259 backend (all passing). 10 new tests.
+
+**Branch:** `claude/nifty-goodall-fetwmg`, commit `a43ede0`
+**Hot cache updated:** yes
 
 ---
 
