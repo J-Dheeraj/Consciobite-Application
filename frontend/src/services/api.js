@@ -29,5 +29,7 @@ export {
   linkProductManufacturer,
   acknowledgeFee,
   fetchTransparencyStats,
+  fetchPendingEvidence,
+  reviewEvidence,
 } from "./admin";
 export { fetchFavorites, addFavorite, removeFavorite, clearServerFavorites } from "./favorites";

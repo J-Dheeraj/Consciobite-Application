@@ -147,6 +147,22 @@ describe("Auth endpoints - validation", () => {
       expect(meRes.body.user.weeklyGoal).toBeDefined();
       expect(typeof meRes.body.user.weeklyGoal).toBe("number");
     });
+
+    test("should return role field defaulting to 'user' for new registrations", async () => {
+      const email = `role-${uid()}@example.com`;
+      const regRes = await request(app).post("/api/auth/register").send({
+        name: "Role Test",
+        email,
+        password: "RolePass1Abc",
+      });
+      expect(regRes.status).toBe(201);
+
+      const meRes = await request(app)
+        .get("/api/auth/me")
+        .set("Authorization", `Bearer ${regRes.body.token}`);
+      expect(meRes.status).toBe(200);
+      expect(meRes.body.user.role).toBe("user");
+    });
   });
 
   describe("PATCH /api/auth/me", () => {
