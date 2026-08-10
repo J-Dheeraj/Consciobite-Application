@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-10
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,29 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-10 — Admin Hub, Evidence Review UI, Role in /auth/me
+
+**Operation:** Scheduled session. Identified that backend had admin evidence review endpoints (`GET /admin/pending-evidence`, `POST /admin/evidence/:id/review`) with no frontend UI. Built the complete admin panel frontend.
+
+**Files created:** 2
+- `frontend/src/app/admin/page.js` — admin hub landing page with stats tiles (products, manufacturers, paying clients, score changes, pending evidence) and navigation cards to all admin sections; red badge on Evidence Review card when submissions are pending
+- `frontend/src/app/admin/evidence/page.js` — evidence review page: shows pending community submissions in expandable cards with approve/reject buttons + optional reviewer notes; also shows previously reviewed entries; per-item loading state + toast feedback
+
+**Files modified:** 5
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence` and `reviewEvidence` service functions
+- `frontend/src/services/api.js` — re-exported the two new admin service functions
+- `frontend/src/components/Navbar.js` — show "Admin" nav link (desktop + mobile) when `user.role === "admin"`
+- `backend/src/routes/auth.js` — `GET /auth/me` now selects and returns `role` field (defaults to "user")
+- `backend/__tests__/auth.test.js` — 1 new test asserting `GET /me` returns `role === "user"` for new accounts
+
+**Test count:** 249 → 250 backend (all passing), 9 frontend (all passing).
+
+**Branch:** `claude/dreamy-dirac-qq4r6y`, commit `ddd5e31` (pushed to origin)
+
+**Hot cache updated:** yes
 
 ---
 

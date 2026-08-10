@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-10
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-10 — admin hub + evidence review UI + role in /auth/me (branch `claude/dreamy-dirac-qq4r6y`, commit `ddd5e31`). All previous open PRs merged. 250 backend + 9 frontend tests passing.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -55,7 +55,9 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status:** 250 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+
+**Admin panel (2026-08-10, branch `claude/dreamy-dirac-qq4r6y`):** `/admin` hub page with stats tiles and navigation cards (including pending-evidence badge count); `/admin/evidence` page for reviewing community evidence submissions (approve/reject with optional notes, per-card expand/collapse, toast feedback). `GET /auth/me` now returns `role` field ("user" for all current accounts; "admin" for admin users). Navbar shows "Admin" link for `user.role === "admin"` on desktop and mobile. Service layer: `fetchPendingEvidence` and `reviewEvidence` added to `admin.js` and re-exported from `api.js`. New test: `GET /me` returns `role === "user"` for new registrations.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
