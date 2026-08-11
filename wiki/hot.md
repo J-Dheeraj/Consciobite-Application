@@ -13,11 +13,13 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-11 — portfolio scoring page added (branch `claude/nifty-goodall-vduqmz`); all prior PRs merged, no open PRs.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
 **B2B layer (2026-07):** `/api/v1/passport/:id`, `POST /api/v1/portfolio/score` (≤100 SKUs), `/api/v1/audit/:id` in `backend/src/routes/passport.js`. `METHODOLOGY.md` at repo root. README rewritten for B2B (no student-project framing).
+
+**Portfolio scoring UI (2026-08-11):** `/portfolio` page (`frontend/src/app/portfolio/page.js`) provides a frontend for the existing `POST /api/v1/portfolio/score` endpoint. Brands select up to 100 SKUs from the searchable catalog, submit for scoring, and see: portfolio summary (avg score, best/worst SKU), category benchmarks table with score bars, and a sorted product grid linking to individual Digital Product Passports. Uses React Query (`useQuery` + `useMutation`). "Portfolio" added to Navbar between Compare and Dashboard. Commit `5bb7347` on branch `claude/nifty-goodall-vduqmz`.
 
 **ML insights layer (2026-07-30):** Course-aligned, advisory-only `/api/v1/ml/*` (similar/classify/estimate-emissions/clusters) — scikit-learn trained offline (`ml/greengrade_ml_analysis.py`), artifacts in `backend/src/data/ml_artifacts.json`, evaluated in plain JS (`backend/src/services/mlInsights.js`). Never touches scores/categories or audit trail. `ML_REPORT.md` = course report with real numbers from sklearn + NumPy reference runs. K-Means k=2 rediscovers animal/plant divide (silhouette 0.472); deployed classifiers are decision trees (auditability > accuracy).
 

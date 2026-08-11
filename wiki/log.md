@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-11
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,30 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-11 — Portfolio Scoring Frontend
+
+**Operation:** Build `/portfolio` page — the missing B2B frontend for the existing `POST /api/v1/portfolio/score` endpoint.
+
+**Context:** All prior open PRs (#34–#47) are merged; no open PRs as of session start. Backend has 249 tests, all passing.
+
+**Files created:** 1
+- `frontend/src/app/portfolio/page.js` — portfolio scoring page (React Query, dark-mode, accessible)
+
+**Files updated:** 1
+- `frontend/src/components/Navbar.js` — "Portfolio" added between Compare and Dashboard
+
+**Feature:** Brands select up to 100 SKUs from a searchable catalog, click "Score N SKUs", and see:
+1. Summary cards — portfolio avg score, product count, best/worst SKU
+2. Category benchmarks table — sorted by avg score with score-bar visualization
+3. Product grid — all scored passports sorted best→worst, each linking to `/passport/[id]`
+
+**Build:** 1120 static pages (added `/portfolio`). ESLint clean. Zero raw `useEffect` calls.
+
+**Branch:** `claude/nifty-goodall-vduqmz`, commit `5bb7347`
+**Hot cache updated:** yes
 
 ---
 
