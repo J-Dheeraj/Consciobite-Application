@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-11
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,26 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-11 — Leaderboard Page
+
+**Operation:** Scheduled session. Added `/leaderboard` frontend page — global top 10 + per-category top 5 by GreenGrade score. Also updated Navbar.
+
+**Context:** All prior PRs (#34–#47) confirmed merged to main. 249 backend tests passing. No open PRs or issues.
+
+**Files created:** 1
+- `frontend/src/app/leaderboard/page.js` — new page; uses `useQuery` (overall top 10) + `useQueries` (top 5 × 9 categories); `GradeBadge` + `PageHero` + `Spinner`; links to product detail pages; "View all →" per category links to filtered products page; hover interactions; light/dark theming
+
+**Files modified:** 1
+- `frontend/src/components/Navbar.js` — added Leaderboard link after Products
+
+**Branch:** `claude/dreamy-dirac-oougoo`, commit `b16ddb4` (pushed to origin)
+**Build:** frontend builds successfully; `/leaderboard` appears as static page in output
+**ESLint/Prettier:** clean
+
+**Hot cache updated:** yes
 
 ---
 
