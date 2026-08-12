@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/AuthContext";
@@ -7,6 +7,8 @@ import { useTheme } from "@/context/ThemeContext";
 import {
   fetchCarbonSummary,
   fetchCarbonLogs,
+  fetchProducts,
+  logCarbonPurchase,
   deleteCarbonLog,
   downloadCarbonExport,
 } from "@/services/api";
@@ -24,6 +26,21 @@ export default function CarbonTracker() {
   const [deleteError, setDeleteError] = useState("");
   const [exporting, setExporting] = useState(false);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [logQty, setLogQty] = useState(1);
+  const [logging, setLogging] = useState(false);
+  const [logSuccess, setLogSuccess] = useState("");
+  const [logError, setLogError] = useState("");
+  const searchDebounceRef = useRef(null);
+
+  useEffect(() => {
+    clearTimeout(searchDebounceRef.current);
+    searchDebounceRef.current = setTimeout(() => setDebouncedSearch(searchTerm), 320);
+    return () => clearTimeout(searchDebounceRef.current);
+  }, [searchTerm]);
+
   const {
     data: carbonData,
     isLoading: loading,
@@ -37,8 +54,43 @@ export default function CarbonTracker() {
       })),
   });
 
+  const { data: searchData, isFetching: searching } = useQuery({
+    queryKey: ["quick-log-search", debouncedSearch],
+    queryFn: () => fetchProducts({ search: debouncedSearch, limit: 6 }),
+    enabled: debouncedSearch.length >= 2 && !selectedProduct,
+    staleTime: 30_000,
+  });
+
   const summary = carbonData?.summary || null;
   const logs = carbonData?.logs || [];
+
+  const handleQuickLog = useCallback(async () => {
+    if (!selectedProduct) return;
+    setLogging(true);
+    setLogError("");
+    setLogSuccess("");
+    try {
+      await logCarbonPurchase(
+        String(selectedProduct.id),
+        selectedProduct.name,
+        logQty,
+        selectedProduct.greenGrade.totalEmissions
+      );
+      setLogSuccess(
+        `Logged ${logQty}× ${selectedProduct.name} (${(selectedProduct.greenGrade.totalEmissions * logQty).toFixed(2)} kg CO₂e)`
+      );
+      setSelectedProduct(null);
+      setSearchTerm("");
+      setDebouncedSearch("");
+      setLogQty(1);
+      queryClient.invalidateQueries({ queryKey: ["carbon"] });
+      queryClient.invalidateQueries({ queryKey: ["carbon-summary-widget"] });
+    } catch (err) {
+      setLogError(err.message || "Failed to log purchase. Please try again.");
+    } finally {
+      setLogging(false);
+    }
+  }, [selectedProduct, logQty, queryClient]);
 
   const handleExport = useCallback(async () => {
     setExporting(true);
@@ -341,6 +393,320 @@ export default function CarbonTracker() {
                   }}
                 />
               </div>
+            </div>
+
+            {/* Quick Log */}
+            <div
+              style={{
+                background: isDark ? "#162419" : "#fff",
+                borderRadius: 14,
+                padding: 20,
+                marginBottom: 16,
+                boxShadow: isDark ? "0 4px 12px rgba(0,0,0,0.2)" : "0 2px 8px rgba(27,67,50,0.06)",
+              }}
+            >
+              <h3
+                style={{
+                  fontFamily: "'Outfit', sans-serif",
+                  fontWeight: 700,
+                  marginBottom: 4,
+                  color: isDark ? "#e8f5e9" : "#333",
+                }}
+              >
+                Log a Product
+              </h3>
+              <p
+                style={{
+                  fontSize: "0.82rem",
+                  color: isDark ? "#7a9a7e" : "#888",
+                  marginBottom: 12,
+                }}
+              >
+                Search and log a food purchase directly.
+              </p>
+
+              <div style={{ position: "relative" }}>
+                <input
+                  type="text"
+                  aria-label="Search products to log"
+                  placeholder="Search products…"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setSelectedProduct(null);
+                    setLogSuccess("");
+                    setLogError("");
+                  }}
+                  style={{
+                    width: "100%",
+                    boxSizing: "border-box",
+                    padding: "10px 14px",
+                    borderRadius: 10,
+                    border: "1px solid " + (isDark ? "#2d4a35" : "#d4edda"),
+                    background: isDark ? "#0f2016" : "#f9fdf9",
+                    color: isDark ? "#e8f5e9" : "#222",
+                    fontSize: "0.9rem",
+                    outline: "none",
+                  }}
+                />
+                {searching && (
+                  <span
+                    style={{
+                      position: "absolute",
+                      right: 12,
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      fontSize: "0.75rem",
+                      color: isDark ? "#7a9a7e" : "#aaa",
+                    }}
+                  >
+                    Searching…
+                  </span>
+                )}
+              </div>
+
+              {/* Search results */}
+              {!selectedProduct &&
+                debouncedSearch.length >= 2 &&
+                searchData?.products?.length > 0 && (
+                  <div
+                    style={{
+                      marginTop: 6,
+                      border: "1px solid " + (isDark ? "#2d4a35" : "#e0f0e6"),
+                      borderRadius: 10,
+                      overflow: "hidden",
+                    }}
+                  >
+                    {searchData.products.map((p, i) => (
+                      <button
+                        key={p.id}
+                        onClick={() => {
+                          setSelectedProduct(p);
+                          setLogQty(1);
+                        }}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          width: "100%",
+                          padding: "10px 14px",
+                          background:
+                            i % 2 === 0
+                              ? isDark
+                                ? "#102018"
+                                : "#f5fbf7"
+                              : isDark
+                                ? "#0f2016"
+                                : "#fff",
+                          border: "none",
+                          borderBottom:
+                            i < searchData.products.length - 1
+                              ? "1px solid " + (isDark ? "#1e3328" : "#edf7f0")
+                              : "none",
+                          cursor: "pointer",
+                          textAlign: "left",
+                          gap: 8,
+                        }}
+                      >
+                        <div>
+                          <div
+                            style={{
+                              fontWeight: 500,
+                              fontSize: "0.88rem",
+                              color: isDark ? "#e8f5e9" : "#222",
+                            }}
+                          >
+                            {p.name}
+                          </div>
+                          <div style={{ fontSize: "0.75rem", color: isDark ? "#7a9a7e" : "#888" }}>
+                            {p.brand} · {p.category}
+                          </div>
+                        </div>
+                        <span
+                          style={{
+                            fontSize: "0.8rem",
+                            fontWeight: 600,
+                            color: isDark ? "#95d5b2" : "#2d6a4f",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {p.greenGrade?.totalEmissions} kg CO₂e
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+              {!selectedProduct &&
+                debouncedSearch.length >= 2 &&
+                searchData?.products?.length === 0 && (
+                  <p
+                    style={{
+                      marginTop: 8,
+                      fontSize: "0.82rem",
+                      color: isDark ? "#7a9a7e" : "#aaa",
+                    }}
+                  >
+                    No products found.
+                  </p>
+                )}
+
+              {/* Selected product + quantity */}
+              {selectedProduct && (
+                <div
+                  style={{
+                    marginTop: 10,
+                    padding: "14px 16px",
+                    borderRadius: 10,
+                    background: isDark ? "#102018" : "#f0fbf4",
+                    border: "1px solid " + (isDark ? "#2d4a35" : "#b7e4c7"),
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      marginBottom: 10,
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          fontWeight: 600,
+                          fontSize: "0.9rem",
+                          color: isDark ? "#e8f5e9" : "#222",
+                        }}
+                      >
+                        {selectedProduct.name}
+                      </div>
+                      <div style={{ fontSize: "0.78rem", color: isDark ? "#7a9a7e" : "#888" }}>
+                        {selectedProduct.greenGrade?.totalEmissions} kg CO₂e per unit
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setSelectedProduct(null);
+                        setLogSuccess("");
+                        setLogError("");
+                      }}
+                      aria-label="Deselect product"
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: isDark ? "#7a9a7e" : "#aaa",
+                        cursor: "pointer",
+                        fontSize: "1rem",
+                        padding: "2px 6px",
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 10,
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <label
+                      htmlFor="quick-log-qty"
+                      style={{
+                        fontSize: "0.82rem",
+                        color: isDark ? "#b0c4b1" : "#555",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      Quantity:
+                    </label>
+                    <input
+                      id="quick-log-qty"
+                      type="number"
+                      min="0.1"
+                      max="100"
+                      step="0.1"
+                      value={logQty}
+                      onChange={(e) => setLogQty(Math.max(0.1, parseFloat(e.target.value) || 1))}
+                      style={{
+                        width: 70,
+                        padding: "6px 10px",
+                        borderRadius: 8,
+                        border: "1px solid " + (isDark ? "#2d4a35" : "#b7e4c7"),
+                        background: isDark ? "#0f2016" : "#fff",
+                        color: isDark ? "#e8f5e9" : "#222",
+                        fontSize: "0.9rem",
+                        textAlign: "center",
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: "0.82rem",
+                        color: isDark ? "#7a9a7e" : "#888",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      = {(selectedProduct.greenGrade?.totalEmissions * logQty).toFixed(2)} kg CO₂e
+                    </span>
+                    <button
+                      onClick={handleQuickLog}
+                      disabled={logging}
+                      style={{
+                        marginLeft: "auto",
+                        padding: "8px 20px",
+                        background: logging
+                          ? isDark
+                            ? "#1e3a28"
+                            : "#d4edda"
+                          : "linear-gradient(135deg, #2d6a4f, #40916c)",
+                        color: logging ? (isDark ? "#7a9a7e" : "#aaa") : "#fff",
+                        border: "none",
+                        borderRadius: 10,
+                        fontWeight: 600,
+                        fontSize: "0.88rem",
+                        cursor: logging ? "not-allowed" : "pointer",
+                        transition: "all 0.15s ease",
+                      }}
+                    >
+                      {logging ? "Logging…" : "Log Purchase"}
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {logSuccess && (
+                <div
+                  role="status"
+                  style={{
+                    marginTop: 10,
+                    padding: "10px 14px",
+                    borderRadius: 10,
+                    background: isDark ? "#102018" : "#edf7f0",
+                    color: isDark ? "#95d5b2" : "#2d6a4f",
+                    fontSize: "0.85rem",
+                    fontWeight: 500,
+                  }}
+                >
+                  ✓ {logSuccess}
+                </div>
+              )}
+              {logError && (
+                <div
+                  role="alert"
+                  style={{
+                    marginTop: 10,
+                    padding: "10px 14px",
+                    borderRadius: 10,
+                    background: isDark ? "#2a1519" : "#fef2f2",
+                    color: "#e63946",
+                    fontSize: "0.85rem",
+                  }}
+                >
+                  {logError}
+                </div>
+              )}
             </div>
 
             {/* Trend Chart */}

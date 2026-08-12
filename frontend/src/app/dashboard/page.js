@@ -133,7 +133,8 @@ function StatCard({ icon, label, value, subtext, color, isDark }) {
 export default function Dashboard() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const weeklyGoal = user?.weeklyGoal ?? WEEKLY_CARBON_GOAL_KG;
 
   const {
     data: dashData,
@@ -322,7 +323,7 @@ export default function Dashboard() {
                   Your Carbon Footprint
                 </h3>
                 <p style={subtextStyle(isDark)}>
-                  Weekly progress toward your {WEEKLY_CARBON_GOAL_KG} kg CO₂e goal.
+                  Weekly progress toward your {weeklyGoal} kg CO₂e goal.
                 </p>
               </div>
               <Link
@@ -341,9 +342,9 @@ export default function Dashboard() {
 
             {/* Weekly progress bar */}
             {(() => {
-              const weekly = carbonSummary.weeklyEmissions ?? 0;
-              const pct = Math.min(100, (weekly / WEEKLY_CARBON_GOAL_KG) * 100);
-              const overGoal = weekly > WEEKLY_CARBON_GOAL_KG;
+              const weekly = carbonSummary.weekly?.emissions ?? 0;
+              const pct = Math.min(100, (weekly / weeklyGoal) * 100);
+              const overGoal = weekly > weeklyGoal;
               const barColor = overGoal
                 ? "#e63946"
                 : weekly / WEEKLY_CARBON_GOAL_KG > 0.75
@@ -363,7 +364,7 @@ export default function Dashboard() {
                     <span style={{ fontWeight: 600, color: overGoal ? "#e63946" : barColor }}>
                       {weekly.toFixed(2)} kg this week
                     </span>
-                    <span>{WEEKLY_CARBON_GOAL_KG} kg goal</span>
+                    <span>{weeklyGoal} kg goal</span>
                   </div>
                   <div
                     style={{
