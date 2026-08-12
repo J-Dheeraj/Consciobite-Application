@@ -268,4 +268,126 @@ describe("Admin governance endpoints", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("GET /api/admin/pending-evidence", () => {
+    test("should return 401 for unauthenticated requests", async () => {
+      const res = await request(app).get("/api/admin/pending-evidence");
+      expect(res.status).toBe(401);
+    });
+
+    test("should return 403 for non-admin users", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${userToken}`);
+      expect(res.status).toBe(403);
+    });
+
+    test("should return pending evidence list for admin", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("evidence");
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+    });
+
+    test("should accept limit and offset query params", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence?limit=5&offset=0")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.evidence.length).toBeLessThanOrEqual(5);
+    });
+  });
+
+  describe("POST /api/admin/evidence/:id/review", () => {
+    let submittedEvidenceId;
+    let secondEvidenceId;
+
+    beforeAll(async () => {
+      // Submit evidence via the products API so FK constraints are satisfied
+      const res1 = await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          citation: "Test citation for admin review — LCA study on product 1, at least 20 chars",
+          source_type: "other",
+        });
+      submittedEvidenceId = res1.body.id;
+
+      const res2 = await request(app)
+        .post("/api/products/2/evidence")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          citation:
+            "Another test citation for rejection — methodology detail insufficient, 20+ chars",
+          source_type: "industry_report",
+        });
+      secondEvidenceId = res2.body.id;
+    });
+
+    test("should return 401 for unauthenticated requests", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${submittedEvidenceId}/review`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(401);
+    });
+
+    test("should return 403 for non-admin users", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${submittedEvidenceId}/review`)
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(403);
+    });
+
+    test("should approve a pending evidence submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${submittedEvidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved", notes: "Verified source" });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("approved");
+
+      const db = getDb();
+      const row = db
+        .prepare("SELECT status, reviewer_notes FROM submitted_evidence WHERE id = ?")
+        .get(submittedEvidenceId);
+      expect(row.status).toBe("approved");
+      expect(row.reviewer_notes).toBe("Verified source");
+    });
+
+    test("should return 404 when trying to re-review an already-reviewed submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${submittedEvidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected" });
+      expect(res.status).toBe(404);
+    });
+
+    test("should reject a pending evidence submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${secondEvidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected", notes: "Insufficient methodology detail" });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("rejected");
+    });
+
+    test("should return 400 for invalid evidence ID", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/not-a-number/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should return 400 for invalid status value", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${submittedEvidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "maybe" });
+      expect(res.status).toBe(400);
+    });
+  });
 });
