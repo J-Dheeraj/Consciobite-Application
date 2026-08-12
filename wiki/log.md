@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-12
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,21 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-12 — Carbon Quick Log + Dashboard Fix
+
+**Operation:** Scheduled session. Add inline product-search quick log flow to Carbon Tracker; fix two bugs in dashboard carbon widget.
+
+**Files modified:** 2
+- `frontend/src/app/carbon/page.js` — new "Log a Product" section: debounced product search (≥2 chars), click-to-select result, quantity input with live CO₂e preview, one-click log via `logCarbonPurchase`. Invalidates `carbon` and `carbon-summary-widget` cache keys on success. Imports `fetchProducts` and `logCarbonPurchase` added.
+- `frontend/src/app/dashboard/page.js` — fixed `carbonSummary.weeklyEmissions` → `carbonSummary.weekly?.emissions` (was always undefined, causing widget to show 0%); fixed hardcoded `WEEKLY_CARBON_GOAL_KG` in goal label and progress math → user personal `weeklyGoal`.
+
+**Test status:** 249 backend (all passing), 9 frontend (all passing). ESLint + Prettier clean.
+
+**Branch:** `claude/nifty-goodall-3d3v5z`, commit `e271c5f`
+**Hot cache updated:** yes
 
 ---
 

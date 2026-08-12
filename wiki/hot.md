@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-12 — quick log feature on carbon page + dashboard carbon widget bug fix (branch `claude/nifty-goodall-3d3v5z`, commit `e271c5f`).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -55,7 +55,9 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status:** 249 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+
+**Carbon Quick Log (2026-08-12, branch `claude/nifty-goodall-3d3v5z`):** Inline product search + log flow added to the Carbon Tracker page (`frontend/src/app/carbon/page.js`). Users can type ≥2 chars to search products (debounced 320ms via `fetchProducts`), click a result to select, set quantity with live CO₂e preview, then log in one click — no need to navigate to the product detail page. Cache-invalidates both `carbon` and `carbon-summary-widget` on success. Also fixed dashboard carbon widget bugs: `carbonSummary.weeklyEmissions` was always undefined (→ `carbonSummary.weekly?.emissions`), and the weekly goal display used the constant instead of the user's personal `weeklyGoal`.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
