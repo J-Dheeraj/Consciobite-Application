@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-12
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,27 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-12 — Admin Evidence Review Page
+
+**Operation:** Add admin frontend page for reviewing pending community evidence submissions. The backend routes existed since PR #45 but no admin UI was built, making the community submission feature non-functional for admins.
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — admin page showing pending submissions with product ID, submitter, citation, source type, expandable methodology/URL detail, reviewer notes textarea, and per-item Approve/Reject buttons; auto-refreshes every 30s; empty state when queue is clear
+
+**Files modified:** 3
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence()` service functions
+- `frontend/src/services/api.js` — re-exported new service functions
+- `backend/__tests__/admin.test.js` — 11 new Supertest tests for `GET /admin/pending-evidence` and `POST /admin/evidence/:id/review`
+
+**Test count:** 249 → 260 backend (all passing). New tests cover: 401/403 auth enforcement, list + pagination, approve with reviewer notes (verified in DB), reject, double-review 404, invalid ID 400, invalid status 400.
+
+**Branch:** `claude/dreamy-dirac-ftnyay`, commit `d239b39`
+
+**Index updated:** no
+**Hot cache updated:** yes
 
 ---
 
