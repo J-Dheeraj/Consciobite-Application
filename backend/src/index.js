@@ -28,6 +28,7 @@ const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const mlInsights = require("./services/mlInsights");
 const { getMethodology } = require("./services/dataProvenance");
 const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
+const productService = require("./services/productService");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -76,6 +77,11 @@ validateConfig();
 getDb();
 runMigrations();
 logger.info("Database initialized");
+
+// Seed catalog_products from JSON if the table is empty, then warm the cache.
+productService.seedFromJson(products);
+productService.loadCache();
+logger.info(`Product catalog: ${productService.getAllProducts().length} active products loaded`);
 
 // ---------- Train GreenGrade ML model on product catalog ----------
 trainModel(products);

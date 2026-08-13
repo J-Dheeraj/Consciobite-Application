@@ -833,6 +833,147 @@ const options = {
           },
         },
       },
+
+      // --- Product Catalog Management ---
+      "/admin/products": {
+        get: {
+          tags: ["Product Catalog"],
+          summary: "List catalog products (admin only)",
+          description:
+            "Returns all active products. Pass `?includeInactive=true` to also see soft-deleted entries.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              in: "query",
+              name: "includeInactive",
+              schema: { type: "boolean" },
+              description: "Include soft-deleted products when true",
+            },
+          ],
+          responses: {
+            200: {
+              description: "Catalog product list",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      products: { type: "array", items: { $ref: "#/components/schemas/Product" } },
+                      total: { type: "integer" },
+                    },
+                  },
+                },
+              },
+            },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+          },
+        },
+        post: {
+          tags: ["Product Catalog"],
+          summary: "Create a new catalog product (admin only)",
+          description:
+            "Adds a product to the SQLite catalog and immediately reflects it in the public API. Generates an ID automatically.",
+          security: [{ bearerAuth: [] }],
+          requestBody: {
+            required: true,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  required: ["name", "brand", "category", "emissions"],
+                  properties: {
+                    name: { type: "string", maxLength: 200 },
+                    brand: { type: "string", maxLength: 200 },
+                    category: { type: "string", maxLength: 50 },
+                    description: { type: "string", maxLength: 500 },
+                    barcode: { type: "string", maxLength: 20 },
+                    emissions: {
+                      type: "object",
+                      required: [
+                        "landUseChange",
+                        "animalFeed",
+                        "farm",
+                        "processing",
+                        "transport",
+                        "packaging",
+                        "retail",
+                      ],
+                      properties: {
+                        landUseChange: { type: "number", minimum: 0 },
+                        animalFeed: { type: "number", minimum: 0 },
+                        farm: { type: "number", minimum: 0 },
+                        processing: { type: "number", minimum: 0 },
+                        transport: { type: "number", minimum: 0 },
+                        packaging: { type: "number", minimum: 0 },
+                        retail: { type: "number", minimum: 0 },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            201: { description: "Created product with GreenGrade score" },
+            400: { description: "Validation error (missing fields or invalid emissions)" },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+          },
+        },
+      },
+      "/admin/products/{id}": {
+        patch: {
+          tags: ["Product Catalog"],
+          summary: "Update a catalog product (admin only)",
+          description:
+            "Partial update — only supplied fields are changed. Rebuilds the in-memory cache and invalidates HTTP cache immediately.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { in: "path", name: "id", required: true, schema: { type: "string" } },
+          ],
+          requestBody: {
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    name: { type: "string", maxLength: 200 },
+                    brand: { type: "string", maxLength: 200 },
+                    category: { type: "string", maxLength: 50 },
+                    description: { type: "string", maxLength: 500 },
+                    barcode: { type: "string", maxLength: 20 },
+                    emissions: { type: "object" },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Updated product with recalculated GreenGrade score" },
+            400: { description: "Validation error" },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+            404: { description: "Product not found" },
+          },
+        },
+        delete: {
+          tags: ["Product Catalog"],
+          summary: "Soft-delete a catalog product (admin only)",
+          description:
+            "Marks the product as inactive. It disappears from the public API immediately but remains auditable in the admin list.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { in: "path", name: "id", required: true, schema: { type: "string" } },
+          ],
+          responses: {
+            200: { description: "Product soft-deleted", content: { "application/json": { schema: { type: "object", properties: { deleted: { type: "boolean" }, id: { type: "string" } } } } } },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+            404: { description: "Product not found" },
+          },
+        },
+      },
     },
   },
   apis: [],

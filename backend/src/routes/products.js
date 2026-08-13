@@ -29,17 +29,14 @@ const EVIDENCE_SUBMIT_SCHEMA = {
     year: { required: false },
   },
 };
-const products = require("../data/products.json");
 const { calculateGreenGrade } = require("../services/greengrade");
 const { logger } = require("../middleware/logger");
+const productService = require("../services/productService");
 
 function enrichProduct(product) {
   const grade = calculateGreenGrade(product.emissions, product.category, product);
   return { ...product, greenGrade: grade };
 }
-
-// Pre-compute enriched products at module load (product catalog is static)
-const enrichedProducts = products.map(enrichProduct);
 
 function sanitize(str, maxLen = 100) {
   if (typeof str !== "string") return "";
@@ -65,7 +62,7 @@ router.get("/", (req, res) => {
     Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_PAGE_SIZE)
   );
 
-  let results = [...enrichedProducts];
+  let results = [...productService.getAllProducts()];
 
   if (search) {
     const q = search.toLowerCase();
@@ -129,9 +126,8 @@ router.get("/compare", validate(COMPARE_SCHEMA), (req, res) => {
   }
 
   const found = ids
-    .map((id) => products.find((p) => p.id === id))
-    .filter(Boolean)
-    .map(enrichProduct);
+    .map((id) => productService.getProductById(id))
+    .filter(Boolean);
 
   if (found.length < 2) {
     return res.status(404).json({ error: "Not enough valid products found to compare" });
@@ -142,9 +138,10 @@ router.get("/compare", validate(COMPARE_SCHEMA), (req, res) => {
 
 // GET /api/products/stats
 router.get("/stats", (req, res) => {
+  const all = productService.getAllProducts();
   const categories = {};
 
-  for (const p of enrichedProducts) {
+  for (const p of all) {
     if (!categories[p.category]) {
       categories[p.category] = { count: 0, totalScore: 0, totalEmissions: 0 };
     }
@@ -162,7 +159,7 @@ router.get("/stats", (req, res) => {
 
   stats.sort((a, b) => b.avgScore - a.avgScore);
 
-  res.json({ totalProducts: products.length, categories: stats });
+  res.json({ totalProducts: all.length, categories: stats });
 });
 
 const OPEN_FOOD_FACTS_RETRIES = 2;
@@ -277,11 +274,12 @@ router.get("/:id/recommendations", (req, res) => {
   if (!validator.isAlphanumeric(id)) {
     return res.status(400).json({ error: "Invalid product ID" });
   }
-  const product = enrichedProducts.find((p) => p.id === id);
+  const product = productService.getProductById(id);
   if (!product) {
     return res.status(404).json({ error: "Product not found" });
   }
-  const similar = enrichedProducts
+  const similar = productService
+    .getAllProducts()
     .filter((p) => p.id !== id && p.category === product.category)
     .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
     .slice(0, 6);
@@ -295,7 +293,7 @@ router.get("/:id/evidence", (req, res, next) => {
     if (!validator.isAlphanumeric(id)) {
       return res.status(400).json({ error: "Invalid product ID" });
     }
-    const product = products.find((p) => String(p.id) === id);
+    const product = productService.getProductById(id);
     if (!product) return res.status(404).json({ error: "Product not found" });
 
     const evidence = getApprovedEvidence(id);
@@ -312,7 +310,7 @@ router.post("/:id/evidence", requireAuth, validate(EVIDENCE_SUBMIT_SCHEMA), (req
     if (!validator.isAlphanumeric(id)) {
       return res.status(400).json({ error: "Invalid product ID" });
     }
-    const product = products.find((p) => String(p.id) === id);
+    const product = productService.getProductById(id);
     if (!product) return res.status(404).json({ error: "Product not found" });
 
     const { citation, source_type, methodology, url, year } = req.body;
@@ -372,7 +370,7 @@ router.get("/:id", async (req, res, next) => {
     if (!validator.isAlphanumeric(id)) {
       return res.status(400).json({ error: "Invalid product ID" });
     }
-    const product = enrichedProducts.find((p) => p.id === id);
+    const product = productService.getProductById(id);
     if (!product) return res.status(404).json({ error: "Product not found" });
     res.json(product);
   } catch (err) {
@@ -388,10 +386,10 @@ router.get("/scan/:barcode", async (req, res, next) => {
       return res.status(400).json({ error: "Invalid barcode format" });
     }
 
-    // Try local database first
-    const product = products.find((p) => p.barcode === barcode);
+    // Try local catalog first
+    const product = productService.getProductByBarcode(barcode);
     if (product) {
-      return res.json(enrichProduct(product));
+      return res.json(product);
     }
 
     const lookup = await lookupOpenFoodFacts(barcode);

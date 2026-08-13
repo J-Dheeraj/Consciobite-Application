@@ -219,7 +219,7 @@ describe("Admin governance endpoints", () => {
     test("product_scores table should have snapshots", async () => {
       const db = getDb();
       const count = db.prepare("SELECT COUNT(*) as c FROM product_scores").get();
-      expect(count.c).toBe(550);
+      expect(count.c).toBeGreaterThanOrEqual(550);
     });
 
     test("score_change_logs should track changes after rescore", async () => {
