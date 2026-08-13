@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-13 — Controlled Score Publication
+
+**Operation:** Implement controlled score publication — a gate between GreenGrade algorithm changes and what B2B DPP passport clients see, directly addressing the architecture reviewer's "controlled score publication" steer.
+
+**Files created:** 3
+- `backend/src/db/migrations/008_score_publication.sql` — `pending_score_publications` (detected changes awaiting review) + `published_scores` (admin-approved scores) tables
+- `backend/src/services/scorePublication.js` — seed, detectDrift, getPublished, getPending, approve, reject
+- `backend/__tests__/scorePublication.test.js` — 17 integration tests
+
+**Files updated:** 4
+- `backend/src/index.js` — call `seedPublishedScores` + `detectPublicationDrift` at startup
+- `backend/src/routes/admin.js` — 3 new endpoints: GET pending-publications, POST approve, POST reject
+- `backend/src/routes/passport.js` — passport now returns `publication_status`, `computed_score`, `published_at`, `published_by`
+- `backend/src/swagger.js` — `PendingScorePublication` schema + Score Publication tag with 3 endpoints
+
+**Test count:** 249 → 266 backend (all passing). 17 new tests cover service unit tests + admin API auth + passport fields.
+
+**Branch:** `claude/dreamy-dirac-w3parn`, commit `b91fae2` (pushed to origin)
+
+**Motivation:** Architecture reviewer steer: "controlled score publication" was the explicit gap. Score changes now require admin approval before reaching B2B clients via the DPP passport. The audit trail (score_change_logs) remains unchanged alongside the new publication workflow.
+
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".

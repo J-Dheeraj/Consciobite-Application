@@ -58,3 +58,12 @@ Cross-cutting tracking of what separates the current deployment from production/
 ## Reviewer's strategic steer
 
 More ML is not the priority. Value = evidence ingestion, provenance/versioning, controlled score publication, repeatable exports. Target architecture: static frontend + stateless API + managed Postgres + object storage + background workers + central observability. No microservices/K8s.
+
+## Progress against reviewer steer (2026-08-13)
+
+| Priority | Status | Details |
+|---|---|---|
+| Evidence ingestion | ✓ Done | Evidence source registry (PR #44) + community submission (PR #45) |
+| Provenance/versioning | ✓ Done | methodology_version, catalog_hash, code_revision per score change (review #2 fixes) |
+| Controlled score publication | ✓ Done | Migration 008, `scorePublication.js`, admin API, DPP passport fields (`claude/dreamy-dirac-w3parn`) |
+| Repeatable exports | ⚪ Partial | Carbon CSV export done (PR #39); B2B portfolio export not yet scoped |

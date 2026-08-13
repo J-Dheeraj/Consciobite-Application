@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-13 — controlled score publication feature (branch `claude/dreamy-dirac-w3parn`); all previous PRs (#34–#47) merged to main.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -35,7 +35,9 @@ tags: [hot-cache, meta]
 
 **Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
 
-**Open PRs (not yet merged):** #34 DPP frontend, #36 recommendations, #37 audit vuln fix + tier filter, #38 user profile, #39 CSV export, #41 server-side favorites. PRs #36/#37/#38 are based on old main (`18bec95`) and may need rebasing.
+**All previous PRs merged to main:** #34 DPP frontend, #36 recommendations, #37 tier filter + carbon widget, #38 user profile, #39 CSV export, #41 server-side favorites, #44 evidence source registry, #45 community evidence submission, #46 pre-commit format, #47 README sync. Main is at commit `1950915`.
+
+**Open PR (in progress):** branch `claude/dreamy-dirac-w3parn`, commit `b91fae2` — controlled score publication (see below).
 
 **Passport frontend (PR #34, branch `claude/dreamy-dirac-fzmsdt`):** `/passport/[id]` page with `PassportCard` (SVG score ring, 7-dimension emission bars, confidence badge, methodology version); `fetchPassport`/`fetchPortfolioScore`/`fetchAuditLog` in the products service; "Eco Passport" button on the product detail page; 550 pages via `generateStaticParams()`.
 
@@ -55,7 +57,9 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status:** 266 backend (up from 189; +77 from merged PRs + 17 new for score publication) + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+
+**Controlled score publication (2026-08-13, branch `claude/dreamy-dirac-w3parn`):** Migration 008 adds `pending_score_publications` + `published_scores` tables. `scorePublication.js` service: `seedPublishedScores()` (initial seed at first startup), `detectPublicationDrift()` (queues changes for admin review, idempotent), `approvePublication()` / `rejectPublication()` (transactional approve updates published_scores). Admin routes: `GET /admin/pending-publications`, `POST /admin/pending-publications/:id/approve|reject`. DPP passport now returns `publication_status` (published | pending_update | not_published), `computed_score`, `published_at`, `published_by` — B2B clients can see whether the score is admin-vetted. Score changes are queued for review instead of taking effect immediately. Swagger docs updated with `PendingScorePublication` schema + Score Publication tag.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
