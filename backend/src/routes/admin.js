@@ -6,6 +6,11 @@ const { getDb } = require("../db/schema");
 const { getConflictLog, getConflictStats, snapshotScores } = require("../services/scoreAudit");
 const { calculateGreenGrade } = require("../services/greengrade");
 const { getPendingEvidence, reviewEvidence } = require("../services/evidenceService");
+const {
+  getPendingPublications,
+  approvePublication,
+  rejectPublication,
+} = require("../services/scorePublication");
 const products = require("../data/products.json");
 
 const router = express.Router();
@@ -135,6 +140,60 @@ router.post("/manufacturers/:id/acknowledge-fee", validate(ACK_SCHEMA), (req, re
 
   res.json({ acknowledged: true });
 });
+
+// --- Controlled Score Publication ---
+
+const PUBLICATION_QUERY_SCHEMA = {
+  query: {
+    limit: { required: false, type: "string", pattern: /^\d+$/ },
+    offset: { required: false, type: "string", pattern: /^\d+$/ },
+  },
+};
+
+const PUBLICATION_ID_SCHEMA = {
+  params: {
+    id: { required: true, type: "string", pattern: /^\d+$/ },
+  },
+};
+
+const REVIEW_REASON_SCHEMA = {
+  body: {
+    reason: { required: false, type: "string", maxLength: 500 },
+  },
+};
+
+router.get("/pending-publications", validate(PUBLICATION_QUERY_SCHEMA), (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit) || 50, 200);
+  const offset = parseInt(req.query.offset) || 0;
+  const publications = getPendingPublications({ limit, offset });
+  res.json({ publications, total: publications.length });
+});
+
+router.post(
+  "/pending-publications/:id/approve",
+  validate({ ...PUBLICATION_ID_SCHEMA, ...REVIEW_REASON_SCHEMA }),
+  (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id < 1) return res.status(400).json({ error: "Invalid publication ID" });
+    const reviewedBy = `admin:${req.user.email || req.user.id}`;
+    const result = approvePublication(id, reviewedBy, req.body.reason);
+    if (!result) return res.status(404).json({ error: "Pending publication not found" });
+    res.json({ message: "Score approved and published", ...result });
+  }
+);
+
+router.post(
+  "/pending-publications/:id/reject",
+  validate({ ...PUBLICATION_ID_SCHEMA, ...REVIEW_REASON_SCHEMA }),
+  (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    if (isNaN(id) || id < 1) return res.status(400).json({ error: "Invalid publication ID" });
+    const reviewedBy = `admin:${req.user.email || req.user.id}`;
+    const ok = rejectPublication(id, reviewedBy, req.body.reason);
+    if (!ok) return res.status(404).json({ error: "Pending publication not found" });
+    res.json({ message: "Score change rejected", id });
+  }
+);
 
 // --- Community Evidence Review ---
 

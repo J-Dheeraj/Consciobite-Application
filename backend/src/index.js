@@ -28,6 +28,7 @@ const { trainModel, calculateGreenGrade } = require("./services/greengrade");
 const mlInsights = require("./services/mlInsights");
 const { getMethodology } = require("./services/dataProvenance");
 const { snapshotScores, getConflictStats } = require("./services/scoreAudit");
+const { seedPublishedScores, detectPublicationDrift } = require("./services/scorePublication");
 const products = require("./data/products.json");
 
 const DEFAULT_PORT = 4000;
@@ -94,6 +95,15 @@ const scoreChanges = snapshotScores(
 );
 if (scoreChanges.length > 0) {
   logger.warn(`Score audit: ${scoreChanges.length} score change(s) detected on startup`);
+}
+
+// Controlled score publication: seed initial published scores on first run,
+// then queue any drifted scores for admin review (instead of auto-publishing).
+const scoreFn = (p) => calculateGreenGrade(p.emissions, p.category, p);
+seedPublishedScores(products, scoreFn);
+const driftCount = detectPublicationDrift(products, scoreFn);
+if (driftCount > 0) {
+  logger.warn(`Score publication: ${driftCount} product(s) have score changes pending admin approval`);
 }
 
 // ---------- Structured logging ----------

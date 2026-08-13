@@ -4,6 +4,7 @@ const router = express.Router();
 const { validate } = require("../middleware/validate");
 const products = require("../data/products.json");
 const { calculateGreenGrade } = require("../services/greengrade");
+const { getPublishedScore } = require("../services/scorePublication");
 const { getDb } = require("../db/schema");
 
 function enrichProduct(product) {
@@ -19,13 +20,28 @@ function sanitize(str, maxLen = 100) {
 function buildPassport(product) {
   const enriched = enrichProduct(product);
   const g = enriched.greenGrade;
+  const published = getPublishedScore(String(product.id));
+
+  // Determine publication status for B2B transparency:
+  //   published       — score matches admin-approved value
+  //   pending_update  — score has drifted; admin review in progress
+  //   not_published   — no approved score on record (should only occur transiently)
+  let publicationStatus;
+  if (!published) {
+    publicationStatus = "not_published";
+  } else if (Math.abs(published.grade - g.score) <= 0.001) {
+    publicationStatus = "published";
+  } else {
+    publicationStatus = "pending_update";
+  }
 
   return {
     product_id: String(product.id),
     product_name: product.name,
     brand: product.brand,
     category: product.category,
-    greengrade_score: g.score,
+    greengrade_score: published ? published.grade : g.score,
+    computed_score: g.score,
     score_percentile: g.percentile,
     emission_breakdown: {
       land_use_change: product.emissions.landUseChange,
@@ -39,6 +55,9 @@ function buildPassport(product) {
     total_carbon_footprint_kg_co2e: g.totalEmissions,
     data_confidence_tier: g.dataTier ?? null,
     data_confidence_label: g.dataTierLabel ?? null,
+    publication_status: publicationStatus,
+    published_at: published?.publishedAt ?? null,
+    published_by: published?.publishedBy ?? null,
     passport_generated_at: new Date().toISOString(),
     methodology_version: "3.0",
   };

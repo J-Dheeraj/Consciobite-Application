@@ -142,6 +142,21 @@ const options = {
             notes: { type: "string", nullable: true },
           },
         },
+        PendingScorePublication: {
+          type: "object",
+          properties: {
+            id: { type: "integer" },
+            product_id: { type: "string" },
+            product_name: { type: "string" },
+            old_grade: { type: "number", nullable: true },
+            new_grade: { type: "number" },
+            detected_at: { type: "string", format: "date-time" },
+            status: { type: "string", enum: ["pending", "approved", "rejected"] },
+            reviewed_by: { type: "string", nullable: true },
+            reviewed_at: { type: "string", format: "date-time", nullable: true },
+            review_reason: { type: "string", nullable: true },
+          },
+        },
       },
     },
     paths: {
@@ -830,6 +845,98 @@ const options = {
             403: { description: "Admin access required" },
             404: { description: "Product or source not found" },
             409: { description: "Link already exists" },
+          },
+        },
+      },
+      "/admin/pending-publications": {
+        get: {
+          tags: ["Score Publication"],
+          summary: "List pending score changes awaiting admin approval",
+          description:
+            "Returns score changes detected since the last publication. Each entry compares the old published grade against the new computed grade. Admins approve or reject each change before it goes live in the DPP passport.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: "limit", in: "query", schema: { type: "integer", default: 50, maximum: 200 } },
+            { name: "offset", in: "query", schema: { type: "integer", default: 0 } },
+          ],
+          responses: {
+            200: {
+              description: "List of pending score publications",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      publications: {
+                        type: "array",
+                        items: { $ref: "#/components/schemas/PendingScorePublication" },
+                      },
+                      total: { type: "integer" },
+                    },
+                  },
+                },
+              },
+            },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+          },
+        },
+      },
+      "/admin/pending-publications/{id}/approve": {
+        post: {
+          tags: ["Score Publication"],
+          summary: "Approve a pending score change",
+          description:
+            "Marks the score change as approved and updates the published_scores table. The DPP passport will reflect the new score immediately.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: "id", in: "path", required: true, schema: { type: "integer" } },
+          ],
+          requestBody: {
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { reason: { type: "string", maxLength: 500 } },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Score approved and published" },
+            400: { description: "Invalid publication ID" },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+            404: { description: "Pending publication not found" },
+          },
+        },
+      },
+      "/admin/pending-publications/{id}/reject": {
+        post: {
+          tags: ["Score Publication"],
+          summary: "Reject a pending score change",
+          description:
+            "Marks the score change as rejected. The published score remains unchanged. The DPP passport continues to serve the last approved score.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { name: "id", in: "path", required: true, schema: { type: "integer" } },
+          ],
+          requestBody: {
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { reason: { type: "string", maxLength: 500 } },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Score change rejected" },
+            400: { description: "Invalid publication ID" },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+            404: { description: "Pending publication not found" },
           },
         },
       },
