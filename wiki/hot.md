@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-13
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-13 — product catalog migrated from static JSON to SQLite (branch `claude/nifty-goodall-gw042u`, commit `b698b64`). All prior open PRs (#34/#36/#37/#38/#39/#41/#44/#45/#46/#47) are merged.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -35,7 +35,7 @@ tags: [hot-cache, meta]
 
 **Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
 
-**Open PRs (not yet merged):** #34 DPP frontend, #36 recommendations, #37 audit vuln fix + tier filter, #38 user profile, #39 CSV export, #41 server-side favorites. PRs #36/#37/#38 are based on old main (`18bec95`) and may need rebasing.
+**Open PRs:** None — all prior PRs are merged. Current work is on `claude/nifty-goodall-gw042u` (product catalog SQLite migration, not yet PR'd).
 
 **Passport frontend (PR #34, branch `claude/dreamy-dirac-fzmsdt`):** `/passport/[id]` page with `PassportCard` (SVG score ring, 7-dimension emission bars, confidence badge, methodology version); `fetchPassport`/`fetchPortfolioScore`/`fetchAuditLog` in the products service; "Eco Passport" button on the product detail page; 550 pages via `generateStaticParams()`.
 
@@ -49,13 +49,15 @@ tags: [hot-cache, meta]
 
 **Server-side favorites (PR #41, branch `claude/nifty-goodall-cavczb`):** `user_favorites` table (migration **004**) with `UNIQUE(user_id, product_id)` and cascade delete; `/api/favorites` GET/POST plus DELETE `/all` and `/:productId`, mounted via ROUTE_TABLE. Favorites page reads from the server via React Query when authenticated and falls back to localStorage for guests (favorites data only — never auth tokens).
 
-**Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap.
+**Product catalog SQLite migration (2026-08-13):** `catalog_products` table (migration 008) stores full product JSON in `product_data` column + denormalised indexed columns (name, brand, category, barcode, is_active). `productService.js` provides a SQLite-backed in-memory enriched cache: `seedFromJson()` seeds the table from `products.json` on first startup; `loadCache()` rebuilds the cache from SQLite; any admin write (create/update/softDelete) calls `loadCache()` + `invalidateHttpCache("/products")` so changes are live immediately. Admin CRUD: `GET/POST /api/admin/products` + `PATCH/DELETE /api/admin/products/:id`. 22 new integration tests (249 → 271 total). Swagger "Product Catalog" tag added. Migration sequence: 001–008 complete.
+
+**Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; ~~catalogue-as-JSON~~ **RESOLVED** (product catalog now in SQLite via migration 008); tamper-evident audit storage still roadmap.
 
 **Community evidence submission (PR #45, branch `claude/dreamy-dirac-2jgkme`):** the *contribution* half of the evidence story (the registry above is the *curation* half — they are complementary, not duplicates). `POST /api/products/:id/evidence` (auth required) accepts citation, source_type, methodology, url, year; submissions land in `submitted_evidence` (migration **006**) as pending. Admins approve/reject via `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review`; approved entries surface through `GET /api/products/:id/evidence` and the `EvidenceSection` component. `csrfProtection` added to the products router.
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status:** 271 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
