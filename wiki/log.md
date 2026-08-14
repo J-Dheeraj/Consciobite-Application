@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-14 — Portfolio CSV Export + Admin Evidence Review UI
+
+**Operation:** Implement portfolio CSV export endpoint and admin evidence review frontend page, aligned with architecture reviewer's steer ("repeatable exports", "evidence ingestion").
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — lists pending community evidence submissions with Approve/Reject buttons and reviewer notes form
+
+**Files modified:** 7
+- `backend/src/routes/passport.js` — `GET /api/v1/portfolio/export?ids=` endpoint: RFC 4180 CSV, 18 columns, max 100 products; `csvEscape()`, `buildCsvRow()`, `CSV_HEADERS`
+- `backend/src/swagger.js` — `/v1/portfolio/export` added under "Digital Product Passport" tag
+- `backend/__tests__/passport.test.js` — 8 new tests for the export endpoint (257 backend total, all green)
+- `frontend/src/services/admin.js` — `fetchPendingEvidence()`, `reviewEvidence()`
+- `frontend/src/services/products.js` — `downloadPortfolioExport()` (raw fetch → blob, no auth)
+- `frontend/src/services/api.js` — new functions exported from barrel
+- `frontend/src/app/compare/page.js` — "Export CSV" button triggers `downloadPortfolioExport` + browser download
+
+**Branch:** `claude/dreamy-dirac-20jld2`, commit `e307609` (pushed to origin)
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
