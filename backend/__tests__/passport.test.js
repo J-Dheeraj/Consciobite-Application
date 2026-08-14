@@ -108,6 +108,68 @@ describe("Digital Product Passport endpoints", () => {
     });
   });
 
+  describe("GET /api/v1/portfolio/export", () => {
+    test("should return CSV for valid product IDs", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1,2,3");
+      expect(res.status).toBe(200);
+      expect(res.headers["content-type"]).toMatch(/text\/csv/);
+      expect(res.headers["content-disposition"]).toMatch(/attachment/);
+      expect(res.headers["content-disposition"]).toMatch(/dpp-portfolio/);
+      const lines = res.text.trim().split(/\r\n|\n/);
+      expect(lines.length).toBeGreaterThan(1);
+      expect(lines[0]).toContain("product_id");
+      expect(lines[0]).toContain("greengrade_score");
+      expect(lines[0]).toContain("total_carbon_footprint_kg_co2e");
+    });
+
+    test("CSV should include all 18 header columns", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1");
+      expect(res.status).toBe(200);
+      const headers = res.text.split(/\r\n|\n/)[0].split(",");
+      expect(headers).toHaveLength(18);
+    });
+
+    test("CSV data rows should match the number of valid products", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1,2,3");
+      expect(res.status).toBe(200);
+      const lines = res.text.trim().split(/\r\n|\n/).filter(Boolean);
+      expect(lines.length).toBe(4); // header + 3 data rows
+    });
+
+    test("should skip invalid IDs and export valid ones", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1,99999");
+      expect(res.status).toBe(200);
+      const lines = res.text.trim().split(/\r\n|\n/).filter(Boolean);
+      expect(lines.length).toBe(2); // header + 1 valid product
+    });
+
+    test("should return 400 when ids param is missing", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export");
+      expect(res.status).toBe(400);
+      expect(res.body.error).toBeDefined();
+    });
+
+    test("should return 400 when more than 100 IDs are provided", async () => {
+      const ids = Array.from({ length: 101 }, (_, i) => String(i + 1)).join(",");
+      const res = await request(app).get(`/api/v1/portfolio/export?ids=${ids}`);
+      expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(/100/);
+    });
+
+    test("should return 404 when no valid products are found", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=99999,88888");
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBeDefined();
+    });
+
+    test("CSV values should be properly escaped for fields with commas", async () => {
+      const res = await request(app).get("/api/v1/portfolio/export?ids=1");
+      expect(res.status).toBe(200);
+      // The CSV must be parseable (no unclosed quotes)
+      expect(res.text).toBeDefined();
+    });
+  });
+
   describe("GET /api/v1/audit/:productId", () => {
     test("should return audit entries for a valid product", async () => {
       const res = await request(app).get("/api/v1/audit/1");

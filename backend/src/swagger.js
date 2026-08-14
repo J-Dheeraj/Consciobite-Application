@@ -502,6 +502,35 @@ const options = {
           },
         },
       },
+      "/v1/portfolio/export": {
+        get: {
+          tags: ["Digital Product Passport"],
+          summary: "Export portfolio as CSV",
+          description:
+            "Returns an RFC 4180 CSV file of Digital Product Passports for up to 100 products. Each row contains all 7 emission dimensions, GreenGrade score, confidence tier, and methodology version — ready for Scope 3 reporting or ESPR submissions.",
+          parameters: [
+            {
+              name: "ids",
+              in: "query",
+              required: true,
+              description: "Comma-separated product IDs (max 100)",
+              schema: { type: "string", example: "1,2,3" },
+            },
+          ],
+          responses: {
+            200: {
+              description: "CSV file with DPP data",
+              content: {
+                "text/csv": {
+                  schema: { type: "string", format: "binary" },
+                },
+              },
+            },
+            400: { description: "Missing or invalid ids parameter" },
+            404: { description: "No valid products found" },
+          },
+        },
+      },
       "/v1/ml/similar/{productId}": {
         get: {
           tags: ["ML Insights"],

@@ -56,3 +56,16 @@ export async function submitProductEvidence(id, data) {
     body: JSON.stringify(data),
   });
 }
+
+export async function downloadPortfolioExport(ids) {
+  // Raw fetch (not httpClient) because the response is CSV (blob), not JSON.
+  // The portfolio export endpoint is public — no auth header needed.
+  const res = await fetch(
+    `${API_BASE}/v1/portfolio/export?ids=${ids.map(encodeURIComponent).join(",")}`
+  );
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Export failed (${res.status})`);
+  }
+  return res.blob();
+}

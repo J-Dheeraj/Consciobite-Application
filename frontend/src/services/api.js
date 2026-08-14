@@ -10,6 +10,7 @@ export {
   fetchAuditLog,
   fetchProductEvidence,
   submitProductEvidence,
+  downloadPortfolioExport,
 } from "./products";
 export { registerUser, loginUser, fetchCurrentUser, updateProfile } from "./auth";
 export { fetchReviews, submitReview, deleteReview } from "./reviews";
@@ -29,5 +30,7 @@ export {
   linkProductManufacturer,
   acknowledgeFee,
   fetchTransparencyStats,
+  fetchPendingEvidence,
+  reviewEvidence,
 } from "./admin";
 export { fetchFavorites, addFavorite, removeFavorite, clearServerFavorites } from "./favorites";

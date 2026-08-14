@@ -141,6 +141,101 @@ router.post("/portfolio/score", validate(PORTFOLIO_SCHEMA), (req, res) => {
   });
 });
 
+// GET /portfolio/export?ids=1,2,3
+// Returns an RFC 4180 CSV of Digital Product Passports for up to 100 products.
+
+const CSV_HEADERS = [
+  "product_id",
+  "product_name",
+  "brand",
+  "category",
+  "greengrade_score",
+  "score_percentile",
+  "emissions_land_use_change_kg_co2e",
+  "emissions_animal_feed_kg_co2e",
+  "emissions_farm_operations_kg_co2e",
+  "emissions_processing_kg_co2e",
+  "emissions_transport_kg_co2e",
+  "emissions_packaging_kg_co2e",
+  "emissions_retail_kg_co2e",
+  "total_carbon_footprint_kg_co2e",
+  "data_confidence_tier",
+  "data_confidence_label",
+  "methodology_version",
+  "passport_generated_at",
+].join(",");
+
+function csvEscape(value) {
+  const str = String(value ?? "");
+  if (/[,"\n\r]/.test(str)) return `"${str.replace(/"/g, '""')}"`;
+  return str;
+}
+
+function buildCsvRow(p) {
+  return [
+    p.product_id,
+    p.product_name,
+    p.brand,
+    p.category,
+    p.greengrade_score,
+    p.score_percentile,
+    p.emission_breakdown.land_use_change,
+    p.emission_breakdown.animal_feed,
+    p.emission_breakdown.farm_operations,
+    p.emission_breakdown.processing,
+    p.emission_breakdown.transport,
+    p.emission_breakdown.packaging,
+    p.emission_breakdown.retail,
+    p.total_carbon_footprint_kg_co2e,
+    p.data_confidence_tier ?? "",
+    p.data_confidence_label ?? "",
+    p.methodology_version,
+    p.passport_generated_at,
+  ]
+    .map(csvEscape)
+    .join(",");
+}
+
+const EXPORT_SCHEMA = {
+  query: {
+    ids: { required: true, message: "ids query parameter is required" },
+  },
+};
+
+router.get("/portfolio/export", validate(EXPORT_SCHEMA), (req, res) => {
+  const rawIds = String(req.query.ids)
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (rawIds.length < 1 || rawIds.length > 100) {
+    return res
+      .status(400)
+      .json({ error: "ids must contain between 1 and 100 comma-separated product IDs" });
+  }
+
+  const passports = [];
+  for (const rawId of rawIds) {
+    const id = sanitize(rawId, 20);
+    if (!validator.isAlphanumeric(id)) continue;
+    const product = products.find((p) => String(p.id) === id);
+    if (!product) continue;
+    passports.push(buildPassport(product));
+  }
+
+  if (passports.length === 0) {
+    return res.status(404).json({ error: "No valid products found for the provided IDs" });
+  }
+
+  const rows = [CSV_HEADERS, ...passports.map(buildCsvRow)];
+  const csv = rows.join("\r\n") + "\r\n";
+  const date = new Date().toISOString().slice(0, 10);
+
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
+  res.setHeader("Content-Disposition", `attachment; filename="dpp-portfolio-${date}.csv"`);
+  res.send(csv);
+});
+
 // GET /audit/:productId
 
 const AUDIT_SCHEMA = {

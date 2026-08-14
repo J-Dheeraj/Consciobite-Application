@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { fetchProducts, compareProducts } from "@/services/api";
+import { fetchProducts, compareProducts, downloadPortfolioExport } from "@/services/api";
 import GradeBadge from "@/components/GradeBadge";
 import GradeBreakdown from "@/components/GradeBreakdown";
 import { useTheme } from "@/context/ThemeContext";
@@ -13,6 +13,7 @@ export default function Compare() {
   const [selected, setSelected] = useState([]);
   const [compared, setCompared] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState("");
   const [searchFilter, setSearchFilter] = useState("");
 
@@ -29,6 +30,27 @@ export default function Compare() {
       return [...prev, id];
     });
     setCompared(null);
+  };
+
+  const exportCsv = async () => {
+    if (selected.length === 0) return;
+    setExporting(true);
+    setError("");
+    try {
+      const blob = await downloadPortfolioExport(selected);
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `dpp-portfolio-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message || "Export failed.");
+    } finally {
+      setExporting(false);
+    }
   };
 
   const runComparison = async () => {
@@ -170,6 +192,26 @@ export default function Compare() {
           >
             {loading ? "Comparing..." : `Compare ${selected.length} Products`}
           </button>
+          {selected.length > 0 && (
+            <button
+              onClick={exportCsv}
+              disabled={exporting}
+              style={{
+                padding: "10px 16px",
+                background: exporting
+                  ? (isDark ? "#1c2e22" : "#f0f7f2")
+                  : (isDark ? "#1c2e22" : "#e8f5e9"),
+                border: `1px solid ${isDark ? "#2d4a35" : "#a7d7b1"}`,
+                borderRadius: 10,
+                cursor: exporting ? "wait" : "pointer",
+                fontSize: "0.85rem",
+                color: isDark ? "#a7f3d0" : "#2d6a4f",
+                fontWeight: 600,
+              }}
+            >
+              {exporting ? "Exporting..." : "Export CSV"}
+            </button>
+          )}
           {selected.length > 0 && (
             <button
               onClick={() => {
