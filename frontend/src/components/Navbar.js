@@ -76,6 +76,11 @@ export default function Navbar() {
             <Link href="/profile" className={styles.userName} title="View profile">
               {user?.name?.split(" ")[0]}
             </Link>
+            {user?.role === "admin" && (
+              <Link href="/admin" className={styles.navLink} title="Admin panel">
+                Admin
+              </Link>
+            )}
             <button onClick={handleLogout} className={styles.btn}>
               Logout
             </button>
@@ -139,6 +144,16 @@ export default function Navbar() {
               >
                 {user?.name} — Profile
               </Link>
+              {user?.role === "admin" && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className={styles.mobileLink}
+                  style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem" }}
+                >
+                  Admin Panel
+                </Link>
+              )}
               <button
                 onClick={handleLogout}
                 className={styles.mobileLink}

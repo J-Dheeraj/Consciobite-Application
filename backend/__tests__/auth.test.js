@@ -131,7 +131,7 @@ describe("Auth endpoints - validation", () => {
       expect(res.status).toBe(401);
     });
 
-    test("should return user with weeklyGoal field when authenticated", async () => {
+    test("should return user with weeklyGoal and role when authenticated", async () => {
       const email = `me-${uid()}@example.com`;
       const regRes = await request(app).post("/api/auth/register").send({
         name: "Me Test",
@@ -146,6 +146,7 @@ describe("Auth endpoints - validation", () => {
       expect(meRes.status).toBe(200);
       expect(meRes.body.user.weeklyGoal).toBeDefined();
       expect(typeof meRes.body.user.weeklyGoal).toBe("number");
+      expect(meRes.body.user.role).toBe("user");
     });
   });
 

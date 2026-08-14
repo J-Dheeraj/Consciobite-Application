@@ -267,7 +267,29 @@ const options = {
           summary: "Get current user profile",
           security: [{ bearerAuth: [] }],
           responses: {
-            200: { description: "User profile" },
+            200: {
+              description: "User profile",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      user: {
+                        type: "object",
+                        properties: {
+                          id: { type: "string" },
+                          email: { type: "string" },
+                          name: { type: "string" },
+                          role: { type: "string", enum: ["user", "admin"] },
+                          weeklyGoal: { type: "number" },
+                          createdAt: { type: "string" },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
             401: { description: "Not authenticated" },
           },
         },
