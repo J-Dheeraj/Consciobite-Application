@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-14 — admin hub page + evidence review UI + role in /auth/me (branch claude/nifty-goodall-gesan0).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -35,7 +35,9 @@ tags: [hot-cache, meta]
 
 **Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
 
-**Open PRs (not yet merged):** #34 DPP frontend, #36 recommendations, #37 audit vuln fix + tier filter, #38 user profile, #39 CSV export, #41 server-side favorites. PRs #36/#37/#38 are based on old main (`18bec95`) and may need rebasing.
+**All prior PRs merged** (#34 DPP frontend, #36 recommendations, #37 tier filter + carbon widget, #38 user profile, #39 CSV export, #41 favorites, #44 evidence registry, #45 community evidence, #46 pre-commit format, #47 README sync).
+
+**Admin hub + evidence review (2026-08-14, branch `claude/nifty-goodall-gesan0`):** Main admin dashboard page at `/admin` — nav hub with cards for Score Audit, Manufacturer Onboarding, and Evidence Review. `/admin/evidence` page: approve/reject pending community evidence submissions with optional rejection notes. `GET /auth/me` and `PATCH /auth/me` now return `role` field. Navbar shows "Admin" link for `role === "admin"` users (desktop + mobile). 249 backend tests all pass.
 
 **Passport frontend (PR #34, branch `claude/dreamy-dirac-fzmsdt`):** `/passport/[id]` page with `PassportCard` (SVG score ring, 7-dimension emission bars, confidence badge, methodology version); `fetchPassport`/`fetchPortfolioScore`/`fetchAuditLog` in the products service; "Eco Passport" button on the product detail page; 550 pages via `generateStaticParams()`.
 

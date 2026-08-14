@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-14 — Admin Hub, Evidence Review UI, Role in /auth/me
+
+**Operation:** Close the admin frontend gap — main admin dashboard and evidence review workflow.
+
+**Files created:** 2
+- `frontend/src/app/admin/page.js` — admin hub with nav cards for Score Audit, Manufacturers, Evidence Review
+- `frontend/src/app/admin/evidence/page.js` — approve/reject pending community submissions with optional rejection notes
+
+**Files updated:** 5
+- `backend/src/routes/auth.js` — `GET /auth/me` + `PATCH /auth/me` now SELECT and return `role` field
+- `backend/src/swagger.js` — explicit JSON schema for `/auth/me` response including `role` enum
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence` and `reviewEvidence` functions
+- `frontend/src/components/Navbar.js` — "Admin" link shown for `role === "admin"` users (desktop + mobile)
+- `backend/__tests__/auth.test.js` — assert `role === "user"` returned in GET /auth/me
+
+**Test count:** 249 backend (all passing). Frontend builds 1123 static pages (added /admin, /admin/evidence).
+
+**Branch:** `claude/nifty-goodall-gesan0`, commit `f5992b8`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
