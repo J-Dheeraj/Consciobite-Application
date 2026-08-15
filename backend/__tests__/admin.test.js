@@ -260,6 +260,169 @@ describe("Admin governance endpoints", () => {
     });
   });
 
+  describe("Community evidence review", () => {
+    let regularUserToken;
+    let regularUserId;
+    const reviewUserEmail = `reviewer-${randomUUID().slice(0, 8)}@example.com`;
+
+    beforeAll(async () => {
+      // Register a regular user to submit evidence
+      const res = await request(app).post("/api/auth/register").send({
+        name: "Evidence Submitter",
+        email: reviewUserEmail,
+        password: "UserPass1",
+      });
+      regularUserToken = res.body.token;
+      regularUserId = res.body.user?.id;
+    });
+
+    test("GET /api/admin/pending-evidence should return 401 for unauthenticated", async () => {
+      const res = await request(app).get("/api/admin/pending-evidence");
+      expect(res.status).toBe(401);
+    });
+
+    test("GET /api/admin/pending-evidence should return 403 for non-admin", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${regularUserToken}`);
+      expect(res.status).toBe(403);
+    });
+
+    test("GET /api/admin/pending-evidence should return empty array when no submissions", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("evidence");
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+    });
+
+    test("POST /api/admin/evidence/:id/review should return 401 for unauthenticated", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/1/review")
+        .send({ status: "approved" });
+      expect(res.status).toBe(401);
+    });
+
+    test("POST /api/admin/evidence/:id/review should return 403 for non-admin", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/1/review")
+        .set("Authorization", `Bearer ${regularUserToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(403);
+    });
+
+    test("POST /api/admin/evidence/:id/review should return 400 for invalid status", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/1/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "maybe" });
+      expect(res.status).toBe(400);
+    });
+
+    test("POST /api/admin/evidence/:id/review should return 400 for invalid id", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/abc/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(400);
+    });
+
+    test("full evidence review workflow: submit then approve", async () => {
+      // Submit evidence as a regular user
+      const csrfRes = await request(app).get("/api/auth/csrf");
+      const csrfToken = csrfRes.body.csrfToken;
+
+      const submitRes = await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${regularUserToken}`)
+        .set("x-csrf-token", csrfToken)
+        .send({
+          citation:
+            "Test LCA study showing emissions data for this product from a peer-reviewed source",
+          source_type: "peer_reviewed_lca",
+          year: 2024,
+        });
+      expect(submitRes.status).toBe(201);
+      const evidenceId = submitRes.body.id;
+
+      // Pending list should contain the submission
+      const pendingRes = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(pendingRes.status).toBe(200);
+      const found = pendingRes.body.evidence.find((e) => e.id === evidenceId);
+      expect(found).toBeDefined();
+      expect(found.source_type).toBe("peer_reviewed_lca");
+
+      // Admin approves
+      const reviewRes = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved", notes: "Verified against our database" });
+      expect(reviewRes.status).toBe(200);
+      expect(reviewRes.body.status).toBe("approved");
+
+      // Approved evidence should now appear on the product page
+      const productEvidenceRes = await request(app).get("/api/products/1/evidence");
+      expect(productEvidenceRes.status).toBe(200);
+      const approvedFound = productEvidenceRes.body.evidence.find((e) => e.id === evidenceId);
+      expect(approvedFound).toBeDefined();
+    });
+
+    test("full evidence review workflow: submit then reject", async () => {
+      const csrfRes = await request(app).get("/api/auth/csrf");
+      const csrfToken = csrfRes.body.csrfToken;
+
+      const submitRes = await request(app)
+        .post("/api/products/2/evidence")
+        .set("Authorization", `Bearer ${regularUserToken}`)
+        .set("x-csrf-token", csrfToken)
+        .send({
+          citation: "Another test citation for product 2 with sufficient length to pass validation",
+          source_type: "industry_report",
+        });
+      expect(submitRes.status).toBe(201);
+      const evidenceId = submitRes.body.id;
+
+      const reviewRes = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected", notes: "Could not verify source" });
+      expect(reviewRes.status).toBe(200);
+      expect(reviewRes.body.status).toBe("rejected");
+    });
+
+    test("POST /api/admin/evidence/:id/review should return 404 for already-reviewed evidence", async () => {
+      // Use evidenceId from a previous test isn't accessible here, so submit fresh
+      const csrfRes = await request(app).get("/api/auth/csrf");
+      const csrfToken = csrfRes.body.csrfToken;
+
+      const submitRes = await request(app)
+        .post("/api/products/3/evidence")
+        .set("Authorization", `Bearer ${regularUserToken}`)
+        .set("x-csrf-token", csrfToken)
+        .send({
+          citation: "Citation for double-review test — should be long enough at 50+ chars here",
+          source_type: "other",
+        });
+      const evidenceId = submitRes.body.id;
+
+      // First review succeeds
+      await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+
+      // Second review on same id returns 404
+      const secondReview = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected" });
+      expect(secondReview.status).toBe(404);
+    });
+  });
+
   describe("v1 alias", () => {
     test("should work at /api/v1/admin/conflict-log", async () => {
       const res = await request(app)
