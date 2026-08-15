@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-15 — Catalog Export API
+
+**Operation:** Implement `GET /api/v1/export/catalog` — full product catalog export in JSON and CSV, addressing architecture review-#2 steer "repeatable exports".
+
+**Files created:** 2
+- `backend/src/routes/export.js` — route handler; pre-computes enriched rows once at module load; supports `?format`, `?category`, `?tier` filters; returns X-Catalog-Sha256 + X-Methodology-Version headers
+- `backend/__tests__/export.test.js` — 12 Supertest tests covering JSON/CSV formats, tier/category filters, header assertions, row count, and hash stability
+
+**Files updated:** 4
+- `backend/src/index.js` — mount exportRoutes at `/api/v1/export` with 300s cache
+- `backend/src/swagger.js` — Catalog Export tag + full request/response schema; fixed missing closing brace for evidence path entry
+- `frontend/src/services/products.js` — `getCatalogExportUrl()` helper
+- `frontend/src/app/transparency/page.js` — "Data Export" section with JSON + CSV download buttons and filter documentation
+
+**Test count:** 189 → 201 backend (all expected to pass). No DB migration needed.
+
+**Branch:** `claude/dreamy-dirac-xp4g5d`, commit `2561fea`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
