@@ -833,6 +833,126 @@ const options = {
           },
         },
       },
+      "/v1/export/catalog": {
+        get: {
+          summary: "Export full product catalog with GreenGrade scores",
+          description:
+            "Returns the complete Consciobite product catalog enriched with GreenGrade sustainability scores. " +
+            "Supports JSON (default) and CSV formats for B2B Scope 3 reporting and digital product passport integrations. " +
+            "The X-Catalog-Sha256 response header contains a SHA-256 hash of products.json that clients can use to detect catalog changes without re-downloading.",
+          tags: ["Catalog Export"],
+          parameters: [
+            {
+              name: "format",
+              in: "query",
+              description: "Response format — json (default) or csv",
+              schema: { type: "string", enum: ["json", "csv"], default: "json" },
+            },
+            {
+              name: "category",
+              in: "query",
+              description: "Filter by product category (exact match, case-insensitive)",
+              schema: { type: "string", example: "Dairy" },
+            },
+            {
+              name: "tier",
+              in: "query",
+              description: "Filter by GreenGrade tier: green (≥7), amber (4–6.9), red (<4)",
+              schema: { type: "string", enum: ["green", "amber", "red"] },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Catalog export (JSON or CSV depending on ?format)",
+              headers: {
+                "X-Catalog-Sha256": {
+                  description: "SHA-256 hash of products.json at build time",
+                  schema: { type: "string" },
+                },
+                "X-Methodology-Version": {
+                  description: "GreenGrade methodology version used for scoring",
+                  schema: { type: "string" },
+                },
+              },
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      metadata: {
+                        type: "object",
+                        properties: {
+                          generated_at: { type: "string", format: "date-time" },
+                          methodology_version: { type: "string" },
+                          catalog_hash: {
+                            type: "string",
+                            description: "SHA-256 of products.json",
+                          },
+                          product_count: { type: "integer" },
+                          filters: {
+                            type: "object",
+                            properties: {
+                              category: { type: "string", nullable: true },
+                              tier: { type: "string", nullable: true },
+                            },
+                          },
+                        },
+                      },
+                      products: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            id: { type: "string" },
+                            name: { type: "string" },
+                            brand: { type: "string" },
+                            category: { type: "string" },
+                            greengrade_score: {
+                              type: "number",
+                              description: "0–10 sustainability score (10 = most sustainable)",
+                            },
+                            score_tier: {
+                              type: "string",
+                              enum: ["green", "amber", "red"],
+                            },
+                            score_percentile: { type: "number", nullable: true },
+                            total_carbon_footprint_kg_co2e: { type: "number" },
+                            emission_breakdown: {
+                              type: "object",
+                              properties: {
+                                land_use_change: { type: "number" },
+                                animal_feed: { type: "number" },
+                                farm_operations: { type: "number" },
+                                processing: { type: "number" },
+                                transport: { type: "number" },
+                                packaging: { type: "number" },
+                                retail: { type: "number" },
+                              },
+                            },
+                            data_confidence_tier: {
+                              type: "integer",
+                              nullable: true,
+                              enum: [1, 2, 3],
+                            },
+                            data_confidence_label: { type: "string", nullable: true },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+                "text/csv": {
+                  schema: {
+                    type: "string",
+                    description:
+                      "RFC 4180 CSV with header row. Columns: ID, Name, Brand, Category, GreenGrade Score, Score Tier, Score Percentile, Total CO2e (kg), and the 7 emission dimension columns.",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
   apis: [],

@@ -56,3 +56,10 @@ export async function submitProductEvidence(id, data) {
     body: JSON.stringify(data),
   });
 }
+
+export function getCatalogExportUrl({ format = "json", category, tier } = {}) {
+  const params = new URLSearchParams({ format });
+  if (category) params.set("category", category);
+  if (tier) params.set("tier", tier);
+  return `${API_BASE}/v1/export/catalog?${params}`;
+}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchTransparencyStats } from "@/services/admin";
+import { getCatalogExportUrl } from "@/services/products";
 import PageHero from "@/components/PageHero";
 import Spinner from "@/components/Spinner";
 import { pageContainer, card } from "@/utils/pageStyles";
@@ -242,6 +243,73 @@ export default function TransparencyPage() {
           >
             View full methodology details &rarr;
           </Link>
+        </SectionCard>
+
+        {/* Data Export */}
+        <SectionCard title="Data Export" isDark={isDark}>
+          <p style={{ color: textColor, lineHeight: 1.7, marginBottom: 16 }}>
+            Download the full product catalog with GreenGrade scores for use in Scope 3 carbon
+            reporting, EU ESPR compliance, or third-party analysis. The catalog hash (SHA-256 of
+            the source data) is included so you can verify that your copy matches what
+            Consciobite published.
+          </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <a
+              href={getCatalogExportUrl({ format: "json" })}
+              download="consciobite-catalog.json"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 18px",
+                borderRadius: 8,
+                background: isDark ? "#1c3a28" : "#ecfdf5",
+                color: "#2d6a4f",
+                fontWeight: 700,
+                fontSize: 14,
+                textDecoration: "none",
+                border: `1px solid ${isDark ? "#2d5a3d" : "#bbf7d0"}`,
+              }}
+            >
+              &#8595; JSON
+            </a>
+            <a
+              href={getCatalogExportUrl({ format: "csv" })}
+              download="consciobite-catalog.csv"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                padding: "8px 18px",
+                borderRadius: 8,
+                background: isDark ? "#1c3a28" : "#ecfdf5",
+                color: "#2d6a4f",
+                fontWeight: 700,
+                fontSize: 14,
+                textDecoration: "none",
+                border: `1px solid ${isDark ? "#2d5a3d" : "#bbf7d0"}`,
+              }}
+            >
+              &#8595; CSV
+            </a>
+          </div>
+          <p
+            style={{
+              marginTop: 12,
+              fontSize: 12,
+              color: isDark ? "#4a6a4e" : "#999",
+            }}
+          >
+            Filters available via API: <code>?tier=green|amber|red</code> and{" "}
+            <code>?category=&lt;name&gt;</code>. See{" "}
+            <Link
+              href="/methodology"
+              style={{ color: "#2d6a4f", fontWeight: 600 }}
+            >
+              methodology
+            </Link>{" "}
+            for score definitions.
+          </p>
         </SectionCard>
 
         {/* Score Change Statistics */}

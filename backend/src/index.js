@@ -17,6 +17,7 @@ const passportRoutes = require("./routes/passport");
 const mlRoutes = require("./routes/ml");
 const favoritesRoutes = require("./routes/favorites");
 const evidenceRoutes = require("./routes/evidence");
+const exportRoutes = require("./routes/export");
 const { requestLogger, logger } = require("./middleware/logger");
 const { cacheMiddleware } = require("./middleware/cache");
 const { csrfProtection } = require("./middleware/auth");
@@ -292,11 +293,12 @@ for (const [route, middlewares, router] of ROUTE_TABLE) {
   }
 }
 
-// v1-only surfaces: ML insights and the Digital Product Passport routes.
+// v1-only surfaces: ML insights, evidence registry, catalog export, and DPP routes.
 // The bare /api/v1 passport mount comes last so more specific /api/v1/*
 // mounts above match first.
 app.use("/api/v1/ml", cacheMiddleware(120), mlRoutes);
 app.use("/api/v1/evidence", cacheMiddleware(300), evidenceRoutes);
+app.use("/api/v1/export", cacheMiddleware(300), exportRoutes);
 app.use("/api/v1", cacheMiddleware(120), passportRoutes);
 
 // ---------- 404 handler ----------
