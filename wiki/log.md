@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-15 — Admin Evidence Review Panel
+
+**Operation:** All previous PRs found fully merged. Implemented missing admin UI for community evidence review.
+
+**Gap identified:** `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review` existed in the backend (admin.js) but had no frontend page and zero integration test coverage.
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence-review/page.js` — admin panel: lists pending submissions with expand/collapse, approve/reject with optional notes, green nav tabs linking to all 3 admin pages
+
+**Files modified:** 3
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence()`
+- `frontend/src/services/api.js` — re-exported both new functions
+- `backend/__tests__/admin.test.js` — 10 new integration tests: auth enforcement, invalid status 400, invalid id 400, approve workflow (with product-evidence verify), reject workflow, double-review 404 guard
+
+**Test count:** 249 → 259 backend (all passing). ESLint and Prettier clean.
+
+**Branch:** `claude/nifty-goodall-60xw2a`, commit `1db21b8`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
