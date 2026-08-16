@@ -260,6 +260,132 @@ describe("Admin governance endpoints", () => {
     });
   });
 
+  describe("GET /api/admin/pending-evidence", () => {
+    test("returns empty list when no submissions exist", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("evidence");
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+    });
+
+    test("rejects unauthenticated requests", async () => {
+      const res = await request(app).get("/api/admin/pending-evidence");
+      expect(res.status).toBe(401);
+    });
+
+    test("rejects non-admin users", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${userToken}`);
+      expect(res.status).toBe(403);
+    });
+
+    test("returns pending submissions after a user submits one", async () => {
+      await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          citation:
+            "Poore, J. & Nemecek, T. (2018). Reducing food's environmental impacts. Science.",
+          source_type: "peer_reviewed_lca",
+          url: "https://doi.org/10.1126/science.aaq0216",
+          year: 2018,
+        });
+
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.evidence.length).toBeGreaterThan(0);
+      const item = res.body.evidence[0];
+      expect(item).toHaveProperty("id");
+      expect(item).toHaveProperty("product_id");
+      expect(item).toHaveProperty("citation");
+      expect(item).toHaveProperty("source_type");
+      expect(item).toHaveProperty("submitter_email");
+    });
+  });
+
+  describe("POST /api/admin/evidence/:id/review", () => {
+    let evidenceId;
+
+    beforeAll(async () => {
+      const submit = await request(app)
+        .post("/api/products/1/evidence")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          citation:
+            "Clark, M.A. et al. (2019). Multiple health and environmental impacts of foods. PNAS.",
+          source_type: "peer_reviewed_lca",
+          year: 2019,
+        });
+      evidenceId = submit.body.id;
+    });
+
+    test("admin can approve a pending submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved", notes: "Verified citation" });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("approved");
+    });
+
+    test("returns 404 for already-reviewed submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected" });
+      expect(res.status).toBe(404);
+    });
+
+    test("admin can reject a pending submission", async () => {
+      const submit = await request(app)
+        .post("/api/products/2/evidence")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({
+          citation:
+            "Willett, W. et al. (2019). Food in the Anthropocene: the EAT–Lancet Commission. Lancet.",
+          source_type: "peer_reviewed_lca",
+          year: 2019,
+        });
+      const newId = submit.body.id;
+
+      const res = await request(app)
+        .post(`/api/admin/evidence/${newId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected", notes: "Out of scope" });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("rejected");
+    });
+
+    test("rejects invalid status value", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "pending" });
+      expect(res.status).toBe(400);
+    });
+
+    test("rejects non-admin users", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(403);
+    });
+
+    test("returns 400 for invalid id", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/notanumber/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(400);
+    });
+  });
+
   describe("v1 alias", () => {
     test("should work at /api/v1/admin/conflict-log", async () => {
       const res = await request(app)
