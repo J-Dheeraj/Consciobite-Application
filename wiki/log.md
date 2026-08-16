@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-16 — Leaderboard Page + Admin Evidence Review UI
+
+**Operation:** Add GreenGrade Leaderboard page (B2B-positioned public ranking) and Admin Evidence Review UI (closing the functional gap in community evidence workflow).
+
+**Files created:** 2
+- `frontend/src/app/leaderboard/page.js` — public `/leaderboard` page; parallel React Query fetches (`useQueries`) for top-5 products per category across 9 categories; Category Champions banner; GradeBadge + tier pill per product; methodology footnote with link
+- `frontend/src/app/admin/evidence/page.js` — admin-only `/admin/evidence` page; shows pending community evidence submissions; approve/reject per-item with optional notes; backed by existing backend endpoints
+
+**Files modified:** 3
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence()` service functions
+- `frontend/src/components/Navbar.js` — added "Leaderboard" link to main nav
+- `backend/__tests__/admin.test.js` — 7 new Supertest tests for `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review` (259 total backend tests, all passing)
+
+**Test count:** 189 → 259 backend tests (all passing). 1119 → 1122 frontend static pages.
+
+**Branch:** `claude/nifty-goodall-eu1wid`, commit `9cd4d02`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
