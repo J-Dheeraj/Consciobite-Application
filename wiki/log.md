@@ -13,6 +13,24 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-17 — Admin Evidence Review UI
+
+**Operation:** Scheduled session. Built missing frontend for the admin evidence review workflow (backend routes existed since PR #45 but had no UI).
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — admin page listing pending community evidence submissions with expand/approve/reject workflow and reviewer notes textarea
+
+**Files modified:** 2
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence()` service functions
+- `backend/__tests__/admin.test.js` — 9 new Supertest tests for `GET /admin/pending-evidence` and `POST /admin/evidence/:id/review` (401/403 enforcement, validation, approve, idempotency guard, bad ID)
+
+**Test count:** 249 → 258 backend (all passing). Frontend build clean (1120 static pages).
+
+**Branch:** `claude/dreamy-dirac-5twntw`, commit `4503264`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
