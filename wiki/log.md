@@ -13,6 +13,23 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-17 — Portfolio Score UI
+
+**Operation:** Scheduled session. Read vault, reviewed graphify god nodes, found all previous PRs merged. Implemented `/portfolio` page surfacing the existing `POST /api/v1/portfolio/score` B2B endpoint in the frontend.
+
+**Files created:** 1
+- `frontend/src/app/portfolio/page.js` — Portfolio Score page: debounced product search, add/remove portfolio items (max 100), score action, summary stat cards, category bar chart (Recharts), sortable product table with tier badges and DPP links.
+
+**Files modified:** 2
+- `frontend/src/components/Navbar.js` — added Portfolio link between Dashboard and Recipes
+- `frontend/src/app/page.js` — updated Organizations ICP card with "Score your portfolio →" CTA; added Portfolio Scoring + DPP rows to comparison table
+
+**Branch:** `claude/nifty-goodall-k11uax`, commit `f825c4b`
+**Test count:** No backend changes; frontend ESLint + Prettier clean
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
