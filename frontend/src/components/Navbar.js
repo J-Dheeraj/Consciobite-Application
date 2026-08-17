@@ -11,6 +11,7 @@ const NAV_LINKS = [
   { to: "/scan", label: "Scan" },
   { to: "/compare", label: "Compare" },
   { to: "/dashboard", label: "Dashboard" },
+  { to: "/portfolio", label: "Portfolio" },
   { to: "/recipes", label: "Recipes" },
   { to: "/carbon", label: "Carbon" },
   { to: "/tips", label: "Tips" },

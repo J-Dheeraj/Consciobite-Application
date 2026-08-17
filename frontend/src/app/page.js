@@ -441,13 +441,26 @@ export default function Home() {
                 Corporate Procurement
               </h3>
               <p style={{ fontSize: 14, color: "var(--lp-ink-light)", marginBottom: 16 }}>
-                Make data-driven purchasing decisions aligned with ESG goals. Audit product
-                sustainability at scale.
+                Make data-driven purchasing decisions aligned with ESG goals. Score your full
+                product portfolio and get Digital Product Passports for Scope 3 reporting.
               </p>
               <p className="lp-icp-pain">
                 &ldquo;We need transparent supply-chain data for our sustainability
                 reporting.&rdquo;
               </p>
+              <Link
+                href="/portfolio"
+                style={{
+                  display: "inline-block",
+                  marginTop: 12,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: "var(--lp-green-700)",
+                  textDecoration: "none",
+                }}
+              >
+                Score your portfolio &rarr;
+              </Link>
             </div>
           </div>
         </div>
@@ -577,6 +590,8 @@ export default function Home() {
                 ["Machine learning methodology", true, false, false],
                 ["Barcode scanning", true, false, false],
                 ["Product comparison tool", true, false, true],
+                ["Portfolio scoring (up to 100 SKUs)", true, false, false],
+                ["Digital Product Passport (DPP)", true, false, false],
                 ["Carbon footprint tracking", true, false, false],
                 ["Free and open access", true, true, true],
                 ["Recipe suggestions", true, false, false],
