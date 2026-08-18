@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-18 — admin evidence review queue UI added (`claude/dreamy-dirac-p0yvea`, commit `aaffcbc`); community evidence workflow now complete end-to-end.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -35,7 +35,9 @@ tags: [hot-cache, meta]
 
 **Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
 
-**Open PRs (not yet merged):** #34 DPP frontend, #36 recommendations, #37 audit vuln fix + tier filter, #38 user profile, #39 CSV export, #41 server-side favorites. PRs #36/#37/#38 are based on old main (`18bec95`) and may need rebasing.
+**Open PRs (not yet merged):** none (all previous PRs merged). Branch `claude/dreamy-dirac-p0yvea` has the admin evidence review UI — ready for PR.
+
+**Admin evidence review (2026-08-18, commit `aaffcbc`):** `/admin/evidence` page completes the community evidence workflow. Pending submissions listed with citation, source type, year, URL, submitter, expandable methodology, and Approve/Reject action with optional reviewer notes. `fetchPendingEvidence()` and `reviewEvidence()` added to admin service. 10 new backend tests (259 total).
 
 **Passport frontend (PR #34, branch `claude/dreamy-dirac-fzmsdt`):** `/passport/[id]` page with `PassportCard` (SVG score ring, 7-dimension emission bars, confidence badge, methodology version); `fetchPassport`/`fetchPortfolioScore`/`fetchAuditLog` in the products service; "Eco Passport" button on the product detail page; 550 pages via `generateStaticParams()`.
 
@@ -55,7 +57,7 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status:** 259 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

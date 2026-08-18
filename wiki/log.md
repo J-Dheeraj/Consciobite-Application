@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-18 — Admin Evidence Review Queue
+
+**Operation:** Complete the community evidence submission workflow by adding a frontend admin UI for reviewing pending evidence submissions.
+
+**Context:** Community evidence submission (PR #45) added the ability for users to submit LCA citations. The backend admin endpoints (`GET /api/admin/pending-evidence`, `POST /api/admin/evidence/:id/review`) existed but had no frontend interface — admins could only review evidence via raw API calls.
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — new admin page at `/admin/evidence`: lists pending submissions with citation, source type, year, URL, submitter email, expandable methodology, and Approve/Reject buttons with optional reviewer notes
+
+**Files modified:** 3
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence()` service functions
+- `frontend/src/services/api.js` — re-exported both new admin service functions
+- `backend/__tests__/admin.test.js` — 10 new Supertest tests for auth enforcement, approval, rejection, edge cases
+
+**Test count:** 249 → 259 backend (all passing). 10 new tests cover 401/403 enforcement, invalid status, approve happy path, 404 on already-reviewed, bad IDs.
+
+**Branch:** `claude/dreamy-dirac-p0yvea`, commit `aaffcbc`
+**Hot cache updated:** yes (next)
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
