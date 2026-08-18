@@ -4,6 +4,7 @@ export {
   scanBarcode,
   compareProducts,
   fetchStats,
+  fetchLeaderboard,
   fetchRecommendations,
   fetchPassport,
   fetchPortfolioScore,

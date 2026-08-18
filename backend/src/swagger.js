@@ -213,6 +213,53 @@ const options = {
           responses: { 200: { description: "Aggregated statistics" } },
         },
       },
+      "/products/leaderboard": {
+        get: {
+          tags: ["Products"],
+          summary: "Get top-scoring products per category",
+          description:
+            "Returns the top 5 products ranked by GreenGrade score within each food category, sorted by category average score descending. Useful for B2B benchmark positioning.",
+          responses: {
+            200: {
+              description: "Category leaderboard",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      categories: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            category: { type: "string" },
+                            total: { type: "integer" },
+                            avgScore: { type: "number" },
+                            top: {
+                              type: "array",
+                              items: {
+                                type: "object",
+                                properties: {
+                                  id: { type: "string" },
+                                  name: { type: "string" },
+                                  brand: { type: "string" },
+                                  score: { type: "number" },
+                                  tier: { type: "string" },
+                                  rank: { type: "integer" },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       "/auth/register": {
         post: {
           tags: ["Auth"],

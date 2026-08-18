@@ -122,6 +122,51 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/leaderboard", () => {
+    test("should return categories array", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.categories)).toBe(true);
+      expect(res.body.categories.length).toBeGreaterThan(0);
+    });
+
+    test("each category should have required fields", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      res.body.categories.forEach((cat) => {
+        expect(cat).toHaveProperty("category");
+        expect(cat).toHaveProperty("total");
+        expect(cat).toHaveProperty("avgScore");
+        expect(Array.isArray(cat.top)).toBe(true);
+      });
+    });
+
+    test("top products should be sorted by score descending with sequential ranks", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      for (const cat of res.body.categories) {
+        const scores = cat.top.map((p) => p.score);
+        for (let i = 1; i < scores.length; i++) {
+          expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+        }
+        cat.top.forEach((p, i) => expect(p.rank).toBe(i + 1));
+      }
+    });
+
+    test("top list should have at most 5 products per category", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      res.body.categories.forEach((cat) => {
+        expect(cat.top.length).toBeLessThanOrEqual(5);
+      });
+    });
+
+    test("categories should be sorted by avgScore descending", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      const scores = res.body.categories.map((c) => c.avgScore);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+      }
+    });
+  });
+
   describe("GET /api/products/:id", () => {
     test("should return 400 for invalid ID", async () => {
       const res = await request(app).get("/api/products/inv@lid!");

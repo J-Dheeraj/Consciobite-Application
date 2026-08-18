@@ -111,6 +111,36 @@ router.get("/", (req, res) => {
   });
 });
 
+// GET /api/products/leaderboard
+router.get("/leaderboard", (req, res) => {
+  const TOP_N = 5;
+  const byCategory = {};
+
+  for (const p of enrichedProducts) {
+    if (!byCategory[p.category]) byCategory[p.category] = [];
+    byCategory[p.category].push(p);
+  }
+
+  const categories = Object.entries(byCategory)
+    .map(([name, prods]) => {
+      const sorted = [...prods].sort((a, b) => b.greenGrade.score - a.greenGrade.score);
+      const avgScore =
+        Math.round((prods.reduce((s, p) => s + p.greenGrade.score, 0) / prods.length) * 10) / 10;
+      const top = sorted.slice(0, TOP_N).map((p, i) => ({
+        id: p.id,
+        name: p.name,
+        brand: p.brand,
+        score: p.greenGrade.score,
+        tier: p.greenGrade.tier,
+        rank: i + 1,
+      }));
+      return { category: name, total: prods.length, avgScore, top };
+    })
+    .sort((a, b) => b.avgScore - a.avgScore);
+
+  res.json({ categories });
+});
+
 // GET /api/products/compare
 router.get("/compare", validate(COMPARE_SCHEMA), (req, res) => {
   const ids = req.query.ids
