@@ -13,6 +13,31 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-18 — Category Leaderboard Feature
+
+**Operation:** Scheduled session — all PRs merged (no open PRs). Added category leaderboard for B2B benchmark positioning.
+
+**Files created:** 1
+- `frontend/src/app/leaderboard/page.js` — `/leaderboard` page: category selector tabs, top-5 ranked products per category with rank medals (🥇🥈🥉), tier badges, score display, "View all" link to filtered product list. Uses React Query (staleTime 5 min).
+
+**Files modified:** 6
+- `backend/src/routes/products.js` — added `GET /api/products/leaderboard` (before `/:id` to avoid shadowing); returns top 5 products per category sorted by score desc, categories sorted by avgScore desc
+- `backend/src/swagger.js` — added Leaderboard endpoint with full schema under Products tag
+- `backend/__tests__/api.test.js` — 5 new Supertest tests (shape, field presence, sort order, rank sequence, top-N cap)
+- `frontend/src/services/products.js` — added `fetchLeaderboard()`
+- `frontend/src/services/api.js` — re-exported `fetchLeaderboard`
+- `frontend/src/components/Navbar.js` — added Leaderboard link between Products and Scan
+
+**Test count:** 249 → 254 backend (all passing). ESLint + Prettier clean.
+
+**Branch:** `claude/nifty-goodall-98z46l`, commit `2c7bfc2` (pushed to origin)
+
+**Rationale:** B2B positioning (SGX Scope 3 / EU ESPR) benefits from benchmark visibility — brands need to see where their SKUs rank within a category. No new database required (computed from pre-enriched product catalog).
+
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
