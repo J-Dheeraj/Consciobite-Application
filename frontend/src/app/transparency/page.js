@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchTransparencyStats } from "@/services/admin";
+import { fetchEvidenceSources } from "@/services/products";
 import PageHero from "@/components/PageHero";
 import Spinner from "@/components/Spinner";
 import { pageContainer, card } from "@/utils/pageStyles";
@@ -138,6 +139,11 @@ export default function TransparencyPage() {
     queryFn: fetchTransparencyStats,
   });
 
+  const { data: evidenceSources } = useQuery({
+    queryKey: ["evidence-sources"],
+    queryFn: fetchEvidenceSources,
+  });
+
   const textColor = isDark ? "#c8d6c8" : "#444";
 
   return (
@@ -243,6 +249,112 @@ export default function TransparencyPage() {
             View full methodology details &rarr;
           </Link>
         </SectionCard>
+
+        {/* Evidence Sources */}
+        {evidenceSources && evidenceSources.length > 0 && (
+          <SectionCard title="Evidence Sources" isDark={isDark}>
+            <p style={{ color: textColor, lineHeight: 1.7, marginBottom: 16, fontSize: 14 }}>
+              GreenGrade emission factors are derived from the following peer-reviewed and curated
+              sources. Reliability reflects the specificity and quality of the underlying data.
+            </p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {evidenceSources.map((src) => {
+                const reliabilityColor =
+                  src.reliability === "high"
+                    ? { bg: isDark ? "#1a3a2a" : "#ecfdf5", text: "#2d6a4f" }
+                    : src.reliability === "medium"
+                      ? { bg: isDark ? "#3a2e1c" : "#fef3c7", text: "#92400e" }
+                      : { bg: isDark ? "#3a1c1c" : "#fef2f2", text: "#991b1b" };
+                return (
+                  <div
+                    key={src.key}
+                    style={{
+                      ...card(isDark, { radius: 10 }),
+                      padding: "14px 16px",
+                      border: `1px solid ${isDark ? "#2d4a35" : "#e5e7eb"}`,
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                        gap: 8,
+                        flexWrap: "wrap",
+                        marginBottom: 6,
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontWeight: 700,
+                          fontSize: 14,
+                          color: isDark ? "#e8f5e9" : "#1a3a2a",
+                          flex: 1,
+                        }}
+                      >
+                        {src.url ? (
+                          <a
+                            href={src.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "#2d6a4f", textDecoration: "none" }}
+                          >
+                            {src.title}
+                          </a>
+                        ) : (
+                          src.title
+                        )}
+                      </span>
+                      <span
+                        style={{
+                          padding: "2px 8px",
+                          borderRadius: 8,
+                          background: reliabilityColor.bg,
+                          color: reliabilityColor.text,
+                          fontSize: 11,
+                          fontWeight: 700,
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        {src.reliability.charAt(0).toUpperCase() + src.reliability.slice(1)}{" "}
+                        reliability
+                      </span>
+                    </div>
+                    {src.authors && (
+                      <div style={{ fontSize: 12, color: isDark ? "#6b8a6e" : "#666", marginBottom: 4 }}>
+                        {src.authors} ({src.year})
+                        {src.doi && (
+                          <span style={{ marginLeft: 8 }}>
+                            <a
+                              href={`https://doi.org/${src.doi}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ color: "#2d6a4f", fontSize: 11 }}
+                            >
+                              DOI
+                            </a>
+                          </span>
+                        )}
+                      </div>
+                    )}
+                    {src.methodology && (
+                      <p
+                        style={{
+                          fontSize: 12,
+                          color: isDark ? "#4a6a4e" : "#888",
+                          margin: 0,
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        {src.methodology}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </SectionCard>
+        )}
 
         {/* Score Change Statistics */}
         <SectionCard title="Score Change Statistics (Last 12 Months)" isDark={isDark}>
