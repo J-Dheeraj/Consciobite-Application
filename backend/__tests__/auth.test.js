@@ -146,6 +146,7 @@ describe("Auth endpoints - validation", () => {
       expect(meRes.status).toBe(200);
       expect(meRes.body.user.weeklyGoal).toBeDefined();
       expect(typeof meRes.body.user.weeklyGoal).toBe("number");
+      expect(meRes.body.user.role).toBe("user");
     });
   });
 

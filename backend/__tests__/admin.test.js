@@ -260,6 +260,88 @@ describe("Admin governance endpoints", () => {
     });
   });
 
+  describe("GET /api/admin/pending-evidence", () => {
+    test("should return pending evidence list", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("evidence");
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+      expect(res.body).toHaveProperty("total");
+    });
+
+    test("should reject non-admin access", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${userToken}`);
+      expect(res.status).toBe(403);
+    });
+
+    test("should reject unauthenticated access", async () => {
+      const res = await request(app).get("/api/admin/pending-evidence");
+      expect(res.status).toBe(401);
+    });
+  });
+
+  describe("POST /api/admin/evidence/:id/review", () => {
+    let submittedId;
+
+    beforeAll(async () => {
+      const db = getDb();
+      const adminUser = db.prepare("SELECT id FROM users WHERE email = ?").get(adminEmail);
+      const info = db
+        .prepare(
+          `INSERT INTO submitted_evidence
+             (product_id, submitted_by, submitter_email, citation, source_type)
+           VALUES (?, ?, ?, ?, ?)`
+        )
+        .run("1", adminUser.id, "submitter@example.com", "Test Citation for Review", "other");
+      submittedId = info.lastInsertRowid;
+    });
+
+    test("should approve a pending submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${submittedId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved", notes: "Looks good" });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("approved");
+    });
+
+    test("should return 404 when reviewing an already-reviewed submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${submittedId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected" });
+      expect(res.status).toBe(404);
+    });
+
+    test("should reject invalid status value", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/9999/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "maybe" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject invalid evidence ID", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/not-a-number/review")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject non-admin access", async () => {
+      const res = await request(app)
+        .post("/api/admin/evidence/1/review")
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(403);
+    });
+  });
+
   describe("v1 alias", () => {
     test("should work at /api/v1/admin/conflict-log", async () => {
       const res = await request(app)

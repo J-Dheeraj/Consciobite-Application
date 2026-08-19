@@ -73,6 +73,11 @@ export default function Navbar() {
         })}
         {isAuthenticated ? (
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
+            {user?.role === "admin" && (
+              <Link href="/admin" className={styles.navLink}>
+                Admin
+              </Link>
+            )}
             <Link href="/profile" className={styles.userName} title="View profile">
               {user?.name?.split(" ")[0]}
             </Link>
@@ -131,6 +136,16 @@ export default function Navbar() {
           <div className={styles.divider} />
           {isAuthenticated ? (
             <>
+              {user?.role === "admin" && (
+                <Link
+                  href="/admin"
+                  onClick={() => setMenuOpen(false)}
+                  className={styles.mobileLink}
+                  style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem" }}
+                >
+                  Admin
+                </Link>
+              )}
               <Link
                 href="/profile"
                 onClick={() => setMenuOpen(false)}
