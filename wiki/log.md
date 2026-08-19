@@ -13,6 +13,21 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-19 — Evidence Sources on Transparency Page
+
+**Operation:** Surface the evidence source registry (migration 007 + `/api/v1/evidence/sources`) on the public Transparency page to close the provenance/visibility gap from Architecture Review #2.
+
+**Files updated:** 2
+- `frontend/src/services/products.js` — added `fetchEvidenceSources()` calling `/api/v1/evidence/sources`
+- `frontend/src/app/transparency/page.js` — new "Evidence Sources" section rendered between Methodology and Score Change Statistics; each source shows title (linked), authors, year, DOI link, methodology summary, and reliability badge (colour-coded high/medium/low)
+
+**Test count:** 249 backend (all passing). Build: 1119 static pages, no errors.
+
+**Branch:** `claude/dreamy-dirac-y4m5ee`, commit `a04ac7a`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
