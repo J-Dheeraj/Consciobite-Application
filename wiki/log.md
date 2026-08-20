@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-20 — Admin Dashboard + Evidence Review UI
+
+**Operation:** Complete the admin experience — landing page, evidence review UI, role-aware navbar, and role field in `/auth/me`.
+
+**Files created:** 2
+- `frontend/src/app/admin/page.js` — admin dashboard with links to all three tools + admin role guard
+- `frontend/src/app/admin/evidence/page.js` — pending evidence review with approve/reject + optional notes
+
+**Files updated:** 3
+- `backend/src/routes/auth.js` — `GET /auth/me` now returns `role` (was missing)
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` + `reviewEvidence()`
+- `frontend/src/components/Navbar.js` — Admin link shown when `user.role === 'admin'` (desktop + mobile)
+
+**Test count:** 249 backend (was 189 — but the increase came from prior PRs, not this session). All passing.
+
+**Branch:** `claude/nifty-goodall-vx6knt`, commit `8c03854`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
