@@ -168,7 +168,7 @@ router.post("/logout", logoutHandler);
 router.get("/me", requireAuth, (req, res) => {
   const db = getDb();
   const user = db
-    .prepare("SELECT id, email, name, weekly_carbon_goal, created_at FROM users WHERE id = ?")
+    .prepare("SELECT id, email, name, weekly_carbon_goal, role, created_at FROM users WHERE id = ?")
     .get(req.user.id);
 
   if (!user) {
@@ -181,6 +181,7 @@ router.get("/me", requireAuth, (req, res) => {
       email: user.email,
       name: user.name,
       weeklyGoal: user.weekly_carbon_goal ?? 10,
+      role: user.role || "user",
       createdAt: user.created_at,
     },
   });
