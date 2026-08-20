@@ -4,72 +4,86 @@ import { API_BASE } from "@/services/httpClient";
 
 const POLL_INTERVAL = 3000;
 const MAX_WAIT = 60000;
+// Wait a moment before announcing a slow API so a healthy load never flashes
+// the banner.
+const GRACE_MS = 2500;
 
+/**
+ * Reports backend availability WITHOUT blocking the page.
+ *
+ * Most of this app is a static export: the home page, product pages and
+ * passports are prerendered and need no API call to be useful. An earlier
+ * version withheld all children until /api/health responded, which meant a
+ * cold start — or an API outage — left every route blank for up to a minute.
+ * Now children render immediately and a banner appears only if the API is
+ * actually slow or unreachable; per-view loading and error states are handled
+ * by React Query where the data is used.
+ */
 export default function ApiReadyGate({ children }) {
-  const [ready, setReady] = useState(false);
+  const [status, setStatus] = useState("checking"); // checking | ready | slow | unreachable
 
   useEffect(() => {
     let cancelled = false;
+    let timer;
     const start = Date.now();
+
+    const grace = setTimeout(() => {
+      if (!cancelled) setStatus((s) => (s === "checking" ? "slow" : s));
+    }, GRACE_MS);
 
     async function check() {
       try {
         const res = await fetch(`${API_BASE}/health`, { cache: "no-store" });
-        if (res.ok && !cancelled) {
-          setReady(true);
+        if (cancelled) return;
+        if (res.ok) {
+          setStatus("ready");
           return;
         }
       } catch {
-        // server not ready yet
+        // API not reachable yet
       }
       if (cancelled) return;
       if (Date.now() - start > MAX_WAIT) {
-        setReady(true);
+        setStatus("unreachable");
         return;
       }
-      setTimeout(check, POLL_INTERVAL);
+      timer = setTimeout(check, POLL_INTERVAL);
     }
 
     check();
     return () => {
       cancelled = true;
+      clearTimeout(grace);
+      clearTimeout(timer);
     };
   }, []);
 
-  if (ready) return children;
+  const message =
+    status === "slow"
+      ? "Waking up the server… live data will appear shortly."
+      : status === "unreachable"
+        ? "Can't reach the server right now — live data may be unavailable."
+        : null;
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "60vh",
-        textAlign: "center",
-        padding: 32,
-        color: "var(--text-secondary, #666)",
-      }}
-    >
-      <div
-        style={{
-          width: 48,
-          height: 48,
-          border: "4px solid #d8f3dc",
-          borderTopColor: "#2d6a4f",
-          borderRadius: "50%",
-          animation: "spin 0.8s linear infinite",
-          marginBottom: 20,
-        }}
-      />
-      <p
-        style={{ fontSize: 18, fontWeight: 600, color: "var(--text-primary, #1b4332)", margin: 0 }}
-      >
-        Waking up the server...
-      </p>
-      <p style={{ fontSize: 14, marginTop: 8, maxWidth: 360 }}>
-        Our API runs on a free tier and may take 30-60 seconds to start after being idle.
-      </p>
-    </div>
+    <>
+      {message && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            padding: "10px 16px",
+            textAlign: "center",
+            fontSize: "0.88rem",
+            background: status === "unreachable" ? "#fff4f4" : "#f0f7f2",
+            color: status === "unreachable" ? "#a4243d" : "#2d6a4f",
+            borderBottom: `1px solid ${status === "unreachable" ? "#f3d4d4" : "#d8f3dc"}`,
+          }}
+        >
+          {message}
+        </div>
+      )}
+      {children}
+    </>
   );
 }
