@@ -37,6 +37,11 @@ services:
         name: Cache-Control
         value: no-cache
     routes:
+      # Next static export with trailingSlash:true emits build/<route>/index.html.
+      # Render serves existing files first and only then applies these routes, so
+      # "/products/" resolves on its own but "/products" does not — it has no
+      # matching file. Rewrite the slashless form to its directory index rather
+      # than letting it fall through to the 404 page.
       - type: rewrite
         source: /*
-        destination: /404.html
+        destination: /:splat/index.html
