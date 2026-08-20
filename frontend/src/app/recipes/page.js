@@ -203,7 +203,7 @@ export default function Recipes() {
                           {items.map((item) => (
                             <Link
                               key={item.id}
-                              href={`/product/${item.id}`}
+                              href={`/product/${item.id}/`}
                               style={{
                                 padding: "6px 12px",
                                 borderRadius: 8,

@@ -73,7 +73,7 @@ export default function Navbar() {
         })}
         {isAuthenticated ? (
           <div style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 4 }}>
-            <Link href="/profile" className={styles.userName} title="View profile">
+            <Link href="/profile/" className={styles.userName} title="View profile">
               {user?.name?.split(" ")[0]}
             </Link>
             <button onClick={handleLogout} className={styles.btn}>
@@ -81,7 +81,7 @@ export default function Navbar() {
             </button>
           </div>
         ) : (
-          <Link href="/login" className={styles.signInLink}>
+          <Link href="/login/" className={styles.signInLink}>
             Sign In
           </Link>
         )}
@@ -132,7 +132,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <>
               <Link
-                href="/profile"
+                href="/profile/"
                 onClick={() => setMenuOpen(false)}
                 className={styles.mobileLink}
                 style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.88rem" }}
@@ -149,11 +149,11 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/login" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>
+              <Link href="/login/" onClick={() => setMenuOpen(false)} className={styles.mobileLink}>
                 Sign In
               </Link>
               <Link
-                href="/register"
+                href="/register/"
                 onClick={() => setMenuOpen(false)}
                 className={styles.mobileLink}
               >

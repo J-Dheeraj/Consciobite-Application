@@ -825,7 +825,7 @@ export default function ProductDetail() {
                     </div>
                   )}
                   <Link
-                    href="/methodology"
+                    href="/methodology/"
                     style={{
                       display: "inline-block",
                       marginTop: 8,
@@ -1137,7 +1137,7 @@ export default function ProductDetail() {
               {recsData.recommendations.map((rec) => (
                 <Link
                   key={rec.id}
-                  href={`/product/${rec.id}`}
+                  href={`/product/${rec.id}/`}
                   style={{
                     display: "flex",
                     alignItems: "center",
@@ -1213,7 +1213,7 @@ export default function ProductDetail() {
             Back
           </button>
           <Link
-            href={`/passport/${id}`}
+            href={`/passport/${id}/`}
             style={{
               flex: 1,
               padding: "13px 0",

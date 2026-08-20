@@ -349,7 +349,7 @@ export default function PassportClient() {
           Unable to load passport for this product.
         </div>
         <div style={{ marginTop: 16 }}>
-          <Link href="/products" style={{ color: "#2d6a4f", fontWeight: 600 }}>
+          <Link href="/products/" style={{ color: "#2d6a4f", fontWeight: 600 }}>
             &larr; Browse products
           </Link>
         </div>
@@ -369,7 +369,7 @@ export default function PassportClient() {
       {/* Back link */}
       <div style={{ maxWidth: 480, margin: "0 auto 20px" }}>
         <Link
-          href={`/product/${id}`}
+          href={`/product/${id}/`}
           style={{
             color: "#52b788",
             fontSize: "0.85rem",
@@ -396,7 +396,7 @@ export default function PassportClient() {
         }}
       >
         <Link
-          href={`/product/${id}`}
+          href={`/product/${id}/`}
           style={{
             padding: "11px 24px",
             borderRadius: 10,
@@ -411,7 +411,7 @@ export default function PassportClient() {
           Full Product Details
         </Link>
         <Link
-          href="/methodology"
+          href="/methodology/"
           style={{
             padding: "11px 24px",
             borderRadius: 10,

@@ -203,7 +203,7 @@ export default function ReviewSection({ productId }) {
           <p
             style={{ fontSize: "0.88rem", color: isDark ? "#7a9a7e" : "#888", margin: "0 0 10px" }}
           >
-            <Link href="/login" style={{ color: "#52b788", fontWeight: 600 }}>
+            <Link href="/login/" style={{ color: "#52b788", fontWeight: 600 }}>
               Sign in
             </Link>{" "}
             to leave a review.

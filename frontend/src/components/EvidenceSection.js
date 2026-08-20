@@ -121,7 +121,7 @@ export default function EvidenceSection({ productId }) {
         )}
         {!isAuthenticated && (
           <Link
-            href="/login"
+            href="/login/"
             style={{
               color: "#52b788",
               fontSize: "0.75rem",

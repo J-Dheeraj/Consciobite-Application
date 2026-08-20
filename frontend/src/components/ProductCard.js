@@ -31,7 +31,7 @@ function ProductCard({ product, delay = 0 }) {
       className={styles.card}
       style={{ "--accent-color": accent, animationDelay: `${delay}ms` }}
     >
-      <Link href={`/product/${product.id}`} className={styles.link}>
+      <Link href={`/product/${product.id}/`} className={styles.link}>
         <ProductImage name={product.name} category={product.category} size={44} />
         <GradeBadge score={greenGrade.score} color={greenGrade.color} />
         <div style={{ flex: 1, minWidth: 0 }}>

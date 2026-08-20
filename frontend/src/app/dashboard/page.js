@@ -326,7 +326,7 @@ export default function Dashboard() {
                 </p>
               </div>
               <Link
-                href="/carbon"
+                href="/carbon/"
                 style={{
                   fontSize: "0.8rem",
                   color: isDark ? "#95d5b2" : "#2d6a4f",

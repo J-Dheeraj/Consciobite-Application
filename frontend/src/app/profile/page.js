@@ -59,7 +59,7 @@ export default function ProfilePage() {
     // otherwise a signed-in user landing here directly is bounced to /login.
     if (initializing) return;
     if (!isAuthenticated) {
-      router.push("/login");
+      router.push("/login/");
       return;
     }
     if (user) {

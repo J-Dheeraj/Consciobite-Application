@@ -75,10 +75,10 @@ export default function Home() {
           </p>
 
           <div className="lp-hero-actions">
-            <button className="lp-btn-primary" onClick={() => router.push("/products")}>
+            <button className="lp-btn-primary" onClick={() => router.push("/products/")}>
               Browse Products
             </button>
-            <Link className="lp-btn-ghost" href="/about">
+            <Link className="lp-btn-ghost" href="/about/">
               How it works &rarr;
             </Link>
           </div>
@@ -316,7 +316,7 @@ export default function Home() {
                   aria-selected={false}
                   onClick={() => {
                     setShowResults(false);
-                    router.push(`/product/${p.id}`);
+                    router.push(`/product/${p.id}/`);
                   }}
                   style={{
                     width: "100%",
@@ -734,17 +734,17 @@ export default function Home() {
           discover greener alternatives — all for free.
         </p>
         <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-          <button className="lp-btn-primary" onClick={() => router.push("/products")}>
+          <button className="lp-btn-primary" onClick={() => router.push("/products/")}>
             Browse Products
           </button>
           <button
             className="lp-btn-primary"
-            onClick={() => router.push("/scan")}
+            onClick={() => router.push("/scan/")}
             style={{ background: "var(--lp-green-600)" }}
           >
             Scan a Barcode
           </button>
-          <Link className="lp-btn-ghost" href="/dashboard">
+          <Link className="lp-btn-ghost" href="/dashboard/">
             View Dashboard &rarr;
           </Link>
         </div>

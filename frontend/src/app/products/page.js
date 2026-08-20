@@ -266,7 +266,7 @@ export default function Products() {
             {products.map((p) => (
               <button
                 key={p.id}
-                onClick={() => router.push(`/product/${p.id}`)}
+                onClick={() => router.push(`/product/${p.id}/`)}
                 style={{
                   background: cardBg,
                   border: `1px solid ${cardBorder}`,

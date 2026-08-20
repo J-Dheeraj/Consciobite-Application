@@ -207,7 +207,7 @@ export default function Scan() {
 
         {result && (
           <div
-            onClick={() => router.push(`/product/${result.id}`)}
+            onClick={() => router.push(`/product/${result.id}/`)}
             style={{
               ...card(isDark),
               padding: 20,

@@ -145,7 +145,7 @@ export default function Register() {
             }}
           >
             Already have an account?{" "}
-            <Link href="/login" style={{ color: "#52b788", fontWeight: 600 }}>
+            <Link href="/login/" style={{ color: "#52b788", fontWeight: 600 }}>
               Sign in
             </Link>
           </p>

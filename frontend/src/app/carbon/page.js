@@ -99,7 +99,7 @@ export default function CarbonTracker() {
               Sign in to start tracking your carbon footprint.
             </p>
             <Link
-              href="/login"
+              href="/login/"
               style={{
                 display: "inline-block",
                 padding: "12px 28px",
@@ -419,7 +419,7 @@ export default function CarbonTracker() {
                     }}
                   >
                     <Link
-                      href={`/product/${p.product_id}`}
+                      href={`/product/${p.product_id}/`}
                       style={{
                         fontWeight: 500,
                         fontSize: "0.88rem",

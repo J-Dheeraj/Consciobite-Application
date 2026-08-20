@@ -232,7 +232,7 @@ export default function TransparencyPage() {
             non-linear sigmoid transform.
           </p>
           <Link
-            href="/methodology"
+            href="/methodology/"
             style={{
               color: "#2d6a4f",
               fontWeight: 600,
