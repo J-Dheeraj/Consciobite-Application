@@ -17,7 +17,13 @@ services:
       - key: JWT_SECRET
         generateValue: true
     plan: free
-    healthCheckPath: /api/health
+    # Liveness, not readiness. /api/health probes the DB with BEGIN IMMEDIATE
+    # and returns 503 if that write lock fails, so a momentary lock or disk
+    # hiccup would make Render judge the instance unhealthy and restart it —
+    # a bad failure mode for the thing that decides whether to kill the process.
+    # /api/health/live has no dependencies and answers only "is the process up".
+    # Readiness is still available at /api/health for monitoring and humans.
+    healthCheckPath: /api/health/live
 
   # Frontend (Next.js static export → build/)
   - type: web
@@ -37,6 +43,11 @@ services:
         name: Cache-Control
         value: no-cache
     routes:
+      # Next static export with trailingSlash:true emits build/<route>/index.html.
+      # Render serves existing files first and only then applies these routes, so
+      # "/products/" resolves on its own but "/products" does not — it has no
+      # matching file. Rewrite the slashless form to its directory index rather
+      # than letting it fall through to the 404 page.
       - type: rewrite
         source: /*
-        destination: /404.html
+        destination: /:splat/index.html
