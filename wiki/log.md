@@ -13,6 +13,26 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-20 — Admin Panel Landing Page + Evidence Review UI
+
+**Operation:** Fill the gap between community evidence submission (PR #45, merged) and the admin tooling needed to action it. Added admin landing page, evidence review UI, admin role surfaced in auth, and conditional admin Navbar link.
+
+**Files created:** 2
+- `frontend/src/app/admin/page.js` — admin hub with cards linking to Score Audit, Manufacturers, and Evidence Review
+- `frontend/src/app/admin/evidence/page.js` — per-submission expand-to-review UX (approve/reject + optional notes), real-time queue invalidation via React Query
+
+**Files modified:** 3
+- `backend/src/routes/auth.js` — `GET /api/auth/me` now returns `role` field (`user.role || "user"`)
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence()`
+- `frontend/src/components/Navbar.js` — Admin link shown for `user.role === "admin"` (desktop + mobile)
+
+**Test count:** 249 backend (all passing — no new tests needed; evidence review routes were already tested in evidence.test.js and admin.test.js)
+
+**Branch:** `claude/dreamy-dirac-5syynd`, commit `6c5f37e`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
