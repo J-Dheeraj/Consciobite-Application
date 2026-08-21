@@ -56,3 +56,7 @@ export async function submitProductEvidence(id, data) {
     body: JSON.stringify(data),
   });
 }
+
+export async function fetchLeaderboard() {
+  return httpClient(`${API_BASE}/products/leaderboard`);
+}

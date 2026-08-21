@@ -122,6 +122,64 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/leaderboard", () => {
+    test("should return 200 with leaderboard shape", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.overall)).toBe(true);
+      expect(typeof res.body.byCategory).toBe("object");
+      expect(typeof res.body.tierCounts).toBe("object");
+      expect(Array.isArray(res.body.categories)).toBe(true);
+    });
+
+    test("overall should have at most 10 entries", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      expect(res.body.overall.length).toBeLessThanOrEqual(10);
+      expect(res.body.overall.length).toBeGreaterThan(0);
+    });
+
+    test("overall entries should be sorted by score descending", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      const scores = res.body.overall.map((p) => p.score);
+      for (let i = 1; i < scores.length; i++) {
+        expect(scores[i]).toBeLessThanOrEqual(scores[i - 1]);
+      }
+    });
+
+    test("overall entries should have required fields", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      res.body.overall.forEach((p) => {
+        expect(p).toHaveProperty("id");
+        expect(p).toHaveProperty("name");
+        expect(p).toHaveProperty("brand");
+        expect(p).toHaveProperty("category");
+        expect(p).toHaveProperty("score");
+        expect(p).toHaveProperty("tier");
+        expect(["green", "amber", "red"]).toContain(p.tier);
+      });
+    });
+
+    test("byCategory should have at most 5 entries per category", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      for (const cat of Object.keys(res.body.byCategory)) {
+        expect(res.body.byCategory[cat].length).toBeLessThanOrEqual(5);
+      }
+    });
+
+    test("tierCounts total should match sum of tiers", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      const { green, amber, red, total } = res.body.tierCounts;
+      expect(green + amber + red).toBe(total);
+      expect(total).toBeGreaterThan(0);
+    });
+
+    test("categories list should match byCategory keys", async () => {
+      const res = await request(app).get("/api/products/leaderboard");
+      const keys = Object.keys(res.body.byCategory).sort();
+      expect(res.body.categories).toEqual(keys);
+    });
+  });
+
   describe("GET /api/products/:id", () => {
     test("should return 400 for invalid ID", async () => {
       const res = await request(app).get("/api/products/inv@lid!");

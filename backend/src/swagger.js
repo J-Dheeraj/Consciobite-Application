@@ -213,6 +213,74 @@ const options = {
           responses: { 200: { description: "Aggregated statistics" } },
         },
       },
+      "/products/leaderboard": {
+        get: {
+          tags: ["Products"],
+          summary: "Get product leaderboard",
+          description:
+            "Returns the top 10 products overall, top 5 per category, tier distribution counts, and a sorted category list.",
+          responses: {
+            200: {
+              description: "Leaderboard data",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      overall: {
+                        type: "array",
+                        maxItems: 10,
+                        items: {
+                          type: "object",
+                          properties: {
+                            id: { type: "string" },
+                            name: { type: "string" },
+                            brand: { type: "string" },
+                            category: { type: "string" },
+                            score: { type: "number" },
+                            tier: { type: "string", enum: ["green", "amber", "red"] },
+                          },
+                        },
+                      },
+                      byCategory: {
+                        type: "object",
+                        additionalProperties: {
+                          type: "array",
+                          maxItems: 5,
+                          items: {
+                            type: "object",
+                            properties: {
+                              id: { type: "string" },
+                              name: { type: "string" },
+                              brand: { type: "string" },
+                              score: { type: "number" },
+                              tier: { type: "string", enum: ["green", "amber", "red"] },
+                            },
+                          },
+                        },
+                      },
+                      tierCounts: {
+                        type: "object",
+                        properties: {
+                          green: { type: "integer" },
+                          amber: { type: "integer" },
+                          red: { type: "integer" },
+                          total: { type: "integer" },
+                        },
+                      },
+                      categories: {
+                        type: "array",
+                        items: { type: "string" },
+                        description: "Sorted list of categories present in byCategory",
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       "/auth/register": {
         post: {
           tags: ["Auth"],

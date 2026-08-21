@@ -165,6 +165,62 @@ router.get("/stats", (req, res) => {
   res.json({ totalProducts: products.length, categories: stats });
 });
 
+// GET /api/products/leaderboard
+router.get("/leaderboard", (req, res) => {
+  function tier(score) {
+    return score >= 7 ? "green" : score >= 4 ? "amber" : "red";
+  }
+
+  const overall = [...enrichedProducts]
+    .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
+    .slice(0, 10)
+    .map(({ id, name, brand, category, greenGrade }) => ({
+      id,
+      name,
+      brand,
+      category,
+      score: greenGrade.score,
+      tier: tier(greenGrade.score),
+    }));
+
+  const categoryMap = {};
+  for (const p of enrichedProducts) {
+    if (!categoryMap[p.category]) categoryMap[p.category] = [];
+    categoryMap[p.category].push(p);
+  }
+
+  const byCategory = {};
+  for (const [cat, prods] of Object.entries(categoryMap)) {
+    byCategory[cat] = [...prods]
+      .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
+      .slice(0, 5)
+      .map(({ id, name, brand, greenGrade }) => ({
+        id,
+        name,
+        brand,
+        score: greenGrade.score,
+        tier: tier(greenGrade.score),
+      }));
+  }
+
+  let green = 0,
+    amber = 0,
+    red = 0;
+  for (const p of enrichedProducts) {
+    const t = tier(p.greenGrade.score);
+    if (t === "green") green++;
+    else if (t === "amber") amber++;
+    else red++;
+  }
+
+  res.json({
+    overall,
+    byCategory,
+    tierCounts: { green, amber, red, total: enrichedProducts.length },
+    categories: Object.keys(byCategory).sort(),
+  });
+});
+
 const OPEN_FOOD_FACTS_RETRIES = 2;
 const OPEN_FOOD_FACTS_BACKOFF_MS = 300;
 
