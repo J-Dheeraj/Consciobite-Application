@@ -13,6 +13,23 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-21 — Admin Dashboard + Evidence Review UI
+
+**Operation:** Complete the admin UI so the community evidence submission feature (PR #45) is fully operable without direct API calls.
+
+**Files created:** 2
+- `frontend/src/app/admin/page.js` — admin landing page with cards linking to all 3 admin sub-sections (conflict log, manufacturers, evidence review)
+- `frontend/src/app/admin/pending-evidence/page.js` — evidence review UI: lists pending community submissions with approve/reject/notes controls
+
+**Files updated:** 2
+- `frontend/src/services/admin.js` — added `fetchPendingEvidence()` and `reviewEvidence()` API calls
+- `backend/__tests__/admin.test.js` — 6 new integration tests for `GET /admin/pending-evidence` and `POST /admin/evidence/:id/review` (257 total, all passing)
+
+**Branch:** `claude/dreamy-dirac-mjose4`, commit `87c46cd`
+**Test count:** 251 → 257 backend (all passing). No frontend tests affected.
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
