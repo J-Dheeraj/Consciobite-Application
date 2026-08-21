@@ -268,4 +268,107 @@ describe("Admin governance endpoints", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("GET /api/admin/pending-evidence", () => {
+    test("should return array when queried", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body).toHaveProperty("evidence");
+      expect(Array.isArray(res.body.evidence)).toBe(true);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${userToken}`);
+      expect(res.status).toBe(403);
+    });
+
+    test("should return pending submissions after one is created", async () => {
+      const db = getDb();
+      const adminUser = db.prepare("SELECT id FROM users WHERE email = ?").get(adminEmail);
+      db.prepare(
+        `INSERT INTO submitted_evidence (product_id, submitted_by, submitter_email, citation, source_type)
+         VALUES ('1', ?, ?, 'Test citation for admin review', 'other')`
+      ).run(adminUser.id, adminEmail);
+
+      const res = await request(app)
+        .get("/api/admin/pending-evidence")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.evidence.length).toBeGreaterThan(0);
+      expect(res.body.evidence[0]).toHaveProperty("citation");
+      expect(res.body.evidence[0]).toHaveProperty("submitter_email");
+    });
+  });
+
+  describe("POST /api/admin/evidence/:id/review", () => {
+    let evidenceId;
+
+    beforeAll(() => {
+      const db = getDb();
+      const adminUser = db.prepare("SELECT id FROM users WHERE email = ?").get(adminEmail);
+      const info = db
+        .prepare(
+          `INSERT INTO submitted_evidence (product_id, submitted_by, submitter_email, citation, source_type)
+           VALUES ('2', ?, ?, 'Citation to be reviewed', 'peer_reviewed_lca')`
+        )
+        .run(adminUser.id, adminEmail);
+      evidenceId = info.lastInsertRowid;
+    });
+
+    test("should approve a pending submission", async () => {
+      const db = getDb();
+      const adminUser = db.prepare("SELECT id FROM users WHERE email = ?").get(adminEmail);
+      const newInfo = db
+        .prepare(
+          `INSERT INTO submitted_evidence (product_id, submitted_by, submitter_email, citation, source_type)
+           VALUES ('3', ?, ?, 'Citation to approve', 'lca_database')`
+        )
+        .run(adminUser.id, adminEmail);
+      const id = newInfo.lastInsertRowid;
+
+      const res = await request(app)
+        .post(`/api/admin/evidence/${id}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved", notes: "Looks good" });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("approved");
+    });
+
+    test("should reject a pending submission", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "rejected" });
+      expect(res.status).toBe(200);
+      expect(res.body.status).toBe("rejected");
+    });
+
+    test("should return 404 for already-reviewed evidence", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(404);
+    });
+
+    test("should return 400 for invalid status", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/999/review`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ status: "invalid" });
+      expect(res.status).toBe(400);
+    });
+
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .post(`/api/admin/evidence/${evidenceId}/review`)
+        .set("Authorization", `Bearer ${userToken}`)
+        .send({ status: "approved" });
+      expect(res.status).toBe(403);
+    });
+  });
 });
