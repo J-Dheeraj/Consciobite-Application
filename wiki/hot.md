@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-21
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-21 — product leaderboard feature added (branch `claude/nifty-goodall-4gaxg3`, commit `37855a0`); all previous PRs #34–#48 merged.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -35,7 +35,9 @@ tags: [hot-cache, meta]
 
 **Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
 
-**Open PRs (not yet merged):** #34 DPP frontend, #36 recommendations, #37 audit vuln fix + tier filter, #38 user profile, #39 CSV export, #41 server-side favorites. PRs #36/#37/#38 are based on old main (`18bec95`) and may need rebasing.
+**Open PRs (not yet merged):** None — all PRs through #48 merged. Current work on `claude/nifty-goodall-4gaxg3` (leaderboard feature, commit `37855a0`), not yet opened as a PR.
+
+**Leaderboard feature (2026-08-21, branch `claude/nifty-goodall-4gaxg3`):** `GET /api/products/leaderboard` returns overall top 10, top 5 per category, tier distribution counts, and sorted category list (no new migrations). `/leaderboard` frontend page shows ranked rows with gold/silver/bronze medals for top 3, category pill selector, and tier distribution bar. Navbar updated. Swagger updated. 7 new Supertest tests; all 256 backend tests pass.
 
 **Passport frontend (PR #34, branch `claude/dreamy-dirac-fzmsdt`):** `/passport/[id]` page with `PassportCard` (SVG score ring, 7-dimension emission bars, confidence badge, methodology version); `fetchPassport`/`fetchPortfolioScore`/`fetchAuditLog` in the products service; "Eco Passport" button on the product detail page; 550 pages via `generateStaticParams()`.
 

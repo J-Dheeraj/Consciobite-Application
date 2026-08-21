@@ -13,6 +13,30 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-21 — Product Leaderboard Feature
+
+**Operation:** Scheduled session. All previous PRs (#34–#48) merged; no open PRs. Implemented product leaderboard endpoint and page as the next meaningful feature.
+
+**Files created:** 1
+- `frontend/src/app/leaderboard/page.js` — leaderboard page: overall top 10 with gold/silver/bronze medals, category pill selector (top 5 per category), tier distribution bar; React Query, `fetchLeaderboard` service
+
+**Files modified:** 6
+- `backend/src/routes/products.js` — added `GET /api/products/leaderboard` (no new migrations; uses pre-computed `enrichedProducts`)
+- `backend/__tests__/api.test.js` — 7 new Supertest tests (shape, sort order, ≤10/≤5 limits, tier counts, categories list)
+- `backend/src/swagger.js` — full OpenAPI schema for leaderboard endpoint
+- `frontend/src/services/products.js` — `fetchLeaderboard()` added
+- `frontend/src/services/api.js` — re-export `fetchLeaderboard`
+- `frontend/src/components/Navbar.js` — "Leaderboard" added between Products and Scan
+
+**Test count:** 249 → 256 backend (all passing). Frontend builds 1120 static pages (leaderboard page included). ESLint and Prettier clean.
+
+**Branch:** `claude/nifty-goodall-4gaxg3`, commit `37855a0` (pushed to origin)
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
