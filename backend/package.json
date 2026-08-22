@@ -8,7 +8,7 @@
     "dev": "nodemon src/index.js",
     "migrate": "node -e \"require('./src/db/schema').getDb(); require('./src/db/migrate').runMigrations()\"",
     "backup": "node scripts/backup.js",
-    "test": "jest --forceExit --detectOpenHandles",
+    "test": "jest --forceExit --detectOpenHandles --runInBand",
     "lint": "eslint src/ __tests__/",
     "format": "prettier --write \"src/**/*.js\" \"__tests__/**/*.js\"",
     "format:check": "prettier --check \"src/**/*.js\" \"__tests__/**/*.js\""
