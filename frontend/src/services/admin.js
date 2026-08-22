@@ -38,3 +38,28 @@ export async function acknowledgeFee(manufacturerId) {
 export async function fetchTransparencyStats() {
   return httpClient(`${API_BASE}/transparency/stats`);
 }
+
+export async function fetchPendingScores({ limit = 100, offset = 0 } = {}) {
+  return httpClient(`${API_BASE}/admin/pending-scores?limit=${limit}&offset=${offset}`);
+}
+
+export async function triggerStagedRescore(reason) {
+  return httpClient(`${API_BASE}/admin/rescore?mode=stage`, {
+    method: "POST",
+    body: JSON.stringify({ reason }),
+  });
+}
+
+export async function publishPendingScore(id, notes) {
+  return httpClient(`${API_BASE}/admin/pending-scores/${id}/publish`, {
+    method: "POST",
+    body: JSON.stringify({ notes }),
+  });
+}
+
+export async function rejectPendingScore(id, notes) {
+  return httpClient(`${API_BASE}/admin/pending-scores/${id}/reject`, {
+    method: "POST",
+    body: JSON.stringify({ notes }),
+  });
+}

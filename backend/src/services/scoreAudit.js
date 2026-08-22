@@ -179,4 +179,111 @@ function getConflictStats() {
   };
 }
 
-module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats };
+// Stage score changes for admin review without applying them live.
+function stageScores(products, scoreFn, options = {}) {
+  const { changedBy = "system", changeReason = "Staged rescore" } = options;
+  const db = getDb();
+  const getSnap = db.prepare(GET_SNAPSHOT);
+  const staged = [];
+
+  for (const product of products) {
+    const result = scoreFn(product);
+    if (!result) continue;
+
+    const newScore = result.score;
+    const existing = getSnap.get(String(product.id));
+    const oldScore = existing?.score ?? null;
+
+    if (oldScore !== null && Math.abs(oldScore - newScore) > 0.0001) {
+      const id = crypto.randomUUID();
+      db.prepare(
+        `INSERT INTO pending_score_changes
+           (id, product_id, product_name, old_score, new_score, score_delta,
+            staged_by, stage_reason, methodology_version, catalog_hash, code_revision)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(
+        id,
+        String(product.id),
+        product.name,
+        oldScore,
+        newScore,
+        parseFloat((newScore - oldScore).toFixed(4)),
+        changedBy,
+        changeReason,
+        METHODOLOGY_VERSION,
+        CATALOG_HASH,
+        CODE_REVISION
+      );
+      staged.push({ id, productId: product.id, name: product.name, oldScore, newScore });
+    }
+  }
+
+  if (staged.length > 0) {
+    logger.info(`Score staging: ${staged.length} change(s) queued for review`);
+  }
+
+  return staged;
+}
+
+function getPendingScoreChanges({ limit = 100, offset = 0 } = {}) {
+  const db = getDb();
+  return db
+    .prepare(
+      `SELECT * FROM pending_score_changes
+       WHERE status = 'pending'
+       ORDER BY staged_at DESC LIMIT ? OFFSET ?`
+    )
+    .all(limit, offset);
+}
+
+function publishPendingChange(id, reviewedBy, notes = null) {
+  const db = getDb();
+  const row = db
+    .prepare("SELECT * FROM pending_score_changes WHERE id = ? AND status = 'pending'")
+    .get(id);
+  if (!row) return null;
+
+  logScoreChange({
+    productId: row.product_id,
+    productName: row.product_name,
+    oldScore: row.old_score,
+    newScore: row.new_score,
+    changedBy: reviewedBy,
+    changeReason: `Published staged change: ${row.stage_reason}`,
+  });
+
+  db.prepare(
+    `UPDATE pending_score_changes
+     SET status = 'published', reviewed_by = ?, review_notes = ?, reviewed_at = datetime('now')
+     WHERE id = ?`
+  ).run(reviewedBy, notes, id);
+
+  return row;
+}
+
+function rejectPendingChange(id, reviewedBy, notes = null) {
+  const db = getDb();
+  const row = db
+    .prepare("SELECT * FROM pending_score_changes WHERE id = ? AND status = 'pending'")
+    .get(id);
+  if (!row) return null;
+
+  db.prepare(
+    `UPDATE pending_score_changes
+     SET status = 'rejected', reviewed_by = ?, review_notes = ?, reviewed_at = datetime('now')
+     WHERE id = ?`
+  ).run(reviewedBy, notes, id);
+
+  return row;
+}
+
+module.exports = {
+  logScoreChange,
+  snapshotScores,
+  stageScores,
+  getPendingScoreChanges,
+  publishPendingChange,
+  rejectPendingChange,
+  getConflictLog,
+  getConflictStats,
+};

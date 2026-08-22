@@ -268,4 +268,154 @@ describe("Admin governance endpoints", () => {
       expect(res.status).toBe(200);
     });
   });
+
+  describe("Pending score publication workflow", () => {
+    const crypto = require("crypto");
+    let pendingId;
+
+    beforeAll(() => {
+      // Use product_id '1' (already in product_scores after rescore) so publishing
+      // triggers an UPSERT that doesn't add a new row and break the 550-count assertion.
+      const db = getDb();
+      pendingId = crypto.randomUUID();
+      db.prepare(
+        `INSERT INTO pending_score_changes
+           (id, product_id, product_name, old_score, new_score, score_delta, staged_by, stage_reason, status)
+         VALUES (?, '1', 'Apples', 5.0, 6.5, 1.5, 'admin:setup', 'test stage', 'pending')`
+      ).run(pendingId);
+    });
+
+    describe("GET /api/admin/pending-scores", () => {
+      test("should return pending changes array", async () => {
+        const res = await request(app)
+          .get("/api/admin/pending-scores")
+          .set("Authorization", `Bearer ${adminToken}`);
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("changes");
+        expect(Array.isArray(res.body.changes)).toBe(true);
+        expect(res.body).toHaveProperty("total");
+      });
+
+      test("should include the seeded pending change", async () => {
+        const res = await request(app)
+          .get("/api/admin/pending-scores")
+          .set("Authorization", `Bearer ${adminToken}`);
+        expect(res.status).toBe(200);
+        const entry = res.body.changes.find((c) => c.id === pendingId);
+        expect(entry).toBeDefined();
+        expect(entry.status).toBe("pending");
+        expect(typeof entry.product_name).toBe("string");
+      });
+
+      test("should require admin", async () => {
+        const res = await request(app)
+          .get("/api/admin/pending-scores")
+          .set("Authorization", `Bearer ${userToken}`);
+        expect(res.status).toBe(403);
+      });
+
+      test("should reject invalid limit", async () => {
+        const res = await request(app)
+          .get("/api/admin/pending-scores?limit=abc")
+          .set("Authorization", `Bearer ${adminToken}`);
+        expect(res.status).toBe(400);
+      });
+    });
+
+    describe("POST /api/admin/rescore?mode=stage", () => {
+      test("should return staged array not changes", async () => {
+        const res = await request(app)
+          .post("/api/admin/rescore?mode=stage")
+          .set("Authorization", `Bearer ${adminToken}`);
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty("staged");
+        expect(Array.isArray(res.body.staged)).toBe(true);
+        expect(res.body.message).toMatch(/staged/);
+      });
+
+      test("should reject invalid mode", async () => {
+        const res = await request(app)
+          .post("/api/admin/rescore?mode=bad")
+          .set("Authorization", `Bearer ${adminToken}`);
+        expect(res.status).toBe(400);
+      });
+    });
+
+    describe("POST /api/admin/pending-scores/:id/publish", () => {
+      test("should publish a pending change and create an audit entry", async () => {
+        const db = getDb();
+        const beforeCount = db.prepare("SELECT COUNT(*) as c FROM score_change_logs").get().c;
+
+        const res = await request(app)
+          .post(`/api/admin/pending-scores/${pendingId}/publish`)
+          .set("Authorization", `Bearer ${adminToken}`)
+          .send({ notes: "Verified externally" });
+
+        expect(res.status).toBe(200);
+        expect(res.body.message).toMatch(/published/);
+        expect(res.body.change).toHaveProperty("id", pendingId);
+
+        const row = db.prepare("SELECT status FROM pending_score_changes WHERE id = ?").get(pendingId);
+        expect(row.status).toBe("published");
+
+        const afterCount = db.prepare("SELECT COUNT(*) as c FROM score_change_logs").get().c;
+        expect(afterCount).toBeGreaterThan(beforeCount);
+      });
+
+      test("should return 404 when publishing an already-reviewed change", async () => {
+        const res = await request(app)
+          .post(`/api/admin/pending-scores/${pendingId}/publish`)
+          .set("Authorization", `Bearer ${adminToken}`);
+        expect(res.status).toBe(404);
+      });
+    });
+
+    describe("POST /api/admin/pending-scores/:id/reject", () => {
+      let rejectId;
+
+      beforeAll(() => {
+        const db = getDb();
+        rejectId = crypto.randomUUID();
+        db.prepare(
+          `INSERT INTO pending_score_changes
+             (id, product_id, product_name, old_score, new_score, score_delta, staged_by, stage_reason, status)
+           VALUES (?, '2', 'Bananas', 4.0, 5.5, 1.5, 'admin:setup', 'test reject', 'pending')`
+        ).run(rejectId);
+      });
+
+      test("should reject a pending change without creating an audit entry", async () => {
+        const db = getDb();
+        const beforeCount = db.prepare("SELECT COUNT(*) as c FROM score_change_logs").get().c;
+
+        const res = await request(app)
+          .post(`/api/admin/pending-scores/${rejectId}/reject`)
+          .set("Authorization", `Bearer ${adminToken}`)
+          .send({ notes: "Insufficient evidence" });
+
+        expect(res.status).toBe(200);
+        expect(res.body.message).toMatch(/rejected/);
+
+        const row = db.prepare("SELECT status, review_notes FROM pending_score_changes WHERE id = ?").get(rejectId);
+        expect(row.status).toBe("rejected");
+        expect(row.review_notes).toBe("Insufficient evidence");
+
+        const afterCount = db.prepare("SELECT COUNT(*) as c FROM score_change_logs").get().c;
+        expect(afterCount).toBe(beforeCount);
+      });
+
+      test("should return 404 for already-rejected change", async () => {
+        const res = await request(app)
+          .post(`/api/admin/pending-scores/${rejectId}/reject`)
+          .set("Authorization", `Bearer ${adminToken}`);
+        expect(res.status).toBe(404);
+      });
+
+      test("should return 404 for nonexistent change", async () => {
+        const res = await request(app)
+          .post(`/api/admin/pending-scores/nonexistent-id/reject`)
+          .set("Authorization", `Bearer ${adminToken}`);
+        expect(res.status).toBe(404);
+      });
+    });
+  });
 });

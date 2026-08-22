@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
+import Link from "next/link";
 import { fetchConflictLog, triggerRescore } from "@/services/admin";
 import PageHero from "@/components/PageHero";
 import Spinner from "@/components/Spinner";
@@ -115,6 +116,29 @@ export default function ConflictLogPage() {
       />
 
       <div style={pageContainer(1000)}>
+        <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap" }}>
+          {[
+            { href: "/admin/conflict-log", label: "📊 Conflict Log", active: true },
+            { href: "/admin/pending-scores", label: "⏳ Pending Scores", active: false },
+            { href: "/admin/manufacturers", label: "🏭 Manufacturers", active: false },
+          ].map((tab) => (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              style={{
+                padding: "7px 16px",
+                borderRadius: 8,
+                fontSize: 13,
+                fontWeight: 600,
+                textDecoration: "none",
+                background: tab.active ? "#2d6a4f" : isDark ? "#1c2e22" : "#f0f0f0",
+                color: tab.active ? "#fff" : isDark ? "#b0c4b1" : "#555",
+              }}
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </div>
         {/* Summary Stats */}
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 28 }}>
           <StatCard isDark={isDark} label="Total Changes (12mo)" value={stats.totalChanges} />

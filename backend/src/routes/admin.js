@@ -3,7 +3,15 @@ const crypto = require("crypto");
 const { requireAdmin } = require("../middleware/auth");
 const { validate } = require("../middleware/validate");
 const { getDb } = require("../db/schema");
-const { getConflictLog, getConflictStats, snapshotScores } = require("../services/scoreAudit");
+const {
+  getConflictLog,
+  getConflictStats,
+  snapshotScores,
+  stageScores,
+  getPendingScoreChanges,
+  publishPendingChange,
+  rejectPendingChange,
+} = require("../services/scoreAudit");
 const { calculateGreenGrade } = require("../services/greengrade");
 const { getPendingEvidence, reviewEvidence } = require("../services/evidenceService");
 const products = require("../data/products.json");
@@ -35,12 +43,38 @@ router.get("/conflict-log", validate(LOG_SCHEMA), (req, res) => {
 
 // --- Rescore all products and log changes ---
 
-router.post("/rescore", (req, res) => {
+const RESCORE_SCHEMA = {
+  query: {
+    mode: { required: false, type: "string", pattern: /^(live|stage)$/ },
+  },
+  body: {
+    reason: { required: false, type: "string", maxLength: 500 },
+  },
+};
+
+router.post("/rescore", validate(RESCORE_SCHEMA), (req, res) => {
+  const actor = `admin:${req.user.email || req.user.id}`;
+
+  if (req.query.mode === "stage") {
+    const staged = stageScores(
+      products,
+      (product) => calculateGreenGrade(product.emissions, product.category, product),
+      {
+        changedBy: actor,
+        changeReason: req.body?.reason || "Staged rescore via admin API",
+      }
+    );
+    return res.json({
+      message: `Rescore staged. ${staged.length} change(s) pending review.`,
+      staged,
+    });
+  }
+
   const changes = snapshotScores(
     products,
     (product) => calculateGreenGrade(product.emissions, product.category, product),
     {
-      changedBy: `admin:${req.user.email || req.user.id}`,
+      changedBy: actor,
       changeReason: "Manual rescore via admin API",
     }
   );
@@ -49,6 +83,49 @@ router.post("/rescore", (req, res) => {
     message: `Rescore complete. ${changes.length} score change(s) logged.`,
     changes,
   });
+});
+
+// --- Pending score publication workflow ---
+
+const PENDING_LIST_SCHEMA = {
+  query: {
+    limit: { required: false, type: "string", pattern: /^\d+$/ },
+    offset: { required: false, type: "string", pattern: /^\d+$/ },
+  },
+};
+
+const REVIEW_SCHEMA = {
+  params: {
+    id: { required: true, type: "string", minLength: 1 },
+  },
+  body: {
+    notes: { required: false, type: "string", maxLength: 500 },
+  },
+};
+
+router.get("/pending-scores", validate(PENDING_LIST_SCHEMA), (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit) || 100, 500);
+  const offset = parseInt(req.query.offset) || 0;
+  const changes = getPendingScoreChanges({ limit, offset });
+  res.json({ changes, total: changes.length });
+});
+
+router.post("/pending-scores/:id/publish", validate(REVIEW_SCHEMA), (req, res) => {
+  const actor = `admin:${req.user.email || req.user.id}`;
+  const row = publishPendingChange(req.params.id, actor, req.body?.notes || null);
+  if (!row) {
+    return res.status(404).json({ error: "Pending change not found or already reviewed" });
+  }
+  res.json({ message: "Score change published", change: row });
+});
+
+router.post("/pending-scores/:id/reject", validate(REVIEW_SCHEMA), (req, res) => {
+  const actor = `admin:${req.user.email || req.user.id}`;
+  const row = rejectPendingChange(req.params.id, actor, req.body?.notes || null);
+  if (!row) {
+    return res.status(404).json({ error: "Pending change not found or already reviewed" });
+  }
+  res.json({ message: "Score change rejected", change: row });
 });
 
 // --- Manufacturer CRUD ---

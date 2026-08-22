@@ -29,5 +29,9 @@ export {
   linkProductManufacturer,
   acknowledgeFee,
   fetchTransparencyStats,
+  fetchPendingScores,
+  triggerStagedRescore,
+  publishPendingScore,
+  rejectPendingScore,
 } from "./admin";
 export { fetchFavorites, addFavorite, removeFavorite, clearServerFavorites } from "./favorites";

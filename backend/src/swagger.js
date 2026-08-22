@@ -142,6 +142,27 @@ const options = {
             notes: { type: "string", nullable: true },
           },
         },
+        PendingScoreChange: {
+          type: "object",
+          properties: {
+            id: { type: "string", format: "uuid" },
+            product_id: { type: "string" },
+            product_name: { type: "string" },
+            old_score: { type: "number", nullable: true },
+            new_score: { type: "number" },
+            score_delta: { type: "number" },
+            staged_by: { type: "string" },
+            stage_reason: { type: "string" },
+            methodology_version: { type: "string", nullable: true },
+            catalog_hash: { type: "string", nullable: true },
+            code_revision: { type: "string", nullable: true },
+            status: { type: "string", enum: ["pending", "published", "rejected"] },
+            reviewed_by: { type: "string", nullable: true },
+            review_notes: { type: "string", nullable: true },
+            staged_at: { type: "string", format: "date-time" },
+            reviewed_at: { type: "string", format: "date-time", nullable: true },
+          },
+        },
       },
     },
     paths: {
@@ -830,6 +851,139 @@ const options = {
             403: { description: "Admin access required" },
             404: { description: "Product or source not found" },
             409: { description: "Link already exists" },
+          },
+        },
+      },
+      "/admin/pending-scores": {
+        get: {
+          tags: ["Score Publication"],
+          summary: "List pending score changes awaiting admin review",
+          description:
+            "Returns all staged score changes that have not yet been published or rejected. Part of the controlled score publication workflow.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              in: "query",
+              name: "limit",
+              schema: { type: "integer", default: 100, maximum: 500 },
+            },
+            {
+              in: "query",
+              name: "offset",
+              schema: { type: "integer", default: 0 },
+            },
+          ],
+          responses: {
+            200: {
+              description: "Pending changes",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      changes: { type: "array", items: { $ref: "#/components/schemas/PendingScoreChange" } },
+                      total: { type: "integer" },
+                    },
+                  },
+                },
+              },
+            },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+          },
+        },
+      },
+      "/admin/rescore": {
+        post: {
+          tags: ["Score Publication"],
+          summary: "Rescore all products (live or staged)",
+          description:
+            "Recalculates GreenGrade scores for all 550 products. `?mode=stage` queues changes for admin review; the default `mode=live` applies changes immediately and records them in the audit log.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            {
+              in: "query",
+              name: "mode",
+              schema: { type: "string", enum: ["live", "stage"], default: "live" },
+              description: "live = apply immediately; stage = queue for review",
+            },
+          ],
+          requestBody: {
+            required: false,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    reason: { type: "string", maxLength: 500 },
+                  },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Rescore complete or staged" },
+            400: { description: "Invalid mode" },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+          },
+        },
+      },
+      "/admin/pending-scores/{id}/publish": {
+        post: {
+          tags: ["Score Publication"],
+          summary: "Publish a pending score change",
+          description:
+            "Approves a staged score change, applies it to the live score, and writes an audit record. This is the publication step in the controlled score publication workflow.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { in: "path", name: "id", required: true, schema: { type: "string" } },
+          ],
+          requestBody: {
+            required: false,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { notes: { type: "string", maxLength: 500 } },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Score change published" },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+            404: { description: "Change not found or already reviewed" },
+          },
+        },
+      },
+      "/admin/pending-scores/{id}/reject": {
+        post: {
+          tags: ["Score Publication"],
+          summary: "Reject a pending score change",
+          description:
+            "Rejects a staged score change without applying it. No audit entry is created; the live score is unchanged.",
+          security: [{ bearerAuth: [] }],
+          parameters: [
+            { in: "path", name: "id", required: true, schema: { type: "string" } },
+          ],
+          requestBody: {
+            required: false,
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: { notes: { type: "string", maxLength: 500 } },
+                },
+              },
+            },
+          },
+          responses: {
+            200: { description: "Score change rejected" },
+            401: { description: "Authentication required" },
+            403: { description: "Admin access required" },
+            404: { description: "Change not found or already reviewed" },
           },
         },
       },
