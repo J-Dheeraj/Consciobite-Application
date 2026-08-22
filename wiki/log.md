@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-22 — Controlled Score Publication Workflow
+
+**Operation:** Implement staged score publication workflow — the key remaining steer from architecture review #2 ("controlled score publication"). Score changes can now be queued for admin review before going live.
+
+**Files created:** 2
+- `backend/src/db/migrations/008_pending_score_changes.sql` — `pending_score_changes` table with status (pending/published/rejected), reviewer attribution, review notes, and provenance fields
+- `frontend/src/app/admin/pending-scores/page.js` — admin page with pending changes table, publish/reject modal, stage-rescore control, admin nav tabs
+
+**Files updated:** 7
+- `backend/src/services/scoreAudit.js` — `stageScores()`, `getPendingScoreChanges()`, `publishPendingChange()`, `rejectPendingChange()`
+- `backend/src/routes/admin.js` — GET /api/admin/pending-scores, POST /api/admin/rescore?mode=stage, POST /api/admin/pending-scores/:id/publish, POST /api/admin/pending-scores/:id/reject
+- `backend/__tests__/admin.test.js` — 11 new integration tests (260 total)
+- `backend/src/swagger.js` — PendingScoreChange schema + Score Publication tag with 4 endpoints
+- `frontend/src/services/admin.js` — fetchPendingScores, triggerStagedRescore, publishPendingScore, rejectPendingScore
+- `frontend/src/services/api.js` — re-export new admin functions
+- `frontend/src/app/admin/conflict-log/page.js` — admin nav tabs added
+
+**Branch:** `claude/dreamy-dirac-64wevh`, commit `21c0823`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
