@@ -13,6 +13,23 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-22 — Admin Evidence Review UI + Test Race Fix
+
+**Operation:** Added frontend admin page for reviewing pending community evidence submissions; fixed SQLite test race condition.
+
+**Files created:** 1
+- `frontend/src/app/admin/evidence/page.js` — Admin UI for approve/reject of pending evidence submissions, with optional rejection notes; uses React Query with 60s refetch interval
+
+**Files updated:** 2
+- `backend/package.json` — Added `--runInBand` to Jest test script; resolves SQLite migration race condition when test suites run in parallel (admin.test.js was flakily failing)
+- `frontend/src/services/admin.js` — Added `fetchPendingEvidence()` and `reviewEvidence()` functions
+
+**Test count:** 249 backend all passing (reliable now); 9 frontend passing.
+
+**Branch:** `claude/nifty-goodall-9w81ep`, commit `5f0e4a0`. Pushed to origin.
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".

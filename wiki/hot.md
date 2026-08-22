@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-22 — admin evidence review UI added; test race condition fixed; branch `claude/nifty-goodall-9w81ep` has 5 commits ahead of main (PR #48 trailing-slash fix + new feat commit).
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -55,7 +55,9 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status:** 249 backend + 9 frontend, all passing (serial via `--runInBand`). Frontend builds 1119 static pages (550 product + 550 passport + routes).
+
+**2026-08-22 session:** Fixed SQLite migration race condition in Jest parallel runs (`--runInBand` added to backend `npm test`). Added `/admin/evidence` frontend page for admin review of pending community evidence submissions (approve/reject with optional notes). Added `fetchPendingEvidence` and `reviewEvidence` to `frontend/src/services/admin.js`. Branch `claude/nifty-goodall-9w81ep` pushed — 5 commits ahead of main.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)
