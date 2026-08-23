@@ -13,6 +13,25 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-23 — Portfolio Scoring Page
+
+**Operation:** Scheduled session. Audited current state (249 backend tests passing, no open PRs). Built Portfolio Scoring page — the key missing B2B frontend for the existing `POST /api/v1/portfolio/score` endpoint.
+
+**Files created:** 1
+- `frontend/src/app/portfolio/page.js` — full Portfolio Scoring UI: product multi-select (up to 100 SKUs, search + scrollable list), "Score Portfolio" action via useMutation, summary stat cards, score distribution BarChart (5 bands, colour-coded), category benchmark table, per-product results table with GradeBadge + TierChip, client-side CSV export.
+
+**Files updated:** 1
+- `frontend/src/components/Navbar.js` — added "Portfolio" link between Compare and Dashboard.
+
+**Branch:** `claude/nifty-goodall-4xlu8p`, commit `bdf7fd7` (pushed to origin).
+
+**Test count:** 249 backend (all passing, no new backend tests required — no new routes).
+
+**Index updated:** no
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
