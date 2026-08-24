@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-24
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,7 +13,7 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-08-24 — routine vault refresh; all previously-open PRs merged, no PRs currently open, branch even with `main@0162ec0`.
 
 **Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
@@ -33,9 +33,14 @@ tags: [hot-cache, meta]
 
 **Evidence registry (2026-07-30, commit `32d27eb`):** Persistent, admin-extensible evidence source registry directly addressing review-#2 steer ("evidence ingestion/provenance > more ML"). Migration 007: `evidence_sources` table seeded with 4 canonical sources (Poore & Nemecek 2018, Our World in Data, Open Food Facts, category-estimate) + `product_evidence_links` for explicit product–source bindings. New v1-only routes in `backend/src/routes/evidence.js`: `GET /api/v1/evidence/sources`, `GET /api/v1/evidence/sources/:key`, `GET /api/v1/evidence/product/:id`, `POST /api/v1/evidence/sources` (admin), `POST /api/v1/evidence/product-link` (admin). Swagger: `EvidenceSource` schema + 5 endpoints under "Evidence & Provenance" tag. 14 new tests.
 
-**Parallel work on main:** DPP passport frontend page in PR #34 (branch `claude/dreamy-dirac-fzmsdt`); `CONTRIBUTING.md` added via `claude/nifty-goodall-s4f427`.
+**Recently merged on `main` (since 2026-07-30):** PR #34 DPP passport frontend, #36 similar-products recommendations, #37 tier filter + carbon widget, #38 user profile + weekly-goal migration 005, #39 carbon CSV export, #41 server-side favorites + migration 004, #45 community evidence submission + migration 006, #46 precommit format, #47 README sync, #48 trailing-slash 404 fix.
 
-**Open PRs (not yet merged):** #34 DPP frontend, #36 recommendations, #37 audit vuln fix + tier filter, #38 user profile, #39 CSV export, #41 server-side favorites. PRs #36/#37/#38 are based on old main (`18bec95`) and may need rebasing.
+**Open PRs:** none. Branch `claude/nifty-goodall-euvdnn` is even with `origin/main`.
+
+**Recent hardening (PR #48, `main@0162ec0`, 2026-08-20):**
+- `render.yaml` rewrite regressed slashless URLs to `/404.html` — fixed by treating directory-index resolution explicitly (Next 14 `trailingSlash:true` emits `build/<route>/index.html`).
+- `ApiReadyGate` no longer wraps the whole app in a blocking gate — children render immediately, the health check only drives a "waking up the server" banner (2.5 s grace). Cold starts and API outages no longer black-hole every prerendered route.
+- `healthCheckPath` moved from `/api/health` (readiness — issues `BEGIN IMMEDIATE`, can 503 on transient lock) to `/api/health/live` (liveness — no dependencies). Prevents Render from restarting a healthy process on a lock hiccup.
 
 **Passport frontend (PR #34, branch `claude/dreamy-dirac-fzmsdt`):** `/passport/[id]` page with `PassportCard` (SVG score ring, 7-dimension emission bars, confidence badge, methodology version); `fetchPassport`/`fetchPortfolioScore`/`fetchAuditLog` in the products service; "Eco Passport" button on the product detail page; 550 pages via `generateStaticParams()`.
 
@@ -55,7 +60,9 @@ tags: [hot-cache, meta]
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status (as of last recorded run, pre-2026-08-24):** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes). ApiReadyGate tests were rewritten in PR #48 (previous assertions covered the blocking behaviour that was the bug); recount after next full CI run.
+
+**Graphify status:** `graphify-out/` on disk is dated 2026-05-10 and predates the DPP passport, evidence registry, submitted-evidence, favorites, profile, CSV export, tier filter, recommendations, and trailing-slash fixes. The `graphify.watch` Python module is not installed in scheduled-routine sessions, so the graph cannot be rebuilt here. Treat the current graph as a stale snapshot for architecture questions post-2026-05-10.
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

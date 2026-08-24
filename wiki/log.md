@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-08-24
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,26 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-08-24 — Vault Refresh (Scheduled Routine)
+
+**Operation:** Scheduled routine reconciled the wiki with `main` after PRs #34, #36, #37, #38, #39, #41, #45, #46, #47, #48 all merged since the 2026-07-30 entry. No new code work; branch `claude/nifty-goodall-euvdnn` is even with `origin/main` and no PRs are open.
+
+**Pages updated:** 2
+- `hot.md` — noted trailing-slash / ApiReadyGate / health-check-liveness fixes (PR #48), README sync (PR #47), and current "no open PRs" state
+- `log.md` — this entry
+
+**Confirmed on `main@0162ec0`:**
+- `render.yaml` `healthCheckPath: /api/health/live` (not `/api/health`, which is the readiness probe with `BEGIN IMMEDIATE`)
+- `ApiReadyGate` no longer blocks children; health check only drives the "waking up the server" banner (2.5 s grace)
+- Every route without a trailing slash serves its `index.html` directory-index instead of `404.html`
+
+**Not done:** graphify rebuild — `graphify.watch` Python module is not installed in this environment (the `graphify-out/` artifacts on disk date to 2026-05-10 and were not regenerable here). Flagged as a follow-up if a future session has the module.
+
+**Index updated:** no
+**Hot cache updated:** yes
 
 ---
 
