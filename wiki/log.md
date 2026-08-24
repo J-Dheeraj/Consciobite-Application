@@ -13,6 +13,25 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-24 — Portfolio Carbon Scoring Page
+
+**Operation:** Build `/portfolio` frontend page that exposes the existing `POST /api/v1/portfolio/score` B2B endpoint via a full UI. All PRs (#34–#48) had merged; branch `claude/dreamy-dirac-iq8m76` was at parity with main; no open issues or PRs.
+
+**Files created:** 1
+- `frontend/src/app/portfolio/page.js` — Portfolio scoring page (product search/select up to 100 SKUs, KPI cards, score-distribution bar chart, category-benchmark table, sortable ranked product table with Passport links)
+
+**Files modified:** 1
+- `frontend/src/components/Navbar.js` — Added "Portfolio" link between Compare and Dashboard
+
+**No backend changes** — `POST /api/v1/portfolio/score` already existed; `fetchPortfolioScore()` already in `products.js` service and re-exported from `api.js`.
+
+**Test status:** 249 backend tests, all passing. Frontend builds cleanly; `/portfolio` included at 7.63 kB.
+
+**Branch:** `claude/dreamy-dirac-iq8m76`, commit `44acbc5`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
