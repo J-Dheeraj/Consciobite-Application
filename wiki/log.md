@@ -13,6 +13,27 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-25 — Per-Product Public Score History
+
+**Operation:** Implement public score change history endpoint and UI component to close the transparency gap: score_change_logs data existed but had no per-product public accessor.
+
+**Files created:** 1
+- `frontend/src/components/ScoreHistoryTimeline.js` — vertical timeline component with delta badges, date, change reason, methodology version; empty state; links to /transparency
+
+**Files modified:** 6
+- `backend/src/routes/products.js` — added `GET /:id/score-history`; imported `getDb`; exposes only public fields (excludes manufacturer_id, is_paying_client, changed_by, catalog_hash, code_revision)
+- `backend/__tests__/api.test.js` — 4 new Supertest tests (invalid ID → 400, unknown product → 404, response shape, private-field exclusion)
+- `backend/src/swagger.js` — full OpenAPI schema for new endpoint under Products tag
+- `frontend/src/services/products.js` — added `fetchScoreHistory(id)`
+- `frontend/src/services/api.js` — re-exported `fetchScoreHistory`
+- `frontend/src/app/product/[id]/ProductDetailClient.js` — imported and rendered `ScoreHistoryTimeline` below `EvidenceSection`
+
+**Test count:** 189 → 253 backend (all passing — growth includes all merged PRs since last log entry).
+**Branch:** `claude/nifty-goodall-0hm4fh`, commit `05e02bc`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
