@@ -13,6 +13,28 @@ Append-only. Newest entries at top.
 
 ---
 
+## 2026-08-25 — Portfolio Scoring Frontend Page
+
+**Operation:** Scheduled session. Added `/portfolio` page exposing the existing `POST /api/v1/portfolio/score` B2B endpoint in the frontend. All previous PRs (#34–#48) had already merged; no open PRs at session start.
+
+**Files created:** 2
+- `frontend/src/app/portfolio/page.js` — static server wrapper (no `generateStaticParams` needed; page is non-parameterized)
+- `frontend/src/app/portfolio/PortfolioClient.js` — full client component with React Query (`useQuery` for product list, `useMutation` for scoring); product search; up to 100 SKU selection; portfolio summary card; category benchmarks table; full SKU list ranked by score
+
+**Files modified:** 1
+- `frontend/src/components/Navbar.js` — added "Portfolio" link between Compare and Dashboard
+
+**Verification:**
+- ESLint: 0 warnings or errors
+- Prettier: clean after auto-format
+- `next build`: succeeds; `/portfolio` appears in the build output (4.41 kB page)
+- 249 backend tests still passing (unchanged)
+
+**Branch:** `claude/dreamy-dirac-8s1qwi`, commit `bd9e457`
+**Hot cache updated:** yes
+
+---
+
 ## 2026-07-30 — Evidence Source Registry
 
 **Operation:** Implement evidence source registry (migration 007 + `/api/v1/evidence/*` routes), addressing architecture review-#2 steer "evidence ingestion/provenance > more ML".
