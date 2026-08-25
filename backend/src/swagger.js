@@ -179,6 +179,52 @@ const options = {
           },
         },
       },
+      "/products/{id}/score-history": {
+        get: {
+          tags: ["Products"],
+          summary: "Get public score change history for a product",
+          description:
+            "Returns a chronological audit trail of GreenGrade score changes for a single product. Private fields (manufacturer identity, paying status, internal actor) are not exposed. Supports the governance and transparency narrative.",
+          parameters: [{ name: "id", in: "path", required: true, schema: { type: "string" } }],
+          responses: {
+            200: {
+              description: "Score history retrieved",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      productId: { type: "string" },
+                      productName: { type: "string" },
+                      scoredSince: {
+                        type: "string",
+                        nullable: true,
+                        description: "ISO datetime of first recorded score",
+                      },
+                      history: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            changed_at: { type: "string" },
+                            old_score: { type: "number" },
+                            new_score: { type: "number" },
+                            score_delta: { type: "number" },
+                            change_reason: { type: "string" },
+                            methodology_version: { type: "string" },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            400: { description: "Invalid product ID" },
+            404: { description: "Product not found" },
+          },
+        },
+      },
       "/products/scan/{barcode}": {
         get: {
           tags: ["Products"],

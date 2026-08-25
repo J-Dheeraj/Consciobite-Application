@@ -29,6 +29,7 @@ const EVIDENCE_SUBMIT_SCHEMA = {
     year: { required: false },
   },
 };
+const { getDb } = require("../db/schema");
 const products = require("../data/products.json");
 const { calculateGreenGrade } = require("../services/greengrade");
 const { logger } = require("../middleware/logger");
@@ -340,6 +341,42 @@ router.post("/:id/evidence", requireAuth, validate(EVIDENCE_SUBMIT_SCHEMA), (req
       id: result.id,
       status: "pending",
       message: "Evidence submitted and pending review. Thank you for your contribution.",
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// GET /api/products/:id/score-history — public audit trail for a single product
+router.get("/:id/score-history", (req, res, next) => {
+  try {
+    const id = sanitize(req.params.id, 20);
+    if (!validator.isAlphanumeric(id)) {
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+    const product = products.find((p) => String(p.id) === id);
+    if (!product) return res.status(404).json({ error: "Product not found" });
+
+    const db = getDb();
+    const history = db
+      .prepare(
+        `SELECT changed_at, old_score, new_score, score_delta, change_reason, methodology_version
+         FROM score_change_logs
+         WHERE product_id = ?
+         ORDER BY changed_at DESC
+         LIMIT 50`
+      )
+      .all(id);
+
+    const snapshot = db
+      .prepare("SELECT scored_at FROM product_scores WHERE product_id = ?")
+      .get(id);
+
+    res.json({
+      productId: id,
+      productName: product.name,
+      scoredSince: snapshot?.scored_at ?? null,
+      history,
     });
   } catch (err) {
     next(err);

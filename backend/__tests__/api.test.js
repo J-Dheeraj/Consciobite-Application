@@ -388,6 +388,46 @@ describe("API Endpoints", () => {
     });
   });
 
+  describe("GET /api/products/:id/score-history", () => {
+    test("returns 400 for an invalid product ID", async () => {
+      const res = await request(app).get("/api/products/bad-id!/score-history");
+      expect(res.status).toBe(400);
+    });
+
+    test("returns 404 for an unknown product", async () => {
+      const res = await request(app).get("/api/products/999999/score-history");
+      expect(res.status).toBe(404);
+    });
+
+    test("returns 200 with correct shape for a known product", async () => {
+      const res = await request(app).get("/api/products/1/score-history");
+      expect(res.status).toBe(200);
+      expect(res.body.productId).toBe("1");
+      expect(typeof res.body.productName).toBe("string");
+      expect(Array.isArray(res.body.history)).toBe(true);
+      // scoredSince is null until the snapshot table is populated on startup
+      expect("scoredSince" in res.body).toBe(true);
+    });
+
+    test("history entries have the expected public fields", async () => {
+      const res = await request(app).get("/api/products/1/score-history");
+      expect(res.status).toBe(200);
+      // history may be empty in test env (no rescore triggered), which is valid
+      if (res.body.history.length > 0) {
+        const entry = res.body.history[0];
+        expect(entry).toHaveProperty("changed_at");
+        expect(entry).toHaveProperty("old_score");
+        expect(entry).toHaveProperty("new_score");
+        expect(entry).toHaveProperty("score_delta");
+        expect(entry).toHaveProperty("change_reason");
+        // private fields must not be exposed
+        expect(entry.manufacturer_id).toBeUndefined();
+        expect(entry.is_paying_client).toBeUndefined();
+        expect(entry.changed_by).toBeUndefined();
+      }
+    });
+  });
+
   describe("404 handling", () => {
     test("should return 404 for unknown routes", async () => {
       const res = await request(app).get("/api/nonexistent");

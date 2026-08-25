@@ -56,3 +56,7 @@ export async function submitProductEvidence(id, data) {
     body: JSON.stringify(data),
   });
 }
+
+export async function fetchScoreHistory(id) {
+  return httpClient(`${API_BASE}/products/${encodeURIComponent(id)}/score-history`);
+}
