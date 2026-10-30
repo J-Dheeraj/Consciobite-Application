@@ -10,6 +10,7 @@ const {
   requireAuth,
   refreshToken,
   logoutHandler,
+  revokeToken,
   generateCsrfToken,
   csrfProtection,
 } = require("../middleware/auth");
@@ -71,7 +72,17 @@ const DUMMY_PASSWORD_HASH = bcrypt.hashSync("dummy-password-for-timing-equalizat
 router.post("/register", async (req, res) => {
   const { email, name, password } = req.body;
 
-  if (!email || !name || !password) {
+  // Type-check before any validator/bcrypt call: those throw on non-strings,
+  // and an async handler's rejection is not caught by Express 4, so a single
+  // request with {"email": 123} would crash the process.
+  if (
+    typeof email !== "string" ||
+    typeof name !== "string" ||
+    typeof password !== "string" ||
+    !email ||
+    !name ||
+    !password
+  ) {
     return res.status(400).json({ error: "Email, name, and password are required" });
   }
 
@@ -124,7 +135,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
+  if (typeof email !== "string" || typeof password !== "string" || !email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
   }
 
@@ -270,7 +281,7 @@ router.get("/export", requireAuth, (req, res) => {
 // Requires the current password as confirmation.
 router.delete("/account", requireAuth, async (req, res) => {
   const { password } = req.body || {};
-  if (!password) {
+  if (typeof password !== "string" || !password) {
     return res.status(400).json({ error: "Password confirmation is required" });
   }
 
@@ -285,10 +296,16 @@ router.delete("/account", requireAuth, async (req, res) => {
     return res.status(401).json({ error: "Incorrect password" });
   }
 
+  // Revoke the presented token first: without this the JWT stays valid for the
+  // rest of its TTL and still authenticates routes that don't re-read `users`.
+  // Note we deliberately do NOT delete this user's revoked_tokens rows — doing
+  // so would resurrect tokens revoked by an earlier logout. They expire on
+  // their own via the lazy purge in revokeToken().
+  revokeToken(req.user);
+
   const deleteAll = db.transaction((userId) => {
     db.prepare("DELETE FROM reviews WHERE user_id = ?").run(userId);
     db.prepare("DELETE FROM carbon_logs WHERE user_id = ?").run(userId);
-    db.prepare("DELETE FROM revoked_tokens WHERE user_id = ?").run(userId);
     db.prepare("DELETE FROM users WHERE id = ?").run(userId);
   });
   deleteAll(req.user.id);

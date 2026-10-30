@@ -10,10 +10,21 @@ const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "2h";
 const JWT_ALGORITHM = "HS256";
 const COOKIE_NAME = "consciobite_session";
 
+// The frontend and the API are deployed on different hosts
+// (consciobite-app.onrender.com vs consciobite-api.onrender.com). onrender.com
+// is on the Public Suffix List, so those are different *sites*, not just
+// different origins — a SameSite=Strict cookie is never sent to the API and
+// session restore plus the CSRF double-submit check both break in production.
+// Cross-site therefore needs SameSite=None, which requires Secure. CSRF is
+// still covered by the double-submit token and by CORS being pinned to the
+// exact deployment origins. Locally the two run same-site, where Lax works and
+// None would be rejected over plain HTTP.
+const CROSS_SITE = process.env.NODE_ENV === "production";
+
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
+  secure: CROSS_SITE,
+  sameSite: CROSS_SITE ? "none" : "lax",
   path: "/",
   maxAge: 2 * 60 * 60 * 1000,
 };
@@ -197,8 +208,8 @@ function generateCsrfToken(_req, res) {
   const token = crypto.randomBytes(32).toString("hex");
   res.cookie("csrf-token", token, {
     httpOnly: false,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: CROSS_SITE ? "none" : "lax",
+    secure: CROSS_SITE,
     maxAge: 24 * 60 * 60 * 1000,
   });
   res.json({ csrfToken: token });
@@ -206,6 +217,7 @@ function generateCsrfToken(_req, res) {
 
 module.exports = {
   generateToken,
+  revokeToken,
   issueToken,
   setAuthCookie,
   clearAuthCookie,
