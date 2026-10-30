@@ -69,14 +69,12 @@ jobs:
         working-directory: ./frontend
         run: npm test
 
-      # The deployed frontend is a static export (output: 'export') — the
-      # Next.js server never runs in production, so high-severity server CVEs
-      # in Next 14 (whose only fix is the breaking Next 16 upgrade) don't
-      # affect the shipped artifact. Gate on critical findings instead of
-      # bypassing the audit entirely.
+      # Critical advisories fail the build unless they are named, justified
+      # and dated in scripts/audit-gate.js (rationale in /SECURITY.md). A new
+      # critical, or an expired exception, still fails.
       - name: Audit frontend dependencies
         working-directory: ./frontend
-        run: npm audit --production --audit-level=critical
+        run: npm run audit:ci
 
       - name: Build frontend
         working-directory: ./frontend
