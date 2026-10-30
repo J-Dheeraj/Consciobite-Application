@@ -279,7 +279,7 @@ router.get("/export", requireAuth, (req, res) => {
 
 // DELETE /api/auth/account - permanently delete the account and all its data.
 // Requires the current password as confirmation.
-router.delete("/account", requireAuth, async (req, res) => {
+router.delete("/account", csrfProtection, requireAuth, async (req, res) => {
   const { password } = req.body || {};
   if (typeof password !== "string" || !password) {
     return res.status(400).json({ error: "Password confirmation is required" });

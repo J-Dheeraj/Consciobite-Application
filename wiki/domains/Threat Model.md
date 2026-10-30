@@ -84,7 +84,7 @@ silently assumes same-site. See T-5.
 | T-4 | **Elevation / Spoofing** — revoked token resurrection | account deletion | High | **Verified**; fixed in PR #50 |
 | T-5 | **Spoofing/DoS** — cross-site cookie withheld | `COOKIE_OPTIONS` | High | **Verified**; fixed in PR #50 |
 | T-6 | **Tampering/Repudiation** — audit trail is mutable + ephemeral | `score_change_logs` | High | **Open — accepted** |
-| T-7 | **Tampering** — CSRF gaps on two mutating surfaces | `DELETE /auth/account`, `/v1/evidence` POSTs | Medium | **Open** |
+| T-7 | **Tampering** — CSRF gaps on two mutating surfaces | `DELETE /auth/account`, `/v1/evidence` POSTs | Medium | **Fixed in PR #50** |
 | T-8 | **Info disclosure** — total data loss / no backup | ephemeral SQLite | High | **Open — known** |
 | T-9 | **Tampering** — stored XSS via community evidence | `submitted_evidence` | Medium | Mitigated (escape + admin review) |
 | T-10 | **DoS** — amplification through OFF | `/products/scan/:barcode` | Low | Mitigated (breaker + limiter) |
@@ -142,15 +142,22 @@ guarantee in the system and currently has the weakest. README already describes
 it as application-level rather than tamper-evident — the honest wording stands;
 the capability gap remains.
 
-### T-7 · CSRF gaps — MEDIUM, open
-`/auth` is mounted with no `csrfProtection` (only `PATCH /me` adds it inline),
-so **`DELETE /api/auth/account` has none** — password-confirmed, which blunts
-it. `/api/v1/evidence` is mounted without CSRF too, so the admin
-`POST /sources` and `POST /product-link` rely on `requireAdmin` alone. Today
-`SameSite=Strict` masks this; **once T-5 is fixed to `SameSite=None` these
-become genuinely reachable**, so they should land together.
+### T-7 · CSRF gaps — MEDIUM, **fixed in PR #50**
+`/auth` is mounted with no `csrfProtection` (only `PATCH /me` added it
+inline), leaving **`DELETE /api/auth/account`** unguarded; `/api/v1/evidence`
+was mounted without it too, so the admin `POST /sources` and
+`POST /product-link` relied on `requireAdmin` alone.
 
----
+Today `SameSite=Strict` masks these — but T-5's fix relaxes that to
+`SameSite=None`, at which point they become genuinely reachable. They
+therefore had to ship together, and now do.
+
+Fixed surgically rather than by guarding the whole `/auth` mount: `logout`
+and `refresh` are called from `AuthContext` with raw `fetch` and no CSRF
+header, so a blanket guard would 403 session restore and sign-out. Verified
+on a live dev instance: the three endpoints return 403 without a token, while
+`logout` still returns 200, `refresh`/`login` return 401 (not 403), and the
+public evidence reads are untouched.
 
 ## 5. Verified sound — do not re-litigate
 
