@@ -155,7 +155,10 @@ const scanLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "Too many scan requests, please try again later." },
 });
+// Both prefixes: ROUTE_TABLE mounts every router at /api and /api/v1, so a
+// limiter bound only to /api would leave the v1 surface unthrottled.
 app.use("/api/products/scan", scanLimiter);
+app.use("/api/v1/products/scan", scanLimiter);
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -167,6 +170,7 @@ const authLimiter = rateLimit({
   skip: () => process.env.NODE_ENV === "test",
 });
 app.use("/api/auth", authLimiter);
+app.use("/api/v1/auth", authLimiter);
 
 // ---------- Cookie parsing ----------
 app.use(cookieParser());
@@ -296,7 +300,7 @@ for (const [route, middlewares, router] of ROUTE_TABLE) {
 // The bare /api/v1 passport mount comes last so more specific /api/v1/*
 // mounts above match first.
 app.use("/api/v1/ml", cacheMiddleware(120), mlRoutes);
-app.use("/api/v1/evidence", cacheMiddleware(300), evidenceRoutes);
+app.use("/api/v1/evidence", cacheMiddleware(300), csrfProtection, evidenceRoutes);
 app.use("/api/v1", cacheMiddleware(120), passportRoutes);
 
 // ---------- 404 handler ----------
@@ -320,6 +324,13 @@ app.use((err, _req, res, _next) => {
 });
 
 // ---------- Graceful shutdown ----------
+// Node exits the process on an unhandled rejection. Express 4 does not catch
+// rejections from async handlers, so one unexpected throw inside a route would
+// take the whole API down. Log and keep serving; the request itself still fails.
+process.on("unhandledRejection", (reason) => {
+  logger.error("Unhandled promise rejection:", reason);
+});
+
 process.on("SIGTERM", () => {
   logger.info("SIGTERM received, closing database...");
   closeDb();
