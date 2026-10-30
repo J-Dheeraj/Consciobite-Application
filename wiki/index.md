@@ -45,6 +45,7 @@ Codebase knowledge base. Mode B (GitHub/codebase). Seeded from graphify audit 20
 - [[Frontend Error Handling]]
 - [[Grading Independence Governance]]
 - [[Production Readiness]]
+- [[Threat Model]]
 
 ## Questions
 - [[What Did the Graphify Audit Find]]
