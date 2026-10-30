@@ -44,10 +44,12 @@ services:
         value: no-cache
     routes:
       # Next static export with trailingSlash:true emits build/<route>/index.html.
-      # Render serves existing files first and only then applies these routes, so
-      # "/products/" resolves on its own but "/products" does not — it has no
-      # matching file. Rewrite the slashless form to its directory index rather
-      # than letting it fall through to the 404 page.
+      # Render serves an existing resource before applying routes, so "/products/"
+      # resolves on its own; "/products" has no matching file and needs this
+      # rewrite. Render's destination wildcard is "*" (it re-inserts the text the
+      # source "*" captured) — NOT ":splat", which is not a Render placeholder and
+      # rewrote every slashless URL to a literal path that does not exist, which is
+      # why those URLs returned an empty 200.
       - type: rewrite
         source: /*
-        destination: /:splat/index.html
+        destination: /*/index.html
