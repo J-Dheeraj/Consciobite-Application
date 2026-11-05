@@ -12,9 +12,11 @@
  */
 const fs = require("fs");
 const path = require("path");
+const yaml = require("js-yaml");
 
 const BUILD = path.join(__dirname, "..", "build");
 const RENDER_YAML = path.join(__dirname, "..", "..", "render.yaml");
+const SITE_NAME = "consciobite-app";
 
 // Routes Render resolves without a rule, so they need none:
 // "/" is the domain root (rules are not allowed on it) and /404 is the error
@@ -33,19 +35,11 @@ function builtRoutes(dir, base = "") {
   return out;
 }
 
-// render.yaml is hand-maintained and flat here; parse the consciobite-app
-// routes block without adding a YAML dependency to the frontend.
 function configuredRules() {
-  const lines = fs.readFileSync(RENDER_YAML, "utf8").split("\n");
-  const start = lines.findIndex((l) => /^\s*routes:\s*$/.test(l));
-  if (start === -1) throw new Error("render.yaml: no routes: block found");
-  const rules = [];
-  for (const line of lines.slice(start + 1)) {
-    if (/^\s{0,3}\S/.test(line) && line.trim()) break; // dedented out of the block
-    const source = line.match(/^\s*(?:- type: \w+\s*)?source:\s*(\S+)/);
-    if (source) rules.push(source[1]);
-  }
-  return rules;
+  const blueprint = yaml.load(fs.readFileSync(RENDER_YAML, "utf8"));
+  const site = blueprint.services.find((s) => s.name === SITE_NAME);
+  if (!site) throw new Error(`render.yaml: no service named ${SITE_NAME}`);
+  return (site.routes || []).map((r) => r.source);
 }
 
 const matches = (source, route) =>
