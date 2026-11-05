@@ -44,3 +44,26 @@ describe("Cache pressure does not 500 cacheable GETs", () => {
     expect(res.status).toBe(200);
   });
 });
+
+// An oversized body is a client error, but it used to reach the global error
+// handler, which answered 500 and logged a full stack trace as "Unhandled
+// error". Any unauthenticated caller could flood the logs that way.
+describe("Body parser errors are answered as client errors", () => {
+  test("oversized JSON body returns 413, not 500", async () => {
+    const res = await request(app)
+      .post("/api/auth/login")
+      .set("Content-Type", "application/json")
+      .send(JSON.stringify({ email: "a@b.com", password: "x".repeat(20000) }));
+    expect(res.status).toBe(413);
+    expect(res.body.error).toBe("Request body too large");
+  });
+
+  test("malformed JSON body still returns 400", async () => {
+    const res = await request(app)
+      .post("/api/auth/login")
+      .set("Content-Type", "application/json")
+      .send("{not json");
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe("Invalid JSON in request body");
+  });
+});

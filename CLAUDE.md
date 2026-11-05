@@ -184,7 +184,7 @@ cd frontend && npm test
 - `GET /api/products/compare?ids=`
 - `POST /api/auth/register` / `POST /api/auth/login` / `POST /api/auth/logout`
 - `GET /api/auth/me` / `POST /api/auth/refresh` / `GET /api/auth/csrf`
-- `GET /api/carbon/summary` / `POST /api/carbon/log` / `DELETE /api/carbon/:id` (auth required)
+- `GET /api/carbon/summary` / `POST /api/carbon/log` / `DELETE /api/carbon/log/:id` (auth required)
 - `GET /api/reviews/:productId` / `POST /api/reviews/:productId` / `DELETE /api/reviews/:id` (auth required)
 - `GET /api/recipes` / `GET /api/methodology` / `GET /api/health`
 - `GET /api/admin/conflict-log` / `POST /api/admin/rescore` (admin only)

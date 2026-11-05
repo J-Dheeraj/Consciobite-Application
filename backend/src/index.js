@@ -179,10 +179,17 @@ app.use(cookieParser());
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: false, limit: "10kb" }));
 
-// ---------- JSON parse error handler ----------
+// ---------- Body parser error handler ----------
+// Both of these are client errors. Without the second branch an oversized
+// body fell through to the global handler, which answered 500 and logged a
+// full stack trace at error level as "Unhandled error" -- so any unauthenticated
+// caller could fill the logs with noise that masks real faults.
 app.use((err, _req, res, next) => {
   if (err.type === "entity.parse.failed") {
     return res.status(400).json({ error: "Invalid JSON in request body" });
+  }
+  if (err.type === "entity.too.large") {
+    return res.status(413).json({ error: "Request body too large" });
   }
   next(err);
 });
