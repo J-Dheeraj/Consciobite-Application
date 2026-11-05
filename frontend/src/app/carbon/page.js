@@ -30,6 +30,7 @@ export default function CarbonTracker() {
     error,
   } = useQuery({
     queryKey: ["carbon"],
+    enabled: isAuthenticated,
     queryFn: () =>
       Promise.all([fetchCarbonSummary(), fetchCarbonLogs()]).then(([summaryData, logsData]) => ({
         summary: summaryData,
@@ -146,7 +147,7 @@ export default function CarbonTracker() {
               color: "#e63946",
             }}
           >
-            {error}
+            {error.message || "Failed to load carbon data."}
           </div>
         )}
 

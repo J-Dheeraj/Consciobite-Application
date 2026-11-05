@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./Navbar.module.css";
+import { isActivePath } from "@/utils/isActivePath";
 
 const NAV_LINKS = [
   { to: "/products", label: "Products" },
@@ -59,7 +60,7 @@ export default function Navbar() {
 
       <div className={styles.desktopLinks}>
         {NAV_LINKS.map((link) => {
-          const active = pathname === link.to;
+          const active = isActivePath(pathname, link.to);
           return (
             <Link
               key={link.to}
@@ -115,7 +116,7 @@ export default function Navbar() {
       {menuOpen && (
         <div className={styles.mobileMenu}>
           {NAV_LINKS.map((link) => {
-            const active = pathname === link.to;
+            const active = isActivePath(pathname, link.to);
             return (
               <Link
                 key={link.to}

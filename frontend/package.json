@@ -30,6 +30,7 @@
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css}\"",
-    "test": "jest"
+    "test": "jest",
+    "audit:ci": "node scripts/audit-gate.js"
   }
 }

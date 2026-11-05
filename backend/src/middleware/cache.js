@@ -20,7 +20,14 @@ function cacheMiddleware(ttl = 300) {
     const originalJson = res.json.bind(res);
     res.json = (body) => {
       if (res.statusCode === 200) {
-        cache.set(key, body, ttl);
+        // node-cache throws ECACHEFULL once maxKeys is reached. The key space is
+        // request-controlled (originalUrl), so without this guard ~1000 crafted
+        // GETs would make every later cache-miss return 500.
+        try {
+          cache.set(key, body, ttl);
+        } catch {
+          // Cache full or unavailable: serve the response uncached.
+        }
       }
       return originalJson(body);
     };

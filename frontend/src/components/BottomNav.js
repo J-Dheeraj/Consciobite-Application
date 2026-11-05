@@ -2,6 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isActivePath } from "@/utils/isActivePath";
 
 const BOTTOM_LINKS = [
   { to: "/", label: "Home" },
@@ -44,7 +45,7 @@ export default function BottomNav() {
           }}
         >
           {BOTTOM_LINKS.map((link) => {
-            const active = pathname === link.to;
+            const active = isActivePath(pathname, link.to);
             return (
               <Link
                 key={link.to}
