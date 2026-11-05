@@ -43,13 +43,69 @@ services:
         name: Cache-Control
         value: no-cache
     routes:
-      # Next static export with trailingSlash:true emits build/<route>/index.html.
-      # Render serves an existing resource before applying routes, so "/products/"
-      # resolves on its own; "/products" has no matching file and needs this
-      # rewrite. Render's destination wildcard is "*" (it re-inserts the text the
-      # source "*" captured) — NOT ":splat", which is not a Render placeholder and
-      # rewrote every slashless URL to a literal path that does not exist, which is
-      # why those URLs returned an empty 200.
+      # Next static export with trailingSlash:true emits build/<route>/index.html,
+      # so "/products/" is served as an existing resource and needs no rule; only
+      # the slashless "/products" does. Render's documented path matching is:
+      # resource exists -> serve it; else first matching rule from the top; else
+      # 404 Not Found. A "/*" catch-all therefore matches EVERY unknown path and
+      # rewrites it to a file that does not exist, which Render answers with an
+      # empty 200 -- a soft 404 that also hid missing /_next assets. Render has no
+      # not-found-page setting, so the only way to get a real 404 is for no rule to
+      # match. Hence one explicit rule per prerendered route instead of "/*".
       - type: rewrite
-        source: /*
-        destination: /*/index.html
+        source: /about
+        destination: /about/index.html
+      - type: rewrite
+        source: /carbon
+        destination: /carbon/index.html
+      - type: rewrite
+        source: /compare
+        destination: /compare/index.html
+      - type: rewrite
+        source: /dashboard
+        destination: /dashboard/index.html
+      - type: rewrite
+        source: /favorites
+        destination: /favorites/index.html
+      - type: rewrite
+        source: /login
+        destination: /login/index.html
+      - type: rewrite
+        source: /methodology
+        destination: /methodology/index.html
+      - type: rewrite
+        source: /products
+        destination: /products/index.html
+      - type: rewrite
+        source: /profile
+        destination: /profile/index.html
+      - type: rewrite
+        source: /recipes
+        destination: /recipes/index.html
+      - type: rewrite
+        source: /register
+        destination: /register/index.html
+      - type: rewrite
+        source: /scan
+        destination: /scan/index.html
+      - type: rewrite
+        source: /tips
+        destination: /tips/index.html
+      - type: rewrite
+        source: /transparency
+        destination: /transparency/index.html
+      - type: rewrite
+        source: /admin/conflict-log
+        destination: /admin/conflict-log/index.html
+      - type: rewrite
+        source: /admin/manufacturers
+        destination: /admin/manufacturers/index.html
+      # 550 prerendered ids each; * carries the captured id into the destination.
+      # A nonexistent id still yields an empty 200 here: no rule can test whether
+      # the target file exists. Coverage is enforced by frontend/scripts/check-render-routes.js.
+      - type: rewrite
+        source: /product/*
+        destination: /product/*/index.html
+      - type: rewrite
+        source: /passport/*
+        destination: /passport/*/index.html

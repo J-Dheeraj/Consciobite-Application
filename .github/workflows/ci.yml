@@ -80,6 +80,12 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
+      # render.yaml lists one rewrite per prerendered route rather than a "/*"
+      # catch-all, so a new page needs a new rule or it 404s in production.
+      - name: Check render.yaml covers every built route
+        working-directory: ./frontend
+        run: npm run check:routes
+
   docker-build:
     name: Docker Build Check
     runs-on: ubuntu-latest

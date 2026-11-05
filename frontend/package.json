@@ -21,6 +21,7 @@
     "eslint-config-next": "^14.2.35",
     "jest": "^30.4.2",
     "jest-environment-jsdom": "^30.4.1",
+    "js-yaml": "^5.5.0",
     "prettier": "^3.2.0"
   },
   "scripts": {
@@ -31,6 +32,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
     "format:check": "prettier --check \"src/**/*.{js,jsx,css}\"",
     "test": "jest",
-    "audit:ci": "node scripts/audit-gate.js"
+    "audit:ci": "node scripts/audit-gate.js",
+    "check:routes": "node scripts/check-render-routes.js"
   }
 }
