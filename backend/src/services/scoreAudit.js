@@ -15,12 +15,107 @@ const CATALOG_HASH = crypto
 const CODE_REVISION =
   process.env.RENDER_GIT_COMMIT || process.env.GIT_SHA || process.env.SOURCE_VERSION || "unknown";
 
+// ---------- Tamper-evident chain (T-6) ----------
+// Each record carries an HMAC over its own content plus the previous record's
+// hash, so altering, deleting or splicing a row invalidates every hash after
+// it. The key is read from the environment, never stored in the database, so
+// reaching the SQLite file alone is not enough to recompute a valid chain.
+//
+// What this does NOT cover: an attacker who also holds the key can forge the
+// chain, and truncating the newest records leaves a shorter but self-consistent
+// chain. Recording the head hash off-host (see verifyAuditChain().head) is what
+// detects truncation.
+const AUDIT_HMAC_KEY = process.env.AUDIT_HMAC_KEY || process.env.JWT_SECRET || "test-only-secret";
+
+// Fixed field order; values are JSON-encoded so a value containing the
+// separator cannot be made to look like a field boundary.
+const CHAIN_FIELDS = [
+  "id",
+  "product_id",
+  "product_name",
+  "manufacturer_id",
+  "is_paying_client",
+  "old_score",
+  "new_score",
+  "score_delta",
+  "changed_at",
+  "changed_by",
+  "change_reason",
+  "methodology_version",
+  "catalog_hash",
+  "code_revision",
+];
+
+function chainHash(prevHash, row) {
+  const canonical = CHAIN_FIELDS.map((f) => JSON.stringify(row[f] ?? null)).join("\u001f");
+  return crypto
+    .createHmac("sha256", AUDIT_HMAC_KEY)
+    .update(`${prevHash ?? ""}\u001e${canonical}`)
+    .digest("hex");
+}
+
+function chainHead(db) {
+  const row = db
+    .prepare(
+      "SELECT entry_hash FROM score_change_logs WHERE entry_hash IS NOT NULL ORDER BY rowid DESC LIMIT 1"
+    )
+    .get();
+  return row?.entry_hash ?? null;
+}
+
+// Re-walks the chain and reports the first inconsistency. Rows written before
+// migration 009 have no hash; they are counted as `unchained`, not as tampered.
+function verifyAuditChain() {
+  const db = getDb();
+  const rows = db
+    .prepare(
+      `SELECT ${CHAIN_FIELDS.join(", ")}, prev_hash, entry_hash
+       FROM score_change_logs ORDER BY rowid`
+    )
+    .all();
+
+  let prev = null;
+  let checked = 0;
+  let unchained = 0;
+
+  for (const row of rows) {
+    if (row.entry_hash === null) {
+      unchained++;
+      continue;
+    }
+    if ((row.prev_hash ?? null) !== prev) {
+      return {
+        ok: false,
+        reason: "chain broken: a record was removed or reordered",
+        at: row.id,
+        checked,
+        unchained,
+      };
+    }
+    if (chainHash(prev, row) !== row.entry_hash) {
+      return {
+        ok: false,
+        reason: "record altered: content does not match its hash",
+        at: row.id,
+        checked,
+        unchained,
+      };
+    }
+    prev = row.entry_hash;
+    checked++;
+  }
+
+  return { ok: true, checked, unchained, head: prev };
+}
+
+// changed_at is supplied here rather than left to SQLite's DEFAULT so the
+// timestamp is covered by the hash.
 const INSERT_LOG = `
   INSERT INTO score_change_logs
     (id, product_id, product_name, manufacturer_id, is_paying_client,
-     old_score, new_score, score_delta, changed_by, change_reason,
-     methodology_version, catalog_hash, code_revision)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     old_score, new_score, score_delta, changed_at, changed_by, change_reason,
+     methodology_version, catalog_hash, code_revision, prev_hash, entry_hash)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `;
 
 const UPSERT_SNAPSHOT = `
@@ -51,23 +146,34 @@ function logScoreChange({
   const db = getDb();
   const mfr = db.prepare(GET_MANUFACTURER).get(productId);
 
-  db.prepare(INSERT_LOG).run(
-    crypto.randomUUID(),
-    productId,
-    productName,
-    mfr?.id ?? null,
-    mfr?.is_paying ? 1 : 0,
-    oldScore,
-    newScore,
-    parseFloat((newScore - oldScore).toFixed(4)),
-    changedBy,
-    changeReason || "unspecified",
-    METHODOLOGY_VERSION,
-    CATALOG_HASH,
-    CODE_REVISION
-  );
+  const row = {
+    id: crypto.randomUUID(),
+    product_id: productId,
+    product_name: productName,
+    manufacturer_id: mfr?.id ?? null,
+    is_paying_client: mfr?.is_paying ? 1 : 0,
+    old_score: oldScore,
+    new_score: newScore,
+    score_delta: parseFloat((newScore - oldScore).toFixed(4)),
+    changed_at: new Date().toISOString().replace("T", " ").slice(0, 19),
+    changed_by: changedBy,
+    change_reason: changeReason || "unspecified",
+    methodology_version: METHODOLOGY_VERSION,
+    catalog_hash: CATALOG_HASH,
+    code_revision: CODE_REVISION,
+  };
 
-  db.prepare(UPSERT_SNAPSHOT).run(productId, newScore);
+  // Reading the head and appending must not interleave with another writer, or
+  // two records could claim the same predecessor.
+  db.transaction(() => {
+    const prevHash = chainHead(db);
+    db.prepare(INSERT_LOG).run(
+      ...CHAIN_FIELDS.map((f) => row[f]),
+      prevHash,
+      chainHash(prevHash, row)
+    );
+    db.prepare(UPSERT_SNAPSHOT).run(productId, newScore);
+  })();
 }
 
 function snapshotScores(products, scoreFn, options = {}) {
@@ -179,4 +285,10 @@ function getConflictStats() {
   };
 }
 
-module.exports = { logScoreChange, snapshotScores, getConflictLog, getConflictStats };
+module.exports = {
+  logScoreChange,
+  snapshotScores,
+  getConflictLog,
+  getConflictStats,
+  verifyAuditChain,
+};

@@ -143,6 +143,9 @@ Consciobite-Application/
 | `PORT` | no | Backend port, default 4000 |
 | `ALLOWED_ORIGINS` | no | Comma-separated CORS origins, default `http://localhost:3000` |
 | `NEXT_PUBLIC_API_URL` | no | Frontend build-time API URL (Docker/Render) |
+| `AUDIT_HMAC_KEY` | no | Key for the score-audit hash chain; falls back to `JWT_SECRET` |
+| `BACKUP_DIR` | no | Backup destination, default `backend/backups` (same ephemeral disk) |
+| `BACKUP_KEEP` | no | Snapshots to retain, default 7 (`0` keeps all) |
 
 Copy `backend/.env.example` to `backend/.env` before running locally.
 

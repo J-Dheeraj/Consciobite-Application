@@ -52,6 +52,26 @@ describe("Admin governance endpoints", () => {
     });
   });
 
+  describe("GET /api/admin/audit-integrity", () => {
+    test("should reject non-admin users", async () => {
+      const res = await request(app)
+        .get("/api/admin/audit-integrity")
+        .set("Authorization", `Bearer ${userToken}`);
+      expect(res.status).toBe(403);
+    });
+
+    test("should report a verified chain and its head", async () => {
+      const res = await request(app)
+        .get("/api/admin/audit-integrity")
+        .set("Authorization", `Bearer ${adminToken}`);
+      expect(res.status).toBe(200);
+      expect(res.body.ok).toBe(true);
+      expect(typeof res.body.checked).toBe("number");
+      // The head is what an operator records off-host to detect truncation.
+      if (res.body.checked > 0) expect(res.body.head).toMatch(/^[0-9a-f]{64}$/);
+    });
+  });
+
   describe("GET /api/admin/conflict-log", () => {
     test("should return logs and stats", async () => {
       const res = await request(app)

@@ -3,7 +3,12 @@ const crypto = require("crypto");
 const { requireAdmin } = require("../middleware/auth");
 const { validate } = require("../middleware/validate");
 const { getDb } = require("../db/schema");
-const { getConflictLog, getConflictStats, snapshotScores } = require("../services/scoreAudit");
+const {
+  getConflictLog,
+  getConflictStats,
+  snapshotScores,
+  verifyAuditChain,
+} = require("../services/scoreAudit");
 const { calculateGreenGrade } = require("../services/greengrade");
 const { getPendingEvidence, reviewEvidence } = require("../services/evidenceService");
 const products = require("../data/products.json");
@@ -31,6 +36,16 @@ router.get("/conflict-log", validate(LOG_SCHEMA), (req, res) => {
   const stats = getConflictStats();
 
   res.json({ logs, stats });
+});
+
+// --- Audit-trail integrity (T-6) ---
+// Re-walks the HMAC chain over score_change_logs and returns the head hash.
+// Record the head somewhere off-host: the chain detects edits, deletions and
+// splices on its own, but truncating the newest records leaves a shorter,
+// self-consistent chain that only a known-good head reveals.
+router.get("/audit-integrity", (_req, res) => {
+  const result = verifyAuditChain();
+  res.status(result.ok ? 200 : 409).json(result);
 });
 
 // --- Rescore all products and log changes ---

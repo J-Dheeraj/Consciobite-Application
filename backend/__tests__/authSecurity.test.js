@@ -135,9 +135,12 @@ describe("Score audit provenance", () => {
 
   // Remove all traces of provenance test rows so other suites' exact-count
   // assertions (e.g. product_scores === 550) stay valid across runs.
+  //
+  // score_change_logs is deliberately append-only (migration 009), so its rows
+  // cannot be deleted here. Nothing asserts an exact count on that table -- the
+  // rescore test measures a before/after delta -- so leaving them is harmless.
   function cleanupProvenanceRows() {
     const db = getDb();
-    db.prepare("DELETE FROM score_change_logs WHERE product_id LIKE 'prov-test-%'").run();
     db.prepare("DELETE FROM product_scores WHERE product_id LIKE 'prov-test-%'").run();
   }
 

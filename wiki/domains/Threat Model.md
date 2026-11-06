@@ -83,9 +83,9 @@ silently assumes same-site. See T-5.
 | T-3 | **Spoofing** — limiter bypass | `/api/v1/*` mounts | High | **Verified**; fixed in PR #50 |
 | T-4 | **Elevation / Spoofing** — revoked token resurrection | account deletion | High | **Verified**; fixed in PR #50 |
 | T-5 | **Spoofing/DoS** — cross-site cookie withheld | `COOKIE_OPTIONS` | High | **Verified**; fixed in PR #50 |
-| T-6 | **Tampering/Repudiation** — audit trail is mutable + ephemeral | `score_change_logs` | High | **Open — accepted** |
+| T-6 | **Tampering/Repudiation** — audit trail is mutable + ephemeral | `score_change_logs` | High | Partly mitigated (append-only + HMAC chain); ephemerality still open |
 | T-7 | **Tampering** — CSRF gaps on two mutating surfaces | `DELETE /auth/account`, `/v1/evidence` POSTs | Medium | **Fixed in PR #50** |
-| T-8 | **Info disclosure** — total data loss / no backup | ephemeral SQLite | High | **Open — known** |
+| T-8 | **Availability** — total data loss / no backup | ephemeral SQLite | High | Partly mitigated (verified, pruned, relocatable snapshots); durability still open |
 | T-9 | **Tampering** — stored XSS via community evidence | `submitted_evidence` | Medium | Mitigated (escape + admin review) |
 | T-10 | **DoS** — amplification through OFF | `/products/scan/:barcode` | Low | Mitigated (breaker + limiter) |
 | T-11 | **Repudiation** — logout left earlier tokens alive | `logoutHandler` | Low | Mitigated (per-user token epoch) |
@@ -132,15 +132,38 @@ Security effect is subtle: it is not a bypass, it *disables* the CSRF control
 by making every protected mutation fail. *Fixed in PR #50 via
 `SameSite=None; Secure`, with CSRF and pinned CORS carrying the protection.*
 
-### T-6 · Audit-trail integrity — HIGH, open and accepted
-`score_change_logs` is an ordinary mutable SQLite table on an ephemeral disk:
-no append-only enforcement, no hash chaining, no signatures, no external
-checkpoint, and `changed_by` is free text rather than an actor FK. Anyone with
-DB or host access can rewrite history, and a redeploy can erase it. This is
-the governance claim's own evidence, so it deserves the strongest integrity
-guarantee in the system and currently has the weakest. README already describes
-it as application-level rather than tamper-evident — the honest wording stands;
-the capability gap remains.
+### T-6 · Audit-trail integrity — HIGH, partly mitigated
+Three of the five original gaps are closed by migration 009:
+
+- **Append-only enforcement**: `BEFORE UPDATE` and `BEFORE DELETE` triggers on
+  `score_change_logs` raise `ABORT`. This stops the application's own code paths
+  and casual `sqlite3` edits, not someone who can `DROP` the triggers.
+- **Hash chaining + signatures**: every record carries an HMAC-SHA256 over its
+  own content chained to the previous record's hash. The key comes from
+  `AUDIT_HMAC_KEY` (falling back to `JWT_SECRET`) and is never stored in the
+  database, so reaching the SQLite file alone is not enough to recompute a valid
+  chain. `verifyAuditChain()` re-walks it; `GET /api/admin/audit-integrity`
+  exposes the result and the head hash.
+
+Measured, with the triggers dropped first to model host access: an edited score,
+a rewritten `changed_by`, a rewritten `change_reason`, a deleted middle record
+and a forged appended record are all detected. Verification with the wrong key
+fails, as it must.
+
+Still open:
+
+- **Truncation.** Deleting the newest records leaves a shorter, self-consistent
+  chain. Only a known-good head hash reveals it, which is why the admin endpoint
+  returns `head` — record it off-host.
+- **Key compromise.** An attacker holding `AUDIT_HMAC_KEY` can forge the chain.
+  The key is an env var on the same host, so host compromise defeats this.
+- **Ephemerality.** A redeploy still erases the table. That is T-8's problem,
+  and it needs storage that outlives the host.
+- **`changed_by` is still free text**, not an actor FK — deliberately, since
+  sentinel values like `system:startup` have no corresponding user row.
+
+So the honest claim is *tamper-evident against a database-level adversary*, not
+tamper-proof.
 
 ### T-7 · CSRF gaps — MEDIUM, **fixed in PR #50**
 `/auth` is mounted with no `csrfProtection` (only `PATCH /me` added it
@@ -181,9 +204,18 @@ public evidence reads are untouched.
 
 ## 6. Residual risk
 
-- **T-6 and T-8 are architectural**, not bugs: durable storage and
-  tamper-evident audit need managed Postgres + signed/chained records. Tracked
-  in [[Production Readiness]].
+- **T-6 and T-8 are now partly mitigated in-place.** The audit trail is
+  append-only and HMAC-chained, and snapshots are verified, pruned and
+  relocatable. What remains in both cases is the same single thing: storage that
+  outlives the host. No amount of application code supplies that — it needs a
+  persistent disk, managed Postgres, or an off-host snapshot target. Tracked in
+  [[Production Readiness]].
+- **T-8 detail**: `npm run backup` now fails loudly rather than leaving an
+  unusable file, keeps the newest `BACKUP_KEEP` snapshots, and writes a
+  single self-contained database (not WAL mode, whose sidecars are easy to copy
+  without). Set `BACKUP_DIR` to a durable location; the default still sits on
+  the same ephemeral disk as the database, which protects against operator error
+  only. Nothing schedules it yet.
 - **T-11** (fixed): `refresh` issues a new `jti` without revoking the old, so
   logout used to kill only the most recent token while earlier ones lived to
   their natural `exp` (≤2 h). Logout now also stamps `users.tokens_valid_from`,

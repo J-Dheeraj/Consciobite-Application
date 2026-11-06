@@ -83,6 +83,31 @@ which is tracked as separate work.
 ## Operational backups
 
 `cd backend && npm run backup` snapshots the SQLite database (using the
-online backup API — safe while the server runs) to `backend/backups/`.
-On ephemeral hosting this protects against operator error only, not host
-loss; copy snapshots off-host for real durability.
+online backup API — safe while the server runs). Each snapshot is verified
+before being reported as good: SQLite's `integrity_check` must pass and every
+table's row count must match the source, or the file is discarded and the
+command exits non-zero. Snapshots are written as a single self-contained
+database rather than in WAL mode, so copying the one file loses nothing.
+
+- `BACKUP_DIR` — destination (default `backend/backups`). **The default sits on
+  the same ephemeral disk as the database, so it protects against operator error
+  only, not host loss.** Point it at a persistent disk or mounted volume, or copy
+  snapshots off-host.
+- `BACKUP_KEEP` — snapshots to retain (default 7; `0` keeps all).
+
+Nothing schedules this yet; it is a manual command.
+
+## Audit-trail integrity
+
+`score_change_logs` is append-only (SQL triggers reject `UPDATE` and `DELETE`)
+and every record is HMAC-chained to its predecessor. The key comes from
+`AUDIT_HMAC_KEY`, falling back to `JWT_SECRET`, and is never stored in the
+database — so an attacker who reaches only the SQLite file cannot recompute a
+valid chain.
+
+`GET /api/admin/audit-integrity` (admin only) re-walks the chain and returns the
+head hash. **Record that head off-host.** Edits, deletions and splices break the
+chain on their own, but deleting the newest records leaves a shorter,
+self-consistent chain that only a known-good head reveals. An attacker holding
+the key can also forge the chain, so this is tamper-*evident* against a
+database-level adversary, not tamper-proof against host compromise.
