@@ -88,7 +88,7 @@ silently assumes same-site. See T-5.
 | T-8 | **Info disclosure** — total data loss / no backup | ephemeral SQLite | High | **Open — known** |
 | T-9 | **Tampering** — stored XSS via community evidence | `submitted_evidence` | Medium | Mitigated (escape + admin review) |
 | T-10 | **DoS** — amplification through OFF | `/products/scan/:barcode` | Low | Mitigated (breaker + limiter) |
-| T-11 | **Repudiation** — refresh doesn't revoke the old token | `refreshToken` | Low | **Open — by design** |
+| T-11 | **Repudiation** — logout left earlier tokens alive | `logoutHandler` | Low | Mitigated (per-user token epoch) |
 
 ---
 
@@ -184,9 +184,19 @@ public evidence reads are untouched.
 - **T-6 and T-8 are architectural**, not bugs: durable storage and
   tamper-evident audit need managed Postgres + signed/chained records. Tracked
   in [[Production Readiness]].
-- **T-11**: `refresh` issues a new `jti` without revoking the old, so logout
-  kills only the most recent token; the prior one lives to its natural `exp`
-  (≤2 h). Low, but surprising given a revocation registry exists.
+- **T-11** (fixed): `refresh` issues a new `jti` without revoking the old, so
+  logout used to kill only the most recent token while earlier ones lived to
+  their natural `exp` (≤2 h). Logout now also stamps `users.tokens_valid_from`,
+  and auth rejects any token whose `iat` predates it, so logging out ends every
+  session for that account.
+
+  Revoking the replaced token inside `refresh` looks like the obvious fix and
+  breaks everyday use: session restore runs on every page load and rotates the
+  shared cookie, so opening a second tab would revoke the first tab's token,
+  and `httpClient` turns that 401 into a full logout. Measured, not assumed.
+  Consequence of the chosen fix: logging out anywhere logs out everywhere.
+  Residual: `iat` has one-second resolution, so a token minted in the same
+  second as the logout survives; the presented token is also revoked by `jti`.
 - **Rate limiting and lockout are process-local** — they reset on restart,
   which T-1 made trivially triggerable.
 - **No monitoring** — none of the above would raise an alert today.
