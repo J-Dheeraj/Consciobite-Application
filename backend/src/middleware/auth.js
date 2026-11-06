@@ -70,6 +70,28 @@ function isRevoked(decoded) {
   return row !== undefined;
 }
 
+// Logout stamps the user's token epoch, so every token issued before that
+// moment is rejected -- not just the one presented. Revoking by jti alone left
+// any token minted by an earlier /auth/refresh alive until its natural expiry
+// (<=2h), which meant logging out did not actually end the session.
+function invalidateUserTokens(userId) {
+  if (!userId) return;
+  getDbLazy()
+    .prepare("UPDATE users SET tokens_valid_from = ? WHERE id = ?")
+    .run(Math.floor(Date.now() / 1000), userId);
+}
+
+// `iat` is whole seconds, so a token minted in the same second as the logout is
+// not caught here. The token actually presented to logout is revoked by jti as
+// well, which covers the one that matters.
+function isBeforeTokenEpoch(decoded) {
+  if (!decoded || !decoded.id || typeof decoded.iat !== "number") return false;
+  const row = getDbLazy()
+    .prepare("SELECT tokens_valid_from FROM users WHERE id = ?")
+    .get(decoded.id);
+  return row !== undefined && decoded.iat < row.tokens_valid_from;
+}
+
 function setAuthCookie(res, token) {
   res.cookie(COOKIE_NAME, token, COOKIE_OPTIONS);
 }
@@ -91,7 +113,7 @@ function extractToken(req) {
 
 function verifyActiveToken(token) {
   const decoded = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
-  if (isRevoked(decoded)) {
+  if (isRevoked(decoded) || isBeforeTokenEpoch(decoded)) {
     const err = new Error("Token revoked");
     err.revoked = true;
     throw err;
@@ -169,6 +191,7 @@ function logoutHandler(req, res) {
     try {
       const decoded = jwt.verify(token, JWT_SECRET, { algorithms: [JWT_ALGORITHM] });
       revokeToken(decoded);
+      invalidateUserTokens(decoded.id);
     } catch {
       // Expired or invalid token: nothing to revoke
     }
@@ -218,6 +241,7 @@ function generateCsrfToken(_req, res) {
 module.exports = {
   generateToken,
   revokeToken,
+  invalidateUserTokens,
   issueToken,
   setAuthCookie,
   clearAuthCookie,

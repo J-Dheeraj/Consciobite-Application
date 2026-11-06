@@ -72,7 +72,10 @@ which is tracked as separate work.
   cookie plus an in-memory copy for the SPA — never persisted to browser storage.
 - `POST /api/auth/refresh` rotates the cookie and returns a fresh token.
 - `POST /api/auth/logout` revokes the presented token's `jti` server-side
-  (`revoked_tokens` table); all auth middleware rejects revoked tokens.
+  (`revoked_tokens` table) **and** stamps `users.tokens_valid_from`, so every
+  token issued before that moment is rejected too — logging out ends the
+  session on all tabs and devices, not just the one that called it. All auth
+  middleware applies both checks.
 - Account lockout after 5 failed logins per email+IP (15 min window).
 - Known limitation: lockout and rate-limit state are process-local; they
   reset on restart and do not synchronize across instances.
