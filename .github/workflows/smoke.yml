@@ -1,0 +1,76 @@
+name: Live smoke test
+
+# Loads the deployed site in a real browser after every push to main and fails
+# unless the products page actually shows products. CI proves the code builds
+# and passes its tests; this proves the thing that was deployed works.
+#
+# A failed run emails the repository owner (GitHub's default for workflows on
+# the default branch), which is the alert.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# A newer push supersedes an older run still waiting on its deploy.
+concurrency:
+  group: live-smoke
+  cancel-in-progress: true
+
+env:
+  SITE_URL: https://consciobite-app.onrender.com
+
+jobs:
+  smoke:
+    name: Products page renders on the live site
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: smoke/package-lock.json
+
+      - name: Install smoke test dependencies
+        working-directory: ./smoke
+        run: npm ci
+
+      - name: Install browser
+        working-directory: ./smoke
+        run: npx playwright install --with-deps chromium
+
+      # Render takes a few minutes to build and publish. Testing straight away
+      # would pass against the PREVIOUS deploy, so wait until the live site
+      # reports this commit (frontend/scripts/write-version.js publishes it).
+      # If it never does, say so and test what is live anyway: an unverified
+      # deploy is worth a warning, a broken site is worth a failure.
+      - name: Wait for this commit to be live
+        run: |
+          for i in $(seq 1 60); do
+            live=$(curl -fsS --max-time 20 "$SITE_URL/version.json?t=$(date +%s)" | jq -r '.commit' 2>/dev/null || true)
+            if [ "$live" = "$GITHUB_SHA" ]; then
+              echo "Live site is serving $GITHUB_SHA."
+              exit 0
+            fi
+            echo "[$i/60] live commit: ${live:-unavailable}; waiting for $GITHUB_SHA"
+            sleep 15
+          done
+          echo "::warning::The live site never reported commit $GITHUB_SHA (last seen: ${live:-unavailable}). Testing whatever is deployed."
+
+      - name: Smoke test the live site
+        working-directory: ./smoke
+        env:
+          SMOKE_BASE_URL: ${{ env.SITE_URL }}
+        run: npm run smoke
+
+      - name: Upload failure screenshot
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-failure
+          path: smoke/smoke-failure.png
+          if-no-files-found: ignore
