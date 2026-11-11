@@ -1,9 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import { API_BASE } from "@/services/httpClient";
+import { API_READY_EVENT } from "@/utils/constants";
 
 const POLL_INTERVAL = 3000;
 const MAX_WAIT = 60000;
+// After MAX_WAIT the banner says the server is unreachable, but checking
+// continues at this slower pace so the page recovers by itself if it returns.
+const SLOW_POLL_INTERVAL = 10000;
 // Wait a moment before announcing a slow API so a healthy load never flashes
 // the banner.
 const GRACE_MS = 2500;
@@ -27,8 +31,14 @@ export default function ApiReadyGate({ children }) {
     let timer;
     const start = Date.now();
 
+    // True once the API has been visibly slow or a check has failed: views may
+    // have fetched and failed in that window, so they are told when to retry.
+    let delayed = false;
+
     const grace = setTimeout(() => {
-      if (!cancelled) setStatus((s) => (s === "checking" ? "slow" : s));
+      if (cancelled) return;
+      delayed = true;
+      setStatus((s) => (s === "checking" ? "slow" : s));
     }, GRACE_MS);
 
     async function check() {
@@ -36,18 +46,19 @@ export default function ApiReadyGate({ children }) {
         const res = await fetch(`${API_BASE}/health`, { cache: "no-store" });
         if (cancelled) return;
         if (res.ok) {
+          clearTimeout(grace);
           setStatus("ready");
+          if (delayed) window.dispatchEvent(new Event(API_READY_EVENT));
           return;
         }
       } catch {
         // API not reachable yet
       }
       if (cancelled) return;
-      if (Date.now() - start > MAX_WAIT) {
-        setStatus("unreachable");
-        return;
-      }
-      timer = setTimeout(check, POLL_INTERVAL);
+      delayed = true;
+      const gaveUp = Date.now() - start > MAX_WAIT;
+      if (gaveUp) setStatus("unreachable");
+      timer = setTimeout(check, gaveUp ? SLOW_POLL_INTERVAL : POLL_INTERVAL);
     }
 
     check();
