@@ -52,6 +52,6 @@ Render Blueprint sync (`render.yaml`) does NOT auto-migrate manually-created ser
 
 ## Environment Variables
 
-- `NEXT_PUBLIC_API_URL` — Set via `fromService` in render.yaml, resolves to the backend's hostname
+- `NEXT_PUBLIC_API_URL` — Set to the API's public URL in render.yaml. Not `fromService`/`property: host`: that resolves to the internal hostname (`consciobite-api`), which a browser cannot reach
 - `JWT_SECRET` — Auto-generated for backend
 - `ALLOWED_ORIGINS` — Set to frontend's URL for CORS
