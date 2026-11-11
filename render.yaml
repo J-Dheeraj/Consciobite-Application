@@ -33,11 +33,12 @@ services:
     buildCommand: npm ci && npm run build
     staticPublishPath: build
     envVars:
+      # The public URL, stated outright. This used to be wired with
+      # fromService/property: host, which resolves to the service's INTERNAL
+      # hostname ("consciobite-api"). A static site runs in the visitor's
+      # browser, which cannot resolve that, so every API call failed.
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          name: consciobite-api
-          type: web
-          property: host
+        value: https://consciobite-api.onrender.com
     headers:
       - path: /*
         name: Cache-Control

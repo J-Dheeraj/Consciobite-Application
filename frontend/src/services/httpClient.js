@@ -1,10 +1,16 @@
 import { AUTH_EXPIRED_EVENT } from "../utils/constants";
 
 function getApiBase() {
-  // Explicit configuration wins: set NEXT_PUBLIC_API_URL at build time
-  // (render.yaml wires it from the API service host).
+  // Explicit configuration wins: set NEXT_PUBLIC_API_URL at build time.
+  //
+  // A bare name with no dot (other than localhost) is ignored rather than
+  // trusted: Render's fromService `host` property yields the service's
+  // internal name ("consciobite-api"), and baking that in sent every request
+  // to https://consciobite-api/api, which no browser can resolve.
   const configured = process.env.NEXT_PUBLIC_API_URL;
-  if (configured) {
+  const resolvable =
+    configured && (/^https?:\/\//.test(configured) || /[.]|^localhost(:|$)/.test(configured));
+  if (resolvable) {
     const base = configured.startsWith("http") ? configured : `https://${configured}`;
     return `${base.replace(/\/$/, "")}/api`;
   }
