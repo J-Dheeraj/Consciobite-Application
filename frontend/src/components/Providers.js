@@ -5,6 +5,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { AuthProvider } from "@/context/AuthContext";
 import ApiReadyGate from "@/components/ApiReadyGate";
 import { initSentry } from "@/services/sentry";
+import { useOnApiReady } from "@/utils/useOnApiReady";
 
 export default function Providers({ children }) {
   useEffect(() => {
@@ -23,6 +24,12 @@ export default function Providers({ children }) {
         },
       })
   );
+
+  // A query that failed while the API was still waking would otherwise stay
+  // failed until the user reloaded.
+  useOnApiReady(() => {
+    queryClient.refetchQueries({ predicate: (query) => query.state.status === "error" });
+  });
 
   return (
     <QueryClientProvider client={queryClient}>

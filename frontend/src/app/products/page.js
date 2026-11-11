@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { fetchProducts } from "@/services/api";
+import { useOnApiReady } from "@/utils/useOnApiReady";
 import { scoreColor } from "@/utils/constants";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -62,6 +63,11 @@ export default function Products() {
   useEffect(() => {
     loadProducts();
   }, [loadProducts]);
+
+  // If the first load failed because the API was still waking, try again.
+  useOnApiReady(() => {
+    if (error) loadProducts();
+  });
 
   useEffect(() => {
     setPage(1);

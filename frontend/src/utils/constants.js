@@ -19,3 +19,8 @@ export const scoreColor = (score) => {
 export const WEEKLY_CARBON_GOAL_KG = 10;
 
 export const AUTH_EXPIRED_EVENT = "auth-expired";
+
+// Dispatched on window when the API becomes reachable after a slow or failed
+// start (a cold start on the free tier), so views whose first fetch failed can
+// retry without the user reloading.
+export const API_READY_EVENT = "api-ready";
