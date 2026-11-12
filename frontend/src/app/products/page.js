@@ -272,6 +272,7 @@ export default function Products() {
             {products.map((p) => (
               <button
                 key={p.id}
+                data-testid="product-card"
                 onClick={() => router.push(`/product/${p.id}`)}
                 style={{
                   background: cardBg,

@@ -8,6 +8,8 @@ RUN npm ci
 COPY frontend/jsconfig.json ./
 COPY frontend/next.config.js ./
 COPY frontend/public/ ./public/
+# The build script runs scripts/write-version.js after the export.
+COPY frontend/scripts/ ./scripts/
 COPY frontend/src/ ./src/
 COPY backend/src/data/products.json /backend/src/data/products.json
 

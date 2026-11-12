@@ -1,0 +1,11 @@
+{
+  "name": "consciobite-smoke",
+  "private": true,
+  "description": "Post-deploy browser smoke test for the live site",
+  "scripts": {
+    "smoke": "node smoke.js"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

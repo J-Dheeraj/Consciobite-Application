@@ -26,7 +26,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build && rm -rf build && mv out build",
+    "build": "next build && rm -rf build && mv out build && node scripts/write-version.js",
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
