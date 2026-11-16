@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/context/ThemeContext";
 import { fetchPassport } from "@/services/api";
 import Spinner from "@/components/Spinner";
+import EstimateNotice from "@/components/EstimateNotice";
 import { scoreColor } from "@/utils/constants";
 
 const EMISSION_LABELS = {
@@ -206,6 +207,10 @@ function PassportCard({ passport, isDark }) {
 
       {/* Body */}
       <div style={{ padding: "20px 24px", background: isDark ? "#0f1e16" : "#0f1e16" }}>
+        <div style={{ marginBottom: 16 }}>
+          <EstimateNotice brand={passport.brand} tone="dark" />
+        </div>
+
         {/* Summary row */}
         <div
           style={{
