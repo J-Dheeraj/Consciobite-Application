@@ -27,6 +27,7 @@ concurrency:
 
 env:
   SITE_URL: https://consciobite-app.onrender.com
+  API_URL: https://consciobite-api.onrender.com
 
 jobs:
   smoke:
@@ -71,6 +72,25 @@ jobs:
             sleep 15
           done
           echo "::warning::The live site never reported commit $GITHUB_SHA (last seen: ${live:-unavailable}). Testing whatever is deployed."
+
+      # The API sleeps on the free tier and a cold start can outlast the browser
+      # test's own wait, which made a run fail while the site was fine. Wake it
+      # first, so the browser test answers "does the site work" and not "how
+      # slow was the cold start". An API that stays down for the whole of this
+      # loop is a real outage, and the job fails here saying so.
+      - name: Wake the API
+        run: |
+          for i in $(seq 1 20); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$API_URL/api/health" || true)
+            if [ "$code" = "200" ]; then
+              echo "API is healthy."
+              exit 0
+            fi
+            echo "[$i/20] API health returned: ${code:-no response}"
+            sleep 10
+          done
+          echo "::error::The API did not become healthy after 20 attempts."
+          exit 1
 
       - name: Smoke test the live site
         working-directory: ./smoke

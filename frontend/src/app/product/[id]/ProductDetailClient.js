@@ -17,6 +17,7 @@ import Spinner from "@/components/Spinner";
 import { useAuth } from "@/context/AuthContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
 import EvidenceSection from "@/components/EvidenceSection";
+import EstimateNotice from "@/components/EstimateNotice";
 
 const LEGEND_ITEMS = [
   { color: "#27ae60", label: "Best" },
@@ -473,6 +474,10 @@ export default function ProductDetail() {
         >
           <div style={{ marginBottom: 14 }}>
             <GradeBadge score={greenGrade.score} color={greenGrade.color} size="large" />
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <EstimateNotice brand={product.brand} />
           </div>
 
           <h3
