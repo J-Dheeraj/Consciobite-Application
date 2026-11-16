@@ -1,20 +1,28 @@
 name: Live smoke test
 
-# Loads the deployed site in a real browser after every push to main and fails
-# unless the products page actually shows products. CI proves the code builds
-# and passes its tests; this proves the thing that was deployed works.
+# Loads the deployed site in a real browser and fails unless the products page
+# actually shows products. CI proves the code builds and passes its tests; this
+# proves the thing that is deployed works.
+#
+# It runs after every push to main, and every six hours on a schedule so that
+# breakage with no push behind it (a Render or API outage, a changed setting)
+# is caught too.
 #
 # A failed run emails the repository owner (GitHub's default for workflows on
-# the default branch), which is the alert.
+# the default branch), which is the alert. Note that GitHub pauses scheduled
+# workflows after 60 days without repository activity.
 
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "17 */6 * * *"
   workflow_dispatch:
 
-# A newer push supersedes an older run still waiting on its deploy.
+# A newer push supersedes an older run still waiting on its deploy. Grouped by
+# trigger so a scheduled run never cancels a push run mid-wait, or vice versa.
 concurrency:
-  group: live-smoke
+  group: live-smoke-${{ github.event_name }}
   cancel-in-progress: true
 
 env:
@@ -48,7 +56,10 @@ jobs:
       # reports this commit (frontend/scripts/write-version.js publishes it).
       # If it never does, say so and test what is live anyway: an unverified
       # deploy is worth a warning, a broken site is worth a failure.
+      # Only a push has a new deploy to wait for; scheduled and manual runs
+      # test whatever is live right now.
       - name: Wait for this commit to be live
+        if: github.event_name == 'push'
         run: |
           for i in $(seq 1 60); do
             live=$(curl -fsS --max-time 20 "$SITE_URL/version.json?t=$(date +%s)" | jq -r '.commit' 2>/dev/null || true)
