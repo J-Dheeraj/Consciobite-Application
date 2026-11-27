@@ -30,12 +30,22 @@ local file, as before. Tests and local development need no account.
 
    In the web dashboard the URL is on the database page, and the token is under
    "Create Token" (read and write, no expiry, or set a reminder to rotate it).
-3. In Render, open `consciobite-api` -> Environment, add:
+3. In Render, open **`consciobite-api`** (the API web service, not the
+   `consciobite-app` static site) -> Environment, and add these two variables
+   with exactly these names:
    - `TURSO_DATABASE_URL` = the `libsql://...` URL
    - `TURSO_AUTH_TOKEN` = the token
-4. Save. Render redeploys. In the logs you should see
-   `Database: Turso embedded replica, synced from primary`. The schema and all
-   migrations are created on the primary on that first start.
+
+   Any other name (`TURSO_URL`, `DATABASE_URL`, `LIBSQL_URL`) is ignored, and
+   the API silently keeps using the local file.
+4. Save. Render redeploys. Check either of these:
+   - https://consciobite-api.onrender.com/api/health shows `"storage":"turso"`
+     (`"local"` means the variables were not picked up);
+   - the logs show `Database: Turso embedded replica, synced from primary`
+     rather than the warning `Database: local SQLite file at ...`.
+
+   The schema and all migrations are created on the primary on that first
+   start. The six-hourly live smoke test fails while storage is not `turso`.
 5. Check: register a test account, then in Render use "Restart service". The
    account should still log in afterwards.
 
