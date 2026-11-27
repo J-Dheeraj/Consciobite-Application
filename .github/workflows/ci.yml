@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
           cache: npm
@@ -39,6 +39,14 @@ jobs:
         working-directory: ./backend
         run: npm test -- --coverage
 
+      # Production runs on libsql (Turso) through src/db/driver.js; run the
+      # suite on that driver too so the two cannot drift apart.
+      - name: Run backend tests on the libsql driver
+        working-directory: ./backend
+        run: npm test
+        env:
+          DB_DRIVER: libsql
+
       - name: Audit backend dependencies
         working-directory: ./backend
         run: npm audit --production --audit-level=high
@@ -48,9 +56,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
           cache: npm
@@ -93,7 +101,7 @@ jobs:
     name: Docker Build Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - run: docker compose build
         env:
           JWT_SECRET: ci-build-test-secret
