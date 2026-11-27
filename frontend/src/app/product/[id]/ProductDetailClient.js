@@ -362,6 +362,7 @@ export default function ProductDetail() {
               GreenGrade
             </h3>
             <span
+              data-testid="greengrade-score"
               style={{
                 width: 40,
                 height: 40,

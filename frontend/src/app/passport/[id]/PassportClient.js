@@ -55,6 +55,7 @@ function ScoreRing({ score, size = 72 }) {
         fontWeight="700"
         fontSize={size * 0.27}
         fontFamily="'Outfit', sans-serif"
+        data-testid="greengrade-score"
       >
         {score}
       </text>

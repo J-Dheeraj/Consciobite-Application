@@ -1,0 +1,41 @@
+# Weekly dependency PRs, grouped so each folder opens at most one PR per week.
+# Every PR still has to pass the "CI" check before it can merge, so a bad bump
+# is caught there. Security updates (turned on in repo settings) arrive on
+# their own schedule regardless of this file.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      backend:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    groups:
+      frontend:
+        patterns: ["*"]
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /smoke
+    schedule:
+      interval: monthly
+    groups:
+      smoke:
+        patterns: ["*"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]

@@ -36,3 +36,4 @@ __pycache__/
 
 # Database backups
 backend/backups/
+smoke/smoke-failure.png
