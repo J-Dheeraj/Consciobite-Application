@@ -8,6 +8,7 @@ import { fetchPassport } from "@/services/api";
 import Spinner from "@/components/Spinner";
 import EstimateNotice from "@/components/EstimateNotice";
 import { scoreColor } from "@/utils/constants";
+import { formatTopPercent } from "@/utils/formatTopPercent";
 
 const EMISSION_LABELS = {
   land_use_change: "Land Use Change",
@@ -224,10 +225,7 @@ function PassportCard({ passport, isDark }) {
             { label: "GreenGrade Score", value: `${passport.greengrade_score} / 10` },
             {
               label: "Percentile",
-              value:
-                passport.score_percentile !== null && passport.score_percentile !== undefined
-                  ? `Top ${Math.round((1 - passport.score_percentile) * 100)}%`
-                  : "N/A",
+              value: formatTopPercent(passport.score_percentile) ?? "N/A",
             },
             { label: "Total CO₂e", value: `${total.toFixed(3)} kg/kg` },
             { label: "Methodology", value: `v${passport.methodology_version}` },

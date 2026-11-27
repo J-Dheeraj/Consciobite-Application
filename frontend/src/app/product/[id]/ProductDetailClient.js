@@ -18,6 +18,7 @@ import { useAuth } from "@/context/AuthContext";
 import { isFavorited, toggleFavorite } from "@/utils/favorites";
 import EvidenceSection from "@/components/EvidenceSection";
 import EstimateNotice from "@/components/EstimateNotice";
+import { formatTopPercent } from "@/utils/formatTopPercent";
 
 const LEGEND_ITEMS = [
   { color: "#27ae60", label: "Best" },
@@ -635,7 +636,7 @@ export default function ProductDetail() {
                   </span>
                 </div>
               )}
-              {greenGrade.percentile !== undefined && (
+              {formatTopPercent(greenGrade.percentile) && (
                 <div
                   style={{
                     display: "flex",
@@ -645,12 +646,10 @@ export default function ProductDetail() {
                   }}
                 >
                   <span>Percentile</span>
-                  <span style={{ fontWeight: 600 }}>
-                    Top {Math.round((1 - greenGrade.percentile) * 100)}%
-                  </span>
+                  <span style={{ fontWeight: 600 }}>{formatTopPercent(greenGrade.percentile)}</span>
                 </div>
               )}
-              {greenGrade.categoryRank && (
+              {formatTopPercent(greenGrade.categoryRank) && (
                 <div
                   style={{
                     display: "flex",
@@ -660,7 +659,9 @@ export default function ProductDetail() {
                   }}
                 >
                   <span>Category Rank</span>
-                  <span style={{ fontWeight: 600 }}>{greenGrade.categoryRank}</span>
+                  <span style={{ fontWeight: 600 }}>
+                    {formatTopPercent(greenGrade.categoryRank)}
+                  </span>
                 </div>
               )}
               {greenGrade.anomaly && (
