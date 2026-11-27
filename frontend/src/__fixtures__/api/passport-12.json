@@ -1,0 +1,22 @@
+{
+  "product_id": "12",
+  "product_name": "Silken Tofu",
+  "brand": "Unicurd",
+  "category": "Protein",
+  "greengrade_score": 8.5,
+  "score_percentile": 76,
+  "emission_breakdown": {
+    "land_use_change": 0.3,
+    "animal_feed": 0,
+    "farm_operations": 0.4,
+    "processing": 0.3,
+    "transport": 0.2,
+    "packaging": 0.2,
+    "retail": 0.1
+  },
+  "total_carbon_footprint_kg_co2e": 1.5,
+  "data_confidence_tier": 1,
+  "data_confidence_label": "verified_lca",
+  "passport_generated_at": "2000-01-01T00:00:00.000Z",
+  "methodology_version": "3.0"
+}
