@@ -1,0 +1,144 @@
+{
+  "id": "2",
+  "name": "Beef Ribeye Steak",
+  "brand": "FairPrice",
+  "category": "Protein",
+  "barcode": "8888001020201",
+  "description": "Chilled grass-fed beef ribeye steak, 300g.",
+  "purchaseLinks": [
+    {
+      "seller": "FairPrice",
+      "url": "https://www.fairprice.com.sg/searchterm/beef%20steak"
+    }
+  ],
+  "emissions": {
+    "landUseChange": 9.8,
+    "animalFeed": 6.2,
+    "farm": 21.3,
+    "processing": 1.8,
+    "transport": 0.5,
+    "packaging": 0.4,
+    "retail": 0.3
+  },
+  "dataSources": {
+    "brand": {
+      "name": "FairPrice",
+      "website": "https://www.fairprice.com.sg",
+      "countryOfOrigin": "Singapore",
+      "description": "NTUC FairPrice, Singapore's largest supermarket chain"
+    },
+    "emissions": [
+      {
+        "name": "Poore & Nemecek (2018)",
+        "type": "peer_reviewed_lca",
+        "citation": "Poore, J. & Nemecek, T. (2018). Reducing food's environmental impacts through producers and consumers. Science, 360(6392), 987-992.",
+        "doi": "https://doi.org/10.1126/science.aaq0216",
+        "methodology": "Meta-analysis of 570 studies covering 38,700 farms and 1,600 processors across 119 countries"
+      },
+      {
+        "name": "Our World in Data",
+        "type": "curated_visualization",
+        "citation": "Ritchie, H. & Roser, M. (2020). Environmental Impacts of Food Production. OurWorldInData.org.",
+        "url": "https://ourworldindata.org/food-ghg-emissions",
+        "methodology": "Curated visualization of Poore & Nemecek data with per-country context"
+      },
+      {
+        "name": "FAO GLEAM Model",
+        "type": "institutional_model",
+        "citation": "FAO (2023). Global Livestock Environmental Assessment Model (GLEAM). Food and Agriculture Organization.",
+        "url": "https://www.fao.org/gleam/en/",
+        "methodology": "FAO lifecycle assessment model for livestock supply chains"
+      }
+    ],
+    "productInfo": {
+      "source": "Consciobite Product Database",
+      "methodology": "Product-level emissions estimated from peer-reviewed LCA literature, with category-average baselines from Poore & Nemecek (2018). Breakdown covers 7 supply chain stages: land use change, animal feed, farm, processing, transport, packaging, and retail.",
+      "lastUpdated": "2025-01"
+    }
+  },
+  "greenGrade": {
+    "score": 0.3,
+    "color": "red",
+    "totalEmissions": 40.3,
+    "breakdown": [
+      {
+        "category": "Land Use Change",
+        "emission": 9.8,
+        "maxReference": 2,
+        "categoryScore": 0,
+        "percentile": 1
+      },
+      {
+        "category": "Animal Feed",
+        "emission": 6.2,
+        "maxReference": 2.8,
+        "categoryScore": 0.1,
+        "percentile": 1
+      },
+      {
+        "category": "Farm",
+        "emission": 21.3,
+        "maxReference": 5.5,
+        "categoryScore": 0,
+        "percentile": 1
+      },
+      {
+        "category": "Processing",
+        "emission": 1.8,
+        "maxReference": 1,
+        "categoryScore": 0,
+        "percentile": 1
+      },
+      {
+        "category": "Transport",
+        "emission": 0.5,
+        "maxReference": 0.6,
+        "categoryScore": 1.9,
+        "percentile": 27
+      },
+      {
+        "category": "Packaging",
+        "emission": 0.4,
+        "maxReference": 0.5,
+        "categoryScore": 1.7,
+        "percentile": 24
+      },
+      {
+        "category": "Retail",
+        "emission": 0.3,
+        "maxReference": 0.3,
+        "categoryScore": 0.4,
+        "percentile": 8
+      }
+    ],
+    "confidence": 1,
+    "percentile": 0,
+    "categoryRank": 1,
+    "anomaly": {
+      "isAnomaly": true,
+      "distance": 4.49,
+      "threshold": 3.75
+    },
+    "dataConfidence": 0.83,
+    "dataTier": 1,
+    "dataTierLabel": "verified_lca",
+    "sources": [
+      {
+        "name": "Poore & Nemecek (2018)",
+        "type": "peer_reviewed_lca",
+        "year": 2018,
+        "reliability": "high"
+      },
+      {
+        "name": "Our World in Data",
+        "type": "curated_aggregation",
+        "year": 2020,
+        "reliability": "high"
+      }
+    ],
+    "sourceCount": 2,
+    "referenceProduct": "beef",
+    "agreementWithReference": 0.84,
+    "lastVerified": "2024-01"
+  }
+}
