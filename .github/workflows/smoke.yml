@@ -39,13 +39,13 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           # The parent commit is needed to work out which services this push
           # changed, and so which Render deploys to wait for.
           fetch-depth: 2
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
           cache: npm
@@ -133,7 +133,7 @@ jobs:
 
       - name: Upload failure screenshot
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: smoke-failure
           path: smoke/smoke-failure.png

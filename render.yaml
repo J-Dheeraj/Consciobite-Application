@@ -16,6 +16,15 @@ services:
         value: https://consciobite-app.onrender.com
       - key: JWT_SECRET
         generateValue: true
+      # Hosted SQLite (Turso). The free plan's disk is wiped on every deploy and
+      # spin-down, so without these every user, review and audit entry is lost
+      # on restart. Set both in the Render dashboard; sync: false keeps them out
+      # of this file. With them unset the API falls back to a local file.
+      # Setup: backend/docs/turso.md
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
     plan: free
     # Liveness, not readiness. /api/health probes the DB with BEGIN IMMEDIATE
     # and returns 503 if that write lock fails, so a momentary lock or disk
