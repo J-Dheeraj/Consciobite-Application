@@ -4,6 +4,32 @@ process.env.NODE_ENV = "test";
 const app = require("../src/index");
 
 describe("Digital Product Passport endpoints", () => {
+  // Regression: the products router scored the catalog when it was loaded,
+  // before index.js trained the model, so product pages showed the untrained
+  // fallback score (Silken Tofu 9.7) while the passport showed 8.5.
+  describe("score consistency with the products API", () => {
+    test.each(["1", "12", "2"])("product %s has one score everywhere", async (id) => {
+      const [product, passport, list] = await Promise.all([
+        request(app).get(`/api/products/${id}`),
+        request(app).get(`/api/v1/passport/${id}`),
+        request(app).get("/api/products?limit=100&page=1"),
+      ]);
+      expect(product.status).toBe(200);
+      expect(passport.status).toBe(200);
+      expect(product.body.greenGrade.score).toBe(passport.body.greengrade_score);
+      expect(product.body.greenGrade.percentile).toBe(passport.body.score_percentile);
+      const listed = list.body.products.find((p) => p.id === id);
+      if (listed) expect(listed.greenGrade.score).toBe(passport.body.greengrade_score);
+    });
+
+    test("product responses carry the trained model's fields", async () => {
+      const res = await request(app).get("/api/products/12");
+      expect(typeof res.body.greenGrade.percentile).toBe("number");
+      expect(res.body.greenGrade.percentile).toBeGreaterThanOrEqual(0);
+      expect(res.body.greenGrade.percentile).toBeLessThanOrEqual(100);
+    });
+  });
+
   describe("GET /api/v1/passport/:productId", () => {
     test("should return a passport for a valid product", async () => {
       const res = await request(app).get("/api/v1/passport/1");

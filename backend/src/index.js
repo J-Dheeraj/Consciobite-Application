@@ -145,6 +145,11 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests, please try again later." },
+  // Render's health checker polls from one internal address, often enough to
+  // use up this budget on its own. A 429 on the health path makes Render
+  // treat a healthy instance as down and restart it, so health checks are
+  // never counted. req.path is relative to the "/api/" mount point here.
+  skip: (req) => req.path === "/health" || req.path.startsWith("/health/"),
 });
 app.use("/api/", apiLimiter);
 
@@ -216,8 +221,13 @@ if (process.env.NODE_ENV !== "production") {
 
 // Liveness: process is up and the event loop responds. No dependency checks —
 // use /api/health for readiness.
+//
+// `commit` is the git SHA this build came from (Render sets RENDER_GIT_COMMIT),
+// so the post-deploy smoke test can tell when a backend deploy is actually
+// live instead of testing whatever instance happened to answer.
+const BUILD_COMMIT = process.env.RENDER_GIT_COMMIT || process.env.GITHUB_SHA || "unknown";
 app.get("/api/health/live", (_req, res) => {
-  res.json({ status: "alive" });
+  res.json({ status: "alive", commit: BUILD_COMMIT });
 });
 
 // Every migration file that must be applied for this build to be considered
