@@ -67,3 +67,31 @@ describe("Body parser errors are answered as client errors", () => {
     expect(res.body.error).toBe("Invalid JSON in request body");
   });
 });
+
+// Render probes healthCheckPath every few seconds, counts a 4xx as a failed
+// check, and restarts the instance after 60 s of failures. The probe used to
+// sit behind the API limiter (200 requests per 15 minutes per IP), so Render's
+// own checks ran into 429s. The path is read from render.yaml so this test
+// covers whatever Render is actually told to call.
+describe("Render's health check is never rate limited", () => {
+  const fs = require("fs");
+  const path = require("path");
+
+  test("more probes than the API limit allows all return 200", async () => {
+    const renderYaml = fs.readFileSync(path.join(__dirname, "../../render.yaml"), "utf8");
+    const match = renderYaml.match(/healthCheckPath:\s*(\S+)/);
+    expect(match).not.toBeNull();
+    const healthCheckPath = match[1];
+
+    // An ordinary route shows the limiter is still on and what its limit is.
+    const ordinary = await request(app).get("/api/methodology");
+    const limit = Number(ordinary.headers["ratelimit-limit"]);
+    expect(limit).toBeGreaterThan(0);
+
+    const statuses = new Set();
+    for (let i = 0; i <= limit; i++) {
+      statuses.add((await request(app).get(healthCheckPath)).status);
+    }
+    expect([...statuses]).toEqual([200]);
+  });
+});

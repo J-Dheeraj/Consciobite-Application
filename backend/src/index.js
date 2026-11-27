@@ -138,6 +138,17 @@ app.use(
   })
 );
 
+// ---------- Liveness probe ----------
+// Render calls this every few seconds (healthCheckPath in render.yaml), counts
+// a 4xx as a failed check, and restarts the instance after 60 s of failures.
+// It is registered ahead of the rate limiters on purpose: behind apiLimiter it
+// counted against the 200-per-15-minutes budget and Render's checks got 429s.
+// It reads no data and does no work, so leaving it unthrottled gives a flood
+// nothing to amplify. It only says the process is up; /api/health is readiness.
+app.get("/api/health/live", (_req, res) => {
+  res.json({ status: "alive" });
+});
+
 // ---------- Rate limiting ----------
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -213,12 +224,6 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 // ---------- Routes (v1) ----------
-
-// Liveness: process is up and the event loop responds. No dependency checks —
-// use /api/health for readiness.
-app.get("/api/health/live", (_req, res) => {
-  res.json({ status: "alive" });
-});
 
 // Every migration file that must be applied for this build to be considered
 // ready, resolved once at startup.
