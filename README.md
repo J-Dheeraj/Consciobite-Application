@@ -32,7 +32,7 @@ SGX-listed food manufacturers in Singapore face Scope 3 carbon reporting obligat
 
 | Layer | Technology |
 |---|---|
-| API | Node.js 20, Express 4.18 |
+| API | Node.js 22, Express 4.18 |
 | Database | SQLite via better-sqlite3 (WAL mode) |
 | Scoring Engine | GreenGrade v3 — KDE + sigmoid scoring in Node.js |
 | Frontend | Next.js 14 (App Router, static export), React 18, TanStack Query |

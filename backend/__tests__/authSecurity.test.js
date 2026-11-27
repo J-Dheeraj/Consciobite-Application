@@ -128,6 +128,12 @@ describe("GET /api/health/live", () => {
     expect(res.status).toBe(200);
     expect(res.body.status).toBe("alive");
   });
+
+  test("reports the commit it was built from", async () => {
+    const res = await request(app).get("/api/health/live");
+    expect(typeof res.body.commit).toBe("string");
+    expect(res.body.commit.length).toBeGreaterThan(0);
+  });
 });
 
 describe("Score audit provenance", () => {

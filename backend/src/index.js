@@ -221,8 +221,13 @@ if (process.env.NODE_ENV !== "production") {
 
 // Liveness: process is up and the event loop responds. No dependency checks —
 // use /api/health for readiness.
+//
+// `commit` is the git SHA this build came from (Render sets RENDER_GIT_COMMIT),
+// so the post-deploy smoke test can tell when a backend deploy is actually
+// live instead of testing whatever instance happened to answer.
+const BUILD_COMMIT = process.env.RENDER_GIT_COMMIT || process.env.GITHUB_SHA || "unknown";
 app.get("/api/health/live", (_req, res) => {
-  res.json({ status: "alive" });
+  res.json({ status: "alive", commit: BUILD_COMMIT });
 });
 
 // Every migration file that must be applied for this build to be considered

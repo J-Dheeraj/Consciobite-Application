@@ -2,6 +2,9 @@
   "name": "consciobite-backend",
   "version": "2.0.0",
   "description": "Consciobite API - GreenGrade sustainability scoring for food products",
+  "engines": {
+    "node": ">=22 <23"
+  },
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -34,5 +37,15 @@
     "nodemon": "^3.0.2",
     "prettier": "^3.2.0",
     "supertest": "^7.2.2"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "statements": 80,
+        "branches": 63,
+        "functions": 80,
+        "lines": 82
+      }
+    }
   }
 }

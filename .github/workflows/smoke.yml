@@ -25,6 +25,9 @@ concurrency:
   group: live-smoke-${{ github.event_name }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   SITE_URL: https://consciobite-app.onrender.com
   API_URL: https://consciobite-api.onrender.com
@@ -36,11 +39,15 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
         with:
-          node-version: 20
+          # The parent commit is needed to work out which services this push
+          # changed, and so which Render deploys to wait for.
+          fetch-depth: 2
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .node-version
           cache: npm
           cache-dependency-path: smoke/package-lock.json
 
@@ -53,25 +60,51 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       # Render takes a few minutes to build and publish. Testing straight away
-      # would pass against the PREVIOUS deploy, so wait until the live site
-      # reports this commit (frontend/scripts/write-version.js publishes it).
-      # If it never does, say so and test what is live anyway: an unverified
+      # would pass against the PREVIOUS deploy, so wait until each service this
+      # push changed reports this commit (frontend: build/version.json written
+      # by frontend/scripts/write-version.js; backend: the `commit` field of
+      # /api/health/live). Each service has a rootDir in render.yaml, and Render
+      # skips the deploy when nothing under it changed, so waiting on an
+      # unchanged service would only time out. If a changed service never
+      # reports the commit, say so and test what is live anyway: an unverified
       # deploy is worth a warning, a broken site is worth a failure.
       # Only a push has a new deploy to wait for; scheduled and manual runs
       # test whatever is live right now.
-      - name: Wait for this commit to be live
+      - name: Work out which services this push deploys
+        id: changed
         if: github.event_name == 'push'
         run: |
+          files=$(git diff --name-only HEAD^1 HEAD)
+          echo "$files" | grep -q '^frontend/' && echo "frontend=true" >> "$GITHUB_OUTPUT" || echo "frontend=false" >> "$GITHUB_OUTPUT"
+          echo "$files" | grep -q '^backend/' && echo "backend=true" >> "$GITHUB_OUTPUT" || echo "backend=false" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for this commit to be live
+        if: github.event_name == 'push'
+        env:
+          WAIT_FRONTEND: ${{ steps.changed.outputs.frontend }}
+          WAIT_BACKEND: ${{ steps.changed.outputs.backend }}
+        run: |
+          site_ok=true; api_ok=true
+          [ "$WAIT_FRONTEND" = "true" ] && site_ok=false
+          [ "$WAIT_BACKEND" = "true" ] && api_ok=false
+          echo "Waiting for: frontend=$WAIT_FRONTEND backend=$WAIT_BACKEND"
           for i in $(seq 1 60); do
-            live=$(curl -fsS --max-time 20 "$SITE_URL/version.json?t=$(date +%s)" | jq -r '.commit' 2>/dev/null || true)
-            if [ "$live" = "$GITHUB_SHA" ]; then
-              echo "Live site is serving $GITHUB_SHA."
+            if [ "$site_ok" = false ]; then
+              site=$(curl -fsS --max-time 20 "$SITE_URL/version.json?t=$(date +%s)" | jq -r '.commit' 2>/dev/null || true)
+              [ "$site" = "$GITHUB_SHA" ] && site_ok=true && echo "Frontend is serving $GITHUB_SHA."
+            fi
+            if [ "$api_ok" = false ]; then
+              api=$(curl -fsS --max-time 30 "$API_URL/api/health/live" | jq -r '.commit' 2>/dev/null || true)
+              [ "$api" = "$GITHUB_SHA" ] && api_ok=true && echo "API is serving $GITHUB_SHA."
+            fi
+            if [ "$site_ok" = true ] && [ "$api_ok" = true ]; then
               exit 0
             fi
-            echo "[$i/60] live commit: ${live:-unavailable}; waiting for $GITHUB_SHA"
+            echo "[$i/60] frontend: ${site:-n/a}  api: ${api:-n/a}; waiting for $GITHUB_SHA"
             sleep 15
           done
-          echo "::warning::The live site never reported commit $GITHUB_SHA (last seen: ${live:-unavailable}). Testing whatever is deployed."
+          [ "$site_ok" = true ] || echo "::warning::The frontend never reported commit $GITHUB_SHA (last seen: ${site:-unavailable}). Testing whatever is deployed."
+          [ "$api_ok" = true ] || echo "::warning::The API never reported commit $GITHUB_SHA (last seen: ${api:-unavailable}). Testing whatever is deployed."
 
       # The API sleeps on the free tier and a cold start can outlast the browser
       # test's own wait, which made a run fail while the site was fine. Wake it
