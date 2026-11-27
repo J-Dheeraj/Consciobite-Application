@@ -145,6 +145,11 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests, please try again later." },
+  // Render's health checker polls from one internal address, often enough to
+  // use up this budget on its own. A 429 on the health path makes Render
+  // treat a healthy instance as down and restart it, so health checks are
+  // never counted. req.path is relative to the "/api/" mount point here.
+  skip: (req) => req.path === "/health" || req.path.startsWith("/health/"),
 });
 app.use("/api/", apiLimiter);
 
