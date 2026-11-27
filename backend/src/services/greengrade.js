@@ -517,8 +517,13 @@ function getColor(score) {
   return "red";
 }
 
+function isTrained() {
+  return trained;
+}
+
 module.exports = {
   trainModel,
+  isTrained,
   calculateGreenGrade,
   getColor,
   CATEGORY_LABELS,

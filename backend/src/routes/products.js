@@ -30,7 +30,7 @@ const EVIDENCE_SUBMIT_SCHEMA = {
   },
 };
 const products = require("../data/products.json");
-const { calculateGreenGrade } = require("../services/greengrade");
+const { calculateGreenGrade, isTrained } = require("../services/greengrade");
 const { logger } = require("../middleware/logger");
 
 function enrichProduct(product) {
@@ -38,8 +38,16 @@ function enrichProduct(product) {
   return { ...product, greenGrade: grade };
 }
 
-// Pre-compute enriched products at module load (product catalog is static)
-const enrichedProducts = products.map(enrichProduct);
+// Enriched once, on first use. This module is loaded before index.js trains the
+// GreenGrade model, so scoring at load time used the untrained fallback and these
+// scores disagreed with the passport, scan and audit trail. Only cache trained scores.
+let enrichedCache = null;
+function getEnrichedProducts() {
+  if (enrichedCache) return enrichedCache;
+  const enriched = products.map(enrichProduct);
+  if (isTrained()) enrichedCache = enriched;
+  return enriched;
+}
 
 function sanitize(str, maxLen = 100) {
   if (typeof str !== "string") return "";
@@ -65,7 +73,7 @@ router.get("/", (req, res) => {
     Math.max(1, parseInt(req.query.limit, 10) || DEFAULT_PAGE_SIZE)
   );
 
-  let results = [...enrichedProducts];
+  let results = [...getEnrichedProducts()];
 
   if (search) {
     const q = search.toLowerCase();
@@ -144,7 +152,7 @@ router.get("/compare", validate(COMPARE_SCHEMA), (req, res) => {
 router.get("/stats", (req, res) => {
   const categories = {};
 
-  for (const p of enrichedProducts) {
+  for (const p of getEnrichedProducts()) {
     if (!categories[p.category]) {
       categories[p.category] = { count: 0, totalScore: 0, totalEmissions: 0 };
     }
@@ -277,11 +285,11 @@ router.get("/:id/recommendations", (req, res) => {
   if (!validator.isAlphanumeric(id)) {
     return res.status(400).json({ error: "Invalid product ID" });
   }
-  const product = enrichedProducts.find((p) => p.id === id);
+  const product = getEnrichedProducts().find((p) => p.id === id);
   if (!product) {
     return res.status(404).json({ error: "Product not found" });
   }
-  const similar = enrichedProducts
+  const similar = getEnrichedProducts()
     .filter((p) => p.id !== id && p.category === product.category)
     .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
     .slice(0, 6);
@@ -372,7 +380,7 @@ router.get("/:id", async (req, res, next) => {
     if (!validator.isAlphanumeric(id)) {
       return res.status(400).json({ error: "Invalid product ID" });
     }
-    const product = enrichedProducts.find((p) => p.id === id);
+    const product = getEnrichedProducts().find((p) => p.id === id);
     if (!product) return res.status(404).json({ error: "Product not found" });
     res.json(product);
   } catch (err) {

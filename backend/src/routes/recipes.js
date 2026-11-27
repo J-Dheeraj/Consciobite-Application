@@ -138,7 +138,7 @@ const RECIPE_TEMPLATES = [
 function getGreenIngredients(category, limit = 3) {
   const categoryProducts = products
     .filter((p) => p.category === category)
-    .map((p) => ({ ...p, greenGrade: calculateGreenGrade(p.emissions) }))
+    .map((p) => ({ ...p, greenGrade: calculateGreenGrade(p.emissions, p.category, p) }))
     .sort((a, b) => b.greenGrade.score - a.greenGrade.score)
     .slice(0, limit);
 
