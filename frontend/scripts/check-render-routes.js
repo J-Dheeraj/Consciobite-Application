@@ -20,8 +20,10 @@ const SITE_NAME = "consciobite-app";
 
 // Routes Render resolves without a rule, so they need none:
 // "/" is the domain root (rules are not allowed on it) and /404 is the error
-// page itself. /_next holds hashed assets, always requested by exact path.
-const EXEMPT = (route) => route === "/" || route === "/404" || route.startsWith("/_next");
+// page itself (Next 16 also writes it as /_not-found). /_next holds hashed
+// assets, always requested by exact path.
+const EXEMPT = (route) =>
+  route === "/" || route === "/404" || route === "/_not-found" || route.startsWith("/_next");
 
 function builtRoutes(dir, base = "") {
   const out = [];

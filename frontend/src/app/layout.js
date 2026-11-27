@@ -16,13 +16,17 @@ export const metadata = {
     apple: "/icon-192.png",
   },
   manifest: "/manifest.json",
-  themeColor: "#2d6a4f",
   openGraph: {
     title: "Consciobite - Sustainable Food Choices",
     description: "Browse 550+ products with GreenGrade sustainability scoring.",
     siteName: "Consciobite",
     type: "website",
   },
+};
+
+// Next 14 deprecated themeColor in metadata; Next 16 only reads it here.
+export const viewport = {
+  themeColor: "#2d6a4f",
 };
 
 export default function RootLayout({ children }) {
