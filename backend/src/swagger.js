@@ -396,6 +396,70 @@ const options = {
           responses: { 201: { description: "Log created" } },
         },
       },
+      "/health": {
+        get: {
+          tags: ["Health"],
+          summary: "Readiness check",
+          description:
+            "Checks that the database is writable, every expected migration is applied and the scoring model runs. `storage` reports which database this instance opened: `turso` keeps data across restarts, `local` is wiped on every restart on Render's free plan. `storage` does not affect `status`; the live smoke test is what fails on `local`.",
+          responses: {
+            200: {
+              description: "Ready",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      status: { type: "string", enum: ["ok", "degraded"] },
+                      service: { type: "string" },
+                      version: { type: "string" },
+                      apiVersion: { type: "string" },
+                      storage: { type: "string", enum: ["turso", "local", "unknown"] },
+                      checks: {
+                        type: "object",
+                        properties: {
+                          database: { type: "boolean" },
+                          migrations: { type: "boolean" },
+                          greengradeModel: { type: "boolean" },
+                          mlArtifacts: { type: "boolean" },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+            503: {
+              description:
+                'Degraded: same body with `status: "degraded"`; the database, migrations or scoring check failed',
+            },
+          },
+        },
+      },
+      "/health/live": {
+        get: {
+          tags: ["Health"],
+          summary: "Liveness check",
+          description:
+            "Answers while the process is up, with no dependency checks. Render's health check uses this route. `commit` is the git SHA this build came from, which the post-deploy smoke test waits for.",
+          responses: {
+            200: {
+              description: "Alive",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      status: { type: "string", example: "alive" },
+                      commit: { type: "string" },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       "/methodology": {
         get: {
           tags: ["Methodology"],
