@@ -1,5 +1,10 @@
 # Consciobite Application - Technical Documentation
 
+> **Historical document, not maintained.** This describes an earlier React Router
+> single-page version of the app. For the current stack, setup and CI see
+> [README.md](./README.md), [CLAUDE.md](./CLAUDE.md), [CONTRIBUTING.md](./CONTRIBUTING.md)
+> and the [`wiki/`](./wiki/). Scoring is specified in [METHODOLOGY.md](./METHODOLOGY.md).
+
 > Empowering sustainable food choices through transparent environmental data.
 
 ## Table of Contents

@@ -23,9 +23,9 @@ reproduced. Companion to [[Backend Security]] and [[Production Readiness]].
 | | |
 |---|---|
 | Architecture | Static SPA + stateless-ish monolith API |
-| Frontend | Next.js 14 `output: "export"` — plain HTML/JS on a CDN host |
-| API | Node 20 / Express 4, single Render free instance |
-| Store | SQLite (better-sqlite3, WAL) on the instance's **ephemeral** disk |
+| Frontend | Next.js 16 `output: "export"` — plain HTML/JS on a CDN host |
+| API | Node 22 / Express 5, single Render free instance |
+| Store | Turso (libSQL, AWS us-west-2) primary, with an embedded replica on the instance's disk (updated 2026-11-28) |
 | Identity | JWT HS256, 2 h TTL, `jti` + `revoked_tokens` revocation registry |
 | Session transport | httpOnly cookie **and** an in-memory copy in the SPA |
 | CSRF | Double-submit token (cookie readable by JS + `X-CSRF-Token` header) |
@@ -59,7 +59,7 @@ that scores are not altered for paying clients.
       *** CROSS-SITE ***  onrender.com is on the Public Suffix List,
                           so these are different SITES, not just origins
 
- [B3] API ──────────────► SQLite (same process, ephemeral disk)
+ [B3] API ──────────────► libSQL replica ──► Turso primary
 
  [B4] API ──────────────► Open Food Facts (outbound, untrusted response)
 
@@ -83,9 +83,9 @@ silently assumes same-site. See T-5.
 | T-3 | **Spoofing** — limiter bypass | `/api/v1/*` mounts | High | **Verified**; fixed in PR #50 |
 | T-4 | **Elevation / Spoofing** — revoked token resurrection | account deletion | High | **Verified**; fixed in PR #50 |
 | T-5 | **Spoofing/DoS** — cross-site cookie withheld | `COOKIE_OPTIONS` | High | **Verified**; fixed in PR #50 |
-| T-6 | **Tampering/Repudiation** — audit trail is mutable + ephemeral | `score_change_logs` | High | Partly mitigated (append-only + HMAC chain); ephemerality still open |
+| T-6 | **Tampering/Repudiation** — audit trail is mutable + ephemeral | `score_change_logs` | High | Mitigated (append-only + HMAC chain; durable on Turso since 2026-11-28) |
 | T-7 | **Tampering** — CSRF gaps on two mutating surfaces | `DELETE /auth/account`, `/v1/evidence` POSTs | Medium | **Fixed in PR #50** |
-| T-8 | **Availability** — total data loss / no backup | ephemeral SQLite | High | Partly mitigated (verified, pruned, relocatable snapshots); durability still open |
+| T-8 | **Availability** — total data loss / no backup | database | High | Mitigated (Turso primary + point-in-time restore since 2026-11-28) |
 | T-9 | **Tampering** — stored XSS via community evidence | `submitted_evidence` | Medium | Mitigated (escape + admin review) |
 | T-10 | **DoS** — amplification through OFF | `/products/scan/:barcode` | Low | Mitigated (breaker + limiter) |
 | T-11 | **Repudiation** — logout left earlier tokens alive | `logoutHandler` | Low | Mitigated (per-user token epoch) |
@@ -206,15 +206,13 @@ public evidence reads are untouched.
 
 - **T-6 and T-8 are now partly mitigated in-place.** The audit trail is
   append-only and HMAC-chained, and snapshots are verified, pruned and
-  relocatable. What remains in both cases is the same single thing: storage that
-  outlives the host. No amount of application code supplies that — it needs a
-  persistent disk, managed Postgres, or an off-host snapshot target. Tracked in
-  [[Production Readiness]].
+  relocatable. The missing piece, storage that outlives the host, arrived on
+  2026-11-28 with Turso. Tracked in [[Production Readiness]].
 - **T-8 detail**: `npm run backup` now fails loudly rather than leaving an
   unusable file, keeps the newest `BACKUP_KEEP` snapshots, and writes a
   single self-contained database (not WAL mode, whose sidecars are easy to copy
   without). Set `BACKUP_DIR` to a durable location; the default still sits on
-  the same ephemeral disk as the database, which protects against operator error
+  the same disk as the local database, which protects against operator error
   only. Nothing schedules it yet.
 - **T-11** (fixed): `refresh` issues a new `jti` without revoking the old, so
   logout used to kill only the most recent token while earlier ones lived to

@@ -49,7 +49,7 @@ The products.json lands at `/backend/src/data/products.json` — exactly the pat
 
 ## Multi-Stage Build
 
-1. **Build stage** (node:20-alpine): Installs deps, copies source + products.json, runs `npm run build` -> produces `build/` directory
+1. **Build stage** (node:22-alpine): Installs deps, copies source + products.json, runs `npm run build` -> produces `build/` directory
 2. **Runtime stage** (nginx:alpine): Copies `build/` to nginx html root, adds nginx.conf with SPA fallback
 
 ## CI

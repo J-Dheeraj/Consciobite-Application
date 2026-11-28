@@ -17,8 +17,8 @@ Food sustainability app. Rates grocery products using GreenGrade (A-F, 1-10 scor
 
 | Layer | Tech |
 |-------|------|
-| Frontend | Next.js 14 App Router (static export), TanStack React Query |
-| Backend | Node.js, Express, SQLite (better-sqlite3) |
+| Frontend | Next.js 16 App Router (static export), React 19, TanStack React Query |
+| Backend | Node.js 22, Express 5, Turso (libSQL) in production / better-sqlite3 locally |
 | Auth | JWT HS256 (httpOnly cookies), CSRF double-submit, account lockout |
 | ML | Custom KDE + sigmoid scoring (greengrade.js) |
 | External | Open Food Facts API (barcode fallback) |

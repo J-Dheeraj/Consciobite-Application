@@ -10,7 +10,7 @@ related: ["[[Render Deployment]]", "[[Docker Build Context]]", "[[System Overvie
 
 # Static Export Pipeline
 
-Next.js 14 with `output: 'export'` generates a fully static site. No Node.js server required at runtime.
+Next.js 16 with `output: 'export'` generates a fully static site. No Node.js server required at runtime.
 
 ## Configuration
 

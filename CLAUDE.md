@@ -42,13 +42,13 @@ Source documents (immutable) live in `.raw/`.
 
 ## Tech stack
 
-**Frontend** — Next.js 14 App Router (`output: 'export'` static site), React 18.2, TanStack React Query 5.90, Recharts 3.7, html5-qrcode, Sentry, CSS Modules + inline styles with CSS custom properties, ESLint (`next/core-web-vitals`) + Prettier.
+**Frontend** — Next.js 16 App Router (`output: 'export'` static site), React 19, TanStack React Query 5, Recharts 3.7, html5-qrcode, Sentry, CSS Modules + inline styles with CSS custom properties, ESLint 10 flat config (`eslint-config-next`) + Prettier.
 
-**Backend** — Node.js 22 (pinned in `.node-version`), Express 4.18, SQLite via better-sqlite3 (WAL mode), JWT + bcryptjs auth, Helmet / CORS / HPP / express-rate-limit security stack, custom `validate()` middleware, node-cache (in-memory), Winston logging, Swagger UI with an inline OpenAPI spec (dev only), Jest 30 + Supertest 7.2.
+**Backend** — Node.js 22 (pinned in `.node-version`), Express 5, SQLite-compatible storage through `src/db/driver.js`: a Turso (libSQL) embedded replica in production, better-sqlite3 on a local file in development and tests, JWT + bcryptjs auth, Helmet / CORS / HPP / express-rate-limit security stack, custom `validate()` middleware, node-cache (in-memory), Winston logging, Swagger UI with an inline OpenAPI spec (dev only), Jest 30 + Supertest 7.2.
 
 **Governance layer** — Score change audit trail (`scoreAudit.js`), manufacturer tracking, admin routes (`/api/admin/*`), `requireAdmin` middleware. See `wiki/domains/Grading Independence Governance.md`.
 
-**DevOps** — Docker (multi-stage, non-root, repo-root build context), Docker Compose, GitHub Actions CI (lint → format → test → audit → Docker build), Render.com deployment (static site for frontend, web service for backend).
+**DevOps** — Docker (multi-stage, non-root, repo-root build context), Docker Compose, GitHub Actions CI (format check → lint → tests with coverage → backend tests again on the libsql driver → audit → frontend build → render.yaml route check → Docker build, gated by one summary check named `CI`), Render.com deployment (static site for frontend, web service for backend).
 
 ---
 
@@ -102,14 +102,14 @@ Consciobite-Application/
 
 ## Key constraints and decisions
 
-- **SQLite is intentional for now.** The app runs on Render free tier (single instance). Do not migrate to PostgreSQL without discussing it first. A migration plan exists at `wiki/concepts/Stack Migration Plan.md`.
+- **SQLite (via Turso) is intentional for now.** The app runs on Render free tier (single instance). Production data lives in Turso, so restarts no longer wipe it (see `backend/docs/turso.md`). Do not migrate to PostgreSQL without discussing it first. A migration plan exists at `wiki/concepts/Stack Migration Plan.md`.
 - **node-cache is in-memory only.** It does not survive restarts. Do not store anything in cache that must persist.
 - **Products come from `products.json`, not a database table.** Adding/editing products means editing that file. There is no admin UI for the product catalog yet.
 - **Next.js static export** (`output: 'export'`). Build produces `out/` which is renamed to `build/`. Dynamic routes need `generateStaticParams()`. No server-side features (API routes, middleware, rewrites).
 - **Docker build context is repo root** (not `./frontend`). The frontend Dockerfile uses `frontend/`-prefixed COPY paths so `generateStaticParams()` can read `backend/src/data/products.json` at build time.
 - **Swagger is disabled in production.** Do not re-enable it in the production config.
 - **JWT secret must come from the environment.** Never hardcode it or commit it.
-- **CI must pass before merging.** The pipeline runs lint, Prettier format check, tests, `npm audit`, and Docker build. If any step fails, the PR is blocked.
+- **CI must pass before merging.** The pipeline runs format check → lint → tests with coverage → backend tests again on the libsql driver → audit → frontend build → render.yaml route check → Docker build, gated by one summary check named `CI`. If any step fails, the PR is blocked.
 
 ## Key invariants
 
@@ -173,7 +173,8 @@ docker compose up --build
 ## Running tests
 
 ```bash
-cd backend && npm test     # 117 tests
+cd backend && npm test     # better-sqlite3 driver
+cd backend && DB_DRIVER=libsql npm test   # same suite on libsql, as CI does
 cd frontend && npm test
 ```
 
@@ -213,7 +214,6 @@ Full spec available at `http://localhost:4000/api/docs` in development.
 
 - Product catalog is static JSON. A future admin panel for managing products is planned.
 - In-memory cache breaks in multi-instance deployments. Redis migration is planned but not yet scoped.
-- No `CONTRIBUTING.md` yet — one is planned.
 - A GreenGrade Independent Advisory Panel governance structure is being set up to address the conflict of interest between manufacturer listing fees and independent scoring. See `wiki/domains/Grading Independence Governance.md`.
 - Stack migration to Prisma/Supabase/Tailwind/shadcn is planned but not started. See `wiki/concepts/Stack Migration Plan.md`.
 
@@ -268,4 +268,4 @@ Rules:
 
 ## Branch
 
-Active development: `claude/improve-application-S5njo`
+Branch from `main` as `feat/`, `fix/`, `chore/` or `docs/<name>`. PRs need the `CI` check to pass.
