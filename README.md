@@ -205,6 +205,9 @@ Full technical specification: [`METHODOLOGY.md`](./METHODOLOGY.md)
 |---|---|---|
 | `JWT_SECRET` | Yes | Long random string. Never commit. |
 | `NODE_ENV` | Yes | `development`, `production`, or `test` |
+| `TURSO_DATABASE_URL` | In production | `libsql://...` URL of the Turso database. Unset means a local SQLite file that Render wipes on every restart. Exact name only; see [`backend/docs/turso.md`](./backend/docs/turso.md) |
+| `TURSO_AUTH_TOKEN` | With the URL | Turso token. Never commit. |
+| `DB_DRIVER` | No | `libsql` runs the libsql driver on the local file (CI runs the backend suite this way too) |
 | `PORT` | No | Backend port (default: 4000) |
 | `ALLOWED_ORIGINS` | No | Comma-separated CORS origins |
 | `NEXT_PUBLIC_API_URL` | No | Frontend build-time API URL (overrides hostname inference) |

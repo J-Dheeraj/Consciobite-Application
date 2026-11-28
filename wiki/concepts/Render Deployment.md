@@ -2,7 +2,7 @@
 type: concept
 title: "Render Deployment"
 created: 2026-05-13
-updated: 2026-05-13
+updated: 2026-11-28
 status: developing
 tags: [render, deployment, infrastructure]
 related: ["[[Static Export Pipeline]]", "[[Docker Build Context]]", "[[System Overview]]"]
@@ -55,3 +55,4 @@ Render Blueprint sync (`render.yaml`) does NOT auto-migrate manually-created ser
 - `NEXT_PUBLIC_API_URL` — Set to the API's public URL in render.yaml. Not `fromService`/`property: host`: that resolves to the internal hostname (`consciobite-api`), which a browser cannot reach
 - `JWT_SECRET` — Auto-generated for backend
 - `ALLOWED_ORIGINS` — Set to frontend's URL for CORS
+- `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` — Declared with `sync: false` in render.yaml and set by hand on `consciobite-api` in the dashboard. Without them the API boots on a local SQLite file that every restart wipes; `/api/health` then reports `"storage":"local"` and the live smoke test fails. Setup: `backend/docs/turso.md`

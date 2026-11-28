@@ -140,11 +140,14 @@ Consciobite-Application/
 |---|---|---|
 | `JWT_SECRET` | yes | Long random string. Never commit. |
 | `NODE_ENV` | yes | `development`, `production`, or `test` |
+| `TURSO_DATABASE_URL` | in production | `libsql://...` URL of the Turso database. Unset means a local SQLite file, which Render wipes on every restart. The name must match exactly; see `backend/docs/turso.md` |
+| `TURSO_AUTH_TOKEN` | with the URL | Turso token. Startup fails if the URL is set without it. Never commit. |
+| `DB_DRIVER` | no | `libsql` runs the libsql driver on the local file instead of better-sqlite3 (what CI's second backend test run does) |
 | `PORT` | no | Backend port, default 4000 |
 | `ALLOWED_ORIGINS` | no | Comma-separated CORS origins, default `http://localhost:3000` |
 | `NEXT_PUBLIC_API_URL` | no | Frontend build-time API URL (Docker/Render) |
 | `AUDIT_HMAC_KEY` | no | Key for the score-audit hash chain; falls back to `JWT_SECRET` |
-| `BACKUP_DIR` | no | Backup destination, default `backend/backups` (same ephemeral disk) |
+| `BACKUP_DIR` | no | Backup destination, default `backend/backups`, on the same disk as the local DB file. In production, Turso's point-in-time restore is the real backup |
 | `BACKUP_KEEP` | no | Snapshots to retain, default 7 (`0` keeps all) |
 
 Copy `backend/.env.example` to `backend/.env` before running locally.
