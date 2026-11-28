@@ -131,6 +131,20 @@ jobs:
           SMOKE_BASE_URL: ${{ env.SITE_URL }}
         run: npm run smoke
 
+      # The free plan wipes the API's disk on every restart, so without Turso
+      # every account, review and audit entry is lost (backend/docs/turso.md).
+      # /api/health reports which storage the running instance opened. This
+      # used to be invisible: a misnamed env var booted cleanly on the local
+      # file and nothing failed.
+      - name: Check the API keeps its data across restarts
+        run: |
+          storage=$(curl -fsS --max-time 30 "$API_URL/api/health" | jq -r '.storage // "unknown"' || true)
+          echo "API storage: ${storage:-no response}"
+          if [ "$storage" != "turso" ]; then
+            echo "::error::The live API reports storage '${storage:-no response}', not 'turso'. Accounts, reviews and the audit trail are wiped on every restart. Set TURSO_DATABASE_URL and TURSO_AUTH_TOKEN (exact names) on consciobite-api in Render; see backend/docs/turso.md."
+            exit 1
+          fi
+
       - name: Upload failure screenshot
         if: failure()
         uses: actions/upload-artifact@v7
