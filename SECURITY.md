@@ -14,8 +14,9 @@ CI gates (`.github/workflows/ci.yml`):
 - **Frontend:** `npm run audit:ci` (`frontend/scripts/audit-gate.js`) — any
   **critical** finding fails the build *unless* its advisory ID is named in
   that script's `ALLOWED` map with a reason. A newly published critical is not
-  on the list, so it fails. The exceptions also carry a `REVIEW_BY` date and
-  fail once it passes, so the list cannot quietly become permanent.
+  on the list, so it fails. While the list has entries it also carries a
+  `REVIEW_BY` date and fails once that passes, so it cannot quietly become
+  permanent.
 
 This replaced a bare `npm audit --audit-level=critical`, which had degenerated
 into a choice between failing forever on advisories that cannot affect this
@@ -28,34 +29,29 @@ HTML/JS/CSS served by nginx/Render). The Next.js server, image optimizer,
 middleware, Server Actions and React Server Components never execute in
 production, so advisories in that code cannot be reached.
 
-### Current exceptions (reviewed 2026-10-30, re-review by 2027-01-31)
+### Current exceptions
 
-All three are in `next`, and all three are the *only* criticals in the tree.
+None (checked 2026-11-28). The upgrade to Next 16 removed the three `next`
+criticals that used to be excepted here (`GHSA-p293-qw3h-jr36`,
+`GHSA-2xp9-vwfh-vxw4`, `GHSA-2464-fhr4-w9xw`), and `npm audit --omit=dev` now
+reports no advisories of any severity in the frontend's production
+dependencies. `ALLOWED` in `audit-gate.js` is empty to match.
 
-| Advisory | Finding | Why it cannot apply here |
-|---|---|---|
-| `GHSA-p293-qw3h-jr36` | Unauthenticated RCE on Windows-hosted servers | No Next server runs at all; the build output is static files on nginx/Render |
-| `GHSA-2xp9-vwfh-vxw4` | Unauthenticated RCE in the Image Optimization API (AVIF) | That API does not exist in a static export, and `next/image` is never imported — verified by grep across `frontend/src` |
-| `GHSA-2464-fhr4-w9xw` | Unauthenticated RCE in the Image Optimization API (SVG) | Same as above |
+A new exception needs the same evidence those had: the advisory, why it cannot
+be reached in a static export, and how that was checked against the code (for
+example, that `next/image` has no import anywhere in `frontend/src`).
 
-Verified when these were accepted: `next.config.js` sets `output: "export"`;
-`next/image` has no import anywhere in `frontend/src`; the app uses neither CSP
-nonces nor `beforeInteractive` scripts (the two `next` advisories that are not
-server-runtime). Of the 24 distinct `next` advisories in the tree, 22 are
-plainly server-runtime and the remaining 2 need those unused features.
-
-**These exceptions are void if the deployment model changes.** If the frontend
+**Exceptions of this kind are void if the deployment model changes.** If the frontend
 ever stops being a static export — adding a Next server, middleware, Server
 Actions, ISR or the image optimizer — every one of them becomes live and the
 right response is to upgrade Next, not to extend the list.
 
 ### Non-blocking findings
 
-High findings in `next`, `postcss`, `nanoid` and `source-map-js` do not fail
-the frontend gate. `postcss`, `nanoid` and `source-map-js` run at build time
-over our own sources, not over untrusted input at runtime. The `next` highs are
-server-runtime, as above. They are still worth clearing by upgrading Next,
-which is tracked as separate work.
+The full tree, dev dependencies included, has moderate advisories in `glob`
+and `minimatch`, pulled in by Jest 30. They run only in local and CI test runs
+over our own files and never ship. npm's only suggested fix is a downgrade to
+Jest 29, so they stay until Jest picks up patched versions.
 
 ### Triage rules
 
@@ -82,7 +78,13 @@ which is tracked as separate work.
 
 ## Operational backups
 
-`cd backend && npm run backup` snapshots the SQLite database (using the
+In production the database is a Turso embedded replica
+(`backend/docs/turso.md`). Every write goes to Turso's hosted primary, so data
+survives restarts and redeploys, and Turso's point-in-time restore is the
+backup that survives host loss. `/api/health` reports `"storage":"turso"` while
+this is in effect, and the live smoke test fails when it reports anything else.
+
+`cd backend && npm run backup` snapshots the local SQLite file (using the
 online backup API — safe while the server runs). Each snapshot is verified
 before being reported as good: SQLite's `integrity_check` must pass and every
 table's row count must match the source, or the file is discarded and the
@@ -90,9 +92,9 @@ command exits non-zero. Snapshots are written as a single self-contained
 database rather than in WAL mode, so copying the one file loses nothing.
 
 - `BACKUP_DIR` — destination (default `backend/backups`). **The default sits on
-  the same ephemeral disk as the database, so it protects against operator error
-  only, not host loss.** Point it at a persistent disk or mounted volume, or copy
-  snapshots off-host.
+  the same disk as the local database file, which Render wipes on every restart,
+  so it protects against operator error only, not host loss.** Point it at a
+  persistent disk or mounted volume, or copy snapshots off-host.
 - `BACKUP_KEEP` — snapshots to retain (default 7; `0` keeps all).
 
 Nothing schedules this yet; it is a manual command.
