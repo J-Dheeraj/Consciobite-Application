@@ -35,6 +35,10 @@ describe.each(["better-sqlite3", "libsql"])("openDatabase (%s)", (driver) => {
     expect(db.driver).toBe(driver);
   });
 
+  test("reports local storage when Turso is not configured", () => {
+    expect(db.storage).toBe("local");
+  });
+
   test("run() returns only changes and lastInsertRowid", () => {
     const info = db.prepare("INSERT INTO t (name) VALUES (?)").run("a");
     expect(Object.keys(info).sort()).toEqual(["changes", "lastInsertRowid"]);
@@ -82,6 +86,19 @@ describe.each(["better-sqlite3", "libsql"])("openDatabase (%s)", (driver) => {
 });
 
 describe("openDatabase with Turso configured", () => {
+  test("treats a blank TURSO_DATABASE_URL as unset", () => {
+    process.env.TURSO_DATABASE_URL = "   ";
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "driver-blank-"));
+    try {
+      const db = openDatabase(path.join(dir, "t.db"));
+      expect(db.storage).toBe("local");
+      db.close();
+    } finally {
+      delete process.env.TURSO_DATABASE_URL;
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   test("refuses to start without an auth token", () => {
     process.env.TURSO_DATABASE_URL = "libsql://example.turso.io";
     delete process.env.TURSO_AUTH_TOKEN;

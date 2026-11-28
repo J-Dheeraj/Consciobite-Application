@@ -15,6 +15,10 @@
  *                              suite exercise the libsql code path offline)
  *   otherwise               -> better-sqlite3 on the local file, as before
  *
+ * The env var names must match exactly. Every boot logs which storage it
+ * opened, and the returned db carries `storage` ("turso" or "local"), which
+ * /api/health reports.
+ *
  * libsql's API is "better-sqlite3 compatible" but not identical: rows come
  * back with an extra enumerable `_metadata` field (which would leak into API
  * responses), and `pluck()` / `pragma(..., { simple: true })` do not unwrap
@@ -96,6 +100,8 @@ class LibsqlDatabase {
     this._db = inner;
     this.replica = replica;
     this.driver = "libsql";
+    // What /api/health reports: "turso" survives a restart, "local" does not.
+    this.storage = replica ? "turso" : "local";
   }
 
   prepare(sql) {
@@ -128,10 +134,10 @@ class LibsqlDatabase {
 }
 
 function openDatabase(localPath) {
-  const url = process.env.TURSO_DATABASE_URL;
+  const url = (process.env.TURSO_DATABASE_URL || "").trim();
 
   if (url) {
-    const authToken = process.env.TURSO_AUTH_TOKEN;
+    const authToken = (process.env.TURSO_AUTH_TOKEN || "").trim();
     if (!authToken) {
       throw new Error("TURSO_DATABASE_URL is set but TURSO_AUTH_TOKEN is missing");
     }
@@ -159,13 +165,29 @@ function openDatabase(localPath) {
     const db = new LibsqlDatabase(new Libsql(localPath), { replica: false });
     // better-sqlite3 waits up to 5 s for a lock by default; libsql does not.
     db.pragma("busy_timeout = 5000");
+    warnIfEphemeral(localPath);
     return db;
   }
 
   const BetterSqlite = require("better-sqlite3");
   const db = new BetterSqlite(localPath);
   db.driver = "better-sqlite3";
+  db.storage = "local";
+  warnIfEphemeral(localPath);
   return db;
+}
+
+// Without this line, falling back to the local file was silent: a missing or
+// misnamed TURSO_DATABASE_URL looked exactly like a healthy boot, while every
+// restart wiped the data. In production it is a warning, and /api/health
+// reports "storage": "local" so the live smoke test fails on it too.
+function warnIfEphemeral(localPath) {
+  const msg =
+    `Database: local SQLite file at ${localPath}. ` +
+    "TURSO_DATABASE_URL is not set, so on Render's free plan every restart wipes " +
+    "users, reviews and the audit trail (see backend/docs/turso.md)";
+  if (process.env.NODE_ENV === "production") logger.warn(msg);
+  else logger.info(msg);
 }
 
 module.exports = { openDatabase };

@@ -287,11 +287,22 @@ app.get("/api/health", (_req, res) => {
 
   // mlArtifacts is advisory-only and does not gate overall health.
   const healthy = checks.database && checks.migrations && checks.greengradeModel;
+  let storage = "unknown";
+  try {
+    storage = getDb().storage || "unknown";
+  } catch (_) {
+    // reported as unknown
+  }
+
   res.status(healthy ? 200 : 503).json({
     status: healthy ? "ok" : "degraded",
     service: "Consciobite API",
     version: "2.0.0",
     apiVersion: "v1",
+    // "turso" keeps data across restarts; "local" is wiped on every restart
+    // on Render's free plan. Not part of `healthy`: a local file still serves
+    // requests, and the live smoke test is what flags it.
+    storage,
     checks,
   });
 });
