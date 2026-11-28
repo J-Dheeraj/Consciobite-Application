@@ -22,6 +22,13 @@ describe("API Endpoints", () => {
       expect(res.body.checks.greengradeModel).toBe(true);
       expect(res.body.checks.mlArtifacts).toBe(true);
     });
+
+    // The live smoke test fails unless production reports "turso"; without
+    // TURSO_DATABASE_URL (as here) the API must say it is on the local file.
+    test("should report which storage it opened", async () => {
+      const res = await request(app).get("/api/health");
+      expect(res.body.storage).toBe("local");
+    });
   });
 
   describe("GET /api/products", () => {
