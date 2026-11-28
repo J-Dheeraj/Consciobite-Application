@@ -29,10 +29,6 @@
       "env": { "node": true, "browser": false }
     },
     {
-      "files": ["frontend/src/**/*.js", "frontend/src/**/*.jsx"],
-      "env": { "browser": true, "node": false }
-    },
-    {
       "files": ["**/*.test.js", "**/__tests__/**"],
       "env": { "jest": true }
     }
