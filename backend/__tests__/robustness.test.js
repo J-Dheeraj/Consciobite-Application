@@ -67,3 +67,17 @@ describe("Body parser errors are answered as client errors", () => {
     expect(res.body.error).toBe("Invalid JSON in request body");
   });
 });
+
+// Express 5 re-parses req.query on every read, which silently undid hpp. These
+// pin the Express 4 behaviour that index.js restores.
+describe("Express 5 request semantics", () => {
+  test("duplicate query params collapse to one value (hpp still applies)", async () => {
+    const res = await request(app).get("/api/products?search=apple&search=milk");
+    expect(res.status).toBe(200);
+  });
+
+  test("a POST with no JSON body gets a 400, not a 500", async () => {
+    const res = await request(app).post("/api/auth/login").set("Content-Type", "text/plain");
+    expect(res.status).toBe(400);
+  });
+});

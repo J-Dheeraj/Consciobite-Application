@@ -199,6 +199,22 @@ app.use((err, _req, res, next) => {
   next(err);
 });
 
+// ---------- Express 4 request semantics ----------
+// Express 5 leaves req.body undefined when no parser ran (handlers here
+// destructure it), and makes req.query a getter that re-parses the URL on
+// every read, so hpp's in-place fixes to it were silently lost. Pin both to
+// plain values so hpp and the validate() middleware see the same object.
+app.use((req, _res, next) => {
+  if (req.body === undefined) req.body = {};
+  Object.defineProperty(req, "query", {
+    value: { ...req.query },
+    writable: true,
+    configurable: true,
+    enumerable: true,
+  });
+  next();
+});
+
 // ---------- HTTP parameter pollution protection ----------
 app.use(hpp());
 
@@ -341,9 +357,9 @@ app.use((err, _req, res, _next) => {
 });
 
 // ---------- Graceful shutdown ----------
-// Node exits the process on an unhandled rejection. Express 4 does not catch
-// rejections from async handlers, so one unexpected throw inside a route would
-// take the whole API down. Log and keep serving; the request itself still fails.
+// Node exits the process on an unhandled rejection. Express 5 forwards
+// rejections from async route handlers to the error handler, but promises
+// started outside a handler are not covered. Log and keep serving.
 process.on("unhandledRejection", (reason) => {
   logger.error("Unhandled promise rejection:", reason);
 });
