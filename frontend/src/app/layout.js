@@ -1,4 +1,5 @@
 import Providers from "@/components/Providers";
+import { themeInitScript } from "@/context/ThemeContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
@@ -31,7 +32,12 @@ export const viewport = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    // The head script sets data-theme on <html> before React hydrates, so the
+    // attribute legitimately differs from the server HTML.
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body>
         <Providers>
           <div
