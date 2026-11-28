@@ -14,8 +14,9 @@ CI gates (`.github/workflows/ci.yml`):
 - **Frontend:** `npm run audit:ci` (`frontend/scripts/audit-gate.js`) — any
   **critical** finding fails the build *unless* its advisory ID is named in
   that script's `ALLOWED` map with a reason. A newly published critical is not
-  on the list, so it fails. The exceptions also carry a `REVIEW_BY` date and
-  fail once it passes, so the list cannot quietly become permanent.
+  on the list, so it fails. While the list has entries it also carries a
+  `REVIEW_BY` date and fails once that passes, so the list cannot quietly
+  become permanent.
 
 This replaced a bare `npm audit --audit-level=critical`, which had degenerated
 into a choice between failing forever on advisories that cannot affect this
@@ -28,34 +29,18 @@ HTML/JS/CSS served by nginx/Render). The Next.js server, image optimizer,
 middleware, Server Actions and React Server Components never execute in
 production, so advisories in that code cannot be reached.
 
-### Current exceptions (reviewed 2026-10-30, re-review by 2027-01-31)
+### Current exceptions: none
 
-All three are in `next`, and all three are the *only* criticals in the tree.
+`ALLOWED` in `audit-gate.js` is empty. The Next 16 upgrade (2026-11-28)
+cleared the three `next` RCE advisories accepted on 2026-10-30
+(`GHSA-p293-qw3h-jr36`, `GHSA-2xp9-vwfh-vxw4`, `GHSA-2464-fhr4-w9xw`), and
+`npm audit` on the frontend lockfile then reported 0 critical and 0 high
+findings (18 moderate, in `glob` and `minimatch`). With no exceptions there is
+no `REVIEW_BY` date; the gate enforces one again as soon as an entry is added.
 
-| Advisory | Finding | Why it cannot apply here |
-|---|---|---|
-| `GHSA-p293-qw3h-jr36` | Unauthenticated RCE on Windows-hosted servers | No Next server runs at all; the build output is static files on nginx/Render |
-| `GHSA-2xp9-vwfh-vxw4` | Unauthenticated RCE in the Image Optimization API (AVIF) | That API does not exist in a static export, and `next/image` is never imported — verified by grep across `frontend/src` |
-| `GHSA-2464-fhr4-w9xw` | Unauthenticated RCE in the Image Optimization API (SVG) | Same as above |
-
-Verified when these were accepted: `next.config.js` sets `output: "export"`;
-`next/image` has no import anywhere in `frontend/src`; the app uses neither CSP
-nonces nor `beforeInteractive` scripts (the two `next` advisories that are not
-server-runtime). Of the 24 distinct `next` advisories in the tree, 22 are
-plainly server-runtime and the remaining 2 need those unused features.
-
-**These exceptions are void if the deployment model changes.** If the frontend
-ever stops being a static export — adding a Next server, middleware, Server
-Actions, ISR or the image optimizer — every one of them becomes live and the
-right response is to upgrade Next, not to extend the list.
-
-### Non-blocking findings
-
-High findings in `next`, `postcss`, `nanoid` and `source-map-js` do not fail
-the frontend gate. `postcss`, `nanoid` and `source-map-js` run at build time
-over our own sources, not over untrusted input at runtime. The `next` highs are
-server-runtime, as above. They are still worth clearing by upgrading Next,
-which is tracked as separate work.
+Any future exception is void if the deployment model changes. If the frontend
+stops being a static export (adding a Next server, middleware, Server Actions,
+ISR or the image optimizer), re-triage every entry.
 
 ### Triage rules
 
@@ -82,20 +67,25 @@ which is tracked as separate work.
 
 ## Operational backups
 
-`cd backend && npm run backup` snapshots the SQLite database (using the
-online backup API — safe while the server runs). Each snapshot is verified
-before being reported as good: SQLite's `integrity_check` must pass and every
-table's row count must match the source, or the file is discarded and the
-command exits non-zero. Snapshots are written as a single self-contained
-database rather than in WAL mode, so copying the one file loses nothing.
+In production the database is a hosted Turso database (see
+`backend/docs/turso.md`). Use Turso's point-in-time restore for recovery;
+`npm run backup` there would only snapshot the API's local replica.
+
+`cd backend && npm run backup` snapshots a local SQLite database (using the
+online backup API — safe while the server runs), for local or self-hosted
+setups without Turso. Each snapshot is verified before being reported as good:
+SQLite's `integrity_check` must pass and every table's row count must match the
+source, or the file is discarded and the command exits non-zero. Snapshots are
+written as a single self-contained database rather than in WAL mode, so copying
+the one file loses nothing.
 
 - `BACKUP_DIR` — destination (default `backend/backups`). **The default sits on
-  the same ephemeral disk as the database, so it protects against operator error
-  only, not host loss.** Point it at a persistent disk or mounted volume, or copy
+  the same disk as the database, so it protects against operator error only,
+  not host loss.** Point it at a persistent disk or mounted volume, or copy
   snapshots off-host.
 - `BACKUP_KEEP` — snapshots to retain (default 7; `0` keeps all).
 
-Nothing schedules this yet; it is a manual command.
+Nothing schedules this; it is a manual command.
 
 ## Audit-trail integrity
 

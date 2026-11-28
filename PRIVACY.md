@@ -1,6 +1,6 @@
 # Privacy Notice — Consciobite
 
-_Last updated: 2026-07-30_
+_Last updated: 2026-11-28_
 
 This notice describes what personal data Consciobite stores, why, and the
 controls available to you. Consciobite is currently operated as a pilot;
@@ -41,15 +41,28 @@ persisted in browser storage (in-memory + httpOnly cookie only).
 - Application logs: retained per hosting-platform defaults (Render);
   request logs contain request IDs and routes, not request bodies.
 
+## Where your data is held
+
+- **Database:** account, review, carbon-log and token records are stored in a
+  hosted [Turso](https://turso.tech) database (libSQL) in AWS `us-west-2`
+  (Oregon, USA).
+- **API server:** the API runs on Render in its Oregon (USA) region. It keeps
+  a local copy of the database (a Turso embedded replica) on the server's
+  disk, which is replaced from the hosted database on each restart.
+- **Logs:** application logs are held by Render.
+
 ## Known limitations (pilot status)
 
-- The database currently runs on ephemeral infrastructure without managed
-  backups; durability is not guaranteed. Deletion is therefore also
-  trivially permanent.
-- There is no data-residency guarantee; the pilot is hosted on Render
-  (region as configured in `render.yaml`).
-- Database-at-rest encryption depends on the hosting platform's disk
-  encryption; no application-level field encryption is applied.
+- **Deletion and backups.** Deleting your account removes your records from
+  the live database immediately. Turso keeps point-in-time restore history,
+  so a copy of deleted data can remain in that history until it ages out
+  under Turso's retention for the plan in use. Data restored from that
+  history would bring deleted records back.
+- **Data residency.** Data is held in the United States (see above). There is
+  no option to choose another region.
+- **Encryption at rest** depends on Turso's and Render's infrastructure; no
+  application-level field encryption is applied. Connections between the API
+  and Turso use TLS.
 
 ## Contact
 

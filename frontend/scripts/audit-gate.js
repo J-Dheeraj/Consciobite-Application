@@ -14,17 +14,16 @@ const { execFileSync } = require("child_process");
 
 const BLOCKING = new Set(["critical"]);
 
-// Re-check these when the expiry passes, when the deployment stops being a
-// static export, or when Next is upgraded.
-const REVIEW_BY = "2027-01-31";
+// Every entry must carry a reason, and the whole list a REVIEW_BY date. The
+// date is only enforced while the list has entries: an empty list has nothing
+// to go stale. Re-check entries when the date passes, when the deployment
+// stops being a static export, or when Next is upgraded.
+//
+// Empty since the Next 16 upgrade (2026-11-28): the three `next` RCE
+// exceptions accepted on 2026-10-30 no longer appear in `npm audit`.
+const REVIEW_BY = null;
 
-const ALLOWED = {
-  "GHSA-p293-qw3h-jr36":
-    "RCE on Windows-hosted Next servers — no Next server runs; static export served by nginx/Render",
-  "GHSA-2xp9-vwfh-vxw4":
-    "RCE in the Image Optimization API (AVIF) — API absent from a static export; next/image is never imported",
-  "GHSA-2464-fhr4-w9xw": "RCE in the Image Optimization API (SVG) — same as above",
-};
+const ALLOWED = {};
 
 function audit() {
   try {
@@ -37,7 +36,12 @@ function audit() {
 }
 
 function main() {
-  if (new Date() > new Date(REVIEW_BY)) {
+  const hasExceptions = Object.keys(ALLOWED).length > 0;
+  if (hasExceptions && !REVIEW_BY) {
+    console.error("audit-gate: ALLOWED has entries but no REVIEW_BY date. Set one.");
+    process.exit(1);
+  }
+  if (hasExceptions && new Date() > new Date(REVIEW_BY)) {
     console.error(
       `audit-gate: exceptions expired on ${REVIEW_BY}. Re-verify them and update SECURITY.md.`
     );
@@ -74,9 +78,8 @@ function main() {
     process.exit(1);
   }
 
-  console.log(
-    `audit-gate: pass — no unreviewed ${[...BLOCKING].join("/")} advisories (exceptions reviewed by ${REVIEW_BY}).`
-  );
+  const note = hasExceptions ? ` (exceptions reviewed by ${REVIEW_BY})` : " (no exceptions)";
+  console.log(`audit-gate: pass — no unreviewed ${[...BLOCKING].join("/")} advisories${note}.`);
 }
 
 main();
