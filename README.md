@@ -205,6 +205,9 @@ Full technical specification: [`METHODOLOGY.md`](./METHODOLOGY.md)
 |---|---|---|
 | `JWT_SECRET` | Yes | Long random string. Never commit. |
 | `NODE_ENV` | Yes | `development`, `production`, or `test` |
+| `TURSO_DATABASE_URL` | Production | `libsql://...` URL of the Turso database. Unset means a local SQLite file, wiped on every Render restart. Exact name required. See `backend/docs/turso.md` |
+| `TURSO_AUTH_TOKEN` | with `TURSO_DATABASE_URL` | Turso database token. Never commit. Boot fails if the URL is set without it |
+| `DB_DRIVER` | No | `libsql` runs the libsql driver on the local file with no network (CI uses it). Ignored when `TURSO_DATABASE_URL` is set |
 | `PORT` | No | Backend port (default: 4000) |
 | `ALLOWED_ORIGINS` | No | Comma-separated CORS origins |
 | `NEXT_PUBLIC_API_URL` | No | Frontend build-time API URL (overrides hostname inference) |

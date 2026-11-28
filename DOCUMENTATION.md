@@ -649,6 +649,9 @@ frontend: port 80 (nginx), depends_on: backend
 | `JWT_SECRET` | dev key (change in production!) | JWT signing secret |
 | `JWT_EXPIRES_IN` | `7d` | Token expiration |
 | `DB_PATH` | `./consciobite.db` | SQLite file path |
+| `TURSO_DATABASE_URL` | (empty) | Turso `libsql://` URL; when set, the DB is a Turso embedded replica (see `backend/docs/turso.md`) |
+| `TURSO_AUTH_TOKEN` | (empty) | Turso token, required with `TURSO_DATABASE_URL` |
+| `DB_DRIVER` | (empty) | `libsql` = libsql driver on the local file, no network |
 | `LOG_LEVEL` | `info` | Winston log level |
 | `NODE_ENV` | `development` | Environment mode |
 | `SENTRY_DSN` | (empty) | Optional error tracking |
