@@ -92,7 +92,7 @@ describe("CSRF is wired onto every mutating surface", () => {
         }
       }
     };
-    walk(app._router.stack);
+    walk(app.router.stack);
     return found.filter((f) => f.path.includes(path));
   }
 
