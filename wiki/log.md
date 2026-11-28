@@ -2,7 +2,7 @@
 type: meta
 title: "Operation Log"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-11-28
 status: evergreen
 tags: [log, meta]
 ---
@@ -10,6 +10,30 @@ tags: [log, meta]
 # Operation Log
 
 Append-only. Newest entries at top.
+
+---
+
+## 2026-11-28 — Doc Drift Sweep (CI hardening, Turso, Next 16)
+
+**Operation:** Manual drift check of the root docs and the living wiki pages against the CI hardening, Turso, storage-reporting and Next 16 changes, then fixes. Checked against the code, both backend test runs, a frontend build and the live `/api/health` (`"storage":"turso"`). `sources/` and this log were left as written.
+
+**Wiki pages updated:** 9
+- `hot.md` — November infra paragraph, stack line, July PRs marked merged, blockers, test status
+- `domains/Production Readiness` — durability blocker resolved by Turso; backups; audit-gate note
+- `domains/Threat Model` — stack, store, B3, T-6/T-8, residual risks (Turso token, cold-start dependency)
+- `concepts/Render Deployment` — Turso env vars, liveness health-check path, per-route rewrites
+- `concepts/Static Export Pipeline` — Next 16, current `next.config.js` and build script, passport route, 1119 pages
+- `concepts/Stack Migration Plan` — current stack table
+- `concepts/Docker Build Context` — node:22-alpine, `scripts/` copy
+- `meta/Consciobite Architecture Overview` — stack table
+- `architecture/System Overview` — database, Next 16, page count
+
+**Repo docs updated:** `CLAUDE.md`, `README.md`, `CONTRIBUTING.md`, `SECURITY.md`, `PRIVACY.md`, `DOCUMENTATION.md` (marked historical), `backend/.env.example`.
+
+**Test count:** 344 backend (19 suites, on both drivers) + 67 frontend (12 suites), all passing.
+
+**Branch:** `claude/zealous-maxwell-mbuxuz`
+**Hot cache updated:** yes
 
 ---
 

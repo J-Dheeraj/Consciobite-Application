@@ -2,7 +2,7 @@
 type: concept
 title: "Docker Build Context"
 created: 2026-05-13
-updated: 2026-05-13
+updated: 2026-11-28
 status: developing
 tags: [docker, build, deployment]
 related: ["[[Static Export Pipeline]]", "[[Render Deployment]]", "[[System Overview]]"]
@@ -41,6 +41,7 @@ RUN npm ci
 COPY frontend/jsconfig.json ./
 COPY frontend/next.config.js ./
 COPY frontend/public/ ./public/
+COPY frontend/scripts/ ./scripts/
 COPY frontend/src/ ./src/
 COPY backend/src/data/products.json /backend/src/data/products.json
 ```
@@ -49,7 +50,7 @@ The products.json lands at `/backend/src/data/products.json` — exactly the pat
 
 ## Multi-Stage Build
 
-1. **Build stage** (node:20-alpine): Installs deps, copies source + products.json, runs `npm run build` -> produces `build/` directory
+1. **Build stage** (node:22-alpine): Installs deps, copies source + products.json, runs `npm run build` -> produces `build/` directory
 2. **Runtime stage** (nginx:alpine): Copies `build/` to nginx html root, adds nginx.conf with SPA fallback
 
 ## CI

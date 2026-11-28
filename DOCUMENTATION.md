@@ -2,6 +2,13 @@
 
 > Empowering sustainable food choices through transparent environmental data.
 
+> **Historical document, not kept current.** It describes the app before the
+> move to Next.js: a React Router 6 single-page app on Node 20 with a local
+> SQLite file. For the current stack see [`README.md`](./README.md),
+> [`CLAUDE.md`](./CLAUDE.md) and `wiki/`; for scoring,
+> [`METHODOLOGY.md`](./METHODOLOGY.md); for the database,
+> [`backend/docs/turso.md`](./backend/docs/turso.md).
+
 ## Table of Contents
 
 1. [Overview](#overview)

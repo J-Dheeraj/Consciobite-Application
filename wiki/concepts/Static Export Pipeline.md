@@ -2,7 +2,7 @@
 type: concept
 title: "Static Export Pipeline"
 created: 2026-05-13
-updated: 2026-05-13
+updated: 2026-11-28
 status: developing
 tags: [next.js, static-export, build, deployment]
 related: ["[[Render Deployment]]", "[[Docker Build Context]]", "[[System Overview]]"]
@@ -10,7 +10,7 @@ related: ["[[Render Deployment]]", "[[Docker Build Context]]", "[[System Overvie
 
 # Static Export Pipeline
 
-Next.js 14 with `output: 'export'` generates a fully static site. No Node.js server required at runtime.
+Next.js 16 with `output: 'export'` generates a fully static site. No Node.js server required at runtime.
 
 ## Configuration
 
@@ -18,20 +18,28 @@ Next.js 14 with `output: 'export'` generates a fully static site. No Node.js ser
 ```javascript
 const nextConfig = {
   output: "export",
+  trailingSlash: true,
   reactStrictMode: true,
+  // The repo root has its own package-lock.json (husky/prettier only), which
+  // makes Turbopack guess the wrong workspace root. Pin it to this app.
+  turbopack: {
+    root: __dirname,
+  },
 };
 ```
 
 **Build script** (`frontend/package.json`):
 ```
-"build": "next build && rm -rf build && mv out build"
+"build": "next build && rm -rf build && mv out build && node scripts/write-version.js"
 ```
+
+`write-version.js` publishes `build/version.json` with the commit, which the live smoke test polls to know when a deploy is live.
 
 Next.js exports to `out/` by default; the script renames to `build/` for Render compatibility. The `rm -rf build` prevents `mv` from nesting `out/` inside an existing `build/` directory.
 
 ## Dynamic Routes
 
-Static export requires `generateStaticParams()` for all dynamic routes. The app has one: `/product/[id]`.
+Static export requires `generateStaticParams()` for all dynamic routes. The app has two: `/product/[id]` and `/passport/[id]`, both built the same way.
 
 **Problem:** `"use client"` pages cannot export `generateStaticParams()` (server-only API).
 
@@ -51,7 +59,8 @@ These features are NOT available with `output: 'export'`:
 
 ## Output
 
-The build produces ~566 static HTML files:
-- 16 top-level routes (/, /about, /carbon, /dashboard, etc.)
+The build produces 1119 static pages (Next's count, 2026-11-28):
+- the top-level routes (/, /about, /carbon, /dashboard, etc.)
 - 550 product detail pages (/product/1 through /product/550)
+- 550 passport pages (/passport/1 through /passport/550)
 - Served by nginx (Docker) or Render Static Site

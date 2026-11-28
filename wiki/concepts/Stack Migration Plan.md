@@ -2,6 +2,7 @@
 type: concept
 title: "Stack Migration Plan — SQLite/Express to Prisma/Supabase/Tailwind"
 created: 2026-05-21
+updated: 2026-11-28
 status: developing
 tags: [migration, prisma, supabase, tailwind, shadcn, planning]
 ---
@@ -16,10 +17,10 @@ Roadmap for migrating from the current stack to the target stack specified in th
 
 | Layer | Technology | Notes |
 |-------|-----------|-------|
-| Database | SQLite (better-sqlite3, WAL mode) | File-based, single-writer |
-| ORM | Raw SQL via better-sqlite3 | Synchronous API |
+| Database | SQLite: Turso embedded replica (libsql) in production, better-sqlite3 (WAL mode) locally | Single-writer; production data survives restarts since 2026-11 |
+| ORM | Raw SQL through `src/db/driver.js` (better-sqlite3-compatible API) | Synchronous API |
 | Backend | Express.js | Custom middleware (validate, auth, cache) |
-| Frontend | Next.js 14 App Router | Static export (`output: 'export'`) |
+| Frontend | Next.js 16 App Router | Static export (`output: 'export'`) |
 | Styling | CSS Modules + inline styles + CSS variables | Design tokens in globals.css |
 | Components | Custom (PageHero, GradeBadge, etc.) | No component library |
 | Auth | JWT in httpOnly cookies | Custom implementation |
@@ -31,7 +32,7 @@ Roadmap for migrating from the current stack to the target stack specified in th
 | Database | Supabase PostgreSQL | High — schema + queries + deployment |
 | ORM | Prisma | Medium — replaces raw SQL |
 | Backend | Express.js (keep) or migrate to Next.js API Routes | Low if keeping Express |
-| Frontend | Next.js 14 App Router (keep) | None |
+| Frontend | Next.js 16 App Router (keep) | None |
 | Styling | Tailwind CSS | High — every component restyled |
 | Components | shadcn/ui | Medium — replace custom components |
 | Auth | Supabase Auth | Medium — replaces custom JWT |

@@ -33,9 +33,9 @@ SGX-listed food manufacturers in Singapore face Scope 3 carbon reporting obligat
 | Layer | Technology |
 |---|---|
 | API | Node.js 22, Express 4.18 |
-| Database | SQLite via better-sqlite3 (WAL mode) |
+| Database | SQLite: a Turso embedded replica (libsql) in production, better-sqlite3 locally |
 | Scoring Engine | GreenGrade v3 — KDE + sigmoid scoring in Node.js |
-| Frontend | Next.js 14 (App Router, static export), React 18, TanStack Query |
+| Frontend | Next.js 16 (App Router, static export), React 19, TanStack Query |
 | Auth | JWT + bcryptjs, CSRF double-submit |
 | Security | Helmet, CORS, HPP, rate limiting, account lockout, input validation |
 | Infrastructure | Docker (multi-stage, non-root), GitHub Actions CI, Render.com |
@@ -218,11 +218,12 @@ See `backend/.env.example` for the full template.
 ## Testing
 
 ```bash
-cd backend && npm test      # 249 tests across 11 suites
-cd frontend && npm test     # component + context tests
+cd backend && npm test                    # API tests on better-sqlite3
+cd backend && DB_DRIVER=libsql npm test   # same suite on the production driver
+cd frontend && npm test                   # component, context and page tests
 ```
 
-CI runs on every push and PR: format check, lint, tests with coverage, `npm audit`, a `docker compose build`, and a frontend production build. A single summary check named `CI` gates branch protection.
+CI runs on every push and PR: format check, lint, tests with coverage (the backend suite runs a second time on the libsql driver), `npm audit`, a frontend production build with a check that `render.yaml` covers every built route, and a `docker compose build`. A single summary check named `CI` gates branch protection.
 
 ## Documentation
 
@@ -234,7 +235,7 @@ CI runs on every push and PR: format check, lint, tests with coverage, `npm audi
 | [`SECURITY.md`](./SECURITY.md) | Security model and vulnerability disclosure |
 | [`PRIVACY.md`](./PRIVACY.md) | Data collected, retention, and user data rights |
 | [`CONTRIBUTING.md`](./CONTRIBUTING.md) | Dev setup, branch/commit conventions, key constraints |
-| [`DOCUMENTATION.md`](./DOCUMENTATION.md) | Architecture and module-level reference |
+| [`DOCUMENTATION.md`](./DOCUMENTATION.md) | Historical reference from before the move to Next.js; not kept current |
 
 ## Security
 

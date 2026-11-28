@@ -2,6 +2,7 @@
 type: domain
 title: "Threat Model"
 created: 2026-10-30
+updated: 2026-11-28
 status: developing
 tags: [domain, security, threat-model, stride]
 ---
@@ -15,6 +16,10 @@ reproduced. Companion to [[Backend Security]] and [[Production Readiness]].
 **Scope:** `backend/src/**`, `frontend/src/**`, `render.yaml`, CI workflow.
 **Reviewed at:** `main` @ `0162ec0` (what production runs) with `fix/real-404`
 (PR #50, **unmerged**) as the remediated state.
+**Updated 2026-11-28:** stack versions, the store, boundary B3, the T-6/T-8
+durability notes and the residual risks, after the move to Turso and Next 16.
+Checked against `backend/src/db/driver.js`, `backend/docs/turso.md` and the
+live `/api/health`. Everything else stands as reviewed above.
 
 ---
 
@@ -23,13 +28,13 @@ reproduced. Companion to [[Backend Security]] and [[Production Readiness]].
 | | |
 |---|---|
 | Architecture | Static SPA + stateless-ish monolith API |
-| Frontend | Next.js 14 `output: "export"` — plain HTML/JS on a CDN host |
-| API | Node 20 / Express 4, single Render free instance |
-| Store | SQLite (better-sqlite3, WAL) on the instance's **ephemeral** disk |
+| Frontend | Next.js 16 `output: "export"` — plain HTML/JS on a CDN host |
+| API | Node 22 / Express 4, single Render free instance |
+| Store | SQLite as a Turso embedded replica (libsql): reads from a local copy on the instance's ephemeral disk, every write to Turso's hosted primary |
 | Identity | JWT HS256, 2 h TTL, `jti` + `revoked_tokens` revocation registry |
 | Session transport | httpOnly cookie **and** an in-memory copy in the SPA |
 | CSRF | Double-submit token (cookie readable by JS + `X-CSRF-Token` header) |
-| Third party | Open Food Facts (outbound only, barcode fallback) |
+| Third party | Open Food Facts (outbound only, barcode fallback); Turso (hosts the database primary, so it holds all stored data) |
 
 ### Data classification
 
@@ -59,7 +64,8 @@ that scores are not altered for paying clients.
       *** CROSS-SITE ***  onrender.com is on the Public Suffix List,
                           so these are different SITES, not just origins
 
- [B3] API ──────────────► SQLite (same process, ephemeral disk)
+ [B3] API ──────────────► Turso primary (network, TURSO_AUTH_TOKEN)
+                          through a local SQLite replica in the same process
 
  [B4] API ──────────────► Open Food Facts (outbound, untrusted response)
 
@@ -83,9 +89,9 @@ silently assumes same-site. See T-5.
 | T-3 | **Spoofing** — limiter bypass | `/api/v1/*` mounts | High | **Verified**; fixed in PR #50 |
 | T-4 | **Elevation / Spoofing** — revoked token resurrection | account deletion | High | **Verified**; fixed in PR #50 |
 | T-5 | **Spoofing/DoS** — cross-site cookie withheld | `COOKIE_OPTIONS` | High | **Verified**; fixed in PR #50 |
-| T-6 | **Tampering/Repudiation** — audit trail is mutable + ephemeral | `score_change_logs` | High | Partly mitigated (append-only + HMAC chain); ephemerality still open |
+| T-6 | **Tampering/Repudiation** — audit trail is mutable + ephemeral | `score_change_logs` | High | Partly mitigated (append-only + HMAC chain); ephemerality closed by Turso |
 | T-7 | **Tampering** — CSRF gaps on two mutating surfaces | `DELETE /auth/account`, `/v1/evidence` POSTs | Medium | **Fixed in PR #50** |
-| T-8 | **Availability** — total data loss / no backup | ephemeral SQLite | High | Partly mitigated (verified, pruned, relocatable snapshots); durability still open |
+| T-8 | **Availability** — total data loss / no backup | SQLite storage | High | Mitigated (Turso primary + point-in-time restore); falls back to a wiped local file if the Turso env vars are missing, which `/api/health` and the smoke test flag |
 | T-9 | **Tampering** — stored XSS via community evidence | `submitted_evidence` | Medium | Mitigated (escape + admin review) |
 | T-10 | **DoS** — amplification through OFF | `/products/scan/:barcode` | Low | Mitigated (breaker + limiter) |
 | T-11 | **Repudiation** — logout left earlier tokens alive | `logoutHandler` | Low | Mitigated (per-user token epoch) |
@@ -150,6 +156,9 @@ a rewritten `changed_by`, a rewritten `change_reason`, a deleted middle record
 and a forged appended record are all detected. Verification with the wrong key
 fails, as it must.
 
+Ephemerality is closed too: since the move to Turso the table lives in the
+hosted primary and survives redeploys (see T-8).
+
 Still open:
 
 - **Truncation.** Deleting the newest records leaves a shorter, self-consistent
@@ -157,8 +166,6 @@ Still open:
   returns `head` — record it off-host.
 - **Key compromise.** An attacker holding `AUDIT_HMAC_KEY` can forge the chain.
   The key is an env var on the same host, so host compromise defeats this.
-- **Ephemerality.** A redeploy still erases the table. That is T-8's problem,
-  and it needs storage that outlives the host.
 - **`changed_by` is still free text**, not an actor FK — deliberately, since
   sentinel values like `system:startup` have no corresponding user row.
 
@@ -204,18 +211,21 @@ public evidence reads are untouched.
 
 ## 6. Residual risk
 
-- **T-6 and T-8 are now partly mitigated in-place.** The audit trail is
-  append-only and HMAC-chained, and snapshots are verified, pruned and
-  relocatable. What remains in both cases is the same single thing: storage that
-  outlives the host. No amount of application code supplies that — it needs a
-  persistent disk, managed Postgres, or an off-host snapshot target. Tracked in
-  [[Production Readiness]].
+- **T-6 and T-8: storage now outlives the host.** Production runs on a Turso
+  embedded replica, so user data and the audit trail survive redeploys, and
+  Turso's point-in-time restore is the off-host backup. Two risks come with it.
+  `TURSO_AUTH_TOKEN` grants read and write on the whole database, so it is now
+  a credential on a par with `JWT_SECRET`. And if Turso is unreachable during a
+  cold start, the API stays down until it answers (`backend/docs/turso.md`).
+  If the env vars go missing, the API quietly falls back to a local file that
+  every restart wipes; `/api/health` reports `storage`, and the live smoke test
+  fails on anything but `turso`. Tracked in [[Production Readiness]].
 - **T-8 detail**: `npm run backup` now fails loudly rather than leaving an
   unusable file, keeps the newest `BACKUP_KEEP` snapshots, and writes a
   single self-contained database (not WAL mode, whose sidecars are easy to copy
-  without). Set `BACKUP_DIR` to a durable location; the default still sits on
-  the same ephemeral disk as the database, which protects against operator error
-  only. Nothing schedules it yet.
+  without). It snapshots the local file only, and the default `BACKUP_DIR` sits
+  on the instance's ephemeral disk, so in production Turso's restore is the real
+  backup. Nothing schedules it.
 - **T-11** (fixed): `refresh` issues a new `jti` without revoking the old, so
   logout used to kill only the most recent token while earlier ones lived to
   their natural `exp` (≤2 h). Logout now also stamps `users.tokens_valid_from`,

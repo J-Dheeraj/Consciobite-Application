@@ -18,14 +18,14 @@ Consciobite deploys to Render.com as two services defined in `render.yaml`.
 - **Type:** `web` (Node.js runtime)
 - **Build:** `npm ci`
 - **Start:** `npm start`
-- **Health check:** `GET /api/health`
+- **Health check:** `GET /api/health/live` (liveness only; `/api/health` is the deeper readiness check, which also reports `storage`)
 - **Plan:** free
 
 ### Frontend (`consciobite-app`)
 - **Type:** `static`
 - **Build:** `npm ci && npm run build`
 - **Publish path:** `build/`
-- **Routing:** All paths rewrite to `/index.html` (SPA fallback)
+- **Routing:** One rewrite per prerendered route in `render.yaml`, not a `/*` catch-all; CI's `check:routes` step fails if a built route has no rule
 
 ## API Base Detection
 
