@@ -27,7 +27,7 @@ Consciobite is a sustainability scoring platform that rates food products across
 
 ## Backend Stack
 - **Framework**: Express.js with modular route handlers
-- **Database**: SQLite via better-sqlite3
+- **Database**: Turso (libSQL) embedded replica in production, better-sqlite3 locally (`src/db/driver.js`)
 - **Auth**: JWT tokens with bcrypt password hashing
 - **Scoring**: [[GreenGrade]] algorithm (Gaussian KDE + variance-based weighting)
 

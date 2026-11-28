@@ -2,7 +2,7 @@
 type: meta
 title: "Hot Cache"
 created: 2026-04-25
-updated: 2026-07-30
+updated: 2026-11-28
 status: evergreen
 tags: [hot-cache, meta]
 ---
@@ -13,9 +13,11 @@ tags: [hot-cache, meta]
 
 ---
 
-**Last updated:** 2026-07-30 — evidence source registry merged (PR #44); community evidence submission open in PR #45.
+**Last updated:** 2026-11-28 — stack and storage refresh (below). Entries further down are dated history from 2026-07-30.
 
-**Project:** Consciobite — Next.js 14 App Router (static export) + Node.js/Express API + SQLite. **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
+**Current state (2026-11-28):** Next.js 16 + React 19 frontend (static export), Express 5 API on Node 22. Production data lives in a Turso (libSQL) database in AWS us-west-2, opened as an embedded replica (`backend/src/db/driver.js`); `/api/health` reports `storage: turso`. Restarts no longer wipe users, reviews or the audit chain, so the old "ephemeral SQLite" blocker is closed without Postgres. Frontend `npm audit`: 0 critical, 0 high; the audit gate has no exceptions.
+
+**Project:** Consciobite — Next.js 16 App Router (static export) + Node.js/Express 5 API + SQLite-compatible storage (Turso in production). **Repositioned as B2B**: SKU-level carbon scoring + Digital Product Passport platform for food FMCG brands (SGX Scope 3 / EU ESPR framing). GreenGrade v3 scores 550 products 0–10 via KDE + sigmoid across 7 emission dimensions.
 
 **B2B layer (2026-07):** `/api/v1/passport/:id`, `POST /api/v1/portfolio/score` (≤100 SKUs), `/api/v1/audit/:id` in `backend/src/routes/passport.js`. `METHODOLOGY.md` at repo root. README rewritten for B2B (no student-project framing).
 
@@ -25,7 +27,7 @@ tags: [hot-cache, meta]
 - #1 (2026-07-29, `main@9914b96`): 5/10 "Prototype".
 - #2 (2026-07-30, `main@2cb26e9`): **6/10 "Pilot-ready"** — disposable-data pilots only, enterprise: no. See [[Architecture Review 2026-07-30]] and [[Production Readiness]].
 
-**Review-#1 fixes landed** (`2bd6790` tier 1, `6f69df0` tier 2): AuthContext refresh/logout now use `API_BASE` (was silently broken in prod — hit frontend origin); `trust proxy 1`; deep `/api/health` (DB writability via BEGIN IMMEDIATE, migrations, scoring, ML artifacts; 503 when degraded); OFF lookup retry+backoff with 503-vs-404 distinction; audit attribution (`admin:<email>`, `system:startup`, reason never null); "immutable"/"ESPR-ready" claims reworded; frontend jest suite wired into CI; frontend audit gate `--audit-level=critical` (Next 14 high CVEs are server-side; static export unaffected; fix requires breaking Next 16).
+**Review-#1 fixes landed** (`2bd6790` tier 1, `6f69df0` tier 2): AuthContext refresh/logout now use `API_BASE` (was silently broken in prod — hit frontend origin); `trust proxy 1`; deep `/api/health` (DB writability via BEGIN IMMEDIATE, migrations, scoring, ML artifacts; 503 when degraded); OFF lookup retry+backoff with 503-vs-404 distinction; audit attribution (`admin:<email>`, `system:startup`, reason never null); "immutable"/"ESPR-ready" claims reworded; frontend jest suite wired into CI; frontend audit gate `--audit-level=critical` (later replaced by `scripts/audit-gate.js`; the Next 14 CVEs it allowed were cleared by the Next 16 upgrade on 2026-11-28).
 
 **Review-#2 fixes landed** (`af395ee`): access token memory-only (never localStorage; cookie-based session restore, `initializing` state); `jti` revocation registry (migration 003) — logout revokes, refresh rotates; Sentry actually wired (`NEXT_PUBLIC_SENTRY_DSN` + `initSentry()` invoked); X-Request-Id tracing; `/api/health/live` + exact migration-set readiness; OFF circuit breaker (3 fails → 60s open); privacy controls (`GET /auth/export`, `DELETE /auth/account`, `PRIVACY.md`); score provenance (methodology version + catalog sha256 + code revision per change); `SECURITY.md` triage policy; `NEXT_PUBLIC_API_URL` precedence; ROUTE_TABLE consolidation; `npm run backup`. See [[Production Readiness]].
 
@@ -49,13 +51,13 @@ tags: [hot-cache, meta]
 
 **Server-side favorites (PR #41, branch `claude/nifty-goodall-cavczb`):** `user_favorites` table (migration **004**) with `UNIQUE(user_id, product_id)` and cascade delete; `/api/favorites` GET/POST plus DELETE `/all` and `/:productId`, mounted via ROUTE_TABLE. Favorites page reads from the server via React Query when authenticated and falls back to localStorage for guests (favorites data only — never auth tokens).
 
-**Open blockers (infrastructure decisions):** ephemeral SQLite on Render free tier (THE blocker; CLAUDE.md requires discussion before Postgres); process-local rate-limit/lockout (Redis when multi-instance); no managed backups/DR or metrics+alerting beyond Sentry; catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap.
+**Open blockers (infrastructure decisions):** ~~ephemeral SQLite on Render free tier~~ (closed 2026-11-28 by Turso); process-local rate-limit/lockout (Redis when multi-instance); no metrics+alerting beyond Sentry; catalogue-as-JSON blocks manufacturer onboarding; tamper-evident audit storage still roadmap.
 
 **Community evidence submission (PR #45, branch `claude/dreamy-dirac-2jgkme`):** the *contribution* half of the evidence story (the registry above is the *curation* half — they are complementary, not duplicates). `POST /api/products/:id/evidence` (auth required) accepts citation, source_type, methodology, url, year; submissions land in `submitted_evidence` (migration **006**) as pending. Admins approve/reject via `GET /api/admin/pending-evidence` and `POST /api/admin/evidence/:id/review`; approved entries surface through `GET /api/products/:id/evidence` and the `EvidenceSection` component. `csrfProtection` added to the products router.
 
 **Migration sequence (unique across all open branches):** 001 initial, 002 governance, 003 revocation+provenance, 004 favorites (PR #41), 005 user profile (PR #38), 006 submitted evidence (PR #45), 007 evidence sources (merged PR #44).
 
-**Test status:** 189 backend + 9 frontend, all passing. Frontend builds 1119 static pages (550 product + 550 passport + routes).
+**Test status:** backend and frontend suites pass in CI (backend runs twice, on better-sqlite3 and libsql). Frontend builds 1119 static pages (550 product + 550 passport + routes).
 
 **Key invariants:**
 - `AUTH_EXPIRED_EVENT` constant for 401 event bus (never raw string)

@@ -26,7 +26,7 @@ Cross-cutting tracking of what separates the current deployment from production/
 | Upstream outage masqueraded as 404 | OFF lookup: 2 retries w/ backoff, `found`/`not_found`/`unavailable` result, 503 on outage |
 | Nullable/unattributed audit rows | `admin:<email>` + reason on rescore, `system:startup` on drift, reason never null |
 | Overstated claims ("immutable", "ready for ESPR") | README/Swagger reworded to accurate descriptions |
-| No frontend tests; audit gate `\|\| true` | jest + testing-library suite in CI; audit gate `--audit-level=critical` (Next 14 high CVEs are server-side; static export unaffected; fix = breaking Next 16) |
+| No frontend tests; audit gate `\|\| true` | jest + testing-library suite in CI; audit gate `--audit-level=critical` (Next 14 high CVEs were server-side; cleared by the Next 16 upgrade, 2026-11-28; gate now `scripts/audit-gate.js` with no exceptions) |
 
 ## Fixed in response to review #2 (2026-07-30)
 
@@ -48,9 +48,9 @@ Cross-cutting tracking of what separates the current deployment from production/
 
 ## Open blockers (infrastructure decisions)
 
-1. **Ephemeral SQLite** — Render free tier, no persistent disk; redeploy can erase all business data. Fix: managed PostgreSQL (CLAUDE.md forbids migrating without discussion; Render free Postgres expires after 90 days → effectively a paid decision; better-sqlite3 sync → pg async touches every route). See [[Stack Migration Plan]].
+1. ~~**Ephemeral SQLite**~~ — **closed 2026-11-28.** Production data now lives in Turso (libSQL, AWS us-west-2) as an embedded replica, so restarts and redeploys keep it. No Postgres migration was needed. See `backend/docs/turso.md`.
 2. **Process-local rate limit/lockout/cache** — Redis when (and only when) multi-instance.
-3. **No managed backups/DR** — `npm run backup` exists but snapshots die with the host; depends on item 1 for anything meaningful.
+3. **Backups/DR** — Turso point-in-time restore covers production. The repo records no restore test yet.
 4. **Branch protection not enforced** — cannot be set from the dev environment (no repo-admin token); requires GitHub UI: Settings → Branches → protect `main` with required status checks.
 5. Catalogue-as-committed-JSON blocks manufacturer onboarding; needs relational product/evidence tables with versioning.
 6. Tamper-evident audit storage (chaining/signatures/external checkpoint) still roadmap.

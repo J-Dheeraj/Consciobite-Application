@@ -53,13 +53,14 @@ Subject line under 72 characters. No period at the end.
 - New routes need `validate()` middleware — use `pattern: /^\d+$/` for numeric query params, not `type: "number"`.
 - New frontend pages use React Query for server state (no raw `useEffect` + `fetch`).
 - Anything touching `greengrade.js` needs a test in `backend/__tests__/`.
-- CI must pass (lint → format → tests → audit → Docker build) before merge.
+- CI must pass before merge: format check → lint → tests with coverage → backend tests again on the libsql driver → audit → frontend build → render.yaml route check → Docker build, gated by one summary check named `CI`.
 
 ## Testing
 
 ```bash
-cd backend && npm test        # 153 backend tests
-cd frontend && npm test       # smoke tests
+cd backend && npm test        # backend suite (better-sqlite3)
+cd backend && DB_DRIVER=libsql npm test   # same suite on libsql, as CI does
+cd frontend && npm test       # component + context tests
 ```
 
 Every new route needs at least one Supertest integration test. The test file lives in `backend/__tests__/`.
